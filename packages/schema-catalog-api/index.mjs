@@ -75,7 +75,7 @@ export function createTenantCatalogProvider(pool) {
           ORDER BY object_name, parent_name, tenant_id`
       );
       await client.query("COMMIT");
-      return buildCatalog(result.rows);
+      return buildCatalog(result.rows, context.tenantId);
     } catch (error) {
       try { await client.query("ROLLBACK"); } catch {}
       throw error;
