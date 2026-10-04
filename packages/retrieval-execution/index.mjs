@@ -44,6 +44,7 @@ export async function executeRetrieval({
     const graphValidation=validate(graph.query,context,catalog);
     if(!graphValidation.ok) throw new RetrievalExecutionError("GRAPH_RETRIEVAL_VALIDATION_FAILED","Graph retrieval validation failed",graphValidation.errors);
     graphCost=graphValidation.cost??0;
+    if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
     const candidateLimit=graph.candidate_limit??graph.query.limit;
     if(candidateLimit>ir.limits.max_results) throw new RetrievalExecutionError("RETRIEVAL_LIMIT_EXCEEDED","Graph candidate limit exceeds retrieval max_results");
     const boundedQuery={...graph.query,limit:candidateLimit};
