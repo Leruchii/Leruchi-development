@@ -38,7 +38,7 @@ export async function executeRetrieval({
   let graphResult={columns:[],rows:[],count:0};
   let vectorResult={columns:[],rows:[],count:0};
   let graphCost=0;
-  let vectorCost=0;
+  let vectorCost=vector?.top_k??0;
 
   if(graph){
     const graphValidation=validate(graph.query,context,catalog);
@@ -50,8 +50,6 @@ export async function executeRetrieval({
     const graphParams=graphParameters(graph.query,requestParameters);
     graphResult=await executeGraph({ir:boundedQuery,context,catalog,requestParameters:graphParams,validate,compile,db,requestId});
   }
-
-  if(vector) vectorCost=vector.top_k;
 
   if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
 
