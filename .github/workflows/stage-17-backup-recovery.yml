@@ -1,0 +1,40 @@
+name: Stage 17 Backup and Recovery
+on:
+  pull_request:
+    paths:
+      - "scripts/vibedb-backup.sh"
+      - "scripts/vibedb-restore.sh"
+      - "packages/backup-recovery/**"
+      - "tests/backup-recovery/**"
+      - ".github/workflows/stage-17-backup-recovery.yml"
+  push:
+    branches: [main, stage17-backup-recovery]
+jobs:
+  backup-recovery:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vibedb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d vibedb"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/vibedb
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Backup contract tests
+        run: node --test tests/backup-recovery/backup-recovery.test.mjs
+      - name: Recovery drill
+        run: bash tests/backup-recovery/backup-recovery-drill.sh
+      - name: Architecture regression audit
+        run: node tests/architecture/contract-audit.mjs
