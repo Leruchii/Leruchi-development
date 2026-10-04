@@ -178,6 +178,7 @@ The Schema Catalog is the authoritative metadata contract for:
 - graph registries
 - graph labels
 - edge types
+- graph metadata visibility (shared or tenant-owned)
 - endpoint compatibility
 - vector metadata
 - validation
@@ -188,6 +189,10 @@ The Schema Catalog is the authoritative metadata contract for:
 - GraphRAG
 
 Agents and UI surfaces must not invent independent schema metadata.
+
+### Graph metadata tenancy
+
+Graph definitions are not automatically one-physical-graph-per-tenant. Vibe supports shared graph definitions for common application schemas and tenant-owned graph definitions for customer-specific schemas. The catalog uses an explicit shared scope (`tenant_id = ''`) and tenant scope (`tenant_id = <tenant>`), protected by PostgreSQL RLS. Shared metadata does not make graph data shared: graph data remains tenant-isolated.
 
 ### Tenant isolation
 
@@ -578,9 +583,17 @@ Implemented so far:
 
 CLI does not become a second compiler/security boundary.
 
-**Status:** IMPLEMENTED — NOT YET VALIDATED.
+**Status:** IN_PROGRESS — catalog tenancy hardening and automated exit-gate validation are being completed.
 
-**Remaining exit-gate work:** establish the repository migration execution contract, implement and execute migrations using the approved migrator role, validate remote Schema Catalog inspection/type generation against a real server contract, and add executable CI evidence for those workflows.
+Implemented in this hardening pass:
+- forward-only numbered migrations with a migrator-only ledger;
+- CLI migration execution requiring a `vibe_migrator` connection;
+- authenticated remote Schema Catalog HTTP contract;
+- remote CLI inspection/type-generation path;
+- adversarial tenant-private catalog visibility tests;
+- repository-wide architecture regression audit.
+
+Exit gate now requires the Stage 11 workflow to prove all of the above against a fresh PostgreSQL/AGE environment. The stage must not be marked VALIDATED from source inspection alone.
 
 ## Stage 12 — Graph Realtime
 
@@ -812,7 +825,7 @@ At the time this plan was expanded:
 - Stage 09: **READY_TO_BUILD / NEXT**
 - Stage 10+: **NOT STARTED / DEFERRED as individually marked**
 
-The next implementation task is **Stage 09 — Graph Mutations**.
+The current implementation task is **Stage 11 — CLI hardening and Schema Catalog tenancy**.
 
 The first Stage 09 action is not to code blindly. Inspect the existing Query IR, Schema Catalog, AGE compiler, Secure Execution Engine, Stage 02 security model, database fixtures and tests, then design the smallest safe mutation boundary consistent with this architecture.
 
