@@ -49,6 +49,41 @@ export function buildCatalog(rows) {
   return {version:"v1", graphs};
 }
 
+export function createTenantCatalogProvider(pool) {
+  if (!pool) throw new Error("pool is required");
+  return async function catalogProvider(context) {
+    if (!context?.tenantId) throw new Error("Trusted tenant context is required");
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify({
+        tenant_id: context.tenantId,
+        role: context.role ?? "authenticated",
+        capabilities: context.capabilities ?? []
+      })]);
+      const result = await client.query(
+        `SELECT object_name AS graph_name,
+                tenant_id,
+                metadata->>'graph_object_kind' AS graph_object_kind,
+                parent_name AS object_name,
+                metadata->>'from_label' AS from_label,
+                metadata->>'to_label' AS to_label,
+                metadata->'properties' AS properties
+           FROM vibe_meta.schema_catalog_entries
+          WHERE catalog_version = 'v1' AND object_kind = 'graph'
+          ORDER BY object_name, parent_name, tenant_id`
+      );
+      await client.query("COMMIT");
+      return buildCatalog(result.rows);
+    } catch (error) {
+      try { await client.query("ROLLBACK"); } catch {}
+      throw error;
+    } finally {
+      client.release();
+    }
+  };
+}
+
 export function createSchemaCatalogServer({pool, jwtSecret, host="127.0.0.1", port=0}={}) {
   if (!pool) throw new Error("pool is required");
   if (!jwtSecret) throw new Error("jwtSecret is required");
@@ -63,26 +98,13 @@ export function createSchemaCatalogServer({pool, jwtSecret, host="127.0.0.1", po
       const auth = req.headers.authorization ?? "";
       if (!auth.startsWith("Bearer ")) throw new Error("Bearer token required");
       const claims = verifyHs256Jwt(auth.slice(7), jwtSecret);
-      const client = await pool.connect();
-      try {
-        await client.query("BEGIN");
-        await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify(claims)]);
-        const result = await client.query(
-          `SELECT object_name AS graph_name,
-                  tenant_id,
-                  metadata->>'graph_object_kind' AS graph_object_kind,
-                  parent_name AS object_name,
-                  metadata->>'from_label' AS from_label,
-                  metadata->>'to_label' AS to_label,
-                  metadata->'properties' AS properties
-             FROM vibe_meta.schema_catalog_entries
-            WHERE catalog_version = 'v1' AND object_kind = 'graph'
-            ORDER BY object_name, parent_name`
-        );
-        await client.query("COMMIT");
-        res.writeHead(200, {"content-type":"application/json","cache-control":"no-store"});
-        res.end(JSON.stringify(buildCatalog(result.rows)));
-      } catch (error) {
+      const catalogProvider = createTenantCatalogProvider(pool);
+    const claimsContext = { tenantId: claims.tenant_id, role: claims.role ?? "authenticated", capabilities: Array.isArray(claims.capabilities) ? claims.capabilities : [] };
+    const catalog = await catalogProvider(claimsContext);
+    res.writeHead(200, {"content-type":"application/json","cache-control":"no-store"});
+    res.end(JSON.stringify(catalog));
+    return;
+    } catch (error) {
         await client.query("ROLLBACK");
         throw error;
       } finally {
