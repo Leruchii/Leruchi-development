@@ -40,8 +40,11 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
         await record("denied","CAPABILITY_DENIED");
         return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for Schema Catalog discovery",request_id:requestId});
       }
-      const catalog=await catalogProvider(context);
-      if(isCatalog){await record("success");return json(res,200,catalog);}
+      if(isCatalog){
+        const catalog=await catalogProvider(context);
+        await record("success");
+        return json(res,200,catalog);
+      }
       const input=await body(req);
       auditInput=input;
       if(isRetrievalRequest){
@@ -55,6 +58,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
           return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"vector:read capability is required for vector retrieval",request_id:requestId});
         }
       }
+      const catalog=await catalogProvider(context);
       if(isRetrievalRequest){
         const client=await pool.connect();
         try{
