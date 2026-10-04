@@ -5,7 +5,8 @@ export const GRAPH_EVENT_CHANNEL = "vibe_graph_events";
 export function topicFor({tenantId,graph}){
   if(!tenantId||!graph)throw new Error("tenantId and graph are required");
   const tenantKey=createHash("sha256").update(tenantId).digest("hex").slice(0,20);
-  return "graph:"+tenantKey+":"+graph;
+  const graphKey=createHash("sha256").update(graph).digest("hex").slice(0,20);
+  return "graph:"+tenantKey+":"+graphKey;
 }
 
 export function authorizeSubscription({context,graph,catalog}){
@@ -98,7 +99,9 @@ export async function readEvent(db,eventId){
   return result.rows[0]??null;
 }
 
-export async function replayTenantGraph(db,{tenantId,graph,afterEventSeq=0,limit=100}){
+export async function replayTenantGraph(db,{tenantId,graph,afterEventSeq=0,limit=100,relayContext}={}){
+  if(relayContext?.trusted!==true||relayContext?.role!=="realtime_relay") throw new Error("trusted realtime relay context is required");
+  if(!tenantId||!graph) throw new Error("tenantId and graph are required");
   const size=Math.max(1,Math.min(500,Number(limit)||100));
   const result=await db.query(
     `SELECT event_seq,event_id,event_type,graph_name,operation,target_kind,target_label,target_id,occurred_at
