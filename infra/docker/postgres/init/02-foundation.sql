@@ -22,6 +22,8 @@ GRANT SELECT ON vibe_meta.extension_probe TO vibe_runtime;
 INSERT INTO vibe_meta.extension_probe (embedding)
 VALUES ('[1,0,0]'), ('[0,1,0]'), ('[0,0,1]');
 
+SET search_path = ag_catalog, "$user", public;
+
 SELECT ag_catalog.create_graph('vibe_stage01');
 SELECT ag_catalog.create_vlabel('vibe_stage01', 'Person');
 SELECT ag_catalog.create_elabel('vibe_stage01', 'KNOWS');
