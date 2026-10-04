@@ -34,9 +34,9 @@ export function resolveVectorCatalog(catalog,catalogRef){
   if(!metric) throw new VectorExecutionError("UNSUPPORTED_DISTANCE_METRIC","Unsupported vector distance metric");
   return {
     ...entry,
-    schemaName:identifier(entry.schemaName??catalogRef.split(".")[0],"schema"),
-    relationName:identifier(entry.relationName??catalogRef.split(".")[1],"relation"),
-    embeddingColumn:identifier(entry.embeddingColumn??"embedding","embedding column"),
+    schemaName:identifier(entry.schemaName,"schema"),
+    relationName:identifier(entry.relationName,"relation"),
+    embeddingColumn:identifier(entry.embeddingColumn,"embedding column"),
     keyColumn:identifier(entry.keyColumn,"key column"),
     contentColumn:entry.contentColumn?identifier(entry.contentColumn,"content column"):null,
     operator:metric.operator
