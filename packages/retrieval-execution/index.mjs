@@ -74,6 +74,10 @@ export async function executeRetrieval({
     request_id:requestId,
     cost:{graph:graphCost,vector:vectorCost,total:graphCost+vectorCost,max:ir.limits.max_cost},
     sources:{graph:graphCandidates.length,vector:vectorCandidates.length},
+    explain:{
+      fusion:{strategy:ir.fusion.strategy,vector_weight:ir.fusion.vector_weight,graph_weight:ir.fusion.graph_weight},
+      candidate_limits:{max_results:ir.limits.max_results,max_cost:ir.limits.max_cost}
+    },
     rows:fused,
     count:fused.length
   };
