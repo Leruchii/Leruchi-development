@@ -12,6 +12,7 @@ on:
       - "tests/retrieval-ir/**"
       - "tests/retrieval-fusion/**"
       - "tests/retrieval-execution/**"
+      - "tests/security/stage-02-setup.sh"
       - "tests/schema-catalog-api/**"
       - "tests/vector-execution/**"
       - "packages/capability-policy/**"
@@ -81,6 +82,15 @@ jobs:
           VIBE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/vibedb
           VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
         run: node tests/vector-execution/integration.mjs
+      - name: Seed AGE tenant isolation fixture
+        run: |
+          docker compose cp tests/security/stage-02-setup.sh db:/tmp/stage-02-setup.sh
+          docker compose exec -T db bash /tmp/stage-02-setup.sh
+      - name: Prove real hybrid graph and vector retrieval
+        env:
+          VIBE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/vibedb
+          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+        run: node tests/retrieval-execution/hybrid-integration.mjs
       - name: Show database logs on failure
         if: failure()
         run: docker compose logs db
