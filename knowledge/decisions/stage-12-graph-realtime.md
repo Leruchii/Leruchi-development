@@ -48,7 +48,7 @@ The outbox and relay are transport-neutral. Supabase Realtime Broadcast is the p
 
 ## Validation
 
-Stage 12 is VALIDATED. CI proved:
+Stage 12 is IMPLEMENTED — NOT YET VALIDATED. The previous CI run was cancelled before the database-backed integration completed; the follow-up gate must prove:
 - atomic mutation + outbox commit;
 - rollback leaves no event;
 - commit emits the wakeup;
