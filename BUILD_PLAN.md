@@ -696,9 +696,9 @@ Add:
 
 Observability must not leak secrets, tenant data or raw database errors.
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED.
 
-Implementation is on branch stage16-observability / PR #42. Focused Stage 16 CI passed on an earlier head; the final telemetry regression test and handoff documentation require a fresh green Stage 16 run before validation.
+PR #42 merged as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`. Dedicated observability, Graph API telemetry, audit, execution, mutation and architecture checks passed. The GitHub Advanced Security external Processing Request failure is tracked as infrastructure/tooling noise rather than a VibeDB regression.
 
 ## Stage 17 — Backup + Recovery
 
