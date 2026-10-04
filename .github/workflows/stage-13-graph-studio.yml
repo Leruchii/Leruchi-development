@@ -38,3 +38,20 @@ jobs:
       - name: Base UI audit
         working-directory: .
         run: bash scripts/audit-baseui.sh apps/studio
+      - name: Start Studio
+        run: PORT=3100 npm run start > /tmp/vibedb-studio.log 2>&1 &
+      - name: Wait for Studio
+        working-directory: .
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:3100 >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/vibedb-studio.log
+          exit 1
+      - name: Install Chromium
+        working-directory: .
+        run: npx -y playwright@1.55.0 install --with-deps chromium
+      - name: Browser tenant and responsive evidence
+        working-directory: .
+        run: npx -y -p @playwright/test@1.55.0 playwright test tests/studio/browser.spec.mjs
