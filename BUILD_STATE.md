@@ -130,7 +130,7 @@ Then:
 4. make the smallest architecture-consistent change;
 5. run relevant tests, including security/adversarial tests;
 6. update knowledge when facts or decisions change;
-7. update this file before ending the work session.
+7. update this file before ending the work session. The root `BUILD_PLAN.md` remains the canonical architecture and stage-order source of truth.
 
 If work stops mid-stage, this file must say exactly:
 
