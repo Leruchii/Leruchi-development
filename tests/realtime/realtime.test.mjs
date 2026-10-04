@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {authorizeSubscription,topicFor,toClientEvent} from "../../packages/realtime-outbox/index.mjs";
+import {authorizeSubscription,topicFor,toClientEvent,replayTenantGraph} from "../../packages/realtime-outbox/index.mjs";
 
 const catalog={graphs:{
   shared:{visibility:"shared",tenantId:null},
@@ -41,4 +41,11 @@ test("replay requires an internal trusted relay context",async()=>{
     ),
     /trusted realtime relay context is required/
   );
+});
+
+
+test("topic derivation does not expose sensitive graph names",()=>{
+  const topic=topicFor({tenantId:"tenant_a",graph:"customer-secret-graph"});
+  assert.equal(topic.includes("customer-secret-graph"),false);
+  assert.match(topic,/^graph:[0-9a-f]{20}:[0-9a-f]{20}$/);
 });
