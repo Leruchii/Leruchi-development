@@ -2,7 +2,7 @@ import http from "node:http";
 import {randomUUID} from "node:crypto";
 import {Pool} from "pg";
 import {verifyHs256Jwt} from "../schema-catalog-api/index.mjs";
-import {createExecutionContext} from "../execution-context/index.mjs";
+import {createExecutionContext,ExecutionContextError} from "../execution-context/index.mjs";
 import {validateQuery} from "../query-validation/index.mjs";
 import {compileAge} from "../compiler-age/index.mjs";
 import {executeGraphQuery,createPgExecutor,ExecutionError} from "../execution-engine/index.mjs";
@@ -38,7 +38,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
       }finally{client.release();}
     }catch(error){
       if(error?.code==="BODY_TOO_LARGE")return json(res,413,{error:{version:"v1",code:"BODY_TOO_LARGE",message:"Request body is too large",request_id:requestId}});
-      if(error?.code==="UNAUTHORIZED"||error?.message?.includes("Bearer token"))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId});
+      if(error?.code==="UNAUTHORIZED"||error instanceof ExecutionContextError||error?.message?.includes("Bearer token"))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId});
       if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
       return json(res,500,{version:"v1",code:"INTERNAL_ERROR",message:"Graph API request failed",request_id:requestId});
     }
