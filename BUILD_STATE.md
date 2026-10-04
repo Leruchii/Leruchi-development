@@ -7,11 +7,11 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 12 — Graph Realtime
-- Current status: IN_PROGRESS
-- Last completed stage: 11 — CLI
-- Last validated commit: `b296635451e6bc24b4bb37ecbe9867ecaf920e98`
+- Current status: VALIDATED
+- Last completed stage: 12 — Graph Realtime
+- Last validated commit: `401ba6224cbd05f31f0a38a420fad5be7b9286e6`
 - Default branch: `main`
-- Next implementation target: Complete Stage 12 realtime outbox/relay exit gate
+- Next implementation target: Stage 13 — Graph Studio
 
 ## Verified state
 
@@ -136,7 +136,7 @@ Do not backfill Realtime, Storage, or Supavisor merely to make Stage 03 broader.
 
 ## Stage 12 implementation
 
-In progress:
+Validated:
 - durable tenant-scoped graph event outbox;
 - commit-bound PostgreSQL NOTIFY wakeup;
 - mutation executor outbox integration;
@@ -146,6 +146,8 @@ In progress:
 - relay-role NOBYPASSRLS proof.
 
 The hosted transport remains adapter-pluggable; Supabase Realtime Broadcast is a production candidate, while the outbox/relay contract remains transport-neutral.
+
+Validation evidence: Stage 12 workflow run `37206338038` passed unit contracts, fresh PostgreSQL/AGE migration execution, relay-role security, architecture audit, and database-backed outbox/NOTIFY/tenant-isolation integration.
 
 ## Known unresolved decisions
 
@@ -229,4 +231,4 @@ Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 
 Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
-Exact next action: run the Stage 12 database-backed realtime workflow, fix all failures, and mark Stage 12 VALIDATED only after the full exit gate passes.
+Exact next action: begin Stage 13 — Graph Studio using the validated Schema Catalog, Query/Mutation IR, Graph API contracts, and realtime event/refetch model.
