@@ -32,3 +32,16 @@ test("expired or unconfigured approval fails closed",async()=>{
   const unavailable=await verifyMutationApproval({ir,parameters:{},context,approval:live});
   assert.equal(unavailable.code,"APPROVAL_VERIFIER_UNAVAILABLE");
 });
+
+test("mutation executor previews destructive work without touching the database and refuses execution without approval",async()=>{
+  const {executeGraphMutation}=await import("../../packages/mutation-execution/index.mjs");
+  let executed=0;
+  const db={begin:async()=>{executed++},execute:async()=>{executed++},commit:async()=>{executed++},rollback:async()=>{}};
+  const catalog={graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[]}}};
+  const preview=await executeGraphMutation({ir,context,catalog,db,mode:"preview"});
+  assert.equal(preview.mode,"preview");
+  assert.equal(preview.approval_required,true);
+  assert.equal(executed,0);
+  await assert.rejects(()=>executeGraphMutation({ir,context,catalog,db}),error=>error.code==="APPROVAL_REQUIRED");
+  assert.equal(executed,0);
+});
