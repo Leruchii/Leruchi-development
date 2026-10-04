@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {Client} from "pg";
 import {createPgMutationExecutor} from "../../packages/mutation-execution/index.mjs";
+import {createExecutionContext} from "../../packages/execution-context/index.mjs";
 import {claimBatch,markPublished,markFailed,replayTenantGraph,toClientEvent} from "../../packages/realtime-outbox/index.mjs";
 
 const runtimeUrl=process.env.VIBE_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb";
@@ -9,7 +10,7 @@ const relayUrl=process.env.VIBE_REALTIME_DATABASE_URL??"postgresql://vibe_realti
 
 async function insertEvent(tenantId,event){
   const client=new Client({connectionString:runtimeUrl});await client.connect();
-  const db=createPgMutationExecutor(client,{tenantId,role:"authenticated"});
+  const db=createPgMutationExecutor(client,createExecutionContext({tenant_id:tenantId,role:"authenticated"}));
   await db.begin();
   await db.insertOutbox(event);
   await db.commit();
@@ -44,7 +45,7 @@ test("tenant-scoped outbox and relay lifecycle",{timeout:20000},async()=>{
 
   const rolledBack={...event,eventId:event.eventId+"-rollback",requestId:"request-stage12-rollback"};
   rollbackClient=new Client({connectionString:runtimeUrl});await rollbackClient.connect();
-  const rollbackDb=createPgMutationExecutor(rollbackClient,{tenantId:"tenant_a",role:"authenticated"});
+  const rollbackDb=createPgMutationExecutor(rollbackClient,createExecutionContext({tenant_id:"tenant_a",role:"authenticated"}));
   await rollbackDb.begin();
   await rollbackDb.insertOutbox(rolledBack);
   await rollbackDb.rollback();
