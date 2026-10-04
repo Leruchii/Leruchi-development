@@ -9,7 +9,7 @@ const catalog={vectors:{
   }
 }};
 
-const context={trusted:true,tenantId:"tenant_a",role:"authenticated",capabilities:["graph:read"],requestId:"r1"};
+const context={trusted:true,tenantId:"tenant_a",role:"authenticated",capabilities:["graph:read","vector:read"],requestId:"r1"};
 
 test("resolves only Schema Catalog vector sources",()=>{
   const source=resolveVectorCatalog(catalog,"docs.embedding");
@@ -31,6 +31,11 @@ test("compiles parameterized pgvector retrieval with catalog-trusted identifiers
 test("fails closed on vector dimension and budget violations",()=>{
   assert.throws(()=>compileVectorRetrieval({catalog,catalogRef:"docs.embedding",embedding:[1,0],topK:5,maxResults:20,maxCost:20}),/dimensions/);
   assert.throws(()=>compileVectorRetrieval({catalog,catalogRef:"docs.embedding",embedding:[1,0,0],topK:21,maxResults:20,maxCost:20}),/budget/);
+});
+
+test("requires the canonical vector read capability",async()=>{
+  const db={begin:async()=>{throw new Error("should not execute")}};
+  await assert.rejects(()=>executeVectorRetrieval({catalog,catalogRef:"docs.embedding",embedding:[1,0,0],topK:1,maxResults:20,maxCost:20,context:{...context,capabilities:["graph:read"]},db}),/vector:read capability/);
 });
 
 test("executes inside the existing trusted transaction boundary",async()=>{
