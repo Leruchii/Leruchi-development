@@ -5,38 +5,38 @@ This file tracks unresolved questions. UNKNOWN is not permission to guess.
 ## Resolved contradictions
 
 ### Build order
-The numbered build order is canonical. UI is implemented at Stage 13 after the backend foundations are proven.
 
-Reason: Graph Studio must consume a stable Graph API, Query IR, Schema Catalog and security contract rather than becoming an alternate source of architecture.
+The numbered build order is canonical. UI is implemented at Stage 13 after backend foundations are proven.
 
 ### Skill naming
-The canonical security skill is `vibe-security`. AGE-specific guidance is provided by `vibe-age`. PostgreSQL guidance is provided by `vibe-postgres`.
+
+The canonical security skill is vibe-security. AGE guidance is vibe-age. PostgreSQL guidance is vibe-postgres.
 
 ### Graph limits
-Provisional UI values are:
 
-- depth default 2;
-- depth maximum 6;
-- result default 100;
-- result maximum 1000.
+Provisional UI values are depth default 2, maximum 6, result default 100, maximum 1000. Backend validation may revise them.
 
-The backend contract must validate or revise these values before Graph Studio is considered complete.
+## Resolved by Stage 01
+
+- PostgreSQL baseline: 17.11.
+- Apache AGE baseline: 1.7.0 for PG17.
+- pgvector baseline: 0.8.7.
+- Database image strategy: official Apache AGE PG17 1.7.0 image pinned by digest, with pgvector compiled into the image.
+- Role separation: vibe_migrator and vibe_runtime, both non-superuser and without RLS bypass.
+- Foundation migration approach: deterministic SQL initialization with psql; no framework added prematurely.
+- Vector smoke-test dimension: 3; production dimension remains undecided.
+- AGE graph initialization requires an explicit ag_catalog search path in this baseline.
 
 ## Remaining UNKNOWNs
 
-- Pinned PostgreSQL, AGE and pgvector versions.
-- Database role names and privilege matrix.
-- Migration tooling and schema layout.
-- Exact AGE/RLS enforcement model.
+- Exact tenant claims and RLS context propagation.
+- Exact AGE graph/RLS privilege matrix for tenant isolation.
 - Query IR schema and versioning.
-- Query planner rules.
+- Query planner and compiler boundaries.
 - Recursive-CTE fallback routing and supported operations.
-- Graph mutation representation.
+- Graph mutation authorization model.
+- Production vector dimensions and index strategy.
 - Supabase compatibility scope and exact service versions.
-- Scoped capability issuance, revocation and audit model.
-- Auth/JWT claim model.
 - Realtime transport/channel model and delivery guarantees.
-- Graph canvas library.
-- Cloud hosting/deployment topology.
-- Backup RPO/RTO.
-- Pricing/billing model.
+- Scoped AI/MCP capability issuance, revocation, and audit format.
+- Cloud topology, backups, RPO/RTO, billing and metering.
