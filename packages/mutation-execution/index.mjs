@@ -4,8 +4,9 @@ import {compileAgeMutation} from "../compiler-age-mutation/index.mjs";
 import {assertTrustedExecutionContext,postgresRequestClaims} from "../execution-context/index.mjs";
 import {isDestructiveMutation,mutationImpact,verifyMutationApproval} from "../mutation-approval/index.mjs";
 
-export class MutationExecutionError{
-  constructor(code,message,details,requestId=randomUUID()){const error=new Error(message);error.name="MutationExecutionError";error.code=code;error.details=details;error.requestId=requestId;return error}
+export class MutationExecutionError extends Error{
+  constructor(code,message,details,requestId=randomUUID()){super(message);this.name="MutationExecutionError";this.code=code;this.details=details;this.requestId=requestId}
+  toJSON(){return{version:"v1",code:this.code,message:this.message,request_id:this.requestId,...(this.details===undefined?{}:{details:this.details})}}
 }
 function targetIdFromResult(result){const row=Array.isArray(result?.rows)&&result.rows.length?result.rows[0]:undefined;if(Array.isArray(row))return row[1];if(row&&typeof row==="object")return row.target_id;return undefined;}
 function targetKind(operation){return operation.endsWith("_edge")?"edge":"vertex";}
