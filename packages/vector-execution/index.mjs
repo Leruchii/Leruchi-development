@@ -61,11 +61,11 @@ export function compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxRes
   };
 }
 
-export async function executeVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost,context,db,requestId=randomUUID()}){
+export async function executeVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost,identityField="id",context,db,requestId=randomUUID()}){
   try{assertTrustedExecutionContext(context);}catch{throw new VectorExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   const capability=requireCapability(context,CAPABILITIES.VECTOR_READ);
   if(!capability.ok) throw new VectorExecutionError(capability.code,capability.message);
-  const compiled=compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost});
+  const compiled=compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost,identityField});
   let began=false;
   try{
     await db.begin(); began=true;
