@@ -39,7 +39,8 @@ Status: IN_PROGRESS.
 - Graph API errors use the existing Vibe normalized error shape at the response root so the JavaScript SDK and Studio share one error contract.
 - Graph Schema is catalog-driven. The Studio does not invent labels, edges or ownership metadata.
 - Traversal Builder sends/represents structured traversal specifications only; it does not expose a free-text Cypher editor.
-- The current renderer benchmark is a synthetic SVG string-generation baseline. It is evidence for regression detection, not production renderer selection. Browser FPS/mobile interaction evidence is still required before choosing a production renderer.
+- The existing renderer script remains a synthetic SVG string-generation baseline only. A new Playwright browser benchmark exercises the actual Studio SVG DOM at 100, 500 and 1,000 nodes and measures render-to-node-completion plus node interaction latency. Thresholds are deliberately generous to catch catastrophic regressions without pretending CI timing is a production performance SLA.
+- The current production renderer decision remains OPEN until the browser benchmark has executed in CI and the live 1,000-node/3,000-edge behavior has been evaluated. Do not silently promote the SVG spike to a long-term renderer.
 
 
 ## Tenant-visible correctness finding
