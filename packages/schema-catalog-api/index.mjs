@@ -1,0 +1,101 @@
+import http from "node:http";
+import {createHmac, timingSafeEqual} from "node:crypto";
+import {Pool} from "pg";
+
+function decodePart(value) {
+  return JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
+}
+
+export function verifyHs256Jwt(token, secret, now=Math.floor(Date.now()/1000)) {
+  if (!token || !secret) throw new Error("Missing bearer token or JWT secret");
+  const parts = token.split(".");
+  if (parts.length !== 3) throw new Error("Invalid JWT");
+  const [encodedHeader, encodedPayload, signature] = parts;
+  const header = decodePart(encodedHeader);
+  const payload = decodePart(encodedPayload);
+  if (header.alg !== "HS256" || header.typ !== "JWT") throw new Error("Unsupported JWT");
+  const expected = createHmac("sha256", secret).update(encodedHeader + "." + encodedPayload).digest();
+  const supplied = Buffer.from(signature, "base64url");
+  if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) throw new Error("Invalid JWT signature");
+  if (payload.exp !== undefined && (!Number.isInteger(payload.exp) || payload.exp <= now)) throw new Error("Expired JWT");
+  if (typeof payload.tenant_id !== "string" || payload.tenant_id === "") throw new Error("JWT tenant_id claim is required");
+  return payload;
+}
+
+export function buildCatalog(rows) {
+  const graphs = {};
+  for (const row of rows) {
+    const graph = graphs[row.graph_name] ??= {
+      visibility: row.tenant_id === "" ? "shared" : "tenant",
+      tenantId: row.tenant_id === "" ? null : row.tenant_id,
+      labels: [],
+      edges: []
+    };
+    if (row.graph_object_kind === "label") {
+      graph.labels.push(row.object_name);
+    } else if (row.graph_object_kind === "edge") {
+      graph.edges.push({
+        name: row.object_name,
+        from: row.from_label ?? null,
+        to: row.to_label ?? null,
+        properties: row.properties ?? {}
+      });
+    }
+  }
+  for (const graph of Object.values(graphs)) {
+    graph.labels.sort();
+    graph.edges.sort((a,b) => a.name.localeCompare(b.name));
+  }
+  return {version:"v1", graphs};
+}
+
+export function createSchemaCatalogServer({pool, jwtSecret, host="127.0.0.1", port=0}={}) {
+  if (!pool) throw new Error("pool is required");
+  if (!jwtSecret) throw new Error("jwtSecret is required");
+
+  const server = http.createServer(async (req,res) => {
+    if (req.method !== "GET" || req.url !== "/v1/schema/catalog") {
+      res.writeHead(404, {"content-type":"application/json"});
+      res.end(JSON.stringify({error:{code:"NOT_FOUND",message:"Not found"}}));
+      return;
+    }
+    try {
+      const auth = req.headers.authorization ?? "";
+      if (!auth.startsWith("Bearer ")) throw new Error("Bearer token required");
+      const claims = verifyHs256Jwt(auth.slice(7), jwtSecret);
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify(claims)]);
+        const result = await client.query(
+          `SELECT object_name AS graph_name,
+                  tenant_id,
+                  metadata->>'graph_object_kind' AS graph_object_kind,
+                  parent_name AS object_name,
+                  metadata->>'from_label' AS from_label,
+                  metadata->>'to_label' AS to_label,
+                  metadata->'properties' AS properties
+             FROM vibe_meta.schema_catalog_entries
+            WHERE catalog_version = 'v1' AND object_kind = 'graph'
+            ORDER BY object_name, parent_name`
+        );
+        await client.query("COMMIT");
+        res.writeHead(200, {"content-type":"application/json","cache-control":"no-store"});
+        res.end(JSON.stringify(buildCatalog(result.rows)));
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      res.writeHead(401, {"content-type":"application/json"});
+      res.end(JSON.stringify({error:{code:"UNAUTHORIZED",message:error.message}}));
+    }
+  });
+  return {server, listen:() => new Promise(resolve => server.listen(port, host, () => resolve(server.address()))), close:() => new Promise(resolve => server.close(resolve))};
+}
+
+export function createPool(connectionString) {
+  return new Pool({connectionString});
+}
