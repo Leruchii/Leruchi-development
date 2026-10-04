@@ -1,52 +1,71 @@
 # Build Prompt 01 — PostgreSQL + AGE + pgvector Spike
 
-Use the VibePlatform AI Engineering Constitution,
-the VibePlatform knowledge base,
-and the vibe-postgres/vibe-age skills.
+## Mission
 
-Execute Build Prompt 01:
-PostgreSQL + AGE + pgvector Spike.
+Prove the VibePlatform database foundation before implementing higher-level product surfaces.
+
+## Required reading
 
 Before changing anything:
 
-1. Inspect the repository.
-2. Read AGENTS.md.
-3. Read:
-   - knowledge/architecture.md
-   - knowledge/database.md
-   - knowledge/security.md
-4. Inspect the current Docker/dev environment.
-5. Determine what already exists.
+1. Read `AGENTS.md`.
+2. Read:
+   - `knowledge/architecture.md`
+   - `knowledge/database.md`
+   - `knowledge/security.md`
+   - `knowledge/testing.md`
+3. Load:
+   - `.agents/skills/vibe-postgres/SKILL.md`
+   - `.agents/skills/vibe-age/SKILL.md`
+4. Inspect the existing repository, Docker/dev environment and current migrations.
 
-Then execute the requirements of Prompt 01.
+## Scope
 
-Do not implement later roadmap stages.
+Implement only the database foundation.
 
-Do not build the SDK, Graph Studio, MCP, GraphRAG, or cloud control plane.
+Do NOT implement:
 
-The purpose of this task is to validate the database foundation.
+- Graph API;
+- Query IR;
+- SDK;
+- CLI;
+- Graph Studio;
+- MCP;
+- GraphRAG;
+- Cloud control plane;
+- billing.
 
-Acceptance criteria must include:
+## Acceptance criteria
 
-- PostgreSQL starts successfully.
-- AGE loads successfully.
-- pgvector loads successfully.
-- Vibe database roles are correctly separated.
-- A graph can be created.
-- Vertices and edges can be created.
-- A vector column can be created and queried.
-- Automated tests prove the above.
-- Versions are pinned.
-- Security assumptions are documented.
+The implementation must prove:
 
-When finished, report:
+- PostgreSQL starts successfully;
+- AGE loads successfully;
+- pgvector loads successfully;
+- versions are pinned;
+- Vibe database roles are separated;
+- runtime paths do not require superuser privileges;
+- a graph can be created;
+- vertices and edges can be created;
+- graph traversal works;
+- a vector column can be created and queried;
+- automated tests prove the above;
+- security assumptions are documented.
+
+## Evidence
+
+Do not mark the stage VALIDATED based on configuration files alone. Run the database and tests.
+
+Report:
 
 1. What changed.
 2. Files changed.
-3. Tests executed.
+3. Commands executed.
 4. Test results.
 5. Architecture decisions discovered.
-6. Problems encountered.
-7. Anything that remains UNKNOWN.
+6. Security implications.
+7. Problems/blockers.
+8. Remaining UNKNOWN items.
+9. Next stage.
 
-Do not claim success unless you actually ran the relevant tests.
+Update the knowledge base only with facts supported by the evidence.
