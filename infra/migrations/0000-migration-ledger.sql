@@ -9,7 +9,12 @@ BEGIN
   END IF;
 END $$;
 
-CREATE SCHEMA IF NOT EXISTS vibe_meta AUTHORIZATION vibe_migrator;
+DO $
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = 'vibe_meta') THEN
+    RAISE EXCEPTION 'vibe_meta schema must be provisioned before migrations';
+  END IF;
+END $;
 
 CREATE TABLE IF NOT EXISTS vibe_meta.schema_migrations (
   migration_id text PRIMARY KEY,
