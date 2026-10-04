@@ -18,40 +18,40 @@ BEGIN
 
   SELECT count(*) INTO table_count
   FROM vibe_meta.schema_catalog_entries e
-  WHERE e.catalog_version = 'v1' AND object_kind = 'table';
+  WHERE e.catalog_version = 'v1' AND e.object_kind = 'table';
 
   IF table_count < 1 THEN
     RAISE EXCEPTION 'No relational tables catalogued';
   END IF;
 
   SELECT count(*) INTO column_count
-  FROM vibe_meta.schema_catalog_entries
-  WHERE catalog_version = 'v1' AND object_kind = 'column';
+  FROM vibe_meta.schema_catalog_entries e
+  WHERE e.catalog_version = 'v1' AND e.object_kind = 'column';
 
   IF column_count < 1 THEN
     RAISE EXCEPTION 'No relational columns catalogued';
   END IF;
 
   SELECT count(*) INTO vector_count
-  FROM vibe_meta.schema_catalog_entries
-  WHERE catalog_version = 'v1' AND object_kind = 'vector'
-    AND parent_name = 'embedding';
+  FROM vibe_meta.schema_catalog_entries e
+  WHERE e.catalog_version = 'v1' AND e.object_kind = 'vector'
+    AND e.parent_name = 'embedding';
 
   IF vector_count < 1 THEN
     RAISE EXCEPTION 'Vector metadata missing';
   END IF;
 
   SELECT count(*) INTO policy_count
-  FROM vibe_meta.schema_catalog_entries
-  WHERE catalog_version = 'v1' AND object_kind = 'policy';
+  FROM vibe_meta.schema_catalog_entries e
+  WHERE e.catalog_version = 'v1' AND e.object_kind = 'policy';
 
   IF policy_count < 1 THEN
     RAISE EXCEPTION 'RLS policy metadata missing';
   END IF;
 
   SELECT count(*) INTO graph_count
-  FROM vibe_meta.schema_catalog_entries
-  WHERE catalog_version = 'v1' AND object_kind = 'graph';
+  FROM vibe_meta.schema_catalog_entries e
+  WHERE e.catalog_version = 'v1' AND e.object_kind = 'graph';
 
   IF graph_count <> 2 THEN
     RAISE EXCEPTION 'Expected 2 registered graph objects, got %', graph_count;
