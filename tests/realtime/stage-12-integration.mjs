@@ -27,7 +27,16 @@ test("tenant-scoped outbox and relay lifecycle",async()=>{
     targetLabel:"Person",
     targetId:"42"
   };
+  const relay=new Client({connectionString:relayUrl});await relay.connect();
+  await relay.query("LISTEN vibe_graph_events");
+  const notification=new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>reject(new Error("realtime wakeup notification timed out")),5000);
+    relay.on("notification",message=>{
+      if(message.channel==="vibe_graph_events"&&message.payload===event.eventId){clearTimeout(timer);resolve(message.payload);}
+    });
+  });
   await insertEvent("tenant_a",event);
+  assert.equal(await notification,event.eventId);
 
   const a=new Client({connectionString:runtimeUrl});await a.connect();
   await a.query("SELECT set_config($1,$2,false)",["request.jwt.claims",JSON.stringify({tenant_id:"tenant_a"})]);
@@ -39,7 +48,6 @@ test("tenant-scoped outbox and relay lifecycle",async()=>{
   assert.equal(denied.rowCount,0);
   await a.end();
 
-  const relay=new Client({connectionString:relayUrl});await relay.connect();
   const batch=await claimBatch(relay,{workerId:"stage12-worker",limit:10});
   const claimed=batch.find(row=>row.event_id===event.eventId);
   assert.ok(claimed);
