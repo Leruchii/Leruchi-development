@@ -1,0 +1,41 @@
+name: Stage State Gate
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  state:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify current stage checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const cp = fs.readFileSync('BUILD_STATE.md','utf8');
+          const status = cp.match(/^- Current status: (.+)$/m)?.[1]?.trim();
+          const evidence = cp.match(/Validation evidence: Stage (\\d+) workflow run \\`(\\d+)\\`/);
+          if (status !== 'VALIDATED') {
+            console.log(JSON.stringify({status, result:'ok', reason:'current stage is not claiming validation'}));
+            process.exit(0);
+          }
+          if (!evidence) {
+            console.error('ARCHITECTURE GATE: VALIDATED checkpoint must cite an executable Stage workflow run.');
+            process.exit(1);
+          }
+          const runId = evidence[2];
+          const {execFileSync} = require('node:child_process');
+          const run = JSON.parse(execFileSync('gh',['api','repos/${{ github.repository }}/actions/runs/'+runId],{encoding:'utf8'}));
+          if (run.conclusion !== 'success') {
+            console.error('ARCHITECTURE GATE: cited validation run is not successful:', JSON.stringify({run_id:run.id,status:run.status,conclusion:run.conclusion,head_sha:run.head_sha}));
+            process.exit(1);
+          }
+          console.log(JSON.stringify({status,result:'ok',validation_run:run.id,conclusion:run.conclusion,validation_head_sha:run.head_sha}));
+          NODE
