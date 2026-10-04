@@ -1,6 +1,6 @@
 # Stage 13 — Graph Studio
 
-Status: IN_PROGRESS.
+Status: VALIDATED.
 
 ## Decisions
 
@@ -48,3 +48,11 @@ Status: IN_PROGRESS.
 - The Explorer must never use synthetic data as a fallback after authenticated data loading. Empty, loading and error states are explicit.
 - The tenant-scoped Schema Catalog provider binds the verified JWT tenant claim to PostgreSQL transaction-local `request.jwt.claims`; RLS remains authoritative.
 - A regression test now fails if the Explorer reintroduces the named static demo nodes or stops deriving displayed nodes from authenticated query results.
+
+
+## Stage 13 final evidence
+
+- VALIDATED: authenticated tenant A/B browser rendering, 360px responsive behavior, keyboard focus and theme switching.
+- VALIDATED: live PostgreSQL/AGE-backed Studio composition through the Graph API, tenant-scoped Schema Catalog, Query IR, ExecutionContext and RLS.
+- VALIDATED: renderer browser regression benchmark at 100/500/1,000 SVG nodes with visible-node interaction latency.
+- VALIDATED: TypeScript build and Base UI architecture audit.

@@ -7,11 +7,11 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 13 — Graph Studio
-- Current status: IN_PROGRESS
+- Current status: VALIDATED
 - Last completed stage: 12 — Graph Realtime
-- Last validated commit: `6966240c82ef33619514f429953f368016964396`
+- Last validated commit: `69842c6fa6dd43c5b44b3a96a962bed6aa177565`
 - Default branch: `main`
-- Next implementation target: Complete Stage 13 Graph Studio backend integration and renderer validation
+- Next implementation target: Stage 14 MCP integration hardening / scoped capability issuance, then Stage 15 GraphRAG
 
 ## Verified state
 
@@ -315,7 +315,7 @@ The Stage 13 workflow now provisions the real PostgreSQL/AGE database, seeds the
 
 The live browser test signs in as `vibe_tenant_a`, goes through the Next.js Studio proxy, reaches the Graph API, executes Query IR through ExecutionContext and PostgreSQL/AGE/RLS, and asserts that Studio renders A1/A2 while B1/B2 are absent. This is distinct from mocked browser evidence.
 
-Status: **IMPLEMENTED — CI VALIDATION PENDING**.
+Status: **VALIDATED — Stage 13 CI exit evidence is complete.**
 
 
 ## Stage 14 — MCP agent gateway started
@@ -329,3 +329,33 @@ Implemented the first agent-native MCP boundary:
 - Added MCP contract tests and a Stage 14 CI gate.
 
 Status: **Stage 14 STARTED — MCP CONTRACT IMPLEMENTED, INTEGRATION VALIDATION PENDING**.
+
+
+Validation evidence: Stage 13 workflow run `37223423312` passed the full live Studio, renderer-browser, build and audit gate on commit `69842c6fa6dd43c5b44b3a96a962bed6aa177565`.
+
+## Final Stage 13 / Stage 14 handoff
+
+Stage 13 is now VALIDATED by the final active-branch CI evidence:
+- live PostgreSQL/AGE database composition;
+- authenticated tenant-scoped Schema Catalog through Graph API;
+- Query IR → ExecutionContext → Secure Execution Engine → PostgreSQL/AGE/RLS → Studio;
+- tenant A/B browser evidence;
+- 360px responsive, keyboard and theme evidence;
+- real SVG DOM renderer benchmark at 100/500/1,000 nodes;
+- Typecheck, production build and Base UI audit.
+
+A real defect discovered during this work was fixed: the Graph API did not expose the Schema Catalog endpoint required by the existing Studio proxy. The Graph API now authenticates the request and invokes the same tenant-scoped catalog provider used by execution.
+
+A test-harness race was also fixed: mocked Studio browser tests now wait for the authenticated catalog fetch before triggering exploration.
+
+Stage 14 MCP:
+- MCP contract tests pass in CI.
+- MCP tool schemas reject undeclared fields.
+- MCP rejects caller-supplied tenant identity.
+- MCP delegates Query/Mutation IR through the Graph API security boundary.
+- Free-form Cypher and arbitrary SQL remain intentionally unavailable.
+
+Current active PR: #30.
+PR #29 was confirmed stale/unmerged; its missing browser renderer evidence was folded into PR #30 rather than treated as merged history.
+
+Next exact action after PR #30 merges: begin the next canonical unfinished stage, Stage 14 integration hardening, with scoped AI/MCP capability issuance, revocation/audit semantics, and live Graph API integration evidence. Do not jump to cloud control-plane work.

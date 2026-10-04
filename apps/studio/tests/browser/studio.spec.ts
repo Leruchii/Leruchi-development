@@ -9,7 +9,9 @@ async function mockStudio(page:Page,names:string[]){
 
 test("tenant A browser session renders only tenant A graph results",async({page})=>{
   await mockStudio(page,["A1","A2"]);
+  const catalog=page.waitForResponse(response=>response.url().endsWith("/api/studio/catalog")&&response.status()===200);
   await page.goto("/");
+  await catalog;
   await page.getByRole("button",{name:"Run exploration"}).click();
   await expect(page.getByRole("button",{name:"A1 Account"})).toBeVisible();
   await expect(page.getByRole("button",{name:"A2 Account"})).toBeVisible();
@@ -19,7 +21,9 @@ test("tenant A browser session renders only tenant A graph results",async({page}
 
 test("tenant B browser session cannot render tenant A graph results",async({page})=>{
   await mockStudio(page,["B1","B2"]);
+  const catalog=page.waitForResponse(response=>response.url().endsWith("/api/studio/catalog")&&response.status()===200);
   await page.goto("/");
+  await catalog;
   await page.getByRole("button",{name:"Run exploration"}).click();
   await expect(page.getByRole("button",{name:"B1 Account"})).toBeVisible();
   await expect(page.getByRole("button",{name:"B2 Account"})).toBeVisible();
@@ -30,7 +34,9 @@ test("tenant B browser session cannot render tenant A graph results",async({page
 test("Graph Studio remains usable at mobile width and exposes keyboard-selectable graph nodes",async({page})=>{
   await page.setViewportSize({width:360,height:800});
   await mockStudio(page,["A1"]);
+  const catalog=page.waitForResponse(response=>response.url().endsWith("/api/studio/catalog")&&response.status()===200);
   await page.goto("/");
+  await catalog;
   await page.getByRole("button",{name:"Run exploration"}).click();
   const node=page.getByRole("button",{name:"A1 Account"});
   await expect(node).toBeVisible();

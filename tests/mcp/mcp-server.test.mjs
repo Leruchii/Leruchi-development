@@ -18,3 +18,15 @@ test("MCP rejects unknown tools without touching the data plane",async()=>{
   assert.equal(response.result.isError,true);
   assert.match(response.result.content[0].text,/Unknown tool/);
 });
+
+test("MCP rejects tenant identity supplied by an agent",async()=>{
+  const response=await handleMcpMessage({jsonrpc:"2.0",id:4,method:"tools/call",params:{name:"graph.query",arguments:{tenant_id:"attacker_tenant",ir:{version:"v1"}}}});
+  assert.equal(response.result.isError,true);
+  assert.match(response.result.content[0].text,/Tenant identity is derived/);
+});
+
+test("MCP tool schemas reject undeclared input fields",()=>{
+  for(const tool of MCP_TOOLS){
+    assert.equal(tool.inputSchema.additionalProperties,false,tool.name);
+  }
+});
