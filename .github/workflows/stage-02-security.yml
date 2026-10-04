@@ -31,19 +31,15 @@ jobs:
 
       - name: Seed tenant security spike
         run: |
-          docker compose exec -T db             psql -U postgres -d vibedb -Xf /dev/stdin < tests/security/stage-02-setup.sql
+          docker compose exec -T db             bash -lc 'bash -s' < tests/security/stage-02-setup.sh
 
       - name: Prove tenant A isolation
-        env:
-          PGPASSWORD: tenant_a
         run: |
-          docker compose exec -T db             psql -h 127.0.0.1 -U vibe_tenant_a -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-a.sql
+          docker compose exec -T db             psql -U vibe_tenant_a -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-a.sql
 
       - name: Prove tenant B isolation
-        env:
-          PGPASSWORD: tenant_b
         run: |
-          docker compose exec -T db             psql -h 127.0.0.1 -U vibe_tenant_b -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-b.sql
+          docker compose exec -T db             psql -U vibe_tenant_b -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-b.sql
 
       - name: Show database logs on failure
         if: failure()
