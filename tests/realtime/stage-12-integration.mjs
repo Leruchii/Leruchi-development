@@ -1,0 +1,64 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {Client} from "pg";
+import {createPgMutationExecutor} from "../../packages/mutation-execution/index.mjs";
+import {claimBatch,markPublished,markFailed,replayTenantGraph,toClientEvent} from "../../packages/realtime-outbox/index.mjs";
+
+const runtimeUrl=process.env.VIBE_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb";
+const relayUrl=process.env.VIBE_REALTIME_DATABASE_URL??"postgresql://vibe_realtime:realtime@127.0.0.1:5432/vibedb";
+
+async function insertEvent(tenantId,event){
+  const client=new Client({connectionString:runtimeUrl});await client.connect();
+  const db=createPgMutationExecutor(client,{tenantId,role:"authenticated"});
+  await db.begin();
+  await db.insertOutbox(event);
+  await db.commit();
+  await client.end();
+}
+
+test("tenant-scoped outbox and relay lifecycle",async()=>{
+  const event={
+    eventId:"stage12-"+Date.now(),
+    requestId:"request-stage12",
+    tenantId:"tenant_a",
+    graph:"vibe_stage01",
+    operation:"update_vertex",
+    targetKind:"vertex",
+    targetLabel:"Person",
+    targetId:"42"
+  };
+  await insertEvent("tenant_a",event);
+
+  const a=new Client({connectionString:runtimeUrl});await a.connect();
+  await a.query("SELECT set_config($1,$2,false)",["request.jwt.claims",JSON.stringify({tenant_id:"tenant_a"})]);
+  const own=await a.query("SELECT event_id,tenant_id,graph_name,target_id FROM vibe_meta.graph_event_outbox WHERE event_id=$1",[event.eventId]);
+  assert.equal(own.rowCount,1);
+  assert.equal(own.rows[0].tenant_id,"tenant_a");
+  await a.query("SELECT set_config($1,$2,false)",["request.jwt.claims",JSON.stringify({tenant_id:"tenant_b"})]);
+  const denied=await a.query("SELECT event_id FROM vibe_meta.graph_event_outbox WHERE event_id=$1",[event.eventId]);
+  assert.equal(denied.rowCount,0);
+  await a.end();
+
+  const relay=new Client({connectionString:relayUrl});await relay.connect();
+  const batch=await claimBatch(relay,{workerId:"stage12-worker",limit:10});
+  const claimed=batch.find(row=>row.event_id===event.eventId);
+  assert.ok(claimed);
+  const replay=await replayTenantGraph(relay,{tenantId:"tenant_a",graph:"vibe_stage01",afterEventSeq:Number(claimed.event_seq)-1});
+  assert.equal(replay.length,1);
+  assert.equal(replay[0].event_id,event.eventId);
+  assert.equal("tenant_id" in replay[0],false);
+  assert.equal(await markPublished(relay,{eventSeq:claimed.event_seq,workerId:"stage12-worker"}),true);
+  assert.equal(await markPublished(relay,{eventSeq:claimed.event_seq,workerId:"stage12-worker"}),false);
+
+  const failedEvent={...event,eventId:event.eventId+"-retry",requestId:"request-stage12-retry"};
+  await insertEvent("tenant_a",failedEvent);
+  const failedBatch=await claimBatch(relay,{workerId:"stage12-worker",limit:10});
+  const retry=failedBatch.find(row=>row.event_id===failedEvent.eventId);
+  assert.ok(retry);
+  assert.equal(await markFailed(relay,{eventSeq:retry.event_seq,workerId:"stage12-worker",error:new Error("temporary")}),true);
+  await relay.end();
+});
+
+if(process.env.RUN_STAGE12_INTEGRATION!=="1") {
+  test("stage 12 integration mode",t=>t.skip("integration mode disabled"));
+}
