@@ -4,7 +4,7 @@
 
 Stages 00 through 08 are validated by executable repository/CI evidence.
 
-Stage 03 core enables Supabase Auth and PostgREST. Realtime, Storage and Supavisor remain explicit compatibility candidates until separately validated.
+Stage 03 is the Supabase Compatibility Core. Auth + PostgREST are validated. Realtime is deferred to Stage 12, Storage is requirement-driven, and Supavisor/pooling is deferred to infrastructure/cloud work when connection topology is known.
 
 Stage 04 Schema Catalog, Stage 05 Query IR, Stage 06 validation/guardrails, Stage 07 AGE compiler and Stage 08 Secure Execution Engine are validated.
 
@@ -16,8 +16,14 @@ Status: VALIDATED.
 ## Stage 02 — RLS + AGE Security
 Status: VALIDATED.
 
-## Stage 03 — Supabase Compatibility
-Status: VALIDATED for Auth + PostgREST core. Realtime, Storage and Supavisor remain unvalidated.
+## Stage 03 — Supabase Compatibility Core
+Status: VALIDATED for Auth + PostgREST core.
+
+Validated boundary: Auth initialization, JWT verification, request-claim propagation, PostgREST access, RLS through PostgREST, and tenant isolation.
+
+Deferred by design: Realtime → Stage 12; Storage → requirement-driven; Supavisor/pooling → infrastructure/cloud once topology and connection requirements are known.
+
+Stage 03 is complete at this defined boundary; deferred supporting services do not block Stage 09.
 
 ## Stage 04 — Schema Catalog
 Status: VALIDATED.
