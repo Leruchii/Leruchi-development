@@ -44,9 +44,9 @@ CREATE POLICY graph_event_outbox_runtime_visibility
   TO PUBLIC
   USING (
     tenant_id = COALESCE(
-      current_setting('request.jwt.claims', true)::json ->> 'tenant_id',
-      ''
-    )
+      current_setting('request.jwt.claims', true),
+      '{}'
+    )::json ->> 'tenant_id'
   );
 
 DROP POLICY IF EXISTS graph_event_outbox_runtime_insert ON vibe_meta.graph_event_outbox;
