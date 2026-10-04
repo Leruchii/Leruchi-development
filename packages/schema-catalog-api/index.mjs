@@ -33,30 +33,43 @@ export function verifyHs256Jwt(token, secret, now=Math.floor(Date.now()/1000)) {
 
 export function buildCatalog(rows, tenantId = null) {
   const graphs = {};
+  const vectors = {};
   for (const row of rows) {
     if (row.tenant_id !== "" && row.tenant_id !== tenantId) continue;
-    const graph = graphs[row.graph_name] ??= {
-      visibility: row.tenant_id === "" ? "shared" : "tenant",
-      tenantId: row.tenant_id === "" ? null : row.tenant_id,
-      labels: [],
-      edges: []
-    };
-    if (row.graph_object_kind === "label") {
-      graph.labels.push(row.object_name);
-    } else if (row.graph_object_kind === "edge") {
-      graph.edges.push({
-        name: row.object_name,
-        from: row.from_label ?? null,
-        to: row.to_label ?? null,
-        properties: row.properties ?? {}
-      });
+    if (row.graph_name !== undefined) {
+      const graph = graphs[row.graph_name] ??= {
+        visibility: row.tenant_id === "" ? "shared" : "tenant",
+        tenantId: row.tenant_id === "" ? null : row.tenant_id,
+        labels: [],
+        edges: []
+      };
+      if (row.graph_object_kind === "label") {
+        graph.labels.push(row.object_name);
+      } else if (row.graph_object_kind === "edge") {
+        graph.edges.push({
+          name: row.object_name,
+          from: row.from_label ?? null,
+          to: row.to_label ?? null,
+          properties: row.properties ?? {}
+        });
+      }
+    }
+    if (row.catalog_ref !== undefined) {
+      vectors[row.catalog_ref] = {
+        visibility: row.tenant_id === "" ? "shared" : "tenant",
+        tenantId: row.tenant_id === "" ? null : row.tenant_id,
+        dimensions: row.dimensions,
+        model: row.model ?? "",
+        distanceMetric: row.distance_metric,
+        metadata: row.metadata ?? {}
+      };
     }
   }
   for (const graph of Object.values(graphs)) {
     graph.labels.sort();
     graph.edges.sort((a,b) => a.name.localeCompare(b.name));
   }
-  return {version:"v1", graphs};
+  return {version:"v1", graphs, vectors};
 }
 
 export function createTenantCatalogProvider(pool) {
@@ -67,7 +80,7 @@ export function createTenantCatalogProvider(pool) {
     try {
       await client.query("BEGIN");
       await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify(postgresRequestClaims(trustedContext))]);
-      const result = await client.query(
+      const graphResult = await client.query(
         `SELECT object_name AS graph_name,
                 tenant_id,
                 metadata->>'graph_object_kind' AS graph_object_kind,
@@ -79,8 +92,31 @@ export function createTenantCatalogProvider(pool) {
           WHERE catalog_version = 'v1' AND object_kind = 'graph'
           ORDER BY object_name, parent_name, tenant_id`
       );
+      const vectorResult = await client.query(
+        `SELECT tenant_id,
+                metadata->>'catalog_ref' AS catalog_ref,
+                metadata->>'dimensions' AS dimensions_text,
+                metadata->>'model' AS model,
+                metadata->>'distance_metric' AS distance_metric,
+                metadata->'metadata' AS metadata
+           FROM vibe_meta.schema_catalog_entries
+          WHERE catalog_version = 'v1' AND object_kind = 'vector'
+            AND metadata ? 'catalog_ref'
+          ORDER BY catalog_ref, tenant_id`
+      );
       await client.query("COMMIT");
-      return buildCatalog(result.rows, context.tenantId);
+      const rows = [
+        ...graphResult.rows,
+        ...vectorResult.rows.map(row => ({
+          tenant_id: row.tenant_id,
+          catalog_ref: row.catalog_ref,
+          dimensions: Number(row.dimensions_text),
+          model: row.model,
+          distance_metric: row.distance_metric,
+          metadata: row.metadata ?? {}
+        }))
+      ];
+      return buildCatalog(rows, context.tenantId);
     } catch (error) {
       try { await client.query("ROLLBACK"); } catch {}
       throw error;
