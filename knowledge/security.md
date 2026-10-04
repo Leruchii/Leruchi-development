@@ -1,6 +1,6 @@
 # Security
 
-Status: DECIDED policy / Stage 01 runtime privilege boundary validated
+Status: DECIDED policy / Stage 02 tenant isolation validated
 
 ## Non-negotiable rules
 
@@ -16,20 +16,34 @@ Status: DECIDED policy / Stage 01 runtime privilege boundary validated
 
 ## Stage 01 evidence
 
-The runtime role is explicitly NOSUPERUSER and NOBYPASSRLS. Executable graph and vector operations are performed through that role.
+The runtime role is NOSUPERUSER and NOBYPASSRLS. Executable graph and vector operations are performed through that role.
 
-Apache AGE 1.7.0 for PG17 includes RLS support and improved permission checks. The PG17 AGE release is therefore the current baseline for tenant-security work.
+## Stage 02 evidence
 
-## Stage 02 required validation
+The adversarial suite uses two non-superuser, non-BYPASSRLS tenant-bound database roles.
 
-Two-tenant adversarial tests must prove:
+Relational RLS proves:
 
-- Tenant A can access A's allowed data.
+- Tenant A reads only A.
 - Tenant A cannot read B.
 - Tenant A cannot update B.
 - Tenant A cannot delete B.
-- Tenant A cannot traverse into B's graph.
-- Tenant A cannot infer B through graph relationships.
-- Tenant B cannot access A.
+- Tenant B cannot read, update or delete A.
 
-The exact AGE/RLS enforcement mechanism must be demonstrated by tests rather than assumed.
+AGE RLS proves:
+
+- Tenant A sees only A graph vertices/edges.
+- Tenant B sees only B graph vertices/edges.
+- Tenant A cannot directly read B graph vertices.
+- Tenant B cannot directly read A graph vertices.
+- Tenant A can traverse A -> A.
+- Tenant A cannot traverse A -> B.
+- An intentionally cross-tenant A -> B edge does not expose B through graph inference.
+
+All tested tenant roles are NOSUPERUSER and NOBYPASSRLS.
+
+## Important limitation
+
+Tenant context propagation from Auth/JWT into a shared runtime role is NOT resolved here. The spike uses tenant-bound database roles so the database enforcement itself can be tested without treating a client-controlled session GUC as trusted.
+
+Stage 03 must resolve how Auth/PostgREST establishes trusted tenant context without weakening the database boundary.
