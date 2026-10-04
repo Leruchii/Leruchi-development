@@ -39,6 +39,11 @@ jobs:
         run: |
           docker compose exec -T db             bash -lc 'bash -s' < tests/security/stage-02-setup.sh
 
+      - name: Prove Graph API tenant isolation end-to-end
+        env:
+          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+        run: node --test tests/security/stage-02-graph-api-e2e.test.mjs
+
       - name: Prove tenant A isolation
         run: |
           docker compose exec -T db             psql -U vibe_tenant_a -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-a.sql
