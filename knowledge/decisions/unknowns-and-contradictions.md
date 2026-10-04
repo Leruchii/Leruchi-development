@@ -2,74 +2,55 @@
 
 This file tracks unresolved questions. UNKNOWN is not permission to guess.
 
-## Resolved contradictions
+## Resolved skill names
 
-### Build order
-
-The numbered build order is canonical. UI is implemented at Stage 13 after backend foundations are proven.
-
-### Skill naming
-
-The canonical security skill is vibe-security. AGE guidance is vibe-age. PostgreSQL guidance is vibe-postgres. Supabase compatibility guidance is vibe-supabase. Schema Catalog guidance is vibe-schema-catalog. Query IR guidance is vibe-query-ir.
-
-### Graph limits
-
-Provisional UI values are depth default 2, maximum 6, default results 100, maximum 1000. Backend validation may revise them.
+vibe-security, vibe-postgres, vibe-age, vibe-supabase, vibe-schema-catalog, vibe-query-ir, vibe-query-validation.
 
 ## Resolved by Stage 01
-
 - PostgreSQL baseline: 17.11.
 - Apache AGE baseline: 1.7.0 for PG17.
 - pgvector baseline: 0.8.7.
-- Database image strategy: official Apache AGE PG17 1.7.0 release tag with pgvector compiled into the image.
-- Role separation: vibe_migrator and vibe_runtime, both non-superuser and without RLS bypass.
-- Foundation migration approach: deterministic SQL initialization with psql.
-- Vector smoke-test dimension: 3; production dimension remains undecided.
-- AGE graph initialization requires an explicit ag_catalog search path.
+- Runtime roles are non-superuser and do not bypass RLS.
 
 ## Resolved by Stage 02
-
-- PostgreSQL RLS can enforce tenant-bound relational read/write/delete isolation.
-- AGE label tables can carry PostgreSQL RLS policies.
-- AGE graph queries respect those RLS policies in the tested PG17/AGE 1.7.0 runtime.
-- A cross-tenant graph edge does not expose the protected destination vertex through the tested traversal/inference path.
-- Tenant-bound database roles can provide a secure proof boundary without superuser or BYPASSRLS privileges.
+- Relational and AGE graph tenant isolation works in the tested runtime.
+- Cross-tenant graph inference is denied.
 
 ## Resolved by Stage 03
-
-- Supabase Auth v2.196.0 can initialize against the Vibe database.
-- PostgREST v14.17 can connect through a limited authenticator role.
-- PostgREST can verify a signed HS256 JWT and pass verified claims into PostgreSQL request context.
-- PostgreSQL RLS can use verified request JWT claims to enforce tenant visibility through REST.
-- PostgREST schema exposure can be restricted to vibe_app.
+- Supabase Auth v2.196.0 initializes against Vibe PostgreSQL.
+- PostgREST v14.17 verifies signed JWTs and passes verified claims into PostgreSQL request context.
+- REST-boundary tenant isolation is proven.
+- Production Auth tenant-claim issuance remains an explicit security decision.
 
 ## Resolved by Stage 04
-
-- Schema Catalog v1 is the authoritative metadata contract for relational, graph, vector and policy domains.
+- Schema Catalog v1 is the authoritative metadata contract.
 - Catalog refresh is deterministic.
-- Graph metadata is explicitly registered rather than automatically reflected.
-- Catalog population can use privileged PostgreSQL system catalogs without exposing those implementation catalogs to runtime consumers.
-- vibe_runtime requires read-only catalog privileges.
+- Graph metadata is explicitly registered.
+- Runtime catalog access is read-only.
 
 ## Resolved by Stage 05
+- Query IR v1 is engine-neutral, versioned and deterministic.
+- Engine-specific fragments are outside the contract.
+- Structured v1 errors are defined.
 
-- Query IR v1 is engine-neutral and versioned.
-- v1 rejects unknown fields and engine-specific executable fragments.
-- Canonical serialization is deterministic and hashable.
-- Structured errors have a separate v1 contract.
+## Resolved by Stage 06
+- Validation is a separate pre-compilation boundary.
+- Schema/graph references are validated against catalog input.
+- Trusted tenant context and graph:read capability are mandatory.
+- service_role requires trusted backend context.
+- Depth/result/cost guardrails are enforced before compilation.
+- Cost calculation is deterministic.
 
 ## Remaining UNKNOWNs
-
-- Production Auth tenant-authorization claim issuance: trusted app_metadata vs custom access-token hook vs another controlled mechanism.
-- Exact production AGE graph/RLS privilege matrix for every mutation operation.
-- Query IR v1 validation semantics for schema existence, tenant scope and capability permissions; Stage 06 owns these guardrails.
-- Query planner and compiler boundaries.
-- Recursive-CTE fallback routing and supported operations.
-- Graph mutation authorization model.
-- Production vector dimensions and index strategy.
-- Realtime transport/channel model and delivery guarantees.
-- Realtime tenant authorization and ID-only event implementation.
-- Storage authorization, backend and object isolation.
-- Pooler/Supavisor topology and security model.
-- Scoped AI/MCP capability issuance, revocation, and audit format.
+- Production Auth tenant-authorization claim issuance mechanism.
+- Full AGE graph/RLS privilege matrix for all mutation patterns.
+- Query planner design.
+- AGE compiler parameterization and output normalization details.
+- Recursive-CTE fallback routing.
+- Graph mutation authorization.
+- Production vector dimensions/index strategy.
+- Realtime transport and tenant authorization.
+- Storage authorization and object isolation.
+- Supavisor topology/security.
+- Scoped AI/MCP capability issuance/revocation/audit.
 - Cloud topology, backups, RPO/RTO, billing and metering.

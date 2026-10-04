@@ -1,0 +1,15 @@
+name: Stage 06 Query Validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  query-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run query validation tests
+        run: node --test tests/query-validation/*.test.mjs

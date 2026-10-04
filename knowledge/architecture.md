@@ -1,74 +1,36 @@
 # VibePlatform Architecture
 
-Status: DECIDED design / partially VALIDATED through Stage 05
+Status: DECIDED design / partially VALIDATED through Stage 06
 
-## Product boundary
+## Query execution boundary
 
-VibePlatform is a secure developer platform that makes relational, graph, vector, realtime, and AI-agent access feel like one database.
+The validated backend path is now:
 
-The core remains PostgreSQL + Apache AGE + pgvector. Vibe's differentiated layer is the developer experience and secure compiler/API layer around those primitives.
+Client intent
+→ Query IR v1
+→ Schema/security/cost validation
+→ AGE or PostgreSQL compiler
+→ secure execution
+→ PostgreSQL / AGE / pgvector
 
-## Five architectural planes
+Stage 06 is the pre-compilation gate. It does not execute queries.
 
-### 1. Developer Plane
+## Stage 06 guardrails
 
-- JavaScript SDK
-- CLI
-- Dashboard
-- Graph Studio
-- MCP
-- REST/API clients
+Validated guardrails:
 
-### 2. API / Compiler Plane
+- Schema Catalog graph allowlisting;
+- graph label and edge endpoint validation;
+- trusted tenant context requirement;
+- graph:read capability requirement;
+- service_role trusted-backend restriction;
+- parameter reference validation;
+- max depth 6;
+- max results 1000;
+- deterministic cost budget 100;
+- engine-fragment rejection.
 
-- Graph API
-- Vibe Query IR
-- validation engine
-- query planner
-- SQL compiler
-- AGE/Cypher compiler
-- Schema Catalog
-- RAG API
-- mutation engine
-- policy evaluation
-
-### 3. Data Plane
-
-- PostgreSQL
-- Apache AGE
-- pgvector
-- RLS
-- migrations
-- outbox/event data
-
-### 4. Platform Services Plane
-
-- Auth
-- PostgREST
-- Realtime
-- Storage
-- connection pooling
-
-### 5. Cloud Control Plane
-
-- project provisioning
-- lifecycle management
-- billing
-- metering
-- backups
-- observability
-- regional infrastructure
-- hosted operations
-
-## Query boundary
-
-Vibe Query IR v1 is now validated as the engine-neutral intent contract.
-
-Client surfaces produce IR. Later stages validate it against the Schema Catalog and security/cost policy before compilation.
-
-The IR contains no SQL, Cypher, AGE expressions or executable fragments.
-
-Canonicalization is deterministic: recursive key ordering, preserved array order, compact UTF-8 JSON, SHA-256 digest.
+Tenant authorization is never inferred from Query IR content.
 
 ## Current validation state
 
@@ -78,16 +40,17 @@ Canonicalization is deterministic: recursive key ordering, preserved array order
 - Supabase Auth + PostgREST core: VALIDATED
 - Schema Catalog: VALIDATED
 - Query IR v1: VALIDATED
+- Query validation + cost guardrails: VALIDATED
 - Realtime: NOT IMPLEMENTED/VALIDATED
 - Storage: NOT IMPLEMENTED/VALIDATED
 - Pooling: NOT IMPLEMENTED/VALIDATED
-- Query guardrails: NOT IMPLEMENTED/VALIDATED
-- Graph compiler: NOT IMPLEMENTED/VALIDATED
-- Graph API: NOT IMPLEMENTED/VALIDATED
+- AGE compiler: NOT IMPLEMENTED/VALIDATED
+- Secure execution engine: NOT IMPLEMENTED/VALIDATED
+- Graph mutations: NOT IMPLEMENTED/VALIDATED
 - SDK: NOT IMPLEMENTED/VALIDATED
 - Graph Studio: NOT IMPLEMENTED/VALIDATED
 - MCP: NOT IMPLEMENTED/VALIDATED
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Next implementation target: Stage 06 — Query Validation + Cost Guardrails.
+Next implementation target: Stage 07 — Apache AGE Compiler.
