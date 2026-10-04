@@ -413,49 +413,28 @@ Stage 14 security contract now includes:
 
 The Stage 14 exit gate is satisfied. Do not reopen Stage 14 unless new executable evidence contradicts these contracts.
 
-## Stage 15 — GraphRAG started
+## Stage 15 — GraphRAG in progress
 
-Stage 15 is now the first unfinished canonical stage. Initial implementation must preserve:
-- ExecutionContext as the only trusted tenant authority;
-- Schema Catalog as the authoritative graph/vector metadata source;
-- engine-neutral retrieval IR rather than agent-specific query formats;
-- PostgreSQL/pgvector plus AGE as the underlying retrieval engines;
-- RLS as the physical tenant-isolation authority;
-- shared Secure Execution Engine boundaries;
-- explainable retrieval metadata and bounded cost/depth/result controls.
+The canonical retrieval contract is established and the tenant-scoped vector catalog gate is now being implemented.
 
-The first Stage 15 checkpoint is architectural: define the hybrid retrieval contract before adding indexes or exposing a new public API. Graph retrieval and vector retrieval must remain composable without introducing a second database or bypassing existing authorization.
+Current implementation:
+- packages/retrieval-ir/ defines Retrieval IR v1 with bounded weighted-RRF fusion, graph Query IR reuse, Schema Catalog references, deterministic hashing, and fail-closed limits.
+- Retrieval requests cannot provide tenant identity, raw SQL/Cypher, vector operators, or unsafe catalog/parameter identifiers.
+- infra/migrations/0003-vector-catalog.sql adds a tenant-scoped vector catalog registry protected by RLS.
+- Vector registry metadata includes logical catalog reference, trusted physical source mapping, embedding dimensions/model/distance metric, and stable result identity metadata.
+- packages/schema-catalog-api/ now exposes tenant-filtered vector metadata alongside graph metadata; physical vector source identifiers remain control-plane/catalog metadata rather than Retrieval IR input.
+- Stage 15 CI now gates Retrieval IR and vector-catalog contract tests plus the architecture regression audit.
 
-## Stage 14 governance continuation — current handoff
+Security boundary:
+- verified JWT -> trusted ExecutionContext -> transaction-local PostgreSQL claims -> Schema Catalog/RLS -> retrieval execution.
+- RLS remains the physical tenant-isolation authority.
+- No vector public endpoint or MCP retrieval tool is exposed yet.
 
-Implemented on branch `stage14-agent-governance` after the Stage 14 MCP live-integration checkpoint.
+Next gate:
+1. validate the new migration/catalog behavior in CI and database-backed tests;
+2. implement a secure pgvector execution compiler/resolver using catalog-trusted physical metadata and the existing transaction-local ExecutionContext;
+3. prove tenant isolation, vector dimension/metric validation, result/cost limits and deterministic retrieval metadata;
+4. then implement hybrid graph/vector execution and fusion;
+5. expose retrieval through MCP only after the data-plane gate is validated.
 
-Completed in this session:
-- added a scoped capability-grant contract in `packages/capability-policy/grants.mjs`;
-- defined `jti`, tenant, canonical capabilities, audience, expiry and optional scope requirements;
-- defined external control-plane revocation lookup semantics without adding an authorization database to the data plane;
-- added `packages/mutation-approval/index.mjs` for exact-mutation approval digests and tenant/expiry/control-plane verification;
-- added mutation preview mode that validates and reports bounded impact without executing;
-- destructive mutations now require an approval artifact in execute mode even when `graph:delete` is present;
-- added `packages/audit/index.mjs` and a Graph API audit-sink boundary;
-- audit events contain request ID, tenant, role, capabilities, route/tool, operation, graph, outcome, error code and approval ID only; secrets, JWTs and raw parameters are excluded;
-- MCP `graph.mutate` now exposes explicit `preview`/`execute` modes and a closed approval artifact schema;
-- Stage 14 CI now runs capability-grant, mutation-approval and audit contract tests.
-
-Security/architecture decision:
-- capability issuance and revocation remain control-plane responsibilities;
-- the data plane validates scoped capability artifacts and may consult an injected revocation verifier, but does not mint, persist, or mutate authorization state;
-- destructive agent actions require explicit, tenant-scoped, exact-mutation, time-bounded approval;
-- MCP remains an adapter over the Graph API and canonical Mutation IR.
-
-Not yet validated:
-- branch CI has not yet run on this checkpoint;
-- live MCP integration must be rerun with the new contracts;
-- no Stage 14 VALIDATED claim is permitted until all gates pass.
-
-Exact next action:
-1. run Stage 14 CI through a pull request;
-2. fix any executable failures;
-3. merge only after all required checks pass;
-4. update this checkpoint to VALIDATED only with CI evidence;
-5. then begin Stage 15 GraphRAG on the same ExecutionContext/IR/security boundary.
+Do not mark Stage 15 VALIDATED until those gates have executable evidence.
