@@ -23,7 +23,13 @@ CREATE TABLE IF NOT EXISTS vibe_meta.vector_catalog_registry (
   model text NOT NULL DEFAULT '',
   distance_metric text NOT NULL CHECK (distance_metric IN ('cosine', 'inner_product', 'l2')),
   metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
-  CONSTRAINT vector_catalog_catalog_ref_check CHECK (catalog_ref ~ '^[A-Za-z_][A-Za-z0-9_.]*
+  CONSTRAINT vector_catalog_catalog_ref_check CHECK (catalog_ref <> ''),
+  CONSTRAINT vector_catalog_schema_check CHECK (schema_name <> ''),
+  CONSTRAINT vector_catalog_relation_check CHECK (relation_name <> ''),
+  CONSTRAINT vector_catalog_embedding_check CHECK (embedding_column <> ''),
+  CONSTRAINT vector_catalog_key_check CHECK (key_column <> ''),
+  CONSTRAINT vector_catalog_content_check CHECK (content_column = '' OR content_column <> ''),
+  PRIMARY KEY (tenant_id, catalog_ref)
 );
 
 ALTER TABLE vibe_meta.vector_catalog_registry OWNER TO vibe_migrator;
