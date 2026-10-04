@@ -44,4 +44,4 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
   });
   return {server,listen:()=>new Promise(resolve=>server.listen(port,host,()=>resolve(server.address()))),close:()=>new Promise(resolve=>server.close(resolve))};
 }
-export {createPool};
+export function createPool(connectionString){return new Pool({connectionString});}
