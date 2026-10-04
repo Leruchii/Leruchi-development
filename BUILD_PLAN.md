@@ -712,7 +712,9 @@ Prove:
 - evidence-backed RTO
 - failure/recovery drills
 
-**Status:** NOT STARTED.
+**Status:** IN_PROGRESS.
+
+Implementation is on branch `stage17-backup-recovery`. The first executable backup/restore contract, integrity manifest, migration-ledger compatibility drill and CI gate are in place. Production-like AGE/pgvector restoration and measured RPO/RTO remain open gates.
 
 ## Stage 18 — Vibe Cloud Control Plane
 
