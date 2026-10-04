@@ -1,0 +1,54 @@
+{
+  "version": "v1",
+  "kind": "graph_query",
+  "graph": "vibe_stage01",
+  "root": {
+    "label": "Person",
+    "alias": "person"
+  },
+  "steps": [
+    {
+      "edge": "KNOWS",
+      "direction": "out",
+      "target": {
+        "label": "Person",
+        "alias": "friend"
+      }
+    }
+  ],
+  "filters": [
+    {
+      "field": "person.name",
+      "op": "eq",
+      "value": {
+        "param": "name"
+      }
+    }
+  ],
+  "projection": [
+    {
+      "field": "person.name",
+      "alias": "name"
+    },
+    {
+      "field": "friend.name",
+      "alias": "friend_name"
+    }
+  ],
+  "orderBy": [
+    {
+      "field": "friend.name",
+      "direction": "asc"
+    }
+  ],
+  "limit": 25,
+  "offset": 0,
+  "depth": 1,
+  "parameters": [
+    {
+      "name": "name",
+      "type": "string",
+      "required": true
+    }
+  ]
+}
