@@ -58,6 +58,9 @@ export function buildCatalog(rows, tenantId = null) {
       vectors[row.catalog_ref] = {
         visibility: row.tenant_id === "" ? "shared" : "tenant",
         tenantId: row.tenant_id === "" ? null : row.tenant_id,
+        schemaName: row.schema_name,
+        relationName: row.relation_name,
+        embeddingColumn: row.embedding_column,
         dimensions: row.dimensions,
         keyColumn: row.key_column,
         contentColumn: row.content_column,
@@ -96,6 +99,9 @@ export function createTenantCatalogProvider(pool) {
       );
       const vectorResult = await client.query(
         `SELECT tenant_id,
+                schema_name AS schema_name,
+                object_name AS relation_name,
+                parent_name AS embedding_column,
                 metadata->>'catalog_ref' AS catalog_ref,
                 metadata->>'dimensions' AS dimensions_text,
                 metadata->>'key_column' AS key_column,
@@ -113,6 +119,9 @@ export function createTenantCatalogProvider(pool) {
         ...graphResult.rows,
         ...vectorResult.rows.map(row => ({
           tenant_id: row.tenant_id,
+          schema_name: row.schema_name,
+          relation_name: row.relation_name,
+          embedding_column: row.embedding_column,
           catalog_ref: row.catalog_ref,
           dimensions: Number(row.dimensions_text),
           key_column: row.key_column,
