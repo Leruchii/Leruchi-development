@@ -307,3 +307,12 @@ Validated and merged in PR #28 as `6966240c82ef33619514f429953f368016964396`.
 Remaining Stage 13 exit work:
 - production renderer benchmark and explicit renderer decision;
 - final live Graph API → PostgreSQL/AGE runtime composition evidence (the Stage 02 security E2E already proves the core JWT → Graph API → transaction-local claims → AGE/RLS path; Stage 13 needs the final composition evidence recorded against the Studio contract).
+
+
+### Stage 13 live composition gate added
+
+The Stage 13 workflow now provisions the real PostgreSQL/AGE database, seeds the tenant isolation fixture, starts the Graph API against `vibe_runtime`, and exposes it to the Studio Playwright harness through `VIBE_API_URL`.
+
+The live browser test signs in as `vibe_tenant_a`, goes through the Next.js Studio proxy, reaches the Graph API, executes Query IR through ExecutionContext and PostgreSQL/AGE/RLS, and asserts that Studio renders A1/A2 while B1/B2 are absent. This is distinct from mocked browser evidence.
+
+Status: **IMPLEMENTED — CI VALIDATION PENDING**.
