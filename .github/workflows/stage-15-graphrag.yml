@@ -1,0 +1,26 @@
+name: Stage 15 GraphRAG
+
+on:
+  pull_request:
+    paths:
+      - "packages/retrieval-ir/**"
+      - "tests/retrieval-ir/**"
+      - "knowledge/decisions/stage-15-graphrag.md"
+      - ".github/workflows/stage-15-graphrag.yml"
+  push:
+    branches: [main, stage15-graphrag-retrieval-ir]
+
+jobs:
+  retrieval-ir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Retrieval IR contract tests
+        run: node --test tests/retrieval-ir/retrieval-ir.test.mjs
+      - name: Architecture regression audit
+        run: node scripts/architecture-regression-audit.mjs
