@@ -12,6 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install runtime dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Automated tenant isolation matrix
+        run: node --test tests/security/tenant-isolation-matrix.test.mjs
+
       - name: Build database image
         run: docker compose build db
 
