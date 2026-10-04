@@ -51,6 +51,8 @@ test("tenant-scoped outbox and relay lifecycle",async()=>{
   const own=await a.query("SELECT event_id,tenant_id,graph_name,target_id FROM vibe_meta.graph_event_outbox WHERE event_id=$1",[event.eventId]);
   assert.equal(own.rowCount,1);
   assert.equal(own.rows[0].tenant_id,"tenant_a");
+  const rolled=await a.query("SELECT event_id FROM vibe_meta.graph_event_outbox WHERE event_id=$1",[rolledBack.eventId]);
+  assert.equal(rolled.rowCount,0);
   await a.query("SELECT set_config($1,$2,false)",["request.jwt.claims",JSON.stringify({tenant_id:"tenant_b"})]);
   const denied=await a.query("SELECT event_id FROM vibe_meta.graph_event_outbox WHERE event_id=$1",[event.eventId]);
   assert.equal(denied.rowCount,0);
