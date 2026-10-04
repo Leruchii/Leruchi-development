@@ -25,6 +25,33 @@ jobs:
       - name: Graph API boundary tests
         working-directory: .
         run: node --test tests/graph-api/api.test.mjs
+      - name: Build database image
+        working-directory: .
+        run: docker compose build db
+      - name: Start database
+        working-directory: .
+        run: docker compose up -d db
+      - name: Wait for database
+        working-directory: .
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+      - name: Seed live Studio tenant data
+        working-directory: .
+        run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
+      - name: Start live Graph API
+        working-directory: .
+        env:
+          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+          VIBE_JWT_SECRET: stage-13-e2e-secret
+          VIBE_GRAPH_API_PORT: 4100
+        run: node scripts/start-stage13-graph-api.mjs > /tmp/vibedb-stage13-api.log 2>&1 &
+      - name: Configure live Studio endpoint
+        run: echo 'VIBE_API_URL=http://127.0.0.1:4100' >> "$GITHUB_ENV"
       - name: Renderer benchmark
         working-directory: .
         run: node scripts/benchmark-graph-renderer.mjs
@@ -39,6 +66,13 @@ jobs:
         run: npm run typecheck
       - name: Build
         run: npm run build
+      - name: Show live Graph API logs on failure
+        if: failure()
+        run: cat /tmp/vibedb-stage13-api.log || true
+      - name: Cleanup live database
+        if: always()
+        working-directory: .
+        run: docker compose down -v
       - name: Base UI audit
         working-directory: .
         run: bash scripts/audit-baseui.sh apps/studio
