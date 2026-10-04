@@ -9,9 +9,9 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current stage: 15 — GraphRAG
 - Current status: IN_PROGRESS
 - Last completed stage: 14 — MCP Server
-- Last validated commit: `f8d6b2ff07ce19c04e316a23fc3a74faa6024279` (Stage 15 hybrid contract CI passed; merged implementation is `9ca0487ff7dbb8101eda10ec8b3c2e9db9b8c029`)
+- Last validated commit: `f0179146c4c4149b22295d12e715af66adf7effa` (Stage 15 hybrid data-plane gate passed; documentation follow-up is `547d03c0e508ab0914000b520296a02e7b342b65`)
 - Default branch: `main`
-- Next implementation target: Prove real database-backed hybrid graph + vector retrieval with tenant isolation, unified cost enforcement, deterministic fusion, then expose retrieval through MCP
+- Next implementation target: Expose the validated GraphRAG retrieval contract through MCP with the same trusted context/capability boundary, then prove live MCP retrieval isolation and auditability
 
 ## Verified state
 
@@ -459,8 +459,11 @@ Validation evidence:
 - Architecture Regression Audit passed on the same validation cycle.
 - The implementation was merged as 9ca0487ff7dbb8101eda10ec8b3c2e9db9b8c029.
 
-Important remaining gate:
-- The current hybrid executor has contract-level branch tests but does not yet constitute full database-backed graph+vector integration proof. Do not mark Stage 15 VALIDATED until a real PostgreSQL/AGE/pgvector fixture proves tenant isolation, candidate identity alignment, RLS enforcement, combined budget behavior and deterministic fusion end-to-end.
-- MCP retrieval remains intentionally unexposed until that data-plane proof passes.
+Data-plane gate now passed:
+- Real PostgreSQL + Apache AGE + pgvector hybrid integration passed in Stage 15 workflow run 37235543756.
+- Tenant A/B retrieval returned only its own graph/vector candidates.
+- Explicit candidate identity, combined budget enforcement and deterministic fusion were exercised against the real execution stack.
+- A real catalog-refresh defect was discovered and fixed: explicit vector registry metadata now reconciles with physical vector discovery instead of creating a duplicate Schema Catalog primary key.
+- MCP retrieval remains intentionally unexposed until the same retrieval contract is proven through the agent boundary.
 
-Exact next action: build the real Stage 15 hybrid database integration fixture using the existing tenant-scoped graph and vector security setup, then add adversarial cross-tenant retrieval tests and only afterward add the MCP retrieval adapter.
+Exact next action: add MCP retrieval as a thin adapter over the validated retrieval executor, then run live MCP GraphRAG integration and adversarial capability/tenant tests before considering Stage 15 complete.
