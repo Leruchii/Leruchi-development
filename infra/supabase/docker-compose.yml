@@ -19,6 +19,8 @@ services:
       GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
       GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
       GOTRUE_MAILER_AUTOCONFIRM: "false"
+    ports:
+      - "9999:9999"
     depends_on:
       db:
         condition: service_healthy
@@ -39,6 +41,8 @@ services:
       PGRST_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
       PGRST_DB_USE_LEGACY_GUCS: "false"
       PGRST_APP_SETTINGS_JWT_EXP: "3600"
+    ports:
+      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
