@@ -52,6 +52,14 @@ jobs:
         run: node scripts/start-stage13-graph-api.mjs > /tmp/vibedb-stage13-api.log 2>&1 &
       - name: Configure live Studio endpoint
         run: echo 'VIBE_API_URL=http://127.0.0.1:4100' >> "$GITHUB_ENV"
+      - name: Wait for live Graph API
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4100/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/vibedb-stage13-api.log || true
+          exit 1
       - name: Renderer benchmark
         working-directory: .
         run: node scripts/benchmark-graph-renderer.mjs
