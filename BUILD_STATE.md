@@ -7,7 +7,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 12 — Graph Realtime
-- Current status: VALIDATED
+- Current status: IMPLEMENTED — NOT YET VALIDATED
 - Last completed stage: 12 — Graph Realtime
 - Last validated commit: `d5a072cc83f6b6182c9d2e3e11c751d70885f472`
 - Default branch: `main`
@@ -232,4 +232,4 @@ Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 
 Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
-Exact next action: begin Stage 13 — Graph Studio.
+Exact next action: rerun the Stage 12 realtime workflow after the replay/topic hardening, then advance to Stage 13 only after the fresh gate passes.
