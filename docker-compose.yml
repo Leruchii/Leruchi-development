@@ -1,0 +1,26 @@
+services:
+  db:
+    build:
+      context: .
+      dockerfile: infra/docker/postgres/Dockerfile
+    image: vibedb/postgres:stage-01
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vibedb
+      VIBE_MIGRATOR_PASSWORD: migrator
+      VIBE_RUNTIME_PASSWORD: runtime
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vibedb"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - vibedb_pgdata:/var/lib/postgresql/data
+      - ./infra/docker/postgres/init/01-vibe-bootstrap.sh:/docker-entrypoint-initdb.d/01-vibe-bootstrap.sh:ro
+      - ./infra/docker/postgres/init/02-foundation.sql:/docker-entrypoint-initdb.d/02-foundation.sql:ro
+
+volumes:
+  vibedb_pgdata:

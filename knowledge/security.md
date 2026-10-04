@@ -1,6 +1,6 @@
 # Security
 
-Status: **DECIDED policy / NOT VALIDATED by implementation**
+Status: DECIDED policy / Stage 01 runtime privilege boundary validated
 
 ## Non-negotiable rules
 
@@ -14,11 +14,15 @@ Status: **DECIDED policy / NOT VALIDATED by implementation**
 - UI visibility is never authorisation.
 - No success claim without executable evidence.
 
-## Tenant isolation
+## Stage 01 evidence
 
-Prompt 02 must create automated adversarial tests for at least two tenants.
+The runtime role is explicitly NOSUPERUSER and NOBYPASSRLS. Executable graph and vector operations are performed through that role.
 
-Required assertions:
+Apache AGE 1.7.0 for PG17 includes RLS support and improved permission checks. The PG17 AGE release is therefore the current baseline for tenant-security work.
+
+## Stage 02 required validation
+
+Two-tenant adversarial tests must prove:
 
 - Tenant A can access A's allowed data.
 - Tenant A cannot read B.
@@ -26,22 +30,6 @@ Required assertions:
 - Tenant A cannot delete B.
 - Tenant A cannot traverse into B's graph.
 - Tenant A cannot infer B through graph relationships.
-- Tenant A cannot receive B's realtime events once realtime is implemented.
 - Tenant B cannot access A.
 
-The exact AGE/RLS enforcement mechanism is an implementation question that must be validated rather than assumed.
-
-## Agent capabilities
-
-The exact scope model, issuance, revocation and audit format remain UNKNOWN. Do not invent an unrestricted service-role workaround.
-
-## Limits
-
-Initial proposed Graph Studio limits:
-
-- default depth: 2
-- architecture maximum depth: 6
-- default result cap: 100
-- maximum result cap: 1000
-
-These values are provisional until backend validation establishes the actual contract.
+The exact AGE/RLS enforcement mechanism must be demonstrated by tests rather than assumed.

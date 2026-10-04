@@ -1,0 +1,44 @@
+name: Stage 01 database foundation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  database-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build VibeDB database image
+        run: docker compose build db
+
+      - name: Start database
+        run: docker compose up -d db
+
+      - name: Wait for database
+        run: |
+          for i in {1..60}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+
+      - name: Run Stage 01 executable tests
+        env:
+          PGPASSWORD: runtime
+        run: |
+          docker compose exec -T db             psql -h 127.0.0.1 -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/db/stage-01.sql
+
+      - name: Show database logs on failure
+        if: failure()
+        run: docker compose logs db
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
