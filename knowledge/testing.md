@@ -1,27 +1,25 @@
 # Testing
 
-Status: VALIDATED through Stage 06 — Query Validation + Cost Guardrails
+Status: VALIDATED through Stage 07 — Apache AGE Compiler
 
-## Stage 06 executable coverage
+## Stage 07 executable coverage
 
-.github/workflows/stage-06-query-validation.yml proves:
+.github/workflows/stage-07-age-compiler.yml proves:
 
-- valid Query IR is accepted with trusted tenant/capability context;
-- missing tenant context is rejected;
-- missing graph:read capability is rejected;
-- unknown graph/label/edge references are rejected;
-- incompatible traversal endpoints are rejected;
-- undeclared parameters are rejected;
-- depth above 6 is rejected;
-- result limits above 1000 are rejected;
-- deterministic cost above 100 is rejected;
-- service_role without trusted backend context is rejected;
-- validation returns structured results without database/compiler execution.
+- the VibeDB image builds and starts;
+- the Stage 01 graph can be seeded;
+- representative Query IR compiles into AGE prepared-statement SQL;
+- declared parameters remain Cypher parameters;
+- literal values are bound through generated parameters;
+- malicious filter values do not appear in generated Cypher;
+- malicious identifiers are rejected;
+- duplicate output aliases are rejected;
+- the generated one-hop query executes successfully against Apache AGE.
 
 ## Security rule
 
-The validator does not derive authorization from Query IR content. Tenant context is an explicit input from the trusted authentication boundary.
+Compiler output is not an authorization boundary. Only validated IR reaches compilation in the intended architecture.
 
 ## Merge blocker
 
-Stages 01 through 06 have executable repository/CI evidence.
+Stages 01 through 07 have executable repository/CI evidence.
