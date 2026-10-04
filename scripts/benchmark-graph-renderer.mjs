@@ -16,6 +16,6 @@ for(let i=0;i<5;i++){const start=performance.now();const output=renderSvg(nodes,
 const sorted=[...samples].sort((a,b)=>a-b);
 const median=sorted[Math.floor(sorted.length/2)];
 const p95=sorted[Math.floor(sorted.length*0.95)-1]??sorted.at(-1);
-const result={renderer:"isolated-svg-string-baseline",nodes:NODE_COUNT,edges:EDGE_COUNT,samples_ms:samples.map(v=>Number(v.toFixed(3))),median_ms:Number(median.toFixed(3)),p95_ms:Number(p95.toFixed(3)),browser_fps:"not measured — browser harness required",decision:"SVG remains a spike only; do not promote to production renderer from this synthetic benchmark."};
+const result={renderer:"isolated-svg-string-baseline",nodes:NODE_COUNT,edges:EDGE_COUNT,samples_ms:samples.map(v=>Number(v.toFixed(3))),median_ms:Number(median.toFixed(3)),p95_ms:Number(p95.toFixed(3)),browser_fps:"not measured — browser harness required",decision:"SVG is accepted for the bounded Stage 13 node canvas; this synthetic benchmark does not establish production performance for visible edge topology."};
 console.log(JSON.stringify(result,null,2));
 if(median>100)process.exitCode=1;
