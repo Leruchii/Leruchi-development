@@ -1,4 +1,4 @@
-FROM apache/age:release_PG17_1.7.0@sha256:92a5d223965bc2e436f9eee436e0bd2c0d81f3b59124b3d197ec94706f3450a
+FROM apache/age:release_PG17_1.7.0
 
 ARG PGVECTOR_VERSION=0.8.7
 
