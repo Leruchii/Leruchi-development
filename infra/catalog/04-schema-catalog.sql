@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS vibe_meta.graph_catalog_registry (
   PRIMARY KEY (graph_name, object_kind, object_name, from_label, to_label)
 );
 
+ALTER TABLE vibe_meta.schema_catalog_entries OWNER TO vibe_migrator;
+ALTER TABLE vibe_meta.graph_catalog_registry OWNER TO vibe_migrator;
+
 CREATE OR REPLACE FUNCTION vibe_meta.refresh_schema_catalog()
 RETURNS void
 LANGUAGE plpgsql
