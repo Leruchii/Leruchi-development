@@ -1,5 +1,7 @@
 # VibePlatform Architecture
 
+> **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
+
 Status: DECIDED design / partially VALIDATED through Stage 08
 
 ## Validated execution path
