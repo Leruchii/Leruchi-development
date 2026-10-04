@@ -19,8 +19,18 @@ function targetKind(operation){return operation.endsWith("_edge")?"edge":"vertex
 export function createPgMutationExecutor(client,context){
   return {
     async begin(){
+      if(!context?.tenantId) throw new Error("TRUSTED_TENANT_CONTEXT_REQUIRED");
       await client.query("BEGIN");
-      await client.query("SELECT set_config($1,$2,true)",["request.jwt.claims",JSON.stringify({tenant_id:context.tenantId,role:context.role??"authenticated"})]);
+      try{
+        await client.query("SELECT set_config($1,$2,true)",["request.jwt.claims",JSON.stringify({
+          tenant_id:context.tenantId,
+          role:context.role??"authenticated",
+          capabilities:context.capabilities??[]
+        })]);
+      }catch(error){
+        try{await client.query("ROLLBACK")}catch{}
+        throw error;
+      }
     },
     async execute(compiled,parameterMap){
       const statementName="vibe_mutation_"+createHash("sha256").update(compiled.sql).digest("hex").slice(0,20);
@@ -48,6 +58,7 @@ export async function executeGraphMutation({ir,context,catalog,requestParameters
   for(const [name,p] of declared)if(p.required&&!Object.hasOwn(requestParameters,name))throw new MutationExecutionError("MISSING_PARAMETER","A required mutation parameter is missing",{parameter:name},requestId);
   const compiled=compileAgeMutation(ir,{tenantId:context.tenantId});
   if(Object.hasOwn(requestParameters,"__vibe_tenant_id"))throw new MutationExecutionError("TENANT_PARAMETER_FORBIDDEN","Tenant binding cannot be overridden",undefined,requestId);
+  for(const key of Object.keys(compiled.literalBindings))if(Object.hasOwn(requestParameters,key))throw new MutationExecutionError("PARAMETER_COLLISION","Request parameter collides with an internal binding",{parameter:key},requestId);
   const params={...compiled.literalBindings,...requestParameters};
   let began=false;
   try{

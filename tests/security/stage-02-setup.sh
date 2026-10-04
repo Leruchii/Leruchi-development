@@ -47,7 +47,9 @@ SELECT ag_catalog.create_graph('vibe_security');
 SELECT ag_catalog.create_vlabel('vibe_security', 'Account');
 SELECT ag_catalog.create_elabel('vibe_security', 'KNOWS');
 
-GRANT USAGE ON SCHEMA vibe_security TO vibe_tenant_a, vibe_tenant_b;
+GRANT USAGE ON SCHEMA vibe_security TO vibe_tenant_a, vibe_tenant_b, vibe_runtime;
+GRANT SELECT, INSERT, UPDATE, DELETE ON vibe_security."Account", vibe_security."KNOWS" TO vibe_runtime;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA vibe_security TO vibe_runtime;
 
 SELECT * FROM ag_catalog.cypher('vibe_security', $cypher$
   CREATE
@@ -92,6 +94,34 @@ CREATE POLICY knows_tenant_isolation
     ag_catalog.agtype_access_operator(
       VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
     ) = format('"%s"', current_user)::ag_catalog.agtype
+  );
+
+CREATE POLICY account_runtime_claims_isolation
+  ON vibe_security."Account" FOR ALL
+  TO vibe_runtime
+  USING (
+    ag_catalog.agtype_access_operator(
+      VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
+    ) = format('"%s"', current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::ag_catalog.agtype
+  )
+  WITH CHECK (
+    ag_catalog.agtype_access_operator(
+      VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
+    ) = format('"%s"', current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::ag_catalog.agtype
+  );
+
+CREATE POLICY knows_runtime_claims_isolation
+  ON vibe_security."KNOWS" FOR ALL
+  TO vibe_runtime
+  USING (
+    ag_catalog.agtype_access_operator(
+      VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
+    ) = format('"%s"', current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::ag_catalog.agtype
+  )
+  WITH CHECK (
+    ag_catalog.agtype_access_operator(
+      VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
+    ) = format('"%s"', current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::ag_catalog.agtype
   );
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON vibe_security."Account", vibe_security."KNOWS" TO vibe_tenant_a, vibe_tenant_b;

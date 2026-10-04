@@ -92,3 +92,11 @@ test("does not execute database or compiler", () => {
   assert.equal(r.ok, true);
   assert.equal(typeof r.cost, "number");
 });
+
+test("rejects a tenant graph owned by another tenant", () => {
+  const privateCatalog={graphs:{private:{visibility:"tenant",tenantId:"tenant_b",labels:["Person"],edges:[]}}};
+  const ir=structuredClone(fixture);
+  ir.graph="private";
+  const r=validateQuery(ir,trusted,privateCatalog);
+  assert.ok(r.errors.some(e=>e.code==="GRAPH_ACCESS_DENIED"));
+});

@@ -30,3 +30,21 @@ Status: IN_PROGRESS.
 - loading/empty/error states wired to real requests;
 - responsive/browser accessibility evidence;
 - 1,000-node/3,000-edge benchmark and production renderer decision.
+
+
+## Stage 13 continuation decisions
+
+- The Graph API is now an explicit authenticated server boundary over the existing Query IR, Mutation IR, Schema Catalog, validation, compilers and Secure Execution Engine.
+- Graph Studio does not call PostgreSQL directly. Browser requests use server-side Next.js proxy routes and a session cookie; service credentials are never embedded in browser code.
+- Graph API errors use the existing Vibe normalized error shape at the response root so the JavaScript SDK and Studio share one error contract.
+- Graph Schema is catalog-driven. The Studio does not invent labels, edges or ownership metadata.
+- Traversal Builder sends/represents structured traversal specifications only; it does not expose a free-text Cypher editor.
+- The current renderer benchmark is a synthetic SVG string-generation baseline. It is evidence for regression detection, not production renderer selection. Browser FPS/mobile interaction evidence is still required before choosing a production renderer.
+
+
+## Tenant-visible correctness finding
+
+- The initial Explorer contained a static demo graph and did not render the rows returned by its authenticated Graph API request. This was a UI correctness/security-UX defect because it could make tenant-isolated users appear to share graph data.
+- The Explorer must never use synthetic data as a fallback after authenticated data loading. Empty, loading and error states are explicit.
+- The tenant-scoped Schema Catalog provider binds the verified JWT tenant claim to PostgreSQL transaction-local `request.jwt.claims`; RLS remains authoritative.
+- A regression test now fails if the Explorer reintroduces the named static demo nodes or stops deriving displayed nodes from authenticated query results.

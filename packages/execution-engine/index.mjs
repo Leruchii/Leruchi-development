@@ -45,9 +45,22 @@ function parseAgtype(value) {
   try { return JSON.parse(value); } catch { return value; }
 }
 
-export function createPgExecutor(client) {
+export function createPgExecutor(client, context) {
   return {
-    async begin() { await client.query("BEGIN"); },
+    async begin() {
+      if (!context?.tenantId) throw new Error("TRUSTED_TENANT_CONTEXT_REQUIRED");
+      await client.query("BEGIN");
+      try {
+        await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify({
+          tenant_id: context.tenantId,
+          role: context.role ?? "authenticated",
+          capabilities: context.capabilities ?? []
+        })]);
+      } catch (error) {
+        try { await client.query("ROLLBACK"); } catch {}
+        throw error;
+      }
+    },
     async execute(compiled, parameterMap) {
       const statementName = "vibe_" + createHash("sha256").update(compiled.sql).digest("hex").slice(0, 20);
       return client.query({

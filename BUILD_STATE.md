@@ -240,15 +240,34 @@ Exact next action: continue Stage 13 Graph Studio with live Graph API/Schema Cat
 In progress:
 - Vibe UI design-system reference contracts restored;
 - Next.js Graph Studio shell and first SVG canvas spike implemented;
-- semantic-token/Base UI audit added;
-- typecheck/build CI added.
+- authenticated Next.js proxy routes for Schema Catalog and Graph API;
+- tenant-scoped Schema Catalog provider with PostgreSQL request.jwt.claims binding;
+- Graph Schema and Traversal Builder foundations;
+- explicit loading/empty/error states;
+- regression test preventing static demo data from appearing in the authenticated Explorer.
+
+Correctness finding resolved:
+- the prior Explorer fetched authenticated Graph API rows but rendered a hard-coded five-node demo graph instead of those rows;
+- this could make different authenticated users appear to see identical graph data even when backend isolation was working;
+- the Explorer now renders only authorized query results and shows an explicit empty state when no rows are returned.
 
 Remaining before VALIDATED:
-1. authenticated Graph API integration;
-2. live Schema Catalog integration;
-3. Graph Schema and Traversal Builder screens;
-4. complete loading/empty/error states;
-5. responsive/accessibility browser evidence;
-6. 1,000-node/3,000-edge renderer benchmark and production renderer decision.
+1. browser-level authenticated tenant A/B evidence;
+2. responsive/accessibility browser evidence;
+3. production graph renderer benchmark and decision;
+4. complete end-to-end Graph API runtime composition against a live PostgreSQL/AGE environment.
 
-Exact next action: run Stage 13 CI, fix build/audit failures, then add live backend integration and benchmark evidence.
+Current branch: `stage13-runtime-hardening`
+Current PR: #25
+PR #24 remains open as the preceding Studio correctness follow-up.
+Latest implementation commits: `385244ca211f185a6fa663b92908951e9ffa1cc9` (AGE runtime RLS fix), preceded by `443e34dc817c1a9e993ddedc1b82dbe4b3fc7fc0`.
+Validation status: IMPLEMENTED — NOT YET VALIDATED. The first PR #25 matrix exposed a real runtime/RLS integration defect: the Graph API executes through the pooled `vibe_runtime` role, but the Stage 02 AGE test policies granted schema/table access only to tenant-specific roles. The runtime path therefore failed with PostgreSQL `permission denied for schema vibe_security` before the isolation proof could run.
+The fix now grants `vibe_runtime` access to the test graph and adds separate FORCE RLS policies that derive the tenant from transaction-local `request.jwt.claims`, while preserving the direct `vibe_tenant_a`/`vibe_tenant_b` role policies.
+The corrected commit has a fresh CI matrix in progress; Stage 02 is queued.
+New runtime invariants:
+- Graph API query execution binds verified JWT tenant/role/capabilities to PostgreSQL `request.jwt.claims` inside the same transaction used for execution;
+- claim-binding failure rolls back before a pooled connection is released;
+- mutation execution uses the same rollback-on-claim-binding-failure rule;
+- malformed, unsupported, expired, or missing-tenant JWTs are classified as unauthorized;
+- AGE `lt` compiles to strict `<`, with regression coverage for all comparison operators.
+Exact next action: let the corrected PR #25 matrix complete; if Stage 02 passes, continue with live authenticated tenant A/B browser evidence, responsive/accessibility evidence, renderer benchmark, and full Graph API → PostgreSQL/AGE runtime composition. Do not merge PR #25 until the required security gates are green.

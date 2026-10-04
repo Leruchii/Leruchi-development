@@ -38,6 +38,15 @@ test("rejects duplicate output aliases", () => {
   assert.throws(() => compileAge(bad), /DUPLICATE_OUTPUT_ALIAS/);
 });
 
+test("compiles strict and inclusive comparison operators distinctly", () => {
+  for (const [op, expected] of [["gt", ">"], ["gte", ">="], ["lt", "<"], ["lte", "<="]]) {
+    const candidate = structuredClone(fixture);
+    candidate.filters[0] = { field: "person.age", op, value: 18 };
+    const result = compileAge(candidate);
+    assert.ok(result.cypher.includes("person.age " + expected + " $__vibe_literal_0"));
+  }
+});
+
 test("executes generated one-hop query against AGE", () => {
   const result = compileAge(fixture);
   const bindingMap = { name: "Alice" };
