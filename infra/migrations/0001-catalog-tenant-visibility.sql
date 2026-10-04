@@ -45,7 +45,7 @@ CREATE POLICY graph_catalog_visibility
 DROP POLICY IF EXISTS schema_catalog_visibility ON vibe_meta.schema_catalog_entries;
 CREATE POLICY schema_catalog_visibility
   ON vibe_meta.schema_catalog_entries FOR SELECT
-  TO vibe_runtime, anon, authenticated
+  TO PUBLIC
   USING (
     tenant_id = ''
     OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', '')
