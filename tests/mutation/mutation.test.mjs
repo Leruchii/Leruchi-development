@@ -19,3 +19,10 @@ test("rolls back failed mutation and hides db details",async()=>{const calls=[];
 test("rejects mutation parameter collision with internal literal binding",async()=>{const ir=structuredClone(create);ir.properties={name:"Alice"};ir.parameters=[...ir.parameters,{name:"__vibe_literal_0",type:"string",required:false}];const db={async begin(){},async execute(){throw new Error("must not execute")},async rollback(){}};await assert.rejects(()=>executeGraphMutation({ir,context:ctx,catalog,requestParameters:{name:"Alice",__vibe_literal_0:"override"},db}),e=>e.code==="PARAMETER_COLLISION");});
 
 test("cross-tenant edge is structurally impossible",()=>{const edge={version:"v1",kind:"graph_mutation",graph:"vibe_security",operation:"create_edge",target:{label:"Account",edge:"KNOWS",from:{label:"Account",field:"name",value:{param:"from"}},to:{label:"Account",field:"name",value:{param:"to"}}},properties:{kind:"friend"},parameters:[{name:"from",type:"string",required:true},{name:"to",type:"string",required:true}]};const c=compileAgeMutation(edge,{tenantId:"vibe_tenant_a"});assert.match(c.cypher,/a\.tenant_id = \$__vibe_tenant_id/);assert.match(c.cypher,/b\.tenant_id = \$__vibe_tenant_id/)});
+
+test("rejects a mutation against a graph owned by another tenant",()=>{
+  const privateCatalog={graphs:{private:{visibility:"tenant",tenantId:"vibe_tenant_b",labels:["Account"],edges:[]}}};
+  const ir=structuredClone(create);
+  ir.graph="private";
+  assert.ok(validateMutation(ir,ctx,privateCatalog).errors.some(e=>e.code==="GRAPH_ACCESS_DENIED"));
+});
