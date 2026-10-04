@@ -21,7 +21,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
       if(req.method==="GET"&&req.url==="/health"){return json(res,200,{version:"v1",status:"ok"});}
       if(!["POST"].includes(req.method)||!["/v1/graph/query","/v1/graph/mutations"].includes(req.url))return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
-      if(!auth.startsWith("Bearer "))return json(res,401,{error:{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId}});
+      if(!auth.startsWith("Bearer "))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
       const context=contextFromClaims(claims);
       const input=await body(req);
@@ -37,9 +37,9 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
       }finally{client.release();}
     }catch(error){
       if(error?.code==="BODY_TOO_LARGE")return json(res,413,{error:{version:"v1",code:"BODY_TOO_LARGE",message:"Request body is too large",request_id:requestId}});
-      if(error?.message?.startsWith("Invalid JWT")||error?.message?.includes("Bearer token"))return json(res,401,{error:{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId}});
-      if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,{error:error.toJSON()});
-      return json(res,500,{error:{version:"v1",code:"INTERNAL_ERROR",message:"Graph API request failed",request_id:requestId}});
+      if(error?.message?.startsWith("Invalid JWT")||error?.message?.includes("Bearer token"))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId});
+      if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
+      return json(res,500,{version:"v1",code:"INTERNAL_ERROR",message:"Graph API request failed",request_id:requestId});
     }
   });
   return {server,listen:()=>new Promise(resolve=>server.listen(port,host,()=>resolve(server.address()))),close:()=>new Promise(resolve=>server.close(resolve))};
