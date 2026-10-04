@@ -1,0 +1,28 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://vibe.dev/mutation-ir/v1.schema.json",
+  "title":"Vibe Mutation IR v1",
+  "type":"object","additionalProperties":false,
+  "required":["version","kind","graph","operation","target","parameters"],
+  "properties":{
+    "version":{"const":"v1"},
+    "kind":{"const":"graph_mutation"},
+    "graph":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},
+    "operation":{"enum":["create_vertex","create_edge","update_vertex","update_edge","delete_vertex","delete_edge"]},
+    "target":{"type":"object","additionalProperties":false,"required":["label"],"properties":{
+      "label":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},
+      "edge":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},
+      "from":{"type":"object","additionalProperties":false,"required":["label","field","value"],"properties":{
+        "label":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},"field":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_.]*$"},"value":{}
+      }},
+      "to":{"type":"object","additionalProperties":false,"required":["label","field","value"],"properties":{
+        "label":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},"field":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_.]*$"},"value":{}
+      }},
+      "field":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_.]*$"},"value":{}
+    }},
+    "properties":{"type":"object","additionalProperties":{"type":["string","number","boolean","null","array","object"]}},
+    "where":{"type":"object","additionalProperties":false,"required":["field","value"],"properties":{"field":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_.]*$"},"value":{}}},
+    "parameters":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["name","type","required"],"properties":{"name":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},"type":{"enum":["string","integer","number","boolean","uuid","json"]},"required":{"type":"boolean"}}}},
+    "extensions":{"type":"object","additionalProperties":false}
+  }
+}

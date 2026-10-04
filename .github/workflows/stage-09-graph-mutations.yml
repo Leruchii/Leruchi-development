@@ -1,0 +1,42 @@
+name: Stage 09 Graph Mutations
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  mutation-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pinned Node dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run mutation unit and adversarial tests
+        run: node --test tests/mutation/mutation.test.mjs
+      - name: Build database image
+        run: docker compose build db
+      - name: Start database
+        run: docker compose up -d db
+      - name: Wait for database
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+      - name: Seed Stage 02 tenant and AGE security fixture
+        run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
+      - name: Run database-backed mutation isolation tests
+        env:
+          RUN_STAGE09_INTEGRATION: "1"
+        run: node --test tests/mutation/stage-09-integration.mjs
+      - name: Show database logs on failure
+        if: failure()
+        run: docker compose logs db
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
