@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 12 — Graph Realtime
-- Current status: VALIDATED
+- Current stage: 13 — Graph Studio
+- Current status: IN_PROGRESS
 - Last completed stage: 12 — Graph Realtime
 - Last validated commit: `fa81c5192ffcda113e6db834139cc560c6482952`
 - Default branch: `main`
-- Next implementation target: Stage 13 — Graph Studio
+- Next implementation target: Complete Stage 13 Graph Studio backend integration and renderer validation
 
 ## Verified state
 
@@ -233,3 +233,22 @@ Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
 Exact next action: begin Stage 13 — Graph Studio.
+
+
+## Stage 13 implementation
+
+In progress:
+- Vibe UI design-system reference contracts restored;
+- Next.js Graph Studio shell and first SVG canvas spike implemented;
+- semantic-token/Base UI audit added;
+- typecheck/build CI added.
+
+Remaining before VALIDATED:
+1. authenticated Graph API integration;
+2. live Schema Catalog integration;
+3. Graph Schema and Traversal Builder screens;
+4. complete loading/empty/error states;
+5. responsive/accessibility browser evidence;
+6. 1,000-node/3,000-edge renderer benchmark and production renderer decision.
+
+Exact next action: run Stage 13 CI, fix build/audit failures, then add live backend integration and benchmark evidence.
