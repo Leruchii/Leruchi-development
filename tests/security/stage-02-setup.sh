@@ -8,6 +8,9 @@ CREATE ROLE vibe_tenant_a
 CREATE ROLE vibe_tenant_b
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
 
+ALTER ROLE vibe_tenant_a SET search_path = "$user", public, ag_catalog;
+ALTER ROLE vibe_tenant_b SET search_path = "$user", public, ag_catalog;
+
 GRANT CONNECT ON DATABASE vibedb TO vibe_tenant_a, vibe_tenant_b;
 GRANT USAGE ON SCHEMA vibe_app, vibe_meta, ag_catalog TO vibe_tenant_a, vibe_tenant_b;
 GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, ag_catalog.agtype) TO vibe_tenant_a, vibe_tenant_b;
@@ -41,7 +44,7 @@ SELECT ag_catalog.create_graph('vibe_security');
 SELECT ag_catalog.create_vlabel('vibe_security', 'Account');
 SELECT ag_catalog.create_elabel('vibe_security', 'KNOWS');
 
-SELECT * FROM cypher('vibe_security', $cypher$
+SELECT * FROM ag_catalog.cypher('vibe_security', $cypher$
   CREATE
     (a1:Account {name:'A1', tenant_id:'vibe_tenant_a'}),
     (a2:Account {name:'A2', tenant_id:'vibe_tenant_a'}),
@@ -51,7 +54,7 @@ SELECT * FROM cypher('vibe_security', $cypher$
     (a1)-[:KNOWS {tenant_id:'vibe_tenant_a'}]->(b1),
     (b1)-[:KNOWS {tenant_id:'vibe_tenant_b'}]->(b2)
   RETURN a1
-$cypher$) AS (a1 agtype);
+$cypher$) AS (a1 ag_catalog.agtype);
 
 ALTER TABLE vibe_security."Account" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vibe_security."Account" FORCE ROW LEVEL SECURITY;
