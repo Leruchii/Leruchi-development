@@ -2,23 +2,23 @@
 
 DO $$
 DECLARE
-  catalog_version text;
+  v_catalog_version text;
   table_count integer;
   column_count integer;
   vector_count integer;
   policy_count integer;
   graph_count integer;
 BEGIN
-  SELECT min(catalog_version) INTO catalog_version
-  FROM vibe_meta.schema_catalog_entries;
+  SELECT min(e.catalog_version) INTO v_catalog_version
+  FROM vibe_meta.schema_catalog_entries e;
 
-  IF catalog_version IS DISTINCT FROM 'v1' THEN
-    RAISE EXCEPTION 'Expected catalog version v1, got %', catalog_version;
+  IF v_catalog_version IS DISTINCT FROM 'v1' THEN
+    RAISE EXCEPTION 'Expected catalog version v1, got %', v_catalog_version;
   END IF;
 
   SELECT count(*) INTO table_count
-  FROM vibe_meta.schema_catalog_entries
-  WHERE catalog_version = 'v1' AND object_kind = 'table';
+  FROM vibe_meta.schema_catalog_entries e
+  WHERE e.catalog_version = 'v1' AND object_kind = 'table';
 
   IF table_count < 1 THEN
     RAISE EXCEPTION 'No relational tables catalogued';
