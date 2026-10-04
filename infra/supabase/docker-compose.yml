@@ -1,0 +1,139 @@
+services:
+  auth:
+    image: supabase/gotrue:v2.196.0
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: http://localhost:9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:vibe_compat_auth@db:5432/vibedb
+      GOTRUE_SITE_URL: http://localhost:3000
+      GOTRUE_URI_ALLOW_LIST: http://localhost:3000
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: "3600"
+      GOTRUE_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      GOTRUE_JWT_ISSUER: http://localhost:9999
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
+      GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
+      GOTRUE_MAILER_AUTOCONFIRM: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  rest:
+    image: postgrest/postgrest:v14.17
+    environment:
+      PGRST_DB_URI: postgres://authenticator:vibe_compat_authenticator@db:5432/vibedb
+      PGRST_DB_SCHEMAS: vibe_app
+      PGRST_DB_EXTRA_SEARCH_PATH: public,ag_catalog
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_MAX_ROWS: "1000"
+      PGRST_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_EXP: "3600"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "postgrest", "--ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  realtime:
+    profiles: ["extended"]
+    image: supabase/realtime:v2.134.10
+    environment:
+      PORT: 4000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: supabase_admin
+      DB_PASSWORD: vibe_compat_admin
+      DB_NAME: vibedb
+      DB_AFTER_CONNECT_QUERY: SET search_path TO _realtime
+      DB_ENC_KEY: supabaserealtime
+      API_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      METRICS_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      SECRET_KEY_BASE: vibe-stage-03-secret-key-base-change-this-to-a-long-secret
+      ERL_AFLAGS: -proto_dist inet_tcp
+      DNS_NODES: "''"
+      RLIMIT_NOFILE: "10000"
+      APP_NAME: realtime
+      SEED_SELF_HOST: "true"
+      RUN_JANITOR: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  storage:
+    profiles: ["extended"]
+    image: supabase/storage-api:v1.74.0
+    environment:
+      ANON_KEY: stage-03-anon
+      SERVICE_KEY: stage-03-service
+      POSTGREST_URL: http://rest:3000
+      AUTH_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      DATABASE_URL: postgres://supabase_storage_admin:vibe_compat_storage@db:5432/vibedb
+      STORAGE_PUBLIC_URL: http://localhost:5000
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: file
+      GLOBAL_S3_BUCKET: vibedb
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: vibe-stage-03
+      REGION: local
+      ENABLE_IMAGE_TRANSFORMATION: "false"
+      IMGPROXY_URL: http://imgproxy:5001
+    volumes:
+      - vibedb_storage:/var/lib/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      rest:
+        condition: service_healthy
+
+  imgproxy:
+    profiles: ["extended"]
+    image: darthsim/imgproxy:v3.31.4
+    environment:
+      IMGPROXY_BIND: ":5001"
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
+      IMGPROXY_USE_ETAG: "true"
+    volumes:
+      - vibedb_storage:/var/lib/storage
+
+  supavisor:
+    profiles: ["pooler"]
+    image: supabase/supavisor:2.9.12
+    environment:
+      PORT: 4000
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: db
+      POSTGRES_DB: vibedb
+      POSTGRES_PASSWORD: postgres
+      DATABASE_URL: ecto://supabase_admin:vibe_compat_admin@db:5432/_supabase
+      CLUSTER_POSTGRES: "true"
+      SECRET_KEY_BASE: vibe-stage-03-secret-key-base-change-this-to-a-long-secret
+      VAULT_ENC_KEY: vibe-stage-03-vault-key-32-characters
+      API_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      METRICS_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      REGION: local
+      ERL_AFLAGS: -proto_dist inet_tcp
+      POOLER_TENANT_ID: vibe-stage-03
+      POOLER_DEFAULT_POOL_SIZE: "10"
+      POOLER_MAX_CLIENT_CONN: "50"
+      POOLER_POOL_MODE: transaction
+      DB_POOL_SIZE: "5"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  vibedb_storage:
