@@ -40,3 +40,11 @@ Status: IN_PROGRESS.
 - Graph Schema is catalog-driven. The Studio does not invent labels, edges or ownership metadata.
 - Traversal Builder sends/represents structured traversal specifications only; it does not expose a free-text Cypher editor.
 - The current renderer benchmark is a synthetic SVG string-generation baseline. It is evidence for regression detection, not production renderer selection. Browser FPS/mobile interaction evidence is still required before choosing a production renderer.
+
+
+## Tenant-visible correctness finding
+
+- The initial Explorer contained a static demo graph and did not render the rows returned by its authenticated Graph API request. This was a UI correctness/security-UX defect because it could make tenant-isolated users appear to share graph data.
+- The Explorer must never use synthetic data as a fallback after authenticated data loading. Empty, loading and error states are explicit.
+- The tenant-scoped Schema Catalog provider binds the verified JWT tenant claim to PostgreSQL transaction-local `request.jwt.claims`; RLS remains authoritative.
+- A regression test now fails if the Explorer reintroduces the named static demo nodes or stops deriving displayed nodes from authenticated query results.
