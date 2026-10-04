@@ -52,7 +52,7 @@ export function validateQuery(ir, context, catalog, limits = DEFAULT_LIMITS) {
   if (errors.length) return { ok: false, errors, cost: null };
 
   if (!context?.tenantId) errors.push(makeError("MISSING_TENANT_CONTEXT","Trusted tenant context is required",["context","tenantId"]));
-  if (!context?.capabilities?.includes("graph:read")) errors.push(makeError("CAPABILITY_DENIED","graph:read capability is required",["context","capabilities"]));
+  if (!hasCapability(context,CAPABILITIES.GRAPH_READ)) errors.push(makeError("CAPABILITY_DENIED","graph:read capability is required",["context","capabilities"]));
   if (context?.role === "service_role" && context?.trustedBackend !== true) {
     errors.push(makeError("SERVICE_ROLE_REQUIRES_TRUSTED_BACKEND","service_role is restricted to trusted backend execution",["context","trustedBackend"]));
   }
