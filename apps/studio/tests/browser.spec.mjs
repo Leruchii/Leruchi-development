@@ -10,7 +10,7 @@ const rowsFor=(tenant)=>tenant==="tenant_a"
   : [{id:"b1",name:"Grace"}];
 
 async function boot(page,tenant){
-  await page.context().addCookies([{name:"vibe_access_token",value:tenant,url:"http://127.0.0.1:3100",path:"/"}]);
+  await page.context().addCookies([{name:"vibe_access_token",value:tenant,url:"http://127.0.0.1:3100"}]);
   await page.route("**/api/studio/catalog",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(catalogFor(tenant))}));
   await page.route("**/api/studio/query",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({version:"v1",rows:rowsFor(tenant),request_id:"browser-"+tenant})}));
   await page.goto("http://127.0.0.1:3100",{waitUntil:"networkidle"});
@@ -47,7 +47,7 @@ test.describe("authenticated Graph Studio browser contract",()=>{
     await page.setViewportSize({width:1440,height:900});
     await page.route("**/api/studio/catalog",route=>route.fulfill({status:401,contentType:"application/json",body:JSON.stringify({error:{code:"UNAUTHORIZED",message:"Studio session is not authenticated"}})}));
     await page.goto("http://127.0.0.1:3100",{waitUntil:"networkidle"});
-    await expect(page.getByRole("alert")).toContainText("Schema Catalog unavailable");
+    await expect(page.locator(".state.error[role=alert]")).toContainText("Schema Catalog unavailable");
     await expect(page.getByText("Ada")).toHaveCount(0);
   });
 });
