@@ -31,6 +31,8 @@ test("executes graph and vector branches under one trusted retrieval contract",a
   assert.equal(result.count,1);
   assert.equal(result.rows[0].candidate_id,"g1");
   assert.equal(result.cost.total,7);
+  assert.deepEqual(result.explain.fusion,{strategy:"weighted_rrf",vector_weight:1,graph_weight:1});
+  assert.deepEqual(result.explain.candidate_limits,{max_results:2,max_cost:40});
   assert.deepEqual(calls.map(x=>x[0]),["graph","vector"]);
 });
 
