@@ -696,7 +696,9 @@ Add:
 
 Observability must not leak secrets, tenant data or raw database errors.
 
-**Status:** NOT STARTED.
+**Status:** IN_PROGRESS.
+
+Implementation is on branch stage16-observability / PR #42. Focused Stage 16 CI passed on an earlier head; the final telemetry regression test and handoff documentation require a fresh green Stage 16 run before validation.
 
 ## Stage 17 — Backup + Recovery
 
