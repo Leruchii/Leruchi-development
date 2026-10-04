@@ -22,9 +22,11 @@ for(const count of [100,500,1000]){
     await expect(page.locator("svg.graph-canvas g")).toHaveCount(count);
     const renderMs=await page.evaluate(startTime=>performance.now()-startTime,start);
 
-    const lastNode=page.getByRole("button",{name:`node-${count} Account`});
+    // Use a visible node for the interaction probe. The current canvas is bounded;
+    // probing the final generated node would measure viewport clipping, not interaction latency.
+    const interactionNode=page.getByRole("button",{name:"node-1 Account"});
     const interactionStart=await page.evaluate(()=>performance.now());
-    await lastNode.click();
+    await interactionNode.click();
     await expect(page.locator("svg.graph-canvas circle.node.selected")).toHaveCount(1);
     const interactionMs=await page.evaluate(startTime=>performance.now()-startTime,interactionStart);
 
