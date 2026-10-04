@@ -6,7 +6,7 @@ import {promisify} from "node:util";
 const execFileAsync = promisify(execFile);
 const MIGRATION_PATTERN = /^(\\d{4})-([a-z0-9][a-z0-9-]*)\\.sql$/;
 
-function migrationFiles(root) {
+export function listMigrationFiles(root) {
   return fs.readdirSync(root)
     .filter(name => MIGRATION_PATTERN.test(name))
     .sort()
@@ -33,7 +33,7 @@ async function psql(url, args) {
 export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(cwd,"infra","migrations")}={}) {
   const url = requireMigratorUrl();
   if (!fs.existsSync(migrationsDir)) throw new Error("Migration directory not found");
-  const files = migrationFiles(migrationsDir);
+  const files = listMigrationFiles(migrationsDir);
   if (!files.length) throw new Error("No numbered migrations found");
 
   const bootstrap = files[0];
