@@ -1,0 +1,20 @@
+name: Stage 11 CLI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  cli-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install CLI dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run CLI tests
+        run: node --test tests/cli/cli.test.mjs
+      - name: Import CLI
+        run: node -e "import('./packages/vibe-cli/index.mjs').then(() => console.log('CLI import OK'))"
