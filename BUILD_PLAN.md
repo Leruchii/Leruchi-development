@@ -568,9 +568,19 @@ Provide validated workflows for:
 - diagnostics
 - local development
 
-CLI must not become a second compiler/security boundary.
+Implemented so far:
+- project base-URL configuration without token persistence;
+- graph query and mutation commands delegated to the JavaScript SDK;
+- Schema Catalog type generation from local catalog JSON;
+- diagnostics endpoint check;
+- local Docker Compose status;
+- CLI parser and adversarial tests.
 
-**Status:** NOT STARTED.
+CLI does not become a second compiler/security boundary.
+
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
+
+**Remaining exit-gate work:** establish the repository migration execution contract, implement and execute migrations using the approved migrator role, validate remote Schema Catalog inspection/type generation against a real server contract, and add executable CI evidence for those workflows.
 
 ## Stage 12 — Graph Realtime
 
