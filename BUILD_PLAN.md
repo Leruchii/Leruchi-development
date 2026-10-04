@@ -609,9 +609,9 @@ Required:
 - subscription lifecycle
 - adversarial event-isolation tests
 
-**Status:** IMPLEMENTED — NOT YET VALIDATED.
+**Status:** VALIDATED.
 
-Previous validation run `37209970650` passed before the latest replay/topic hardening. A fresh Stage 12 run is required before this stage can remain VALIDATED.
+Fresh validation run `37210250276` passed after the replay/topic hardening, including opaque topics and trusted relay-only replay.
 
 ## Stage 13 — Graph Studio
 
