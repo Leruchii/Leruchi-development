@@ -1,10 +1,10 @@
-import {test,expect} from "@playwright/test";
+import {test,expect,type Page,type Route} from "@playwright/test";
 
 const catalog={version:"v1",graphs:{vibe_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
 
-async function mockStudio(page,names){
-  await page.route("**/api/studio/catalog",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(catalog)}));
-  await page.route("**/api/studio/query",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({version:"v1",request_id:"browser-test",columns:["name"],rows:names.map(name=>({name,id:name})),count:names.length})}));
+async function mockStudio(page:Page,names:string[]){
+  await page.route("**/api/studio/catalog",(route:Route)=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(catalog)}));
+  await page.route("**/api/studio/query",(route:Route)=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({version:"v1",request_id:"browser-test",columns:["name"],rows:names.map(name=>({name,id:name})),count:names.length})}));
 }
 
 test("tenant A browser session renders only tenant A graph results",async({page})=>{
