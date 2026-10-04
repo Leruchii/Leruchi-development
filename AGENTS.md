@@ -59,6 +59,18 @@ Rules:
 - Parameterise values; never build SQL/Cypher by concatenating untrusted strings.
 - The recursive-CTE PostgreSQL path is a fallback implementation, not a second public API.
 
+## 3A. Intermediate Representation (IR) is a first-class product contract
+
+Vibe's Intermediate Representation is not an implementation detail and must be recognized by every coding agent before adding API, SDK, CLI, Studio, MCP, or compiler behavior.
+
+- **Query IR** is the engine-neutral read contract. Client surfaces describe intent through Query IR; the backend validates it against the Schema Catalog, applies security/cost/depth/result guardrails, plans/compiles it, and executes it through the Secure Execution Engine.
+- **Mutation IR** is the explicit engine-neutral write contract. It remains separate from Query IR unless an explicit architecture decision proves a safe unified model.
+- SDK, REST/Graph API, MCP, AI agents, CLI, and Studio must converge on these IR contracts rather than creating parallel query languages or engine-specific request models.
+- Apache AGE/Cypher and PostgreSQL/SQL are compiler targets behind the IR boundary, not public contracts for normal clients.
+- Tenant identity, authorization, capabilities, limits, and security policy are applied around the IR boundary; callers must never be able to override trusted tenant context through IR payload fields.
+- New features must extend or compose the existing IR and Schema Catalog contracts before introducing a new representation. Do not duplicate equivalent request semantics in another package.
+- When an agent encounters an existing IR type, builder, validator, compiler input, or execution boundary, it must inspect and reuse it before designing a new abstraction.
+
 ## 4. Schema Catalog
 
 The Schema Catalog is the authoritative source for relational, graph and vector metadata consumed by:
