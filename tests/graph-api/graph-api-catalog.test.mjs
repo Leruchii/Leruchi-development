@@ -50,7 +50,7 @@ test("Graph API catalog discovery requires graph:read capability",async()=>{
   });
   const address=await api.listen();
   try{
-    const response=await fetch(`http://127.0.0.1:${address.port}/v1/schema/catalog`,{headers:{authorization:"Bearer "+token("tenant_a",secret)}});
+    const response=await fetch(`http://127.0.0.1:${address.port}/v1/schema/catalog`,{headers:{authorization:"Bearer "+token("tenant_a",secret,[])}});
     const body=await response.json();
     assert.equal(response.status,403);
     assert.equal(body.version,"v1");
