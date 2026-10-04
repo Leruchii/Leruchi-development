@@ -9,7 +9,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current stage: 13 — Graph Studio
 - Current status: IN_PROGRESS
 - Last completed stage: 12 — Graph Realtime
-- Last validated commit: `d9526830c230f27bcfef311ae13e7d93e76e88f7`
+- Last validated commit: `6966240c82ef33619514f429953f368016964396`
 - Default branch: `main`
 - Next implementation target: Complete Stage 13 Graph Studio backend integration and renderer validation
 
@@ -258,7 +258,7 @@ Remaining before VALIDATED:
 4. complete end-to-end Graph API runtime composition against a live PostgreSQL/AGE environment.
 
 Current branch: `main`
-PR #24 and PR #25 are merged; their correctness/security fixes are now part of main.
+PR #24, PR #25, PR #27, and PR #28 are merged; their correctness, execution-context, and browser-evidence work is now part of main.
 Latest implementation commits: `385244ca211f185a6fa663b92908951e9ffa1cc9` (AGE runtime RLS fix), preceded by `443e34dc817c1a9e993ddedc1b82dbe4b3fc7fc0`.
 Validation status: IMPLEMENTED — NOT YET VALIDATED. PR #25 merged after the corrected security matrix passed. The first PR #25 matrix exposed a real runtime/RLS integration defect: the Graph API executes through the pooled `vibe_runtime` role, but the Stage 02 AGE test policies granted schema/table access only to tenant-specific roles. The runtime path therefore failed with PostgreSQL `permission denied for schema vibe_security` before the isolation proof could run.
 The fix now grants `vibe_runtime` access to the test graph and adds separate FORCE RLS policies that derive the tenant from transaction-local `request.jwt.claims`, while preserving the direct `vibe_tenant_a`/`vibe_tenant_b` role policies.
@@ -269,7 +269,7 @@ New runtime invariants:
 - mutation execution uses the same rollback-on-claim-binding-failure rule;
 - malformed, unsupported, expired, or missing-tenant JWTs are classified as unauthorized;
 - AGE `lt` compiles to strict `<`, with regression coverage for all comparison operators.
-Exact next action: complete and validate the shared ExecutionContext contract across Graph API, Schema Catalog, query execution, and mutation execution; then use that contract to finish live authenticated tenant A/B browser evidence, responsive/accessibility evidence, renderer benchmark, and full Graph API → PostgreSQL/AGE runtime composition. Stage 13 remains the canonical active stage until its exit gate is satisfied.
+Exact next action: finish the Stage 13 renderer benchmark/production renderer decision and record the live Graph API → PostgreSQL/AGE runtime composition evidence. Browser tenant A/B, mobile-width, keyboard, and theme evidence now pass in CI. Stage 13 remains the canonical active stage until its exit gate is satisfied.
 
 
 ## ExecutionContext hardening continuation
@@ -282,3 +282,16 @@ Implemented on `stage14-execution-context-contract`:
 - added focused execution-context regression tests.
 
 Validation evidence: PR #27 merged as `d9526830c230f27bcfef311ae13e7d93e76e88f7`; secure execution, realtime, tenant isolation, Studio, catalog, compiler, mutation, audit, and state checks passed on the final PR head. GitHub Advanced Security failed only because its Copilot code-scanning service exceeded its monthly quota; this was infrastructure/quota failure, not a repository test failure. The shared context is now the mandatory boundary for Stage 13 runtime composition and Stage 14 MCP.
+
+
+## Stage 13 browser evidence
+
+Validated and merged in PR #28 as `6966240c82ef33619514f429953f368016964396`.
+- Chromium browser tests prove tenant A and tenant B sessions render only their authenticated Graph API result sets.
+- Mobile 360px coverage proves the Studio has no horizontal overflow and keeps graph nodes keyboard-focusable.
+- Theme switching is exercised in-browser.
+- The browser test suite initially exposed real mobile defects: horizontal overflow from the query controls and a mobile inspector overlay intercepting controls. Both were fixed before merge.
+
+Remaining Stage 13 exit work:
+- production renderer benchmark and explicit renderer decision;
+- final live Graph API → PostgreSQL/AGE runtime composition evidence (the Stage 02 security E2E already proves the core JWT → Graph API → transaction-local claims → AGE/RLS path; Stage 13 needs the final composition evidence recorded against the Studio contract).
