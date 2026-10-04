@@ -1,5 +1,6 @@
 import {randomUUID} from "node:crypto";
 import {assertTrustedExecutionContext} from "../execution-context/index.mjs";
+import {CAPABILITIES,requireCapability} from "../capability-policy/index.mjs";
 
 const IDENTIFIER=/^[A-Za-z_][A-Za-z0-9_]*$/;
 const CATALOG_REF=/^[A-Za-z_][A-Za-z0-9_.]*$/;
@@ -61,6 +62,8 @@ export function compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxRes
 
 export async function executeVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost,context,db,requestId=randomUUID()}){
   try{assertTrustedExecutionContext(context);}catch{throw new VectorExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
+  const capability=requireCapability(context,CAPABILITIES.VECTOR_READ);
+  if(!capability.ok) throw new VectorExecutionError(capability.code,capability.message);
   const compiled=compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost});
   let began=false;
   try{
