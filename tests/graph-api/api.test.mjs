@@ -52,3 +52,18 @@ test("Graph API derives tenant context from JWT and does not trust request tenan
     assert.equal(observed[0].tenantId,"tenant_a");
   } finally { await api.close(); }
 });
+
+test("Graph API rejects expired JWTs with 401", async()=>{
+  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",catalogProvider:async()=>({graphs:{}}),port:0});
+  const address=await api.listen();
+  try{
+    const res=await fetch(`http://127.0.0.1:${address.port}/v1/graph/query`,{
+      method:"POST",
+      headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",exp:1},"secret"),"content-type":"application/json"},
+      body:"{}"
+    });
+    assert.equal(res.status,401);
+    const body=await res.json();
+    assert.equal(body.code,"UNAUTHORIZED");
+  }finally{await api.close();}
+});
