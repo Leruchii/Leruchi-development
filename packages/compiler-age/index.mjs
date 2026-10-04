@@ -38,7 +38,7 @@ function compileFilter(filter, bindings, state) {
   const left = field(filter.field);
   if (filter.op === "is_null") return left + " IS NULL";
   const ops = {
-    eq: "=", neq: "<>", gt: ">", gte: ">=", lt: "<=", lte: "<=",
+    eq: "=", neq: "<>", gt: ">", gte: ">=", lt: "<", lte: "<=",
     in: "IN", contains: "CONTAINS", starts_with: "STARTS WITH"
   };
   const op = ops[filter.op];
