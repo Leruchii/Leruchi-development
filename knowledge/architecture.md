@@ -1,6 +1,6 @@
 # VibePlatform Architecture
 
-Status: DECIDED design / partially VALIDATED through Stage 02
+Status: DECIDED design / partially VALIDATED through Stage 03
 
 ## Product boundary
 
@@ -97,7 +97,9 @@ Stage 01 validates the non-superuser runtime boundary.
 
 Stage 02 validates two-tenant relational and AGE graph isolation, including cross-tenant read/update/delete denial and graph inference denial through a deliberately cross-tenant edge.
 
-Tenant context propagation from Auth/JWT into a shared runtime role is not yet decided and is a Stage 03 concern.
+Stage 03 validates the Auth/PostgREST compatibility boundary: Auth can initialize against the Vibe database, PostgREST can verify a signed JWT, verified request.jwt.claims can reach PostgreSQL RLS, and tenant_a cannot see tenant_b through the REST boundary.
+
+The Stage 03 JWT/RLS probe signs a test token inside CI to isolate PostgREST verification and RLS behavior. The exact production mechanism for issuing tenant authorization claims from Auth remains UNKNOWN.
 
 ## Realtime architecture
 
@@ -134,6 +136,10 @@ Realtime payloads are not authoritative protected data.
 - Repository bootstrap: VALIDATED
 - Database foundation: VALIDATED
 - Tenant security: VALIDATED through adversarial Stage 02 tests
+- Supabase Auth + PostgREST core: VALIDATED through Stage 03 CI
+- Realtime: NOT IMPLEMENTED/VALIDATED
+- Storage: NOT IMPLEMENTED/VALIDATED
+- Pooling: NOT IMPLEMENTED/VALIDATED
 - Query IR: NOT IMPLEMENTED/VALIDATED
 - Graph API: NOT IMPLEMENTED/VALIDATED
 - SDK: NOT IMPLEMENTED/VALIDATED
@@ -142,4 +148,4 @@ Realtime payloads are not authoritative protected data.
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Next implementation target: Stage 03 — Supabase Compatibility Stack.
+Next implementation target: Stage 04 — Schema Catalog.

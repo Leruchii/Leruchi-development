@@ -1,0 +1,75 @@
+name: Stage 03 Supabase compatibility
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  supabase-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build VibeDB database image
+        run: docker compose build db
+
+      - name: Start VibeDB database
+        run: docker compose up -d db
+
+      - name: Wait for database
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+
+      - name: Install Supabase compatibility roles and RLS probe
+        run: |
+          docker compose exec -T db psql -U postgres -d vibedb -Xf /dev/stdin < infra/supabase/roles.sql
+
+      - name: Start Auth and PostgREST
+        run: docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d auth rest
+
+      - name: Wait for Auth and PostgREST
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:9999/health >/dev/null 2>&1; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:9999/health
+          curl -fsS http://127.0.0.1:3000/
+
+      - name: Verify signed JWT reaches PostgREST RLS
+        run: |
+          TOKEN=$(python3 - <<'PY'
+          import base64, hashlib, hmac, json, time
+          secret=b"vibe-stage-03-jwt-secret-change-me-32"
+          def b64(v):
+              return base64.urlsafe_b64encode(v).rstrip(b"=").decode()
+          header=b64(json.dumps({"alg":"HS256","typ":"JWT"},separators=(",",":")).encode())
+          payload=b64(json.dumps({"role":"authenticated","tenant_id":"tenant_a","aud":"authenticated","exp":int(time.time())+300},separators=(",",":")).encode())
+          msg=f"{header}.{payload}".encode()
+          sig=b64(hmac.new(secret,msg,hashlib.sha256).digest())
+          print(f"{header}.{payload}.{sig}")
+          PY
+          )
+          RESPONSE=$(curl -fsS             -H "Authorization: Bearer ${TOKEN}"             "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
+          echo "${RESPONSE}"
+          echo "${RESPONSE}" | grep -q '"tenant_a"'
+          if echo "${RESPONSE}" | grep -q 'tenant_b'; then
+            echo "Tenant B leaked through PostgREST"
+            exit 1
+          fi
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml logs auth rest db
+
+      - name: Cleanup
+        if: always()
+        run: docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml down -v
