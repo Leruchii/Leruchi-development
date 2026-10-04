@@ -8,6 +8,9 @@ CREATE ROLE vibe_tenant_a
 CREATE ROLE vibe_tenant_b
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
 
+ALTER ROLE vibe_tenant_a PASSWORD 'tenant-a-ci';
+ALTER ROLE vibe_tenant_b PASSWORD 'tenant-b-ci';
+
 ALTER ROLE vibe_tenant_a SET search_path = "$user", public, ag_catalog;
 ALTER ROLE vibe_tenant_b SET search_path = "$user", public, ag_catalog;
 

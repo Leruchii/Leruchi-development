@@ -1,31 +1,38 @@
 # VibePlatform Architecture
 
-Status: DECIDED design / partially VALIDATED through Stage 07
+Status: DECIDED design / partially VALIDATED through Stage 08
 
 ## Validated execution path
 
-Client intent
+Trusted request context
 → Query IR v1
 → Schema/security/cost validation
 → Apache AGE compiler
-→ secure execution (Stage 08)
-→ PostgreSQL / AGE
+→ Secure Execution Engine
+→ single database transaction
+→ PostgreSQL/AGE/RLS
+→ normalized result
 
-## Stage 07 AGE compiler
+No client surface may bypass this path.
 
-The compiler is an implementation detail behind the Query IR boundary.
+## Stage 08 Secure Execution Engine
 
-It generates prepared-statement SQL using AGE's documented model: Cypher parameters such as $name are placed inside the Cypher query, while a PostgreSQL parameter is passed as the third cypher() argument and receives an agtype parameter map. citeturn17view0turn17view1
+The engine is the central read-only graph execution boundary.
 
-Compiler rules:
-- strict identifier validation;
-- no raw Cypher input;
-- no filter-value interpolation;
-- deterministic projection aliases;
-- deterministic prepared SQL;
-- read-only graph_query compilation in v1.
+It:
+- requires trusted execution context;
+- validates before compilation;
+- validates request parameters before BEGIN;
+- compiles only validated IR;
+- executes on one transaction-scoped client;
+- commits only after success;
+- rolls back after execution failure;
+- normalizes results;
+- normalizes database failures without exposing raw database details.
 
-The compiler is not an authorization boundary. Stage 06 must run first, and Stage 08 will enforce the full execution path.
+The live Stage 08 integration uses the Stage 02 tenant roles and demonstrates tenant-A graph visibility remains isolated by PostgreSQL RLS even though both tenants use the same graph schema.
+
+The engine is read-only in v1. Mutations are Stage 09.
 
 ## Current validation state
 
@@ -37,7 +44,7 @@ The compiler is not an authorization boundary. Stage 06 must run first, and Stag
 - Query IR v1: VALIDATED
 - Query validation + cost guardrails: VALIDATED
 - AGE compiler: VALIDATED
-- Secure execution engine: NOT IMPLEMENTED/VALIDATED
+- Secure execution engine: VALIDATED
 - Graph mutations: NOT IMPLEMENTED/VALIDATED
 - Realtime: NOT IMPLEMENTED/VALIDATED
 - Storage: NOT IMPLEMENTED/VALIDATED
@@ -48,4 +55,4 @@ The compiler is not an authorization boundary. Stage 06 must run first, and Stag
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Next implementation target: Stage 08 — Secure Execution Engine.
+Next implementation target: Stage 09 — Graph Mutations.

@@ -1,0 +1,47 @@
+name: Stage 08 Secure Execution Engine
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  secure-execution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node dependencies
+        run: npm install --ignore-scripts
+
+      - name: Build database image
+        run: docker compose build db
+
+      - name: Start database
+        run: docker compose up -d db
+
+      - name: Wait for database
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+
+      - name: Install tenant security fixture
+        run: docker compose exec -T db bash < tests/security/stage-02-setup.sh
+
+      - name: Run secure execution tests
+        env:
+          RUN_STAGE08_INTEGRATION: "1"
+        run: node --test tests/execution-engine/*.test.mjs
+
+      - name: Show database logs on failure
+        if: failure()
+        run: docker compose logs db
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v

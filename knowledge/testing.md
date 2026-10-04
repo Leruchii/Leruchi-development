@@ -1,25 +1,27 @@
 # Testing
 
-Status: VALIDATED through Stage 07 — Apache AGE Compiler
+Status: VALIDATED through Stage 08 — Secure Execution Engine
 
-## Stage 07 executable coverage
+## Stage 08 executable coverage
 
-.github/workflows/stage-07-age-compiler.yml proves:
+.github/workflows/stage-08-secure-execution.yml proves:
 
-- the VibeDB image builds and starts;
-- the Stage 01 graph can be seeded;
-- representative Query IR compiles into AGE prepared-statement SQL;
-- declared parameters remain Cypher parameters;
-- literal values are bound through generated parameters;
-- malicious filter values do not appear in generated Cypher;
-- malicious identifiers are rejected;
-- duplicate output aliases are rejected;
-- the generated one-hop query executes successfully against Apache AGE.
+- Node PostgreSQL dependency installs;
+- VibeDB builds and starts;
+- Stage 02 tenant security fixture installs;
+- validation failure produces zero DB calls;
+- successful execution commits;
+- execution failure rolls back;
+- undeclared/missing parameters fail before BEGIN;
+- rows are normalized;
+- raw database error details are not exposed;
+- real tenant-A execution through AGE remains isolated by PostgreSQL RLS;
+- a query for tenant-B graph data returns no rows to tenant A.
 
 ## Security rule
 
-Compiler output is not an authorization boundary. Only validated IR reaches compilation in the intended architecture.
+The execution engine is the only intended route from validated Query IR to database execution.
 
 ## Merge blocker
 
-Stages 01 through 07 have executable repository/CI evidence.
+Stages 01 through 08 have executable repository/CI evidence.
