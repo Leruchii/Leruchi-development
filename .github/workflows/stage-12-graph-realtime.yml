@@ -52,6 +52,8 @@ jobs:
             END IF;
           END $vibe$;
           SQL
+      - name: Run architecture regression audit
+        run: node tests/architecture/contract-audit.mjs
       - name: Run database-backed realtime integration
         env:
           VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
