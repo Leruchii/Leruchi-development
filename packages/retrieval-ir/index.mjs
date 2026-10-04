@@ -18,7 +18,7 @@ export function validateRetrievalIR(ir){
   if(!ir.sources||typeof ir.sources!=="object"||(!ir.sources.vector&&!ir.sources.graph))throw fail("INVALID_RETRIEVAL_IR","At least one retrieval source is required");
   if(ir.sources.vector){
     const v=ir.sources.vector;
-    if(typeof v.catalog_ref!=="string"||!v.catalog_ref)throw fail("INVALID_RETRIEVAL_IR","Vector catalog_ref is required");
+    if(typeof v.catalog_ref!=="string"||!/^[A-Za-z_][A-Za-z0-9_.]*$/.test(v.catalog_ref))throw fail("INVALID_RETRIEVAL_IR","Vector catalog_ref must be a safe catalog reference");
     if(typeof v.query_parameter!=="string"||!IDENTIFIER.test(v.query_parameter))throw fail("INVALID_RETRIEVAL_IR","Vector query_parameter must be a safe identifier");
     if(!Number.isInteger(v.top_k)||v.top_k<1||v.top_k>MAX_RESULTS)throw fail("RETRIEVAL_LIMIT_EXCEEDED","Vector top_k must be between 1 and 1000");
   }
