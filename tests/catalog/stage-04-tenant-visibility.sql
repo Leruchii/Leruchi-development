@@ -1,4 +1,5 @@
 \set ON_ERROR_STOP on
+-- Executed as a non-owner role so catalog RLS is actually exercised.
 
 DO $$
 DECLARE
@@ -6,15 +7,6 @@ DECLARE
   tenant_a_count integer;
   tenant_b_count integer;
 BEGIN
-  INSERT INTO vibe_meta.graph_catalog_registry
-    (tenant_id, graph_name, object_kind, object_name, from_label, to_label, properties)
-  VALUES
-    ('tenant_a', 'tenant_private_a', 'label', 'PrivateA', '', '', '{}'),
-    ('tenant_b', 'tenant_private_b', 'label', 'PrivateB', '', '', '{}')
-  ON CONFLICT DO NOTHING;
-
-  PERFORM vibe_meta.refresh_schema_catalog();
-
   SELECT count(*) INTO shared_count
   FROM vibe_meta.schema_catalog_entries
   WHERE object_kind = 'graph' AND tenant_id = '';
@@ -23,11 +15,7 @@ BEGIN
     RAISE EXCEPTION 'Shared graph catalog metadata missing';
   END IF;
 
-  PERFORM set_config(
-    'request.jwt.claims',
-    '{"tenant_id":"tenant_a"}',
-    true
-  );
+  PERFORM set_config('request.jwt.claims', '{"tenant_id":"tenant_a"}', true);
 
   SELECT count(*) INTO tenant_a_count
   FROM vibe_meta.schema_catalog_entries
@@ -44,11 +32,7 @@ BEGIN
     RAISE EXCEPTION 'Tenant A can see tenant B graph metadata';
   END IF;
 
-  PERFORM set_config(
-    'request.jwt.claims',
-    '{"tenant_id":"tenant_b"}',
-    true
-  );
+  PERFORM set_config('request.jwt.claims', '{"tenant_id":"tenant_b"}', true);
 
   SELECT count(*) INTO tenant_b_count
   FROM vibe_meta.schema_catalog_entries
