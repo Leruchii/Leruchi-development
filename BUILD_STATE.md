@@ -331,6 +331,8 @@ Implemented the first agent-native MCP boundary:
 Status: **Stage 14 STARTED — MCP CONTRACT IMPLEMENTED, INTEGRATION VALIDATION PENDING**.
 
 
+Validation evidence: Stage 13 workflow run `37223423312` passed the full live Studio, renderer-browser, build and audit gate on commit `69842c6fa6dd43c5b44b3a96a962bed6aa177565`.
+
 ## Final Stage 13 / Stage 14 handoff
 
 Stage 13 is now VALIDATED by the final active-branch CI evidence:
