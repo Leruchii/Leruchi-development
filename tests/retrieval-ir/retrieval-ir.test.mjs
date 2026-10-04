@@ -30,4 +30,5 @@ test("retrieval budgets fail closed",()=>{
   assert.throws(()=>validateRetrievalIR({...base,limits:{max_results:1001,max_cost:40}}),/between 1 and 1000/);
   assert.throws(()=>validateRetrievalIR({...base,limits:{max_results:20,max_cost:101}}),/between 1 and 100/);
   assert.throws(()=>validateRetrievalIR({...base,sources:{...base.sources,vector:{...base.sources.vector,query_parameter:"embedding;DROP"}}}),/safe identifier/);
+  assert.throws(()=>validateRetrievalIR({...base,sources:{...base.sources,vector:{...base.sources.vector,catalog_ref:"documents;DROP"}}}),/safe catalog reference/);
 });
