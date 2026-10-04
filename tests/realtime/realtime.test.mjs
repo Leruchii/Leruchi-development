@@ -11,7 +11,8 @@ test("subscription topics are tenant-scoped and non-authoritative",()=>{
   const a=topicFor({tenantId:"tenant_a",graph:"shared"});
   const b=topicFor({tenantId:"tenant_b",graph:"shared"});
   assert.notEqual(a,b);
-  assert.match(a,/^graph:[0-9a-f]{20}:shared$/);
+  assert.equal(a.includes("shared"),false);
+  assert.match(a,/^graph:[0-9a-f]{20}:[0-9a-f]{20}$/);
 });
 
 test("authorization requires trusted tenant context",()=>{
