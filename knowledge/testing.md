@@ -1,5 +1,7 @@
 # Testing
 
+Status: VALIDATED for Stage 01 database foundation
+
 ## Core policy
 
 Security tests are merge blockers.
@@ -17,37 +19,25 @@ Every build prompt must report:
 7. Remaining UNKNOWN items.
 8. Next stage.
 
-## Required test layers
+## Stage 01 executable coverage
 
-As the system grows, use:
+.github/workflows/stage-01-db.yml builds the database image, starts PostgreSQL, waits for readiness, and runs tests/db/stage-01.sql as the non-superuser vibe_runtime role.
 
-- unit tests;
-- integration tests;
-- database tests;
-- security/adversarial tests;
-- API contract tests;
-- compatibility tests;
-- fuzz/property tests where appropriate;
-- performance tests;
-- end-to-end tests.
+Assertions cover:
 
-Do not add every test category before it is useful; introduce the smallest layer required by the current stage.
+- PostgreSQL 17+;
+- exact AGE 1.7.0;
+- exact pgvector 0.8.7;
+- runtime role separation and no superuser/RLS bypass;
+- vector storage and nearest-neighbour query;
+- AGE graph traversal;
+- graph vertex and edge creation;
+- graph traversal after mutation.
 
-## Security
+## Merge blocker
 
-At minimum, tenant-isolation tests must verify both allowed same-tenant access and denied cross-tenant access.
+The Stage 01 workflow is required evidence for the database foundation. Configuration-only claims are insufficient.
 
-## UI
+## Next security stage
 
-When UI exists, verify:
-
-- 360px;
-- 768px;
-- 1440px;
-- dark theme;
-- light theme;
-- keyboard operation;
-- focus visibility/restoration;
-- loading/empty/error states;
-- semantic token usage;
-- Base UI audit.
+Stage 02 must add adversarial tenant isolation tests for relational reads/writes/deletes and graph traversal/inference.
