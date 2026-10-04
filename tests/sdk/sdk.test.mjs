@@ -61,7 +61,7 @@ test("builds graph mutations through the same Vibe surface", async () => {
 
 test("rejects unsafe identifiers and client-side guardrail violations", () => {
   const vibe = createClient({ transport: transportRecorder() });
-  assert.throws(() => vibe.graph("vibe_security").query("Account").select(["name; DROP"]), /INVALID_FIELD/);
+  assert.throws(() => vibe.graph("vibe_security").query("Account").select(["name; DROP"]), e => e instanceof VibeClientError && e.code === "INVALID_FIELD");
   assert.throws(() => vibe.graph("vibe_security").query("Account").select(["name"]).limit(1001), /INVALID_LIMIT/);
   assert.throws(() => vibe.graph("vibe_security").query("Account").select(["name"]).depth(7), /INVALID_DEPTH/);
 });
@@ -70,7 +70,7 @@ test("does not accept engine fragments through query builders", () => {
   const transport = transportRecorder();
   const vibe = createClient({ transport });
   const query = vibe.graph("vibe_security").query("Account").select(["name"]);
-  assert.throws(() => query.where("name", "eq", { sql: "DROP TABLE" }), /INVALID_FIELD|object/);
+  assert.throws(() => query.where("name", "eq", { sql: "DROP TABLE" }), e => e instanceof VibeClientError && e.code === "INVALID_VALUE");
   assert.equal(transport.calls.length, 0);
 });
 
