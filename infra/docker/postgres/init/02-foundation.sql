@@ -30,3 +30,4 @@ SELECT ag_catalog.create_elabel('vibe_stage01', 'KNOWS');
 
 GRANT USAGE ON SCHEMA vibe_stage01 TO vibe_migrator, vibe_runtime;
 GRANT SELECT, INSERT, UPDATE, DELETE ON vibe_stage01."Person", vibe_stage01."KNOWS" TO vibe_migrator, vibe_runtime;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA vibe_stage01 TO vibe_migrator, vibe_runtime;
