@@ -19,6 +19,7 @@ export function validateMutation(ir,context,catalog){
   if(DESTRUCTIVE.has(ir.operation)&&!context?.capabilities?.includes("graph:delete"))e.push(err("CAPABILITY_DENIED","graph:delete capability is required",["context","capabilities"]));
   if(context?.role==="service_role"&&context?.trustedBackend!==true)e.push(err("SERVICE_ROLE_REQUIRES_TRUSTED_BACKEND","service_role is restricted to trusted backend execution",["context","trustedBackend"]));
   const g=catalog?.graphs?.[ir.graph];if(!g)e.push(err("UNKNOWN_GRAPH","Graph is not present in the Schema Catalog",["graph"]));
+  if(g?.visibility==="tenant"&&g.tenantId!==context.tenantId)e.push(err("GRAPH_ACCESS_DENIED","Graph is not authorized for the current tenant",["graph"]));
   const t=ir.target||{};
   const edgeOp=ir.operation?.endsWith("_edge"), create=ir.operation==="create_vertex"||ir.operation==="create_edge", updateDelete=!create;
   if(!t.label||!IDENT.test(t.label))e.push(err("INVALID_TARGET","A valid target label is required",["target","label"]));
