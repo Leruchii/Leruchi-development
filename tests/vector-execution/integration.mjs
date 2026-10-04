@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import {Pool} from "pg";
 import {createTenantCatalogProvider} from "../../packages/schema-catalog-api/index.mjs";
+import {createExecutionContext} from "../../packages/execution-context/index.mjs";
+import {createPgExecutor} from "../../packages/execution-engine/index.mjs";
 import {executeVectorRetrieval} from "../../packages/vector-execution/index.mjs";
 
 const adminUrl=process.env.VIBE_ADMIN_DATABASE_URL;
@@ -53,22 +55,22 @@ async function seed(){
 
 async function run(){
   await seed();
+  const contextA=createExecutionContext({
+    tenant_id:"tenant_a",
+    role:"authenticated",
+    capabilities:["vector:read"]
+  });
   const provider=createTenantCatalogProvider(runtime);
-  const catalogA=await provider({tenantId:"tenant_a",role:"authenticated",capabilities:["vector:read"]});
+  const catalogA=await provider(contextA);
   assert.ok(catalogA.vectors["stage15.a.embedding"]);
   assert.equal(catalogA.vectors["stage15.b.embedding"],undefined);
 
   const dbClient=await runtime.connect();
-  const db={
-    begin:()=>dbClient.query("BEGIN"),
-    executeBound:compiled=>dbClient.query({text:compiled.sql,values:compiled.values,rowMode:"array"}),
-    commit:()=>dbClient.query("COMMIT"),
-    rollback:()=>dbClient.query("ROLLBACK")
-  };
+  const db=createPgExecutor(dbClient,contextA);
   try{
     const resultA=await executeVectorRetrieval({
       catalog:catalogA,catalogRef:"stage15.a.embedding",embedding:[1,0,0],topK:5,maxResults:20,maxCost:20,
-      context:{trusted:true,tenantId:"tenant_a",role:"authenticated",capabilities:["vector:read"]},db
+      context:contextA,db
     });
     assert.equal(resultA.count,1);
     assert.equal(resultA.rows[0][0],"stage15-a");
@@ -76,7 +78,7 @@ async function run(){
     await assert.rejects(
       ()=>executeVectorRetrieval({
         catalog:catalogA,catalogRef:"stage15.b.embedding",embedding:[0,1,0],topK:5,maxResults:20,maxCost:20,
-        context:{trusted:true,tenantId:"tenant_a",role:"authenticated",capabilities:["vector:read"]},db
+        context:contextA,db
       }),
       /not visible/
     );
