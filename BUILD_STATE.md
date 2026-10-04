@@ -232,7 +232,7 @@ Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 
 Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
-Exact next action: begin Stage 13 — Graph Studio.
+Exact next action: continue Stage 13 Graph Studio with live Graph API/Schema Catalog integration and renderer benchmark evidence.
 
 
 ## Stage 13 implementation
