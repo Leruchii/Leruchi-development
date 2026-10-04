@@ -521,7 +521,7 @@ Required:
 
 No mutation may bypass the Secure Execution Engine or PostgreSQL RLS.
 
-**Status:** READY TO BUILD / NEXT.
+**Status:** IMPLEMENTED — NOT YET VALIDATED.\n\nCurrent implementation: Mutation IR v1, mutation validation, AGE mutation compiler, transactional mutation execution boundary, and adversarial unit tests. Database-backed RLS validation and CI exit-gate evidence remain required.\n\nConflict semantics for v1: mutations operate on the tenant-visible current state inside one database transaction. No optimistic version field is introduced yet; an update/delete that matches zero visible targets is a safe no-op, while concurrent writes rely on PostgreSQL transaction/row-lock behavior. Last-writer-wins is the explicit v1 behavior when concurrent updates target the same property.\n\nAudit boundary for v1: every execution has a request ID plus tenant, operation, graph and target metadata in the normalized mutation result. Durable outbox/realtime persistence remains Stage 12.
 
 **Exit gate:** mutation tests, adversarial tenant-isolation tests, transaction/rollback tests, authorization tests, security review, CI, knowledge updates and explicit conflict semantics all pass.
 
