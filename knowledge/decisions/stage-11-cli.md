@@ -24,7 +24,7 @@ Migrations are:
 - recorded atomically in vibe_meta.schema_migrations;
 - immutable after application; fixes require a later migration.
 
-This uses PostgreSQL's transactional psql behavior to prevent partial migration application. Non-transactional operations such as concurrent index creation require an explicit future runner mode rather than silently violating the contract. citeturn1search25turn2search0
+This uses PostgreSQL's transactional psql behavior to prevent partial migration application. Non-transactional operations such as concurrent index creation require an explicit future runner mode rather than silently violating the contract. PostgreSQL psql and CREATE INDEX documentation
 
 ## Remote Schema Catalog contract
 
