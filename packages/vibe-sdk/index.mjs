@@ -21,9 +21,12 @@ function normalizeField(field, rootAlias) {
   return field.includes(".") ? field : `${rootAlias}.${field}`;
 }
 function valueForIr(value) {
-  if (value && typeof value === "object" && !Array.isArray(value) && Object.hasOwn(value, "param")) {
-    assertIdentifier(value.param, "parameter");
-    return { param: value.param };
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    if (Object.hasOwn(value, "param") && Object.keys(value).every(key => key === "param" || key === "type")) {
+      assertIdentifier(value.param, "parameter");
+      return { param: value.param };
+    }
+    throw new VibeClientError("INVALID_VALUE", "Query values must be primitives, arrays, or parameter references");
   }
   return clone(value);
 }
@@ -193,12 +196,12 @@ export function createFetchTransport({ baseUrl, token, fetchImpl = globalThis.fe
 export function createClient(options = {}) {
   if (!options.transport && !options.baseUrl) throw new VibeClientError("MISSING_TRANSPORT", "Provide baseUrl or a custom transport");
   const transport = options.transport ?? createFetchTransport(options);
-  return {
+  const client = {
     graph(graph) {
       return {
-        query(label, alias = "root") { return new QueryBuilder(thisClient, graph, label, alias); },
+        query(label, alias = "root") { return new QueryBuilder(client, graph, label, alias); },
         createVertex(label, properties = {}) {
-          return new MutationBuilder(thisClient, graph, "create_vertex", { label }).properties(properties);
+          return new MutationBuilder(client, graph, "create_vertex", { label }).properties(properties);
         },
         createEdge(edge, from, to, properties = {}) {
           assertIdentifier(edge, "Edge");
@@ -207,23 +210,23 @@ export function createClient(options = {}) {
             return { label: assertIdentifier(endpoint.label, `${name} label`), field: assertField(endpoint.field), value: valueForIr(endpoint.value) };
           };
           const target = { label: assertIdentifier(from.label, "From label"), edge, from: normalizeEndpoint(from, "From"), to: normalizeEndpoint(to, "To") };
-          return new MutationBuilder(thisClient, graph, "create_edge", target).properties(properties);
+          return new MutationBuilder(client, graph, "create_edge", target).properties(properties);
         },
         updateVertex(label, field, value) {
-          return new MutationBuilder(thisClient, graph, "update_vertex", { label: assertIdentifier(label, "Label"), field: assertField(field), value: valueForIr(value) });
+          return new MutationBuilder(client, graph, "update_vertex", { label: assertIdentifier(label, "Label"), field: assertField(field), value: valueForIr(value) });
         },
         updateEdge(edge, from, to) {
-          return new MutationBuilder(thisClient, graph, "update_edge", {
+          return new MutationBuilder(client, graph, "update_edge", {
             label: assertIdentifier(from.label, "From label"), edge: assertIdentifier(edge, "Edge"),
             from: { label: assertIdentifier(from.label, "From label"), field: assertField(from.field), value: valueForIr(from.value) },
             to: { label: assertIdentifier(to.label, "To label"), field: assertField(to.field), value: valueForIr(to.value) }
           });
         },
         deleteVertex(label, field, value) {
-          return new MutationBuilder(thisClient, graph, "delete_vertex", { label: assertIdentifier(label, "Label"), field: assertField(field), value: valueForIr(value) });
+          return new MutationBuilder(client, graph, "delete_vertex", { label: assertIdentifier(label, "Label"), field: assertField(field), value: valueForIr(value) });
         },
         deleteEdge(edge, from, to) {
-          return new MutationBuilder(thisClient, graph, "delete_edge", {
+          return new MutationBuilder(client, graph, "delete_edge", {
             label: assertIdentifier(from.label, "From label"), edge: assertIdentifier(edge, "Edge"),
             from: { label: assertIdentifier(from.label, "From label"), field: assertField(from.field), value: valueForIr(from.value) },
             to: { label: assertIdentifier(to.label, "To label"), field: assertField(to.field), value: valueForIr(to.value) }
@@ -234,5 +237,5 @@ export function createClient(options = {}) {
     request(kind, body) { return transport.request(kind, body); },
     param
   };
-  function thisClientRequest(kind, body) { return transport.request(kind, body); }
+  return client;
 }
