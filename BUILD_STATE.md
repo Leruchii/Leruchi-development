@@ -7,9 +7,10 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 09 — Graph Mutations
-- Current status: READY_TO_BUILD
+- Current status: IMPLEMENTED — NOT YET VALIDATED
 - Last completed stage: 08 — Secure Execution Engine
 - Last validated commit: `f4dc9521b761a9e262a638f00e7506334b91266a`
+- Stage 09 working branch: `stage-09-graph-mutations`
 - Default branch: `main`
 - Next implementation target: Stage 09 — Graph Mutations
 
@@ -21,7 +22,7 @@ Stage 03 is the Supabase Compatibility Core:
 - VALIDATED: Auth initialization, JWT verification, request-claim propagation, PostgREST access, RLS enforcement through PostgREST, tenant isolation.
 - DEFERRED: Realtime to Stage 12, Storage until a concrete product requirement, Supavisor/pooling to infrastructure/cloud work when topology and connection requirements are known.
 
-Stage 09 has not yet been implemented or validated.
+Stage 09 implementation exists on `stage-09-graph-mutations` but has not yet passed its CI/security exit gate.
 
 ## Stage 09 objective
 
@@ -159,4 +160,4 @@ Use these terms exactly:
 
 Repository handoff/checkpoint protocol introduced after Stage 08 validation.
 
-Exact next action: inspect the existing Query IR, Schema Catalog, AGE compiler, Secure Execution Engine, Stage 02 security model, and tests; then design the smallest safe Stage 09 mutation boundary before implementation.
+Exact next action: run Stage 09 CI and adversarial tests; fix any failures; then update knowledge and only mark VALIDATED when executable evidence satisfies the exit gate.
