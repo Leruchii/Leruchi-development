@@ -4,7 +4,7 @@ import {createHmac} from "node:crypto";
 import {createGraphApiServer} from "../../packages/graph-api/index.mjs";
 
 const SECRET = "secret";
-const catalog = {graphs:{tenant_graph:{visibility:"tenant",tenantId:"tenant_a",labels:["Person"],edges:[]}}};
+const catalog = {graphs:{shared_graph:{visibility:"shared",tenantId:null,labels:["Person"],edges:[]}}};
 
 function token(payload){
   const enc=value=>Buffer.from(JSON.stringify(value)).toString("base64url");
@@ -21,11 +21,11 @@ function fakePool(){
 }
 
 function queryIr(){
-  return {version:"v1",kind:"graph_query",graph:"tenant_graph",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:1,offset:0,depth:0,parameters:[]};
+  return {version:"v1",kind:"graph_query",graph:"shared_graph",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:1,offset:0,depth:0,parameters:[]};
 }
 
 function mutationIr(){
-  return {version:"v1",kind:"graph_mutation",graph:"tenant_graph",operation:"create_vertex",target:{label:"Person"},properties:{name:"Alice"},parameters:[]};
+  return {version:"v1",kind:"graph_mutation",graph:"shared_graph",operation:"create_vertex",target:{label:"Person"},properties:{name:"Alice"},parameters:[]};
 }
 
 async function start(){
