@@ -4,7 +4,7 @@ import {handleMcpMessage,MCP_TOOLS} from "../../packages/mcp-server/index.mjs";
 
 test("MCP advertises the canonical agent-native graph tools",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/list"});
-  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate"]);
+  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.query"]);
 });
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
@@ -35,4 +35,11 @@ test("MCP graph.mutate exposes preview and scoped approval controls",()=>{
   const tool=MCP_TOOLS.find(tool=>tool.name==="graph.mutate");
   assert.deepEqual(tool.inputSchema.properties.execution.properties.mode.enum,["preview","execute"]);
   assert.equal(tool.inputSchema.properties.execution.properties.approval.additionalProperties,false);
+});
+
+test("MCP retrieval schema is closed and tenant identity is not an input",()=>{
+  const tool=MCP_TOOLS.find(tool=>tool.name==="retrieval.query");
+  assert.ok(tool);
+  assert.equal(tool.inputSchema.additionalProperties,false);
+  assert.equal(tool.inputSchema.required.includes("ir"),true);
 });
