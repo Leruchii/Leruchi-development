@@ -657,11 +657,9 @@ Required:
 
 Never give normal agents unrestricted `service_role`.
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED.
 
-Validated within current scope: MCP JSON-RPC stdio contract, tenant-authority rejection, closed tool schemas, Schema Catalog capability gating, live MCP → Graph API → PostgreSQL/AGE/RLS integration, and canonical capability-policy/request-context hardening.
-
-Remaining Stage 14 exit work: scoped capability issuance/revocation design, destructive-operation approval workflow, durable/structured auditability, and final security/knowledge evidence. Do not expose unrestricted `service_role` or free-form SQL/Cypher.
+Validated: MCP JSON-RPC stdio contract, tenant-authority rejection, closed tool schemas, Schema Catalog capability gating, scoped capability-grant contract, tenant-scoped destructive-operation approval, preview mode, structured auditability, live MCP → Graph API → PostgreSQL/AGE/RLS integration, and architecture regression auditing. Do not expose unrestricted `service_role` or free-form SQL/Cypher.
 
 ## Stage 15 — GraphRAG
 
@@ -676,10 +674,13 @@ Required:
 - cost/depth/result guardrails
 - explainable retrieval metadata
 - secure agent integration
+- engine-neutral retrieval IR built on the existing Query IR/Schema Catalog contracts
+- no tenant identity in retrieval payloads
+- bounded candidate/result budgets and deterministic metadata for agent/tool use
 
-Do not add a second vector/graph database without an explicit architecture decision.
+Do not add a second vector/graph database without an explicit architecture decision. AGE and pgvector remain implementation targets behind the existing execution/security boundary.
 
-**Status:** NOT STARTED.
+**Status:** IN_PROGRESS — architecture contract first.
 
 ## Stage 16 — Observability
 
@@ -831,13 +832,13 @@ Conversation history is not required for a correct handoff.
 
 See **`BUILD_STATE.md`** for the exact current checkpoint.
 
-At the time this plan was expanded:
+Current canonical checkpoint:
 
-- Stages 00–08: **VALIDATED**
-- Stage 09: **READY_TO_BUILD / NEXT**
-- Stage 10+: **NOT STARTED / DEFERRED as individually marked**
+- Stages 00–14: **VALIDATED**
+- Stage 15: **IN_PROGRESS**
+- Stage 16+: **NOT STARTED / DEFERRED as individually marked**
 
-The next implementation task is **Stage 13 — Graph Studio**.
+The current implementation task is **Stage 15 — GraphRAG**. The first task is to define and test the engine-neutral hybrid retrieval contract before introducing indexes or a new public API.
 
 The first Stage 09 action is not to code blindly. Inspect the existing Query IR, Schema Catalog, AGE compiler, Secure Execution Engine, Stage 02 security model, database fixtures and tests, then design the smallest safe mutation boundary consistent with this architecture.
 
