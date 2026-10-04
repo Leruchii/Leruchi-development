@@ -57,8 +57,8 @@ export default function GraphStudio(){
         <div className="workspace-head">
           <div><p className="eyebrow">{view==="explorer"?"GRAPH EXPLORER":view==="schema"?"GRAPH SCHEMA":"TRAVERSAL BUILDER"}</p><h1>{view==="explorer"?"Explore your graph":view==="schema"?"Understand your graph contract":"Build a bounded traversal"}</h1><p className="subtle">{catalog?"Live Schema Catalog metadata. Authorization and execution remain server-side.":"Loading the authenticated Schema Catalog…"}</p></div>
           <div className="controls">
-            <label>Graph<select value={selectedGraph} onChange={e=>{setSelectedGraph(e.target.value);setRows([])}}>{Object.keys(catalog?.graphs??{}).map(g=><option key={g}>{g}</option>)}</select></label>
-            <label>Label<select value={selectedLabel} onChange={e=>setSelectedLabel(e.target.value)}>{graph?.labels.map(l=><option key={l}>{l}</option>)}</select></label>
+            <label>Graph<select value={selectedGraph} onChange={e=>{const next=e.target.value;setSelectedGraph(next);setSelectedLabel(catalog?.graphs?.[next]?.labels?.[0]??"");setRows([]);setQueryError("")}}>{Object.keys(catalog?.graphs??{}).map(g=><option key={g}>{g}</option>)}</select></label>
+            <label>Label<select value={selectedLabel} onChange={e=>{setSelectedLabel(e.target.value);setRows([]);setQueryError("")}}>{graph?.labels.map(l=><option key={l}>{l}</option>)}</select></label>
             <label>Limit<select value={limit} onChange={e=>setLimit(Number(e.target.value))}>{[100,250,500,1000].map(v=><option key={v} value={v}>{v}</option>)}</select></label>
             <button className="primary" onClick={runExplorer} disabled={loading}>{loading?"Running…":"Run exploration"}</button>
           </div>
