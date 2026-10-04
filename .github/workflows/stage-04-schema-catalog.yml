@@ -36,14 +36,14 @@ jobs:
           docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
           SELECT md5(string_agg(
             catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
-            object_name || '|' || parent_name || '|' || metadata::text,
+            object_name || '|' || parent_name || '|' || tenant_id || '|' || metadata::text,
             E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
           )) AS before_hash
           FROM vibe_meta.schema_catalog_entries;
           SELECT vibe_meta.refresh_schema_catalog();
           SELECT md5(string_agg(
             catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
-            object_name || '|' || parent_name || '|' || metadata::text,
+            object_name || '|' || parent_name || '|' || tenant_id || '|' || metadata::text,
             E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
           )) AS after_hash
           FROM vibe_meta.schema_catalog_entries;
