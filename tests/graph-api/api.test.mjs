@@ -51,6 +51,7 @@ test("Graph API derives tenant context from JWT and does not trust request tenan
     });
     assert.notEqual(res.status,401);
     assert.equal(observed[0].tenantId,"tenant_a");
+    assert.ok(observed[0].requestId);
   } finally { await api.close(); }
 });
 
