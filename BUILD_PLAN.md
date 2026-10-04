@@ -609,9 +609,9 @@ Required:
 - subscription lifecycle
 - adversarial event-isolation tests
 
-**Status:** VALIDATED.
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
 
-Validation evidence: PR #18 follow-up workflow run `37209970650` passed the full Stage 12 exit gate, including database-backed NOTIFY, RLS tenant isolation, relay claim/ack/retry, migration and architecture security checks.
+Previous validation run `37209970650` passed before the latest replay/topic hardening. A fresh Stage 12 run is required before this stage can remain VALIDATED.
 
 ## Stage 13 — Graph Studio
 
