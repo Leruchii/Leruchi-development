@@ -9,7 +9,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current stage: 13 — Graph Studio
 - Current status: IN_PROGRESS
 - Last completed stage: 12 — Graph Realtime
-- Last validated commit: `5bd58b431f50c72745d4b7264d6e456d77bd2ed4`
+- Last validated commit: `d9526830c230f27bcfef311ae13e7d93e76e88f7`
 - Default branch: `main`
 - Next implementation target: Complete Stage 13 Graph Studio backend integration and renderer validation
 
@@ -257,13 +257,12 @@ Remaining before VALIDATED:
 3. production graph renderer benchmark and decision;
 4. complete end-to-end Graph API runtime composition against a live PostgreSQL/AGE environment.
 
-Current branch: `stage13-runtime-hardening`
-Current PR: #25
-PR #24 remains open as the preceding Studio correctness follow-up.
+Current branch: `main`
+PR #24 and PR #25 are merged; their correctness/security fixes are now part of main.
 Latest implementation commits: `385244ca211f185a6fa663b92908951e9ffa1cc9` (AGE runtime RLS fix), preceded by `443e34dc817c1a9e993ddedc1b82dbe4b3fc7fc0`.
 Validation status: IMPLEMENTED — NOT YET VALIDATED. PR #25 merged after the corrected security matrix passed. The first PR #25 matrix exposed a real runtime/RLS integration defect: the Graph API executes through the pooled `vibe_runtime` role, but the Stage 02 AGE test policies granted schema/table access only to tenant-specific roles. The runtime path therefore failed with PostgreSQL `permission denied for schema vibe_security` before the isolation proof could run.
 The fix now grants `vibe_runtime` access to the test graph and adds separate FORCE RLS policies that derive the tenant from transaction-local `request.jwt.claims`, while preserving the direct `vibe_tenant_a`/`vibe_tenant_b` role policies.
-The corrected commit has a fresh CI matrix in progress; Stage 02 is queued.
+The corrected PR #25 security matrix passed and PR #25 was merged as `5bd58b431f50c72745d4b7264d6e456d77bd2ed4`.
 New runtime invariants:
 - Graph API query execution binds verified JWT tenant/role/capabilities to PostgreSQL `request.jwt.claims` inside the same transaction used for execution;
 - claim-binding failure rolls back before a pooled connection is released;
@@ -282,4 +281,4 @@ Implemented on `stage14-execution-context-contract`:
 - invalid/missing tenant context fails closed and Graph API classifies it as unauthorized;
 - added focused execution-context regression tests.
 
-Validation pending: local/runtime test execution and CI. This hardening is intentionally supporting Stage 13's remaining live runtime composition and will also become the mandatory context boundary for Stage 14 MCP.
+Validation evidence: PR #27 merged as `d9526830c230f27bcfef311ae13e7d93e76e88f7`; secure execution, realtime, tenant isolation, Studio, catalog, compiler, mutation, audit, and state checks passed on the final PR head. GitHub Advanced Security failed only because its Copilot code-scanning service exceeded its monthly quota; this was infrastructure/quota failure, not a repository test failure. The shared context is now the mandatory boundary for Stage 13 runtime composition and Stage 14 MCP.
