@@ -16,7 +16,11 @@ async function insertEvent(tenantId,event){
   await client.end();
 }
 
-test("tenant-scoped outbox and relay lifecycle",async()=>{
+test("tenant-scoped outbox and relay lifecycle",{timeout:20000},async()=>{
+  let relay;
+  let a;
+  let rollbackClient;
+  try {
   const event={
     eventId:"stage12-"+Date.now(),
     requestId:"request-stage12",
@@ -27,7 +31,7 @@ test("tenant-scoped outbox and relay lifecycle",async()=>{
     targetLabel:"Person",
     targetId:"42"
   };
-  const relay=new Client({connectionString:relayUrl});await relay.connect();
+  relay=new Client({connectionString:relayUrl});await relay.connect();
   await relay.query("LISTEN vibe_graph_events");
   const notification=new Promise((resolve,reject)=>{
     const timer=setTimeout(()=>reject(new Error("realtime wakeup notification timed out")),5000);
@@ -39,14 +43,14 @@ test("tenant-scoped outbox and relay lifecycle",async()=>{
   assert.equal(await notification,event.eventId);
 
   const rolledBack={...event,eventId:event.eventId+"-rollback",requestId:"request-stage12-rollback"};
-  const rollbackClient=new Client({connectionString:runtimeUrl});await rollbackClient.connect();
+  rollbackClient=new Client({connectionString:runtimeUrl});await rollbackClient.connect();
   const rollbackDb=createPgMutationExecutor(rollbackClient,{tenantId:"tenant_a",role:"authenticated"});
   await rollbackDb.begin();
   await rollbackDb.insertOutbox(rolledBack);
   await rollbackDb.rollback();
   await rollbackClient.end();
 
-  const a=new Client({connectionString:runtimeUrl});await a.connect();
+  a=new Client({connectionString:runtimeUrl});await a.connect();
   await a.query("SELECT set_config($1,$2,false)",["request.jwt.claims",JSON.stringify({tenant_id:"tenant_a"})]);
   const own=await a.query("SELECT event_id,tenant_id,graph_name,target_id FROM vibe_meta.graph_event_outbox WHERE event_id=$1",[event.eventId]);
   assert.equal(own.rowCount,1);
@@ -75,6 +79,12 @@ test("tenant-scoped outbox and relay lifecycle",async()=>{
   assert.ok(retry);
   assert.equal(await markFailed(relay,{eventSeq:retry.event_seq,workerId:"stage12-worker",error:new Error("temporary")}),true);
   await relay.end();
+  relay=null;
+  } finally {
+    for (const client of [rollbackClient,a,relay]) {
+      if (client) { try { await client.end(); } catch {} }
+    }
+  }
 });
 
 if(process.env.RUN_STAGE12_INTEGRATION!=="1") {
