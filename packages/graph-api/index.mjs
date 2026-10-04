@@ -1,3 +1,4 @@
+import {CAPABILITIES,hasCapability} from "../capability-policy/index.mjs";
 import http from "node:http";
 import {randomUUID} from "node:crypto";
 import {Pool} from "pg";
@@ -26,8 +27,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer "))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
-      const context=contextFromClaims(claims);
-      if(isCatalog&&!context.capabilities.includes("graph:read"))return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for Schema Catalog discovery",request_id:requestId});
+      const context=contextFromClaims(claims,requestId);
+      if(isCatalog&&!hasCapability(context,CAPABILITIES.GRAPH_READ))return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for Schema Catalog discovery",request_id:requestId});
       const catalog=await catalogProvider(context);
       if(isCatalog)return json(res,200,catalog);
       const input=await body(req);
