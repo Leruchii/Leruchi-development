@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-psql -v ON_ERROR_STOP=1 -U postgres -d vibedb \
-  --set=tenant_a_password="$VIBE_TENANT_A_PASSWORD" \
-  --set=tenant_b_password="$VIBE_TENANT_B_PASSWORD" <<'SQL'
+psql -v ON_ERROR_STOP=1 -U postgres -d vibedb <<'SQL'
 CREATE ROLE vibe_tenant_a
-  LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
-  PASSWORD :'tenant_a_password';
+  LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
 
 CREATE ROLE vibe_tenant_b
-  LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
-  PASSWORD :'tenant_b_password';
+  LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
 
 GRANT CONNECT ON DATABASE vibedb TO vibe_tenant_a, vibe_tenant_b;
 GRANT USAGE ON SCHEMA vibe_app, vibe_meta, ag_catalog TO vibe_tenant_a, vibe_tenant_b;
