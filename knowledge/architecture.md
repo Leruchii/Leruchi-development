@@ -2,7 +2,7 @@
 
 > **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
 
-Status: DECIDED design / VALIDATED through Stage 10
+Status: DECIDED design / VALIDATED through Stage 10; Stage 11 CLI is IMPLEMENTED — NOT YET VALIDATED
 
 ## Validated execution path
 
@@ -53,9 +53,10 @@ The engine is read-only in v1. Mutations are Stage 09.
 - Storage: NOT IMPLEMENTED/VALIDATED
 - Pooling: NOT IMPLEMENTED/VALIDATED
 - SDK: VALIDATED
+- CLI: IMPLEMENTED — NOT YET VALIDATED
 - Graph Studio: NOT IMPLEMENTED/VALIDATED
 - MCP: NOT IMPLEMENTED/VALIDATED
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Next implementation target: Stage 11 — CLI.
+Current implementation target: complete Stage 11 — CLI migration and remote Schema Catalog workflows.
