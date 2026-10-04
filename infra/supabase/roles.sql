@@ -30,6 +30,10 @@ CREATE SCHEMA IF NOT EXISTS auth AUTHORIZATION supabase_auth_admin;
 CREATE SCHEMA IF NOT EXISTS storage AUTHORIZATION supabase_storage_admin;
 CREATE SCHEMA IF NOT EXISTS _realtime AUTHORIZATION supabase_admin;
 
+ALTER ROLE supabase_auth_admin SET search_path = auth, public;
+ALTER ROLE supabase_storage_admin SET search_path = storage, public;
+ALTER ROLE supabase_admin SET search_path = _realtime, public;
+
 GRANT CONNECT ON DATABASE vibedb TO anon, authenticated, service_role, authenticator, supabase_auth_admin, supabase_storage_admin, supabase_admin;
 GRANT USAGE ON SCHEMA auth TO supabase_auth_admin;
 GRANT USAGE ON SCHEMA storage TO supabase_storage_admin;
