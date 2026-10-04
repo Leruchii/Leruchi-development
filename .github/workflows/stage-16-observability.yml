@@ -1,0 +1,36 @@
+name: Stage 16 Observability
+
+on:
+  pull_request:
+    paths:
+      - "packages/observability/**"
+      - "packages/audit/**"
+      - "packages/graph-api/**"
+      - "packages/execution-engine/**"
+      - "packages/mutation-execution/**"
+      - "packages/retrieval-execution/**"
+      - "tests/observability/**"
+      - "tests/audit/**"
+      - "tests/graph-api/**"
+      - ".github/workflows/stage-16-observability.yml"
+  push:
+    branches: [main, stage16-observability]
+
+jobs:
+  observability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Observability contract tests
+        run: node --test tests/observability/observability.test.mjs tests/audit/audit.test.mjs
+      - name: Graph API contract tests
+        run: node --test tests/graph-api/api.test.mjs
+      - name: Execution and mutation contract tests
+        run: node --test tests/execution-engine/execution.test.mjs tests/mutation/mutation.test.mjs
+      - name: Architecture regression audit
+        run: node tests/architecture/contract-audit.mjs
