@@ -1,6 +1,6 @@
 # VibePlatform Architecture
 
-Status: DECIDED design / partially VALIDATED through Stage 04
+Status: DECIDED design / partially VALIDATED through Stage 05
 
 ## Product boundary
 
@@ -49,8 +49,6 @@ The core remains PostgreSQL + Apache AGE + pgvector. Vibe's differentiated layer
 - Storage
 - connection pooling
 
-Supabase services are reused where they reduce unnecessary platform duplication.
-
 ### 5. Cloud Control Plane
 
 - project provisioning
@@ -62,42 +60,15 @@ Supabase services are reused where they reduce unnecessary platform duplication.
 - regional infrastructure
 - hosted operations
 
-The Cloud Control Plane is separated from the OSS/self-hostable runtime.
+## Query boundary
 
-## Core request architecture
+Vibe Query IR v1 is now validated as the engine-neutral intent contract.
 
-SDK / REST / MCP / AI Agent
-→ Vibe Query IR
-→ Schema + Security Validation
-→ Cost / Depth / Result Limits
-→ Query Planner
-→ AGE Compiler OR PostgreSQL Compiler
-→ Secure Execution
-→ PostgreSQL / AGE / pgvector
+Client surfaces produce IR. Later stages validate it against the Schema Catalog and security/cost policy before compilation.
 
-Vibe Query IR is engine-neutral. Apache AGE is an implementation detail.
+The IR contains no SQL, Cypher, AGE expressions or executable fragments.
 
-## Schema Catalog
-
-The Schema Catalog is now validated as a versioned v1 metadata boundary.
-
-It stores relational tables/columns, foreign-key relationships, explicitly registered graph labels/edges/properties, vector column metadata and RLS policy metadata.
-
-The catalog is populated by a privileged migrator-owned function and exposed read-only to vibe_runtime. Later layers consume this Vibe catalog instead of reaching directly into PostgreSQL or AGE implementation catalogs.
-
-Graph metadata remains explicitly registered; automatic graph reflection is deferred.
-
-## Security boundary
-
-PostgreSQL/RLS is authoritative.
-
-Stage 01 validates the non-superuser runtime boundary.
-
-Stage 02 validates two-tenant relational and AGE graph isolation.
-
-Stage 03 validates Auth/PostgREST signed-JWT verification and REST-boundary tenant isolation.
-
-Stage 04 validates that metadata discovery can be exposed to the runtime role without granting it catalog mutation privileges or superuser/BYPASSRLS access.
+Canonicalization is deterministic: recursive key ordering, preserved array order, compact UTF-8 JSON, SHA-256 digest.
 
 ## Current validation state
 
@@ -106,10 +77,12 @@ Stage 04 validates that metadata discovery can be exposed to the runtime role wi
 - Tenant security: VALIDATED
 - Supabase Auth + PostgREST core: VALIDATED
 - Schema Catalog: VALIDATED
+- Query IR v1: VALIDATED
 - Realtime: NOT IMPLEMENTED/VALIDATED
 - Storage: NOT IMPLEMENTED/VALIDATED
 - Pooling: NOT IMPLEMENTED/VALIDATED
-- Query IR: NOT IMPLEMENTED/VALIDATED
+- Query guardrails: NOT IMPLEMENTED/VALIDATED
+- Graph compiler: NOT IMPLEMENTED/VALIDATED
 - Graph API: NOT IMPLEMENTED/VALIDATED
 - SDK: NOT IMPLEMENTED/VALIDATED
 - Graph Studio: NOT IMPLEMENTED/VALIDATED
@@ -117,4 +90,4 @@ Stage 04 validates that metadata discovery can be exposed to the runtime role wi
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Next implementation target: Stage 05 — Vibe Query IR.
+Next implementation target: Stage 06 — Query Validation + Cost Guardrails.

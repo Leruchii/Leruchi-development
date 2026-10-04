@@ -1,0 +1,22 @@
+{
+  "version": "v1",
+  "kind": "graph_query",
+  "graph": "vibe_stage01",
+  "root": {
+    "label": "Person",
+    "alias": "person"
+  },
+  "steps": [],
+  "filters": [],
+  "projection": [
+    {
+      "field": "person.name"
+    }
+  ],
+  "orderBy": [],
+  "limit": 10,
+  "offset": 0,
+  "depth": 0,
+  "parameters": [],
+  "cypher": "MATCH (n) RETURN n"
+}

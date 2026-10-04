@@ -1,6 +1,6 @@
 # Testing
 
-Status: VALIDATED through Stage 04 — Schema Catalog
+Status: VALIDATED through Stage 05 — Vibe Query IR
 
 ## Core policy
 
@@ -8,25 +8,20 @@ Security tests are merge blockers.
 
 No feature is VALIDATED without relevant executable evidence.
 
-Every build prompt must report what changed, files, commands/tests, results, architecture decisions, security implications, remaining UNKNOWNs and next stage.
+## Stage 05 executable coverage
 
-## Stage 04 executable coverage
+.github/workflows/stage-05-query-ir.yml proves:
 
-.github/workflows/stage-04-schema-catalog.yml proves:
+- the v1 JSON Schema is structurally valid;
+- representative one-hop and two-hop fixtures conform to v1;
+- unknown engine-specific fields such as Cypher are rejected;
+- structured v1 errors conform to the error schema;
+- engine-specific tokens are absent from valid fixtures;
+- canonical serialization is deterministic;
+- golden SHA-256 digests remain stable.
 
-- the VibeDB image builds and starts;
-- the catalog schema and v1 catalog objects install;
-- catalog refresh is deterministic across repeated refreshes;
-- relational table metadata is present;
-- relational column metadata is present;
-- vector metadata is present;
-- RLS policy metadata is present;
-- explicit graph label/edge metadata is present;
-- vibe_runtime can read the catalog;
-- vibe_runtime does not have superuser or BYPASSRLS privileges.
-
-The catalog population uses PostgreSQL system catalogs internally because information_schema visibility is privilege-filtered. Future consumers do not query those implementation catalogs directly.
+The reference test uses pinned jsonschema 4.23.0 when the runner does not already provide it.
 
 ## Merge blocker
 
-Stage 01 through Stage 04 workflows are executable evidence. Configuration-only claims are insufficient.
+Stages 01 through 05 have executable repository/CI evidence. Configuration-only claims are insufficient.
