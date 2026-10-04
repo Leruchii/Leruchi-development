@@ -1,36 +1,31 @@
 # VibePlatform Architecture
 
-Status: DECIDED design / partially VALIDATED through Stage 06
+Status: DECIDED design / partially VALIDATED through Stage 07
 
-## Query execution boundary
-
-The validated backend path is now:
+## Validated execution path
 
 Client intent
 → Query IR v1
 → Schema/security/cost validation
-→ AGE or PostgreSQL compiler
-→ secure execution
-→ PostgreSQL / AGE / pgvector
+→ Apache AGE compiler
+→ secure execution (Stage 08)
+→ PostgreSQL / AGE
 
-Stage 06 is the pre-compilation gate. It does not execute queries.
+## Stage 07 AGE compiler
 
-## Stage 06 guardrails
+The compiler is an implementation detail behind the Query IR boundary.
 
-Validated guardrails:
+It generates prepared-statement SQL using AGE's documented model: Cypher parameters such as $name are placed inside the Cypher query, while a PostgreSQL parameter is passed as the third cypher() argument and receives an agtype parameter map. citeturn17view0turn17view1
 
-- Schema Catalog graph allowlisting;
-- graph label and edge endpoint validation;
-- trusted tenant context requirement;
-- graph:read capability requirement;
-- service_role trusted-backend restriction;
-- parameter reference validation;
-- max depth 6;
-- max results 1000;
-- deterministic cost budget 100;
-- engine-fragment rejection.
+Compiler rules:
+- strict identifier validation;
+- no raw Cypher input;
+- no filter-value interpolation;
+- deterministic projection aliases;
+- deterministic prepared SQL;
+- read-only graph_query compilation in v1.
 
-Tenant authorization is never inferred from Query IR content.
+The compiler is not an authorization boundary. Stage 06 must run first, and Stage 08 will enforce the full execution path.
 
 ## Current validation state
 
@@ -41,16 +36,16 @@ Tenant authorization is never inferred from Query IR content.
 - Schema Catalog: VALIDATED
 - Query IR v1: VALIDATED
 - Query validation + cost guardrails: VALIDATED
+- AGE compiler: VALIDATED
+- Secure execution engine: NOT IMPLEMENTED/VALIDATED
+- Graph mutations: NOT IMPLEMENTED/VALIDATED
 - Realtime: NOT IMPLEMENTED/VALIDATED
 - Storage: NOT IMPLEMENTED/VALIDATED
 - Pooling: NOT IMPLEMENTED/VALIDATED
-- AGE compiler: NOT IMPLEMENTED/VALIDATED
-- Secure execution engine: NOT IMPLEMENTED/VALIDATED
-- Graph mutations: NOT IMPLEMENTED/VALIDATED
 - SDK: NOT IMPLEMENTED/VALIDATED
 - Graph Studio: NOT IMPLEMENTED/VALIDATED
 - MCP: NOT IMPLEMENTED/VALIDATED
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Next implementation target: Stage 07 — Apache AGE Compiler.
+Next implementation target: Stage 08 — Secure Execution Engine.
