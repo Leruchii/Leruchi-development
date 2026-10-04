@@ -1,26 +1,47 @@
 # Security
 
-## Rules (from the AI Engineering Constitution examples)
-- [DECIDED] PostgreSQL is the security boundary.
-- [DECIDED] RLS must remain enabled.
-- [DECIDED] Never use runtime superuser privileges.
-- [DECIDED] Never allow unrestricted raw Cypher for normal clients.
-- [DECIDED] Never give AI agents unrestricted service_role credentials; use scoped capabilities.
-- [DECIDED] Security tests are merge blockers.
-- [DECIDED] No infrastructure without architectural justification.
-- [DECIDED] No claim a feature works without evidence.
-- [DECIDED] Studio never holds browser-side service credentials; all data flows through the approved Graph API/client. Hiding a UI item is not authorisation; the backend is authoritative.
-- [DECIDED] service_role bypasses RLS; the Policy Tester must not imply it can safely emulate service-role behaviour.
+Status: **DECIDED policy / NOT VALIDATED by implementation**
 
-## Tenant isolation test plan (Prompt 02)
-- [PROPOSED] Two tenants, each with users, projects, graph, data. Attack tests: A reads/updates/deletes B; A traverses into B; A infers B through graph relationships; A subscribes to B's realtime events.
-- [PROPOSED] Required results: A→A allowed, A→B denied, B→A denied, automated.
+## Non-negotiable rules
+
+- PostgreSQL is the security boundary.
+- RLS must remain enabled where tenant isolation depends on it.
+- Runtime application paths must not require superuser privileges.
+- Normal clients must not receive unrestricted raw Cypher.
+- AI agents must not receive unrestricted service_role credentials.
+- AI/MCP access uses scoped capabilities.
+- Security tests are merge blockers.
+- UI visibility is never authorisation.
+- No success claim without executable evidence.
+
+## Tenant isolation
+
+Prompt 02 must create automated adversarial tests for at least two tenants.
+
+Required assertions:
+
+- Tenant A can access A's allowed data.
+- Tenant A cannot read B.
+- Tenant A cannot update B.
+- Tenant A cannot delete B.
+- Tenant A cannot traverse into B's graph.
+- Tenant A cannot infer B through graph relationships.
+- Tenant A cannot receive B's realtime events once realtime is implemented.
+- Tenant B cannot access A.
+
+The exact AGE/RLS enforcement mechanism is an implementation question that must be validated rather than assumed.
+
+## Agent capabilities
+
+The exact scope model, issuance, revocation and audit format remain UNKNOWN. Do not invent an unrestricted service-role workaround.
 
 ## Limits
-- [PROPOSED] Graph Explorer result cap default 100, maximum 1000 (Prompt 13). The AGENTS UI rules leave these blank.
-- [PROPOSED] Depth bounded: UI default 2; architecture-level maximum 6. Must follow the validated backend contract.
 
-## Open
-- [UNKNOWN] RLS design for graph data stored in AGE (how row policies apply to vertices/edges).
-- [UNKNOWN] Scoped-capability model for AI/MCP (scopes, issuance, revocation).
-- [UNKNOWN] Auth/JWT claim model.
+Initial proposed Graph Studio limits:
+
+- default depth: 2
+- architecture maximum depth: 6
+- default result cap: 100
+- maximum result cap: 1000
+
+These values are provisional until backend validation establishes the actual contract.
