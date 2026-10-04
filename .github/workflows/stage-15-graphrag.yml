@@ -29,4 +29,4 @@ jobs:
       - name: Tenant-scoped vector catalog contract tests
         run: node --test tests/schema-catalog-api/api.test.mjs
       - name: Architecture regression audit
-        run: node scripts/architecture-regression-audit.mjs
+        run: node tests/architecture/contract-audit.mjs
