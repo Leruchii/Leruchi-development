@@ -20,7 +20,7 @@ for(const count of [100,500,1000]){
     const start=await page.evaluate(()=>performance.now());
     await page.getByRole("button",{name:"Run exploration"}).click();
     await expect(page.locator("svg.graph-canvas g")).toHaveCount(count);
-    const renderMs=await page.evaluate(startTime=>performance.now()-start,start);
+    const renderMs=await page.evaluate(startTime=>performance.now()-startTime,start);
 
     const lastNode=page.getByRole("button",{name:`node-${count} Account`});
     const interactionStart=await page.evaluate(()=>performance.now());
