@@ -109,12 +109,12 @@ function createDbAdapter(client) {
 
 test("PostgreSQL graph executor binds trusted JWT claims inside the transaction", async()=>{
   const queries=[];
-  const client={query:async query=>{queries.push(query);return {rows:[]};}};
+  const client={query:async (...args)=>{queries.push(args);return {rows:[]};}};
   const db=createPgExecutor(client,{tenantId:"tenant_a",role:"authenticated",capabilities:["graph:read"]});
   await db.begin();
   assert.equal(queries[0],"BEGIN");
-  assert.equal(queries[1].text,"SELECT set_config($1, $2, true)");
-  assert.deepEqual(JSON.parse(queries[1].values[1]),{
+  assert.equal(queries[1][0],"SELECT set_config($1, $2, true)");
+  assert.deepEqual(JSON.parse(queries[1][1][1]),{
     tenant_id:"tenant_a",
     role:"authenticated",
     capabilities:["graph:read"]
