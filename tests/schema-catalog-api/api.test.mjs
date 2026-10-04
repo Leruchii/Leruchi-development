@@ -42,3 +42,14 @@ test("tenant catalog provider binds the verified tenant to PostgreSQL request co
   assert.equal(catalog.graphs.private_graph.labels[0],"PrivateA");
   assert.equal(calls[1].values[1],JSON.stringify({tenant_id:"tenant_a",role:"authenticated",capabilities:["graph:read"]}));
 });
+
+test("catalog filters private graph metadata to the verified tenant",()=>{
+  const catalog=buildCatalog([
+    {graph_name:"shared",tenant_id:"",graph_object_kind:"label",object_name:"Public",from_label:null,to_label:null,properties:{}},
+    {graph_name:"private_a",tenant_id:"tenant_a",graph_object_kind:"label",object_name:"PrivateA",from_label:null,to_label:null,properties:{}},
+    {graph_name:"private_b",tenant_id:"tenant_b",graph_object_kind:"label",object_name:"PrivateB",from_label:null,to_label:null,properties:{}}
+  ],"tenant_a");
+  assert.deepEqual(Object.keys(catalog.graphs).sort(),["private_a","shared"]);
+  assert.equal(catalog.graphs.private_a.labels[0],"PrivateA");
+  assert.equal(catalog.graphs.private_b,undefined);
+});
