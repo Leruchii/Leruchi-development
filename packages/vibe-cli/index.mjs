@@ -23,7 +23,7 @@ export function parseArgs(argv) {
   return args;
 }
 
-function valuesOf(value){return Array.isArray(value)?value:[value];}
+function valuesOf(value){if(value===undefined||value===null)return [];return Array.isArray(value)?value:[value];}
 function required(args,key){if(typeof args[key]!=="string"||args[key]==="")throw new Error(`Missing --${key}`);return args[key];}
 function splitAssignment(value,name){const i=value.indexOf("=");if(i<=0)throw new Error(`${name} must use key=value`);return [value.slice(0,i),value.slice(i+1)];}
 function parseProperties(values){
