@@ -65,7 +65,7 @@ test("tenant-scoped outbox and relay lifecycle",{timeout:20000},async()=>{
   const batch=await claimBatch(relay,{workerId:"stage12-worker",limit:10});
   const claimed=batch.find(row=>row.event_id===event.eventId);
   assert.ok(claimed);
-  const replay=await replayTenantGraph(relay,{tenantId:"tenant_a",graph:"vibe_stage01",afterEventSeq:Number(claimed.event_seq)-1});
+  const replay=await replayTenantGraph(relay,{tenantId:"tenant_a",graph:"vibe_stage01",afterEventSeq:Number(claimed.event_seq)-1,relayContext:{trusted:true,role:"realtime_relay"}});
   assert.equal(replay.length,1);
   assert.equal(replay[0].event_id,event.eventId);
   assert.equal("tenant_id" in replay[0],false);
