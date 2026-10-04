@@ -69,12 +69,12 @@ CREATE POLICY account_tenant_isolation
   USING (
     ag_catalog.agtype_access_operator(
       VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
-    )::varchar = current_user
+    ) = format('"%s"', current_user)::ag_catalog.agtype
   )
   WITH CHECK (
     ag_catalog.agtype_access_operator(
       VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
-    )::varchar = current_user
+    ) = format('"%s"', current_user)::ag_catalog.agtype
   );
 
 CREATE POLICY knows_tenant_isolation
@@ -83,12 +83,12 @@ CREATE POLICY knows_tenant_isolation
   USING (
     ag_catalog.agtype_access_operator(
       VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
-    )::varchar = current_user
+    ) = format('"%s"', current_user)::ag_catalog.agtype
   )
   WITH CHECK (
     ag_catalog.agtype_access_operator(
       VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
-    )::varchar = current_user
+    ) = format('"%s"', current_user)::ag_catalog.agtype
   );
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON vibe_security."Account", vibe_security."KNOWS" TO vibe_tenant_a, vibe_tenant_b;
