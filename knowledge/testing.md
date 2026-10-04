@@ -1,6 +1,6 @@
 # Testing
 
-Status: VALIDATED through Stage 02 — tenant isolation
+Status: VALIDATED through Stage 03 — Auth + PostgREST compatibility core
 
 ## Core policy
 
@@ -40,10 +40,27 @@ The suite proves:
 - cross-tenant graph inference denial through an intentionally cross-tenant edge;
 - tenant roles do not bypass RLS.
 
-## Security limitation captured by tests
+## Stage 03 executable coverage
 
-Tenant roles are used only as a database-boundary spike. Auth/JWT-to-database tenant context propagation remains UNKNOWN and is a Stage 03 compatibility/security decision.
+.github/workflows/stage-03-supabase.yml proves:
+
+- VibeDB image builds;
+- VibeDB database starts;
+- compatibility roles and RLS probe are installed;
+- Supabase Auth v2.196.0 starts and completes its database migrations;
+- PostgREST v14.17 starts and connects to PostgreSQL;
+- both service health endpoints are reachable;
+- a signed HS256 JWT is accepted by PostgREST;
+- the verified JWT claim context reaches PostgreSQL RLS;
+- tenant_a data is returned;
+- tenant_b data is denied.
+
+The workflow also reruns Stage 01 and Stage 02 on the same PR commit; both remained successful after the Stage 03 integration.
+
+## Stage 03 compatibility scope
+
+Realtime, Storage and Supavisor are present only as explicit Compose profiles and are not VALIDATED. Their presence is not treated as evidence.
 
 ## Merge blocker
 
-Stage 01 and Stage 02 workflows are executable evidence. Configuration-only claims are insufficient.
+Stage 01, Stage 02 and the Stage 03 core workflow are executable evidence. Configuration-only claims are insufficient.
