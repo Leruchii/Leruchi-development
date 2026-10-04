@@ -15,7 +15,7 @@ BEGIN
     RAISE EXCEPTION 'Shared graph catalog metadata missing';
   END IF;
 
-  PERFORM set_config('request.jwt.claims', '{"tenant_id":"tenant_a"}', true);
+  PERFORM set_config('request.jwt.claims', '{"tenant_id":"tenant_a"}', false);
 
   SELECT count(*) INTO tenant_a_count
   FROM vibe_meta.schema_catalog_entries
@@ -32,7 +32,7 @@ BEGIN
     RAISE EXCEPTION 'Tenant A can see tenant B graph metadata';
   END IF;
 
-  PERFORM set_config('request.jwt.claims', '{"tenant_id":"tenant_b"}', true);
+  PERFORM set_config('request.jwt.claims', '{"tenant_id":"tenant_b"}', false);
 
   SELECT count(*) INTO tenant_b_count
   FROM vibe_meta.schema_catalog_entries
