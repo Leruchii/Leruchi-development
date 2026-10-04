@@ -24,4 +24,4 @@ Mutation results carry a request ID and normalized audit metadata (tenant, graph
 
 ## Validation status
 
-Implementation is present but remains `IMPLEMENTED — NOT YET VALIDATED` until Stage 09 CI passes, including database-backed RLS/adversarial tests.
+Stage 09 is `VALIDATED`. CI passed the mutation unit/adversarial suite and database-backed RLS integration suite.
