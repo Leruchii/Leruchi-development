@@ -1,15 +1,7 @@
 # Unknowns and Decisions Requiring Validation
 
-This file tracks unresolved questions. UNKNOWN is not permission to guess.
-
-## Resolved skill names
-
-vibe-security, vibe-postgres, vibe-age, vibe-supabase, vibe-schema-catalog, vibe-query-ir, vibe-query-validation.
-
 ## Resolved by Stage 01
-- PostgreSQL baseline: 17.11.
-- Apache AGE baseline: 1.7.0 for PG17.
-- pgvector baseline: 0.8.7.
+- PostgreSQL 17.11, AGE 1.7.0, pgvector 0.8.7.
 - Runtime roles are non-superuser and do not bypass RLS.
 
 ## Resolved by Stage 02
@@ -17,40 +9,40 @@ vibe-security, vibe-postgres, vibe-age, vibe-supabase, vibe-schema-catalog, vibe
 - Cross-tenant graph inference is denied.
 
 ## Resolved by Stage 03
-- Supabase Auth v2.196.0 initializes against Vibe PostgreSQL.
-- PostgREST v14.17 verifies signed JWTs and passes verified claims into PostgreSQL request context.
-- REST-boundary tenant isolation is proven.
-- Production Auth tenant-claim issuance remains an explicit security decision.
+- Supabase Auth + PostgREST core compatibility is validated.
+- Signed JWT claims can reach PostgreSQL RLS through PostgREST.
+- Production tenant-claim issuance remains undecided.
 
 ## Resolved by Stage 04
-- Schema Catalog v1 is the authoritative metadata contract.
+- Schema Catalog v1 is authoritative for current metadata domains.
 - Catalog refresh is deterministic.
-- Graph metadata is explicitly registered.
 - Runtime catalog access is read-only.
 
 ## Resolved by Stage 05
 - Query IR v1 is engine-neutral, versioned and deterministic.
-- Engine-specific fragments are outside the contract.
-- Structured v1 errors are defined.
+- Engine-specific fragments are excluded.
 
 ## Resolved by Stage 06
-- Validation is a separate pre-compilation boundary.
-- Schema/graph references are validated against catalog input.
-- Trusted tenant context and graph:read capability are mandatory.
+- Validation is a pre-compilation boundary.
+- Schema references, tenant context, capabilities, parameters, depth, result limits and deterministic cost are checked.
 - service_role requires trusted backend context.
-- Depth/result/cost guardrails are enforced before compilation.
-- Cost calculation is deterministic.
+
+## Resolved by Stage 07
+- AGE prepared statements use Cypher parameters plus a PostgreSQL agtype parameter-map argument.
+- Vibe can compile and execute a one-hop Query IR against AGE without interpolating filter values.
+- Compiler identifiers are defensively validated.
+- Output columns are deterministic.
 
 ## Remaining UNKNOWNs
-- Production Auth tenant-authorization claim issuance mechanism.
-- Full AGE graph/RLS privilege matrix for all mutation patterns.
-- Query planner design.
-- AGE compiler parameterization and output normalization details.
+- Secure Execution Engine transaction and connection lifecycle.
+- Planner boundary and compiler selection.
 - Recursive-CTE fallback routing.
+- Production Auth tenant-claim issuance.
+- Full AGE mutation privilege matrix.
 - Graph mutation authorization.
 - Production vector dimensions/index strategy.
-- Realtime transport and tenant authorization.
-- Storage authorization and object isolation.
+- Realtime transport/authorization.
+- Storage authorization/object isolation.
 - Supavisor topology/security.
 - Scoped AI/MCP capability issuance/revocation/audit.
 - Cloud topology, backups, RPO/RTO, billing and metering.
