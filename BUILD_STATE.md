@@ -7,9 +7,9 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 12 — Graph Realtime
-- Current status: IMPLEMENTED — NOT YET VALIDATED
+- Current status: VALIDATED
 - Last completed stage: 12 — Graph Realtime
-- Last validated commit: `d5a072cc83f6b6182c9d2e3e11c751d70885f472`
+- Last validated commit: `fa81c5192ffcda113e6db834139cc560c6482952`
 - Default branch: `main`
 - Next implementation target: Stage 13 — Graph Studio
 
@@ -147,7 +147,7 @@ Validated:
 
 The hosted transport remains adapter-pluggable; Supabase Realtime Broadcast is a production candidate, while the outbox/relay contract remains transport-neutral.
 
-Validation evidence: PR #18 follow-up workflow run `37209970650` passed realtime contract tests, fresh PostgreSQL/AGE migration execution, relay-role security, architecture audit, and database-backed outbox/NOTIFY/tenant-isolation integration. The earlier PR #16 workflow was cancelled; its merge is not treated as validation evidence.
+Validation evidence: Stage 12 follow-up workflow run `37210250276` passed realtime contract tests, fresh PostgreSQL/AGE migration execution, relay-role security, architecture audit, and database-backed outbox/NOTIFY/tenant-isolation integration, including the post-validation replay/topic hardening. The earlier PR #16 workflow was cancelled; its merge is not treated as validation evidence.
 
 ## Known unresolved decisions
 
@@ -232,4 +232,4 @@ Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 
 Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
-Exact next action: rerun the Stage 12 realtime workflow after the replay/topic hardening, then advance to Stage 13 only after the fresh gate passes.
+Exact next action: begin Stage 13 — Graph Studio.
