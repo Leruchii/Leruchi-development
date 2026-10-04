@@ -20,13 +20,16 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
     const requestId=randomUUID();
     try{
       if(req.method==="GET"&&req.url==="/health"){return json(res,200,{version:"v1",status:"ok"});}
-      if(!["POST"].includes(req.method)||!["/v1/graph/query","/v1/graph/mutations"].includes(req.url))return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
+      const isCatalog=req.method==="GET"&&req.url==="/v1/schema/catalog";
+      const isGraphRequest=req.method==="POST"&&["/v1/graph/query","/v1/graph/mutations"].includes(req.url);
+      if(!isCatalog&&!isGraphRequest)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer "))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
       const context=contextFromClaims(claims);
-      const input=await body(req);
       const catalog=await catalogProvider(context);
+      if(isCatalog)return json(res,200,catalog);
+      const input=await body(req);
       const client=await pool.connect();
       try{
         if(req.url==="/v1/graph/query"){
