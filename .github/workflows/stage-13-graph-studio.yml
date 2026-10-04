@@ -19,6 +19,12 @@ jobs:
           cache-dependency-path: apps/studio/package.json
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Graph API boundary tests
+        working-directory: .
+        run: node --test tests/graph-api/api.test.mjs
+      - name: Renderer benchmark
+        working-directory: .
+        run: node scripts/benchmark-graph-renderer.mjs
       - name: Typecheck
         run: npm run typecheck
       - name: Build
