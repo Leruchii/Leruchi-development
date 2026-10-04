@@ -14,7 +14,7 @@ test("weighted RRF deterministically fuses overlapping graph and vector candidat
 });
 
 test("fusion is deterministic when scores tie",()=>{
-  const result=fuseWeightedRRF({vectorRows:[{id:"b"},{id:"a"}],graphRows:[],maxResults:2});
+  const result=fuseWeightedRRF({vectorRows:[{id:"a"},{id:"b"}],graphRows:[{id:"b"},{id:"a"}],maxResults:2});
   assert.deepEqual(result.map(x=>x.id),["a","b"]);
 });
 
