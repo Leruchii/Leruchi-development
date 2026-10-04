@@ -10,7 +10,7 @@ The numbered build order is canonical. UI is implemented at Stage 13 after backe
 
 ### Skill naming
 
-The canonical security skill is vibe-security. AGE guidance is vibe-age. PostgreSQL guidance is vibe-postgres. Supabase compatibility guidance is vibe-supabase.
+The canonical security skill is vibe-security. AGE guidance is vibe-age. PostgreSQL guidance is vibe-postgres. Supabase compatibility guidance is vibe-supabase. Schema Catalog guidance is vibe-schema-catalog.
 
 ### Graph limits
 
@@ -23,9 +23,9 @@ Provisional UI values are depth default 2, maximum 6, default results 100, maxim
 - pgvector baseline: 0.8.7.
 - Database image strategy: official Apache AGE PG17 1.7.0 release tag with pgvector compiled into the image.
 - Role separation: vibe_migrator and vibe_runtime, both non-superuser and without RLS bypass.
-- Foundation migration approach: deterministic SQL initialization with psql; no framework added prematurely.
+- Foundation migration approach: deterministic SQL initialization with psql.
 - Vector smoke-test dimension: 3; production dimension remains undecided.
-- AGE graph initialization requires an explicit ag_catalog search path in this baseline.
+- AGE graph initialization requires an explicit ag_catalog search path.
 
 ## Resolved by Stage 02
 
@@ -37,16 +37,24 @@ Provisional UI values are depth default 2, maximum 6, default results 100, maxim
 
 ## Resolved by Stage 03
 
-- Supabase Auth v2.196.0 can initialize against the Vibe PostgreSQL 17.11/AGE/pgvector database.
+- Supabase Auth v2.196.0 can initialize against the Vibe database.
 - PostgREST v14.17 can connect through a limited authenticator role.
-- PostgREST can verify a signed HS256 JWT and pass its verified claims into PostgreSQL request context.
-- PostgreSQL RLS can use the verified request JWT claims to enforce tenant visibility through the REST boundary.
-- PostgREST schema exposure can be explicitly restricted to vibe_app.
+- PostgREST can verify a signed HS256 JWT and pass verified claims into PostgreSQL request context.
+- PostgreSQL RLS can use verified request JWT claims to enforce tenant visibility through REST.
+- PostgREST schema exposure can be restricted to vibe_app.
+
+## Resolved by Stage 04
+
+- Schema Catalog v1 is the authoritative metadata contract for the currently supported relational, graph, vector and policy domains.
+- Catalog refresh is deterministic.
+- Graph metadata is explicitly registered rather than automatically reflected.
+- Catalog population can use privileged PostgreSQL system catalogs without exposing those implementation catalogs to runtime consumers.
+- vibe_runtime requires read-only catalog privileges.
 
 ## Remaining UNKNOWNs
 
 - Production Auth tenant-authorization claim issuance: trusted app_metadata vs custom access-token hook vs another controlled mechanism.
-- Exact production AGE graph/RLS privilege matrix for every mutation operation, especially complex deletes and variable-length traversal.
+- Exact production AGE graph/RLS privilege matrix for every mutation operation.
 - Query IR schema and versioning.
 - Query planner and compiler boundaries.
 - Recursive-CTE fallback routing and supported operations.
