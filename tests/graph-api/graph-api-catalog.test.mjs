@@ -21,7 +21,7 @@ test("Graph API exposes the authenticated tenant-scoped Schema Catalog",async()=
   const api=createGraphApiServer({pool,jwtSecret:secret,catalogProvider,port:0});
   const address=await api.listen();
   try{
-    const response=await fetch(`http://127.0.0.1:${address.port}/v1/schema/catalog`,{headers:{authorization:"Bearer "+token("tenant_a",secret,[])}});
+    const response=await fetch(`http://127.0.0.1:${address.port}/v1/schema/catalog`,{headers:{authorization:"Bearer "+token("tenant_a",secret)}});
     assert.equal(response.status,200);
     assert.deepEqual(await response.json(),{version:"v1",graphs:{tenant_graph:{visibility:"tenant",tenantId:"tenant_a",labels:["Account"],edges:[]}}});
     assert.equal(calls.length,1);
