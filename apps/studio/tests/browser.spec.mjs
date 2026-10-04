@@ -22,7 +22,7 @@ test.describe("authenticated Graph Studio browser contract",()=>{
       await page.setViewportSize(viewport);
       await boot(page,"tenant_a");
       await page.getByRole("button",{name:"Run exploration"}).click();
-      await expect(page.getByText("Ada")).toBeVisible();
+      await expect(page.getByRole("button",{name:"Ada Person"})).toBeVisible();
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
     });
   }
