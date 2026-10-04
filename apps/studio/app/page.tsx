@@ -7,21 +7,6 @@ type Edge={id:string;from:string;to:string;label:string};
 type Graph={visibility:"shared"|"tenant";tenantId:string|null;labels:string[];edges:{name:string;from:string|null;to:string|null;properties:Record<string,unknown>}[]};
 type Catalog={version:string;graphs:Record<string,Graph>};
 
-const nodes:Node[]=[
-  {id:"1",label:"Person",x:18,y:28,name:"Ada"},
-  {id:"2",label:"Person",x:48,y:18,name:"Grace"},
-  {id:"3",label:"Person",x:72,y:38,name:"Lin"},
-  {id:"4",label:"Person",x:38,y:68,name:"Margaret"},
-  {id:"5",label:"Person",x:78,y:72,name:"Evelyn"}
-];
-const edges:Edge[]=[
-  {id:"e1",from:"1",to:"2",label:"KNOWS"},
-  {id:"e2",from:"2",to:"3",label:"KNOWS"},
-  {id:"e3",from:"1",to:"4",label:"KNOWS"},
-  {id:"e4",from:"4",to:"5",label:"KNOWS"},
-  {id:"e5",from:"3",to:"5",label:"KNOWS"}
-];
-
 export default function GraphStudio(){
   const [selected,setSelected]=useState<string>("1");
   const [view,setView]=useState<"explorer"|"schema"|"traversal">("explorer");
@@ -36,13 +21,13 @@ export default function GraphStudio(){
   const [traversalEdge,setTraversalEdge]=useState("");
   useEffect(()=>{let cancelled=false;fetch("/api/studio/catalog",{cache:"no-store"}).then(async response=>{const body=await response.json();if(!response.ok)throw new Error(body?.error?.message??"Schema Catalog request failed");if(!cancelled){setCatalog(body);const first=Object.keys(body.graphs??{})[0]??"";setSelectedGraph(first);setSelectedLabel(body.graphs?.[first]?.labels?.[0]??"");setTraversalEdge(body.graphs?.[first]?.edges?.[0]?.name??"")}}).catch(error=>{if(!cancelled)setCatalogError(error.message)});return()=>{cancelled=true}},[]);
   const graph=catalog?.graphs?.[selectedGraph];
-  const liveNodes=rows.map((row,index)=>({id:String(index+1),label:selectedLabel,x:12+(index%8)*11,y:18+Math.floor(index/8)*13,name:String(row.name??"node")}));
-  const displayNodes=liveNodes.length?liveNodes:nodes;
+  const liveNodes:Node[]=rows.map((row,index)=>({id:String(row.id??row._id??index+1),label:selectedLabel,x:12+(index%8)*11,y:18+Math.floor(index/8)*13,name:String(row.name??"node")}));
+  const displayNodes=liveNodes;
   const runExplorer=async()=>{if(!selectedGraph||!selectedLabel)return;setLoading(true);setQueryError("");try{const response=await fetch("/api/studio/query",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({ir:{version:"v1",kind:"graph_query",graph:selectedGraph,root:{label:selectedLabel,alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit,offset:0,depth:0,parameters:[]},parameters:{}})});const body=await response.json();if(!response.ok)throw new Error(body?.error?.message??"Graph query failed");setRows(body.rows??[]);setRequestId(body.request_id??"")}catch(error){setRows([]);setQueryError(error instanceof Error?error.message:"Graph query failed")}finally{setLoading(false)}};
   const [depth,setDepth]=useState(2);
   const [limit,setLimit]=useState(100);
   const [theme,setTheme]=useState<"dark"|"light">("dark");
-  const current=useMemo(()=>displayNodes.find(n=>n.id===selected)??displayNodes[0],[selected,displayNodes]);
+  const current=useMemo(()=>displayNodes.find(n=>n.id===selected)??displayNodes[0]??null,[selected,displayNodes]);
   const themeClass=theme==="light"?"light":"";
   return <main className={themeClass}>
     <a className="skip" href="#workspace">Skip to workspace</a>
@@ -83,20 +68,19 @@ export default function GraphStudio(){
         {catalogError&&<div className="state error" role="alert"><strong>Schema Catalog unavailable.</strong><span>{catalogError}</span><button className="secondary" onClick={()=>location.reload()}>Retry</button></div>}
         {view==="explorer"&&<div className="canvas-grid">
           <section className="graph-panel" aria-label="Graph visualization">
-            <div className="panel-toolbar"><span>{nodes.length} visible nodes</span><span>depth {depth} · cap {limit}</span><div><button aria-label="Fit graph">Fit</button><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div></div>
-            <svg className="graph-canvas" viewBox="0 0 100 100" role="img" aria-label="Graph visualization of Person nodes connected by KNOWS edges">
-              {edges.map(e=>{const a=nodes.find(n=>n.id===e.from)!;const b=nodes.find(n=>n.id===e.to)!;return <g key={e.id}><line x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="edge"/><text x={(a.x+b.x)/2} y={(a.y+b.y)/2-2} className="edge-label">{e.label}</text></g>})}
-              {nodes.map(n=><g key={n.id} onClick={()=>setSelected(n.id)} tabIndex={0} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")setSelected(n.id)}} role="button" aria-label={n.name+" "+n.label}>
+            <div className="panel-toolbar"><span>{displayNodes.length} authorized nodes</span><span>depth {depth} · cap {limit}</span><div><button aria-label="Fit graph">Fit</button><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div></div>
+            {loading?<div className="state"><strong>Running authorized graph query…</strong><span>Results are filtered by the authenticated tenant context on the server.</span></div>:!catalog&&!catalogError?<div className="state"><strong>Loading Schema Catalog…</strong><span>Waiting for the authenticated project schema.</span></div>:catalog&&!rows.length&&!queryError?<div className="state"><strong>No authorized nodes returned.</strong><span>Run the exploration to query this tenant's data, or verify that the selected label has data.</span></div>:<svg className="graph-canvas" viewBox="0 0 100 100" role="img" aria-label={selectedLabel+" nodes returned by the authorized graph query"}>
+              {displayNodes.map(n=><g key={n.id} onClick={()=>setSelected(n.id)} tabIndex={0} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")setSelected(n.id)}} role="button" aria-label={n.name+" "+n.label}>
                 <circle cx={n.x} cy={n.y} r={selected===n.id?5:4} className={selected===n.id?"node selected":"node"}/><text x={n.x} y={n.y+1} className="node-id">{n.id}</text><text x={n.x} y={n.y+9} className="node-name">{n.name}</text>
               </g>)}
             </svg>
-            <div className="canvas-footer"><span>Layout: force-directed</span><span>Live events refetch through Graph API</span></div>
+            <div className="canvas-footer"><span>Layout: bounded canvas</span><span>Only authenticated Graph API results are rendered</span></div>
           </section>
           <aside className="inspector" aria-label="Selection inspector">
-            <div className="inspector-head"><div><p className="eyebrow">SELECTED NODE</p><h2>{current.name}</h2></div><span className="badge">{current.label}</span></div>
+            {current?<><div className="inspector-head"><div><p className="eyebrow">SELECTED NODE</p><h2>{current.name}</h2></div><span className="badge">{current.label}</span></div>
             <dl className="properties"><div><dt>ID</dt><dd><code>{current.id}</code><button aria-label="Copy node ID">Copy</button></dd></div><div><dt>Name</dt><dd>{current.name}</dd></div><div><dt>Tenant</dt><dd>derived by server context</dd></div></dl>
-            <div className="inspector-section"><h3>Relationships</h3>{edges.filter(e=>e.from===current.id||e.to===current.id).map(e=><button className="relation" key={e.id} onClick={()=>setSelected(e.from===current.id?e.to:e.from)}><span>{e.label}</span><span>{e.from===current.id?"outgoing":"incoming"}</span></button>)}</div>
-            <button className="secondary">Expand neighbours</button>
+            <div className="inspector-section"><h3>Relationships</h3><p className="subtle">Relationship expansion is available through the structured Traversal Builder.</p></div>
+            <button className="secondary" onClick={()=>setView("traversal")}>Open Traversal Builder</button></>:<div className="state"><strong>No node selected.</strong><span>Run an authorized exploration to inspect returned data.</span></div>}
           </aside>
         </div>}
         {view==="schema"&&<div className="schema-grid">{graph?<><section className="schema-card"><p className="eyebrow">GRAPH</p><h2>{selectedGraph}</h2><span className="badge">{graph.visibility}</span><h3>Vertex labels</h3>{graph.labels.map(label=><div className="schema-row" key={label}><strong>{label}</strong><span>label</span></div>)}</section><section className="schema-card"><p className="eyebrow">RELATIONSHIPS</p><h2>Edge types</h2>{graph.edges.map(edge=><div className="schema-row" key={edge.name}><strong>{edge.name}</strong><span>{edge.from} → {edge.to}</span></div>)}</section></>:<div className="state">Select a graph from the Schema Catalog.</div>}</div>}
