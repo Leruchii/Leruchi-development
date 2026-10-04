@@ -1,27 +1,27 @@
 # Testing
 
-Status: VALIDATED through Stage 05 — Vibe Query IR
+Status: VALIDATED through Stage 06 — Query Validation + Cost Guardrails
 
-## Core policy
+## Stage 06 executable coverage
 
-Security tests are merge blockers.
+.github/workflows/stage-06-query-validation.yml proves:
 
-No feature is VALIDATED without relevant executable evidence.
+- valid Query IR is accepted with trusted tenant/capability context;
+- missing tenant context is rejected;
+- missing graph:read capability is rejected;
+- unknown graph/label/edge references are rejected;
+- incompatible traversal endpoints are rejected;
+- undeclared parameters are rejected;
+- depth above 6 is rejected;
+- result limits above 1000 are rejected;
+- deterministic cost above 100 is rejected;
+- service_role without trusted backend context is rejected;
+- validation returns structured results without database/compiler execution.
 
-## Stage 05 executable coverage
+## Security rule
 
-.github/workflows/stage-05-query-ir.yml proves:
-
-- the v1 JSON Schema is structurally valid;
-- representative one-hop and two-hop fixtures conform to v1;
-- unknown engine-specific fields such as Cypher are rejected;
-- structured v1 errors conform to the error schema;
-- engine-specific tokens are absent from valid fixtures;
-- canonical serialization is deterministic;
-- golden SHA-256 digests remain stable.
-
-The reference test uses pinned jsonschema 4.23.0 when the runner does not already provide it.
+The validator does not derive authorization from Query IR content. Tenant context is an explicit input from the trusted authentication boundary.
 
 ## Merge blocker
 
-Stages 01 through 05 have executable repository/CI evidence. Configuration-only claims are insufficient.
+Stages 01 through 06 have executable repository/CI evidence.
