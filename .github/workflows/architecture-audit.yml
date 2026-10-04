@@ -1,0 +1,20 @@
+name: Architecture Regression Audit
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run architecture audit
+        run: node tests/architecture/contract-audit.mjs
+      - name: Run SDK and CLI contract tests
+        run: node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs tests/schema-catalog-api/api.test.mjs

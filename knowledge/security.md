@@ -63,4 +63,12 @@ The CI token is generated only to isolate the signed-JWT verification boundary. 
 - A production tenant claim should come from trusted app metadata or a validated custom access-token hook, with the exact design decided before shared-role production deployment.
 - Realtime authorization, Storage authorization and pooler isolation require separate executable tests before being marked compatible.
 
-Stage 04 must preserve this boundary when the Schema Catalog is introduced.
+Stage 04 catalog hardening now preserves this boundary for metadata as well as data.
+
+## Schema Catalog metadata isolation
+
+Graph catalog metadata has two explicit scopes: shared (`tenant_id = ''`) and tenant-owned (`tenant_id = <tenant>`). Both catalog registry and materialized catalog entries use PostgreSQL RLS with FORCE RLS. The refresh function has a dedicated migrator maintenance policy rather than bypassing RLS.
+
+The authenticated remote Schema Catalog API verifies the bearer token before placing its trusted tenant claim into transaction-local PostgreSQL request context. The runtime database role remains NOSUPERUSER/NOBYPASSRLS, so catalog visibility is enforced by the database rather than by the HTTP layer alone.
+
+Adversarial CI must prove Tenant A cannot see Tenant B's private graph name, label, edge or catalog metadata, while both can see shared metadata.

@@ -36,22 +36,64 @@ jobs:
           docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
           SELECT md5(string_agg(
             catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
-            object_name || '|' || parent_name || '|' || metadata::text,
+            object_name || '|' || parent_name || '|' || tenant_id || '|' || metadata::text,
             E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
           )) AS before_hash
           FROM vibe_meta.schema_catalog_entries;
           SELECT vibe_meta.refresh_schema_catalog();
           SELECT md5(string_agg(
             catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
-            object_name || '|' || parent_name || '|' || metadata::text,
+            object_name || '|' || parent_name || '|' || tenant_id || '|' || metadata::text,
             E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
           )) AS after_hash
           FROM vibe_meta.schema_catalog_entries;
           SQL
 
-      - name: Run runtime catalog assertions
+      - name: Seed private catalog fixtures as migrator
+        run: |
+          docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          INSERT INTO vibe_meta.graph_catalog_registry
+            (tenant_id, graph_name, object_kind, object_name, from_label, to_label, properties)
+          VALUES
+            ('tenant_a', 'tenant_private_a', 'label', 'PrivateA', '', '', '{}'),
+            ('tenant_b', 'tenant_private_b', 'label', 'PrivateB', '', '', '{}')
+          ON CONFLICT DO NOTHING;
+          SELECT vibe_meta.refresh_schema_catalog();
+          SQL
+
+      - name: Run shared catalog assertions as runtime
         run: |
           docker compose exec -T db psql -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/catalog/stage-04.sql
+
+      - name: Run tenant catalog RLS assertions as runtime
+        run: |
+          docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          SET ROLE vibe_runtime;
+          SELECT set_config('request.jwt.claims', '{"tenant_id":"tenant_a"}', false);
+          DO $vibe$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM vibe_meta.schema_catalog_entries
+              WHERE object_kind='graph' AND tenant_id='tenant_a'
+            ) THEN RAISE EXCEPTION 'tenant_a private graph metadata missing'; END IF;
+            IF EXISTS (
+              SELECT 1 FROM vibe_meta.schema_catalog_entries
+              WHERE object_kind='graph' AND tenant_id='tenant_b'
+            ) THEN RAISE EXCEPTION 'tenant_a can see tenant_b metadata'; END IF;
+          END $vibe$;
+          SELECT set_config('request.jwt.claims', '{"tenant_id":"tenant_b"}', false);
+          DO $vibe$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM vibe_meta.schema_catalog_entries
+              WHERE object_kind='graph' AND tenant_id='tenant_b'
+            ) THEN RAISE EXCEPTION 'tenant_b private graph metadata missing'; END IF;
+            IF EXISTS (
+              SELECT 1 FROM vibe_meta.schema_catalog_entries
+              WHERE object_kind='graph' AND tenant_id='tenant_a'
+            ) THEN RAISE EXCEPTION 'tenant_b can see tenant_a metadata'; END IF;
+          END $vibe$;
+          SQL
 
       - name: Show database logs on failure
         if: failure()

@@ -2,7 +2,7 @@
 
 ## Decision
 
-The CLI is a thin developer-plane wrapper over the validated JavaScript SDK and Schema Catalog contracts.
+The CLI remains a thin developer-plane wrapper over Vibe SDK and Schema Catalog contracts.
 
 ## Security boundary
 
@@ -13,20 +13,42 @@ The CLI does not:
 - store bearer tokens in project configuration;
 - bypass PostgreSQL RLS.
 
-Authentication is supplied through environment-controlled `VIBE_TOKEN`. Project configuration stores only non-secret connection metadata.
+Authentication is supplied through environment-controlled VIBE_TOKEN for API calls. Project configuration stores only non-secret connection metadata.
 
-## Current implementation
+## Migration contract
 
-Validated CLI workflows:
-- base URL configuration;
-- graph query delegation;
-- graph mutation delegation;
-- local catalog type generation;
-- diagnostics;
-- local Docker Compose status.
+Migrations are:
+- numbered, forward-only SQL files under infra/migrations/;
+- executed only through a connection authenticated as vibe_migrator;
+- run with psql ON_ERROR_STOP and a single transaction unless a future migration explicitly documents a non-transactional requirement;
+- recorded atomically in vibe_meta.schema_migrations;
+- immutable after application; fixes require a later migration.
 
-## Remaining
+This uses PostgreSQL's transactional psql behavior to prevent partial migration application. Non-transactional operations such as concurrent index creation require an explicit future runner mode rather than silently violating the contract. PostgreSQL psql and CREATE INDEX documentation
 
-The repository does not yet have a durable migration execution contract or a validated remote Schema Catalog HTTP contract. Those must be established before Stage 11 can be marked VALIDATED.
+## Remote Schema Catalog contract
 
-Status: IMPLEMENTED — NOT YET VALIDATED.
+GET /v1/schema/catalog returns a versioned v1 catalog derived from the authoritative database catalog.
+
+The API:
+- verifies a signed HS256 bearer token;
+- requires a trusted tenant_id claim;
+- passes verified claims into PostgreSQL request context;
+- queries the catalog through the non-BYPASSRLS runtime role;
+- therefore returns shared graph metadata plus only the caller's tenant-owned graph metadata.
+
+The CLI can inspect the remote catalog and generate types from it. It does not reimplement catalog discovery.
+
+Production tenant-claim issuance remains a separate Auth design decision and must not be inferred from this CI token mechanism.
+
+## Automated issue detection
+
+Repository CI now includes:
+- migration-chain checks;
+- catalog tenant/RLS checks;
+- runtime/migrator role checks;
+- security-definer search_path checks;
+- SDK/CLI compiler-boundary checks;
+- remote Schema Catalog tenant-isolation integration tests.
+
+Status: IN_PROGRESS pending Stage 04 revalidation and Stage 11 CI evidence.
