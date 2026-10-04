@@ -609,7 +609,9 @@ Required:
 - subscription lifecycle
 - adversarial event-isolation tests
 
-**Status:** VALIDATED.
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
+
+Validation workflow was previously cancelled before the database-backed integration completed. Do not treat PR #16 merge as Stage 12 validation evidence. Follow-up validation is required.
 
 ## Stage 13 — Graph Studio
 
