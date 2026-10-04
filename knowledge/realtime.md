@@ -1,7 +1,12 @@
 # Realtime
 
-- [DECIDED] Graph realtime events are ID-only.
-- [DECIDED] Flow: database mutation → ID-only event → Studio receives → Studio refetches via Graph API → RLS → updated UI.
-- [DECIDED] The UI must not treat realtime payloads as authoritative data.
-- [PROPOSED] Test that tenant A cannot subscribe to tenant B events.
-- [UNKNOWN] Transport, channel model, event schema, delivery guarantees.
+- [DECIDED] Graph realtime uses a durable PostgreSQL outbox as the source of truth.
+- [DECIDED] PostgreSQL NOTIFY is only a low-latency wakeup hint. If a relay misses a notification, it can recover from the outbox cursor/claim queue.
+- [DECIDED] Events are ID-only/minimal: event ID, sequence, graph, operation, target kind/label/id, and timestamp. No row/property payload is broadcast.
+- [DECIDED] Client subscription topics are tenant-scoped using an opaque tenant-derived key; raw tenant identifiers are not placed in public topic names.
+- [DECIDED] Delivery is at-least-once. event_id is the client/server deduplication key.
+- [DECIDED] Relay workers claim pending events with FOR UPDATE SKIP LOCKED, acknowledge publication only after the transport accepts the event, and retry failed delivery.
+- [DECIDED] Stale claims are recoverable after a bounded lease period.
+- [DECIDED] Realtime refetches through the Graph API after receiving an event. PostgreSQL RLS remains the authoritative authorization boundary.
+- [DECIDED] The relay role is NOSUPERUSER/NOBYPASSRLS and is not a client capability.
+- [UNKNOWN] Final hosted transport remains an adapter decision. Supabase Realtime Broadcast is a strong production candidate; the outbox/relay contract remains transport-neutral.
