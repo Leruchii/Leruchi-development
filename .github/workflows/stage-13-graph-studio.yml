@@ -51,7 +51,7 @@ jobs:
           exit 1
       - name: Install Chromium
         working-directory: .
-        run: npx -y playwright@1.55.0 install --with-deps chromium
+        run: npx playwright install --with-deps chromium
       - name: Browser tenant and responsive evidence
         working-directory: .
-        run: npx -y -p @playwright/test@1.55.0 playwright test tests/studio/browser.spec.mjs
+        run: npx playwright test tests/studio/browser.spec.mjs
