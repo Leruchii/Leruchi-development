@@ -45,9 +45,9 @@ function parseAgtype(value) {
   try { return JSON.parse(value); } catch { return value; }
 }
 
-export function createPgExecutor(client) {
+export function createPgExecutor(client, context) {
   return {
-    async begin() { await client.query("BEGIN"); },
+    async begin() {\n      await client.query("BEGIN");\n      if (!context?.tenantId) throw new Error("TRUSTED_TENANT_CONTEXT_REQUIRED");\n      await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify({\n        tenant_id: context.tenantId,\n        role: context.role ?? "authenticated",\n        capabilities: context.capabilities ?? []\n      })]);\n    },
     async execute(compiled, parameterMap) {
       const statementName = "vibe_" + createHash("sha256").update(compiled.sql).digest("hex").slice(0, 20);
       return client.query({
