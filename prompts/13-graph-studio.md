@@ -2,6 +2,8 @@
 
 ## Mission
 
+Stage 13 begins with a graph-canvas spike and a reproducible developer workflow. Do not call the spike production-scale until performance evidence exists.
+
 Build the VibePlatform Graph Studio dashboard.
 
 The Graph Studio is a core developer experience surface for the VibePlatform graph system.
