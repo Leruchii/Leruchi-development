@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 14 — MCP Server
-- Current status: IMPLEMENTED — NOT YET VALIDATED
-- Last completed stage: 13 — Graph Studio
-- Last validated commit: `0cf069de83457decfe4f9667e8d687a4be7c1328`
+- Current stage: 15 — GraphRAG
+- Current status: IN_PROGRESS
+- Last completed stage: 14 — MCP Server
+- Last validated commit: `b55d9b415086daa40bd999f1d66b479b71c41a6b`
 - Default branch: `main`
-- Next implementation target: Finish Stage 14 destructive-operation approval, auditability, and capability issuance/revocation design; then Stage 15 GraphRAG
+- Next implementation target: Build the secure graph + vector retrieval bridge on the same ExecutionContext, Schema Catalog, IR and RLS boundary
 
 ## Verified state
 
@@ -393,6 +393,38 @@ Remaining exit-gate work:
 
 Do not mark Stage 14 VALIDATED until those exit conditions have executable evidence.
 
+
+## Stage 14 validation — completed
+
+Stage 14 governance is now VALIDATED on main.
+
+Validation evidence:
+- PR #35 `feat: harden Stage 14 agent governance` merged as `b55d9b415086daa40bd999f1d66b479b71c41a6b`.
+- Stage 14 MCP workflow run `37228039183` passed capability, MCP contract, capability-grant, mutation-approval/audit, database build/start, live MCP integration, cleanup, and architecture regression audit.
+- Stage 09 mutation workflow run `37228039179` passed unit/adversarial and database-backed tenant-isolation mutation tests after destructive-operation approval was correctly added to the fixture.
+- Stage State Gate and Architecture Regression Audit passed on the same checkpoint.
+
+Stage 14 security contract now includes:
+- control-plane-owned scoped capability issuance/revocation contract;
+- tenant-scoped, exact-mutation, time-bounded destructive approval;
+- preview mode with bounded impact metadata and no database transaction;
+- structured audit events that exclude secrets, JWTs and raw query/parameter values;
+- MCP tool attribution without creating a second execution/security boundary.
+
+The Stage 14 exit gate is satisfied. Do not reopen Stage 14 unless new executable evidence contradicts these contracts.
+
+## Stage 15 — GraphRAG started
+
+Stage 15 is now the first unfinished canonical stage. Initial implementation must preserve:
+- ExecutionContext as the only trusted tenant authority;
+- Schema Catalog as the authoritative graph/vector metadata source;
+- engine-neutral retrieval IR rather than agent-specific query formats;
+- PostgreSQL/pgvector plus AGE as the underlying retrieval engines;
+- RLS as the physical tenant-isolation authority;
+- shared Secure Execution Engine boundaries;
+- explainable retrieval metadata and bounded cost/depth/result controls.
+
+The first Stage 15 checkpoint is architectural: define the hybrid retrieval contract before adding indexes or exposing a new public API. Graph retrieval and vector retrieval must remain composable without introducing a second database or bypassing existing authorization.
 
 ## Stage 14 governance continuation — current handoff
 
