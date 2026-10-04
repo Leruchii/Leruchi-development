@@ -65,10 +65,10 @@ jobs:
         run: |
           docker compose exec -T db psql -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/catalog/stage-04.sql
 
-      - name: Run tenant catalog RLS assertions as authenticated
+      - name: Run tenant catalog RLS assertions as runtime
         run: |
           docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
-          SET ROLE authenticated;
+          SET ROLE vibe_runtime;
           SELECT set_config('request.jwt.claims', '{"tenant_id":"tenant_a"}', true);
           DO $
           BEGIN
