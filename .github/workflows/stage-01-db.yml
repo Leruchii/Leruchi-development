@@ -30,8 +30,10 @@ jobs:
           exit 1
 
       - name: Run Stage 01 executable tests
+        env:
+          PGPASSWORD: runtime
         run: |
-          docker compose exec -T db             psql -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/db/stage-01.sql
+          docker compose exec -T db             psql -h 127.0.0.1 -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/db/stage-01.sql
 
       - name: Show database logs on failure
         if: failure()
