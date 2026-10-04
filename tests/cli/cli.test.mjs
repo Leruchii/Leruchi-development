@@ -10,3 +10,30 @@ test("generates deterministic catalog types",()=>{const catalog={graphs:{zeta:{l
 test("config never stores token",async()=>{const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-"));const output=[];const code=await run(["config","set","--base-url","https://api.example"],{cwd,stdout:v=>output.push(v),stderr:()=>{}});assert.equal(code,0);const config=JSON.parse(fs.readFileSync(path.join(cwd,".vibe/config.json"),"utf8"));assert.deepEqual(config,{baseUrl:"https://api.example"});assert.equal(JSON.stringify(config).includes("token"),false);});
 test("builds query through SDK rather than a second compiler",async()=>{const calls=[];const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-"));fs.mkdirSync(path.join(cwd,".vibe"));fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));const code=await run(["graph","query","--graph","g","--label","Account","--select","name","--eq","name=Alice"],{cwd,fetchImpl:async(url,init)=>{calls.push({url,init});return{ok:true,status:200,async json(){return{rows:[]}}};},stdout:()=>{},stderr:()=>{}});assert.equal(code,0);assert.equal(calls[0].url,"https://api.example/v1/graph/query");const body=JSON.parse(calls[0].init.body);assert.equal(body.ir.kind,"graph_query");assert.equal(body.ir.filters[0].op,"eq");assert.equal(body.ir.filters[0].value,"Alice");});
 test("rejects unsafe identifiers through SDK boundary",async()=>{const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-"));fs.mkdirSync(path.join(cwd,".vibe"));fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));await assert.rejects(()=>run(["graph","query","--graph","g","--label","Account","--select","name;DROP"],{cwd,stdout:()=>{},stderr:()=>{}}),/Field must be a valid Vibe field/);});
+
+test("remote schema inspection uses authenticated catalog endpoint",async()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-"));
+  fs.mkdirSync(path.join(cwd,".vibe"));
+  fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));
+  const calls=[];
+  const output=[];
+  process.env.VIBE_TOKEN="test-token";
+  try {
+    const code=await run(["schema","inspect"],{cwd,fetchImpl:async(url,init)=>{
+      calls.push({url,init});
+      return {ok:true,status:200,async json(){return {version:"v1",graphs:{demo:{labels:["Account"],edges:[]}}}}};
+    },stdout:v=>output.push(v),stderr:()=>{}});
+    assert.equal(code,0);
+    assert.equal(calls[0].url,"https://api.example/v1/schema/catalog");
+    assert.equal(calls[0].init.headers.authorization,"Bearer test-token");
+    assert.match(output[0],/demo/);
+  } finally { delete process.env.VIBE_TOKEN; }
+});
+
+test("migration command refuses non-migrator connection URLs",async()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-"));
+  process.env.VIBE_MIGRATOR_DATABASE_URL="postgresql://vibe_runtime:runtime@localhost:5432/vibedb";
+  try {
+    await assert.rejects(()=>run(["db","migrate"],{cwd,stdout:()=>{},stderr:()=>{}}),/vibe_migrator/);
+  } finally { delete process.env.VIBE_MIGRATOR_DATABASE_URL; }
+});
