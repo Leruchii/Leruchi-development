@@ -1,9 +1,11 @@
 "use client";
 
-import {useMemo,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
 
 type Node={id:string;label:string;x:number;y:number;name:string};
 type Edge={id:string;from:string;to:string;label:string};
+type Graph={visibility:"shared"|"tenant";tenantId:string|null;labels:string[];edges:{name:string;from:string|null;to:string|null;properties:Record<string,unknown>}[]};
+type Catalog={version:string;graphs:Record<string,Graph>};
 
 const nodes:Node[]=[
   {id:"1",label:"Person",x:18,y:28,name:"Ada"},
@@ -22,10 +24,25 @@ const edges:Edge[]=[
 
 export default function GraphStudio(){
   const [selected,setSelected]=useState<string>("1");
+  const [view,setView]=useState<"explorer"|"schema"|"traversal">("explorer");
+  const [catalog,setCatalog]=useState<Catalog|null>(null);
+  const [catalogError,setCatalogError]=useState("");
+  const [selectedGraph,setSelectedGraph]=useState("");
+  const [selectedLabel,setSelectedLabel]=useState("");
+  const [rows,setRows]=useState<Record<string,unknown>[]>([]);
+  const [queryError,setQueryError]=useState("");
+  const [requestId,setRequestId]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [traversalEdge,setTraversalEdge]=useState("");
+  useEffect(()=>{let cancelled=false;fetch("/api/studio/catalog",{cache:"no-store"}).then(async response=>{const body=await response.json();if(!response.ok)throw new Error(body?.error?.message??"Schema Catalog request failed");if(!cancelled){setCatalog(body);const first=Object.keys(body.graphs??{})[0]??"";setSelectedGraph(first);setSelectedLabel(body.graphs?.[first]?.labels?.[0]??"");setTraversalEdge(body.graphs?.[first]?.edges?.[0]?.name??"")}}).catch(error=>{if(!cancelled)setCatalogError(error.message)});return()=>{cancelled=true}},[]);
+  const graph=catalog?.graphs?.[selectedGraph];
+  const liveNodes=rows.map((row,index)=>({id:String(index+1),label:selectedLabel,x:12+(index%8)*11,y:18+Math.floor(index/8)*13,name:String(row.name??"node")}));
+  const displayNodes=liveNodes.length?liveNodes:nodes;
+  const runExplorer=async()=>{if(!selectedGraph||!selectedLabel)return;setLoading(true);setQueryError("");try{const response=await fetch("/api/studio/query",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({ir:{version:"v1",kind:"graph_query",graph:selectedGraph,root:{label:selectedLabel,alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit,offset:0,depth:0,parameters:[]},parameters:{}})});const body=await response.json();if(!response.ok)throw new Error(body?.error?.message??"Graph query failed");setRows(body.rows??[]);setRequestId(body.request_id??"")}catch(error){setRows([]);setQueryError(error instanceof Error?error.message:"Graph query failed")}finally{setLoading(false)}};
   const [depth,setDepth]=useState(2);
   const [limit,setLimit]=useState(100);
   const [theme,setTheme]=useState<"dark"|"light">("dark");
-  const current=useMemo(()=>nodes.find(n=>n.id===selected)??nodes[0],[selected]);
+  const current=useMemo(()=>displayNodes.find(n=>n.id===selected)??displayNodes[0],[selected,displayNodes]);
   const themeClass=theme==="light"?"light":"";
   return <main className={themeClass}>
     <a className="skip" href="#workspace">Skip to workspace</a>
@@ -45,25 +62,26 @@ export default function GraphStudio(){
       </aside>
       <aside className="section-nav">
         <div className="section-title">GRAPH STUDIO</div>
-        <button className="nav-item active">Graph Explorer</button>
-        <button className="nav-item">Graph Schema</button>
-        <button className="nav-item">Traversal Builder</button>
+        <button className={view==="explorer"?"nav-item active":"nav-item"} onClick={()=>setView("explorer")}>Graph Explorer</button>
+        <button className={view==="schema"?"nav-item active":"nav-item"} onClick={()=>setView("schema")}>Graph Schema</button>
+        <button className={view==="traversal"?"nav-item active":"nav-item"} onClick={()=>setView("traversal")}>Traversal Builder</button>
         <div className="section-divider"/>
-        <div className="section-title">GRAPH</div>
-        <div className="catalog-group"><strong>vibe_stage01</strong><span>shared</span></div>
-        <div className="catalog-group"><strong>Person</strong><span>label</span></div>
-        <div className="catalog-group"><strong>KNOWS</strong><span>Person → Person</span></div>
+        <div className="section-title">SCHEMA CATALOG</div>
+        {catalog ? Object.entries(catalog.graphs).map(([name,item])=><button className="catalog-group" key={name} onClick={()=>{setSelectedGraph(name);setSelectedLabel(item.labels[0]??"")}}><strong>{name}</strong><span>{item.visibility} · {item.labels.length} labels · {item.edges.length} edges</span></button>) : <div className="catalog-group"><strong>Loading…</strong><span>Awaiting authenticated catalog</span></div>}
       </aside>
-      <section id="workspace" className="workspace" aria-label="Graph Explorer">
+      <section id="workspace" className="workspace" aria-label="Graph Studio workspace">
         <div className="workspace-head">
-          <div><p className="eyebrow">GRAPH EXPLORER</p><h1>Explore your graph</h1><p className="subtle">Schema Catalog-backed graph exploration. Results remain tenant-authorized by the backend.</p></div>
+          <div><p className="eyebrow">{view==="explorer"?"GRAPH EXPLORER":view==="schema"?"GRAPH SCHEMA":"TRAVERSAL BUILDER"}</p><h1>{view==="explorer"?"Explore your graph":view==="schema"?"Understand your graph contract":"Build a bounded traversal"}</h1><p className="subtle">{catalog?"Live Schema Catalog metadata. Authorization and execution remain server-side.":"Loading the authenticated Schema Catalog…"}</p></div>
           <div className="controls">
+            <label>Graph<select value={selectedGraph} onChange={e=>{setSelectedGraph(e.target.value);setRows([])}}>{Object.keys(catalog?.graphs??{}).map(g=><option key={g}>{g}</option>)}</select></label>
+            <label>Label<select value={selectedLabel} onChange={e=>setSelectedLabel(e.target.value)}>{graph?.labels.map(l=><option key={l}>{l}</option>)}</select></label>
             <label>Depth<select value={depth} onChange={e=>setDepth(Number(e.target.value))}>{[1,2,3,4,5,6].map(v=><option key={v} value={v}>{v}</option>)}</select></label>
             <label>Limit<select value={limit} onChange={e=>setLimit(Number(e.target.value))}>{[100,250,500,1000].map(v=><option key={v} value={v}>{v}</option>)}</select></label>
-            <button className="primary">Run exploration</button>
+            <button className="primary" onClick={runExplorer} disabled={loading}>{loading?"Running…":"Run exploration"}</button>
           </div>
         </div>
-        <div className="canvas-grid">
+        {catalogError&&<div className="state error" role="alert"><strong>Schema Catalog unavailable.</strong><span>{catalogError}</span><button className="secondary" onClick={()=>location.reload()}>Retry</button></div>}
+        {view==="explorer"&&<div className="canvas-grid">
           <section className="graph-panel" aria-label="Graph visualization">
             <div className="panel-toolbar"><span>{nodes.length} visible nodes</span><span>depth {depth} · cap {limit}</span><div><button aria-label="Fit graph">Fit</button><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div></div>
             <svg className="graph-canvas" viewBox="0 0 100 100" role="img" aria-label="Graph visualization of Person nodes connected by KNOWS edges">
@@ -80,8 +98,11 @@ export default function GraphStudio(){
             <div className="inspector-section"><h3>Relationships</h3>{edges.filter(e=>e.from===current.id||e.to===current.id).map(e=><button className="relation" key={e.id} onClick={()=>setSelected(e.from===current.id?e.to:e.from)}><span>{e.label}</span><span>{e.from===current.id?"outgoing":"incoming"}</span></button>)}</div>
             <button className="secondary">Expand neighbours</button>
           </aside>
-        </div>
-        <div className="statusbar"><span className="status-dot"/>Connected to Graph API contract <span className="request-id">request_id: explorer-demo</span></div>
+        </div>}
+        {view==="schema"&&<div className="schema-grid">{graph?<><section className="schema-card"><p className="eyebrow">GRAPH</p><h2>{selectedGraph}</h2><span className="badge">{graph.visibility}</span><h3>Vertex labels</h3>{graph.labels.map(label=><div className="schema-row" key={label}><strong>{label}</strong><span>label</span></div>)}</section><section className="schema-card"><p className="eyebrow">RELATIONSHIPS</p><h2>Edge types</h2>{graph.edges.map(edge=><div className="schema-row" key={edge.name}><strong>{edge.name}</strong><span>{edge.from} → {edge.to}</span></div>)}</section></>:<div className="state">Select a graph from the Schema Catalog.</div>}</div>}
+        {view==="traversal"&&<div className="traversal-grid"><section className="builder-card"><p className="eyebrow">STRUCTURED REQUEST</p><label>Start label<select value={selectedLabel} onChange={e=>setSelectedLabel(e.target.value)}>{graph?.labels.map(l=><option key={l}>{l}</option>)}</select></label><label>Edge<select value={traversalEdge} onChange={e=>setTraversalEdge(e.target.value)}>{graph?.edges.map(e=><option key={e.name}>{e.name}</option>)}</select></label><label>Depth<select value={depth} onChange={e=>setDepth(Number(e.target.value))}>{[1,2,3,4,5,6].map(v=><option key={v}>{v}</option>)}</select></label></section><section className="result-card"><p className="eyebrow">QUERY SPECIFICATION</p><pre>{JSON.stringify({version:"v1",graph:selectedGraph,root:{label:selectedLabel},steps:[{edge:traversalEdge,direction:"out",target:{label:selectedLabel}}],depth,limit},null,2)}</pre><p className="subtle">Structured requests are validated and compiled server-side. No free-form Cypher editor is exposed.</p></section><section className="result-card"><p className="eyebrow">EXECUTION PLAN</p><div className="plan-row"><span>Engine</span><strong>server-selected</strong></div><div className="plan-row"><span>Authorization</span><strong>tenant + graph:read</strong></div><div className="plan-row"><span>Depth</span><strong>{depth} / 6</strong></div><div className="plan-row"><span>Result cap</span><strong>{limit} / 1000</strong></div></section></div>}
+        {queryError&&<div className="state error" role="alert"><strong>Graph request failed.</strong><span>{queryError}</span><span>Request ID: {requestId||"not returned"}</span><button className="secondary" onClick={runExplorer}>Retry</button></div>}
+        <div className="statusbar"><span className="status-dot"/><span>{catalog?"Schema Catalog connected":"Connecting to Schema Catalog…"}</span>{requestId&&<span className="request-id">request_id: {requestId}</span>}</div>
       </section>
     </div>
   </main>;
