@@ -244,3 +244,16 @@ Until justified by evidence, do not add:
 - unrelated microservices.
 
 Prefer a small, auditable PostgreSQL-centred implementation.
+
+
+## 15. Repository handoff protocol
+
+Conversation history is not the project source of truth. The repository is.
+
+Before coding, every agent must read `BUILD_PLAN.md` and `BUILD_STATE.md` in addition to this constitution, then verify the checkpoint against recent Git history, implementation, tests and relevant CI workflows. If the checkpoint conflicts with executable repository evidence, the evidence wins and `BUILD_STATE.md` must be corrected.
+
+Agents must continue the first unfinished canonical stage rather than restarting validated stages or jumping ahead. Existing partial branches, commits, pull requests and tests must be inspected before replacing work.
+
+Before ending a work session, update `BUILD_STATE.md` with the current stage and status, last validated commit, branch or pull request when applicable, completed work, remaining work, tests and CI status, blockers, decisions, changed packages/files, and the exact next action. Another agent must be able to continue without asking the user what happened.
+
+Use the checkpoint status vocabulary defined in `BUILD_STATE.md`. Code that exists without the required executable evidence is `IMPLEMENTED — NOT YET VALIDATED`, not `VALIDATED`.
