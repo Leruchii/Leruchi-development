@@ -13,8 +13,8 @@ assert.match(catalog, /FORCE ROW LEVEL SECURITY/, "catalog tables must force RLS
 assert.match(catalog, /graph_catalog_visibility/, "graph catalog visibility policy missing");
 assert.match(catalog, /schema_catalog_visibility/, "schema catalog visibility policy missing");
 assert.match(catalog, /request\.jwt\.claims/, "catalog policy must derive private scope from trusted JWT claims");
-assert.match(catalog, /GRANT SELECT ON vibe_meta\\.schema_catalog_entries, vibe_meta\\.graph_catalog_registry TO vibe_runtime;/, "catalog grants must remain runtime-scoped");
-if (/GRANT SELECT[\\s\\S]*TO PUBLIC/.test(catalog)) fail("catalog data grants must not be PUBLIC");
+if (!catalog.includes("GRANT SELECT ON vibe_meta.schema_catalog_entries, vibe_meta.graph_catalog_registry TO vibe_runtime;")) fail("catalog grants must remain runtime-scoped");
+if (/GRANT SELECT.*TO PUBLIC/.test(catalog)) fail("catalog data grants must not be PUBLIC");
 
 const roles = read("infra/docker/postgres/init/01-vibe-bootstrap.sh");
 assert.match(roles, /CREATE ROLE vibe_runtime[\s\S]*NOBYPASSRLS/, "runtime role must not bypass RLS");
