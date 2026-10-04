@@ -59,4 +59,4 @@ The engine is read-only in v1. Mutations are Stage 09.
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Current implementation target: Stage 13 — Graph Studio.
+Current implementation target: complete Stage 13 — Graph Studio.
