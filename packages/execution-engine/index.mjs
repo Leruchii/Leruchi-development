@@ -88,9 +88,11 @@ export async function executeGraphQuery({
   validate,
   compile,
   db,
-  requestId = randomUUID()
+  requestId = randomUUID(),
+  observability
 }) {
-  try { assertTrustedExecutionContext(context); } catch (error) {
+  const started=Date.now();
+  try { assertTrustedExecutionContext(context); } catch {
     throw new ExecutionError("UNTRUSTED_CONTEXT", "Trusted execution context is required", undefined, requestId);
   }
 
@@ -128,15 +130,25 @@ export async function executeGraphQuery({
   }
 
   let began = false;
+  let dbStarted = 0;
+  let dbDuration = 0;
   try {
     await db.begin();
     began = true;
+    dbStarted=Date.now();
     const result = await db.execute(compiled, parameterMap);
+    dbDuration=Date.now()-dbStarted;
     await db.commit();
     began = false;
+    const executionMs=Date.now()-started;
+    if(observability){
+      observability.observe("vibe_query_duration_ms",executionMs,{operation:"graph_query"});
+      observability.observe("vibe_query_db_duration_ms",dbDuration,{operation:"graph_query"});
+    }
     return {
       version: "v1",
       request_id: requestId,
+      timing_ms:{execution:executionMs,database:dbDuration},
       columns: compiled.columns,
       rows: normalizeRows(result, compiled.columns),
       count: Array.isArray(result.rows) ? result.rows.length : 0
