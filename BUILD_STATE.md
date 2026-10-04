@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 10 — JavaScript SDK
-- Current status: VALIDATED
+- Current stage: 11 — CLI
+- Current status: IMPLEMENTED — NOT YET VALIDATED
 - Last completed stage: 10 — JavaScript SDK
 - Last validated commit: `62366581a44183ed500a121ec3c9890d72ef21c5`
 - Default branch: `main`
-- Next implementation target: Stage 11 — CLI
+- Next implementation target: Continue Stage 11 — CLI
 
 ## Verified state
 
@@ -32,6 +32,15 @@ Stage 10 implementation passed focused JavaScript SDK CI:
 - HTTP transport bearer-token/path test passed;
 - SDK module import passed.
 - Stage 10 PR #12 was merged to main as `62366581a44183ed500a121ec3c9890d72ef21c5`.
+
+Stage 11 implementation passed focused CLI CI:
+- CLI parser tests passed;
+- deterministic Schema Catalog type-generation tests passed;
+- project configuration tests passed with token non-persistence;
+- graph query delegation tests passed;
+- unsafe identifier tests passed;
+- CLI import passed.
+Stage 11 PR #13 was merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`, but the stage exit gate is not yet satisfied because the repository has no established migration execution contract and remote Schema Catalog inspection has not been validated.
 
 ## Stage 09 objective
 
@@ -103,15 +112,31 @@ The SDK exposes engine-neutral Query IR v1 and Mutation IR v1 builders, typed pa
 
 The SDK does not claim server authorization, Schema Catalog validation, tenant assignment, compilation, RLS, or database execution. The default HTTP route names are a transport contract and require later Graph API/runtime validation.
 
-## Do not start yet
+## Stage 11 implementation
 
-Do not start these stages while Stage 10 remains unfinished:
+Implemented:
+- `packages/vibe-cli/index.mjs`
+- `packages/vibe-cli/package.json`
+- `packages/vibe-cli/bin/vibe.mjs`
+- `packages/vibe-cli/README.md`
+- `tests/cli/cli.test.mjs`
+- `.github/workflows/stage-11-cli.yml`
 
-- 11 — CLI
-- 12 — Graph Realtime
-- 13 — Graph Studio
-- 14 — MCP Server
-- 15 — GraphRAG
+Validated within current scope:
+- project base-URL configuration without token persistence;
+- graph query/mutation delegation to the SDK;
+- Schema Catalog type generation from catalog JSON;
+- diagnostics endpoint command;
+- local Docker Compose status command;
+- parser and unsafe-input tests.
+
+Remaining Stage 11 work before `VALIDATED`:
+1. establish a safe migration file/execution contract;
+2. implement and execute migration workflow using the repository's approved migrator role;
+3. validate remote Schema Catalog inspection/type generation against an actual server contract;
+4. add executable CI evidence for those workflows.
+
+Do not start Stage 12 until these Stage 11 exit-gate items are resolved.
 
 Do not backfill Realtime, Storage, or Supavisor merely to make Stage 03 broader. Their current deferral is intentional.
 
@@ -180,12 +205,15 @@ Use these terms exactly:
 
 Stage 10 is validated and merged.
 
+Stage 11 is implemented but not yet validated.
+
 CI evidence:
 - Stage 10 workflow run `37195877514` — success.
-- Job `sdk-tests` passed all SDK tests and import verification.
-- PR #12 merged as `62366581a44183ed500a121ec3c9890d72ef21c5`.
+- Stage 11 workflow run `37195984686` — success.
+- Stage 11 PR #13 merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`.
 
 Known limitation:
 - Local container execution in this assistant environment could not reach GitHub, so executable validation was performed by repository GitHub Actions.
+- Stage 11 must not be called `VALIDATED` until migration execution and remote Schema Catalog workflows have executable evidence.
 
-Exact next action: begin Stage 11 — CLI from the repository checkpoint.
+Exact next action: continue Stage 11 by defining the migration and remote Schema Catalog contracts; then run the full CLI exit gate.
