@@ -27,11 +27,13 @@ export async function executeRetrieval({
   validate=validateQuery,
   compile=compileAge,
   executeGraph=executeGraphQuery,
-  executeVector=executeVectorRetrieval
+  executeVector=executeVectorRetrieval,
+  observability
 }){
   try{assertTrustedExecutionContext(context);}catch{throw new RetrievalExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   try{validateRetrievalIR(ir);}catch(error){throw new RetrievalExecutionError(error.code??"INVALID_RETRIEVAL_IR",error.message);}
 
+  const started=Date.now();
   const graph=ir.sources.graph;
   const vector=ir.sources.vector;
   if(vector&&!Object.hasOwn(requestParameters,vector.query_parameter)) throw new RetrievalExecutionError("MISSING_VECTOR_PARAMETER","Vector query parameter is missing",{parameter:vector.query_parameter});
@@ -69,9 +71,12 @@ export async function executeRetrieval({
     maxResults:ir.limits.max_results
   });
 
+  const executionMs=Date.now()-started;
+  if(observability) observability.observe("vibe_retrieval_duration_ms",executionMs,{source:"hybrid"});
   return {
     version:"v1",
     request_id:requestId,
+    timing_ms:{execution:executionMs},
     cost:{graph:graphCost,vector:vectorCost,total:graphCost+vectorCost,max:ir.limits.max_cost},
     sources:{graph:graphCandidates.length,vector:vectorCandidates.length},
     explain:{

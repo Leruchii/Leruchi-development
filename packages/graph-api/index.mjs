@@ -10,21 +10,26 @@ import {executeGraphQuery,createPgExecutor,ExecutionError} from "../execution-en
 import {executeGraphMutation,createPgMutationExecutor,MutationExecutionError} from "../mutation-execution/index.mjs";
 import {executeRetrieval,RetrievalExecutionError} from "../retrieval-execution/index.mjs";
 import {createAuditEvent,emitAudit} from "../audit/index.mjs";
+import {createObservability} from "../observability/index.mjs";
 
 function json(res,status,payload){res.writeHead(status,{"content-type":"application/json","cache-control":"no-store"});res.end(JSON.stringify(payload));}
 async function body(req){let data="";for await(const chunk of req)data+=chunk;if(data.length>1024*1024)throw new Error("BODY_TOO_LARGE");return data?JSON.parse(data):{};}
 function contextFromClaims(claims,requestId){return createExecutionContext(claims,{requestId});}
 
-export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,verifyApproval,host="127.0.0.1",port=0}={}){
+export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,verifyApproval,observability=createObservability(),host="127.0.0.1",port=0}={}){
   if(!pool||!jwtSecret||typeof catalogProvider!=="function")throw new Error("pool, jwtSecret and catalogProvider are required");
   const server=http.createServer(async(req,res)=>{
     const requestId=randomUUID();
+    const started=Date.now();
+    const span=observability.startSpan(req.method+" "+(req.url?.split("?")[0]??""),{traceparent:req.headers.traceparent});
+    res.setHeader("x-vibe-request-id",requestId);
+    res.setHeader("x-vibe-trace-id",span.context.traceId);
     let context=null;
     let auditInput=null;
     const record=async(outcome,errorCode=null)=>{try{await emitAudit(auditSink,createAuditEvent({
-      requestId,context,route:req.url,tool:req.headers["x-vibe-mcp-tool"]??null,
+      requestId,traceId:span.context.traceId,context,route:req.url?.split("?")[0]??null,tool:req.headers["x-vibe-mcp-tool"]??null,
       operation:auditInput?.ir?.operation??auditInput?.ir?.kind??null,graph:auditInput?.ir?.graph??null,outcome,errorCode,
-      approvalId:auditInput?.execution?.approval?.id??null
+      approvalId:auditInput?.execution?.approval?.id??null,durationMs:Date.now()-started
     }));}catch{}};
     try{
       if(req.method==="GET"&&req.url==="/health")return json(res,200,{version:"v1",status:"ok"});
@@ -62,7 +67,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       if(isRetrievalRequest){
         const client=await pool.connect();
         try{
-          const result=await executeRetrieval({ir:input.ir,context,catalog,requestParameters:input.parameters??{},db:createPgExecutor(client,context),requestId});
+          const result=await executeRetrieval({ir:input.ir,context,catalog,requestParameters:input.parameters??{},db:createPgExecutor(client,context),requestId,observability});
           await record("success");
           return json(res,200,result);
         }finally{client.release();}
@@ -70,13 +75,13 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const client=await pool.connect();
       try{
         if(req.url==="/v1/graph/query"){
-          const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile:compileAge,db:createPgExecutor(client,context),requestId});
+          const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile:compileAge,db:createPgExecutor(client,context),requestId,observability});
           await record("success");
           return json(res,200,result);
         }
         const result=await executeGraphMutation({
           ir:input.ir,context,catalog,requestParameters:input.parameters??{},db:createPgMutationExecutor(client,context),
-          requestId,mode:input.execution?.mode??"execute",approval:input.execution?.approval,verifyApproval
+          requestId,mode:input.execution?.mode??"execute",approval:input.execution?.approval,verifyApproval,observability
         });
         await record("success");
         return json(res,200,result);
@@ -88,6 +93,11 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
       if(error instanceof RetrievalExecutionError)return json(res,400,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});
       return json(res,500,{version:"v1",code:"INTERNAL_ERROR",message:"Graph API request failed",request_id:requestId});
+    }finally{
+      const statusClass=Math.floor((res.statusCode||500)/100)+"xx";
+      observability.increment("vibe_http_requests_total",1,{method:req.method,route:req.url?.split("?")[0]??"",status_class:statusClass});
+      if((res.statusCode||500)>=400)observability.increment("vibe_security_events_total",1,{method:req.method,route:req.url?.split("?")[0]??"",outcome:"error"});
+      span.end({status:(res.statusCode||500)>=400?"error":"ok",attributes:{status_class:statusClass}});
     }
   });
   return {server,listen:()=>new Promise(resolve=>server.listen(port,host,()=>resolve(server.address()))),close:()=>new Promise(resolve=>server.close(resolve))};

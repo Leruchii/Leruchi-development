@@ -1,5 +1,5 @@
-export function createAuditEvent({requestId,context,route,tool,operation,graph,outcome,errorCode,approvalId}){
-  return Object.freeze({
+export function createAuditEvent({requestId,context,route,tool,operation,graph,outcome,errorCode,approvalId,durationMs,traceId}){
+  const event={
     version:"v1",
     timestamp:new Date().toISOString(),
     request_id:requestId,
@@ -13,7 +13,10 @@ export function createAuditEvent({requestId,context,route,tool,operation,graph,o
     outcome,
     error_code:errorCode??null,
     approval_id:approvalId??null
-  });
+  };
+  if(traceId)event.trace_id=traceId;
+  if(Number.isFinite(durationMs))event.duration_ms=Math.max(0,durationMs);
+  return Object.freeze(event);
 }
 
 export async function emitAudit(auditSink,event){
