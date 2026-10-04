@@ -59,6 +59,8 @@ export function buildCatalog(rows, tenantId = null) {
         visibility: row.tenant_id === "" ? "shared" : "tenant",
         tenantId: row.tenant_id === "" ? null : row.tenant_id,
         dimensions: row.dimensions,
+        keyColumn: row.key_column,
+        contentColumn: row.content_column,
         model: row.model ?? "",
         distanceMetric: row.distance_metric,
         metadata: row.metadata ?? {}
@@ -96,6 +98,8 @@ export function createTenantCatalogProvider(pool) {
         `SELECT tenant_id,
                 metadata->>'catalog_ref' AS catalog_ref,
                 metadata->>'dimensions' AS dimensions_text,
+                metadata->>'key_column' AS key_column,
+                metadata->>'content_column' AS content_column,
                 metadata->>'model' AS model,
                 metadata->>'distance_metric' AS distance_metric,
                 metadata->'metadata' AS metadata
@@ -111,6 +115,8 @@ export function createTenantCatalogProvider(pool) {
           tenant_id: row.tenant_id,
           catalog_ref: row.catalog_ref,
           dimensions: Number(row.dimensions_text),
+          key_column: row.key_column,
+          content_column: row.content_column,
           model: row.model,
           distance_metric: row.distance_metric,
           metadata: row.metadata ?? {}
