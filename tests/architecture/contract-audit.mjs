@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 
 const root = process.cwd();
 const read = file => fs.readFileSync(path.join(root, file), "utf8");
-const fail = (message) => { throw new Error("ARCHITECTURE AUDIT: " + message); };
+const fail = message => { throw new Error("ARCHITECTURE AUDIT: " + message); };
 
 const catalog = read("infra/catalog/04-schema-catalog.sql");
 assert.match(catalog, /tenant_id text NOT NULL DEFAULT ''/, "catalog must use an explicit shared tenant scope");
@@ -15,12 +15,16 @@ assert.match(catalog, /schema_catalog_visibility/, "schema catalog visibility po
 assert.match(catalog, /request\.jwt\.claims/, "catalog policy must derive private scope from trusted JWT claims");
 
 const roles = read("infra/docker/postgres/init/01-vibe-bootstrap.sh");
-assert.match(roles, /vibe_runtime[\\s\\S]*NOBYPASSRLS/, "runtime role must not bypass RLS");
-assert.match(roles, /vibe_migrator[\\s\\S]*NOBYPASSRLS/, "migrator role must not bypass RLS");
+assert.match(roles, /CREATE ROLE vibe_runtime[\s\S]*NOBYPASSRLS/, "runtime role must not bypass RLS");
+assert.match(roles, /CREATE ROLE vibe_migrator[\s\S]*NOBYPASSRLS/, "migrator role must not bypass RLS");
 
 const migrationsDir = path.join(root, "infra", "migrations");
-const migrations = fs.readdirSync(migrationsDir).filter(f => /^\\d{4}-[a-z0-9][a-z0-9-]*\\.sql$/.test(f)).sort();
-if (!migrations.length || migrations[0] !== "0000-migration-ledger.sql") fail("migration chain must begin with 0000-migration-ledger.sql");
+const migrations = fs.readdirSync(migrationsDir)
+  .filter(f => /^\d{4}-[a-z0-9][a-z0-9-]*\.sql$/.test(f))
+  .sort();
+if (!migrations.length || migrations[0] !== "0000-migration-ledger.sql") {
+  fail("migration chain must begin with 0000-migration-ledger.sql");
+}
 for (const file of migrations) {
   const sql = read(path.join("infra", "migrations", file));
   assert.match(sql, /ON_ERROR_STOP|current_user <> 'vibe_migrator'/, file + " lacks migrator safety checks");
@@ -29,12 +33,10 @@ for (const file of migrations) {
   }
 }
 
-const definerFiles = [
-  "infra/catalog/04-schema-catalog.sql"
-];
+const definerFiles = ["infra/catalog/04-schema-catalog.sql"];
 for (const file of definerFiles) {
-  const text = read(file);
-  if (/SECURITY DEFINER/.test(text) && !/SET search_path\s*=/.test(text)) {
+  const source = read(file);
+  if (/SECURITY DEFINER/.test(source) && !/SET search_path\s*=/.test(source)) {
     fail(file + " contains SECURITY DEFINER without a pinned search_path");
   }
 }
@@ -42,11 +44,11 @@ for (const file of definerFiles) {
 const sdk = read("packages/vibe-sdk/index.mjs");
 const cli = read("packages/vibe-cli/index.mjs");
 for (const [name, source] of [["SDK", sdk], ["CLI", cli]]) {
-  if (/\\b(cypher|ag_catalog|SELECT\\s+|INSERT\\s+|UPDATE\\s+|DELETE\\s+)/i.test(source)) {
+  if (/\b(cypher|ag_catalog|SELECT\s+|INSERT\s+|UPDATE\s+|DELETE\s+)/i.test(source)) {
     fail(name + " must remain a thin client boundary and not contain database/compiler logic");
   }
 }
-if (/tenant[_-]?id\\s*[:=]/i.test(sdk)) fail("SDK must not expose client-controlled tenant authorization state");
+if (/tenant[_-]?id\s*[:=]/i.test(sdk)) fail("SDK must not expose client-controlled tenant authorization state");
 
 const buildPlan = read("BUILD_PLAN.md");
 assert.match(buildPlan, /shared graph definitions/i, "build plan must document shared/private graph metadata");
