@@ -26,12 +26,12 @@ test("builds deterministic graph and vector catalog contract",()=>{
   const catalog=buildCatalog([
     {graph_name:"g",tenant_id:"",graph_object_kind:"label",object_name:"Person",from_label:null,to_label:null,properties:{}},
     {graph_name:"g",tenant_id:"",graph_object_kind:"edge",object_name:"KNOWS",from_label:"Person",to_label:"Person",properties:{}},
-    {catalog_ref:"docs.embedding",tenant_id:"",dimensions:1536,key_column:"id",content_column:"content",model:"text-embedding-3-small",distance_metric:"cosine",metadata:{}}
+    {catalog_ref:"docs.embedding",tenant_id:"",schema_name:"vibe_app",relation_name:"documents",embedding_column:"embedding",dimensions:1536,key_column:"id",content_column:"content",model:"text-embedding-3-small",distance_metric:"cosine",metadata:{}}
   ]);
   assert.deepEqual(catalog,{
     version:"v1",
     graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[{name:"KNOWS",from:"Person",to:"Person",properties:{}}]}},
-    vectors:{"docs.embedding":{visibility:"shared",tenantId:null,dimensions:1536,keyColumn:"id",contentColumn:"content",model:"text-embedding-3-small",distanceMetric:"cosine",metadata:{}}}
+    vectors:{"docs.embedding":{visibility:"shared",tenantId:null,schemaName:"vibe_app",relationName:"documents",embeddingColumn:"embedding",dimensions:1536,keyColumn:"id",contentColumn:"content",model:"text-embedding-3-small",distanceMetric:"cosine",metadata:{}}}
   });
 });
 
