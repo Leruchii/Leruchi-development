@@ -7,12 +7,13 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 17 — Backup + Recovery
-- Current status: READY_TO_BUILD
+- Current status: IMPLEMENTED — NOT YET VALIDATED
 - Last completed stage: 15 — GraphRAG
 - Last validated commit: `cb17e926ea668f0815923634aa46351bc0072ca9` (Stage 15 GraphRAG exit evidence passed; documentation checkpoints are `777efa73e98c624da605f58a5009673a03101334` and `7e7d132f55c127ccf3e4b5ded3726f704b3e5f2c`)
 - Default branch: `main`
 - Stage 16 merged: PR #42 as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`
-- Next implementation target: Prove backup, restore, integrity verification, migration compatibility, RPO/RTO and failure/recovery drills
+- Current branch: `stage17-backup-recovery`
+- Next implementation target: Run the Stage 17 recovery drill, then add production-image AGE/pgvector restore evidence before validation
 
 ## Verified state
 
@@ -524,3 +525,20 @@ Exact next action:
 Stage 16 is merged to main. Repository-wide checks on the final Stage 16 head were green for the product test suites, including the dedicated observability gate, tenant isolation, query validation, retrieval, SDK, CLI and state checks. The GitHub Advanced Security `github-advanced-security` job failed in its external Processing Request step; it is not a VibeDB test or architecture regression and is not treated as a code failure.
 
 Stage 17 is now READY_TO_BUILD.
+
+
+## Stage 17 — Backup + Recovery handoff
+
+Implemented on branch stage17-backup-recovery:
+- scripts/vibedb-backup.sh: PostgreSQL custom-format backup plus SHA-256 manifest, server/tool versions, migration digest and measured backup duration;
+- scripts/vibedb-restore.sh: checksum/size verification before pg_restore and measured restore duration;
+- packages/backup-recovery: manifest/hash verification contract;
+- tests/backup-recovery: tamper/size failure tests and executable PostgreSQL backup/restore drill;
+- Stage 17 CI with PostgreSQL 17 service;
+- durable Stage 17 recovery decision and build-plan handoff.
+
+Security/recovery boundary:
+- PostgreSQL remains the system of record;
+- restore is not considered compatible merely because pg_restore exits successfully;
+- migration-ledger equality is checked after restore;
+- RPO/RTO are not claimed until measured in a production-like VibeDB image.
