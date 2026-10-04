@@ -17,6 +17,7 @@ Status: IN_PROGRESS.
 
 - restored missing Vibe UI token/layout/screen/accessibility references;
 - created a Next.js/React/Tailwind v4 Graph Studio application shell;
+- established an authenticated Graph API runtime boundary at /v1/graph/query and /v1/graph/mutation;
 - implemented a first Graph Explorer interaction spike with bounded depth/result controls and keyboard-selectable nodes;
 - added reproducible Base UI/style audit;
 - added Stage 13 typecheck/build CI.
