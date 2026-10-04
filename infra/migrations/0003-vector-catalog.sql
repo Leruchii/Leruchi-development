@@ -28,7 +28,6 @@ CREATE TABLE IF NOT EXISTS vibe_meta.vector_catalog_registry (
   CONSTRAINT vector_catalog_relation_check CHECK (relation_name <> ''),
   CONSTRAINT vector_catalog_embedding_check CHECK (embedding_column <> ''),
   CONSTRAINT vector_catalog_key_check CHECK (key_column <> ''),
-  CONSTRAINT vector_catalog_content_check CHECK (content_column = '' OR content_column <> ''),
   PRIMARY KEY (tenant_id, catalog_ref)
 );
 
