@@ -5,8 +5,8 @@ import {canonicalizeRetrievalIR,hashRetrievalIR,validateRetrievalIR} from "../..
 const base={
   version:"v1",kind:"retrieval_query",
   sources:{
-    vector:{catalog_ref:"documents.embedding",query_parameter:"embedding",top_k:20},
-    graph:{query:{version:"v1",kind:"graph_query",graph:"vibe_security",root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.name",alias:"name"}],limit:20,offset:0,depth:2,parameters:[]},candidate_limit:20}
+    vector:{catalog_ref:"documents.embedding",query_parameter:"embedding",top_k:20,identity_field:"id"},
+    graph:{query:{version:"v1",kind:"graph_query",graph:"vibe_security",root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.id",alias:"id"},{field:"n.name",alias:"name"}],limit:20,offset:0,depth:2,parameters:[]},candidate_limit:20,identity_field:"id"}
   },
   fusion:{strategy:"weighted_rrf",vector_weight:1,graph_weight:1},
   limits:{max_results:20,max_cost:40}
