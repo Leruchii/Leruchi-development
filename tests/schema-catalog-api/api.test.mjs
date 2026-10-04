@@ -26,12 +26,12 @@ test("builds deterministic graph and vector catalog contract",()=>{
   const catalog=buildCatalog([
     {graph_name:"g",tenant_id:"",graph_object_kind:"label",object_name:"Person",from_label:null,to_label:null,properties:{}},
     {graph_name:"g",tenant_id:"",graph_object_kind:"edge",object_name:"KNOWS",from_label:"Person",to_label:"Person",properties:{}},
-    {catalog_ref:"docs.embedding",tenant_id:"",dimensions:1536,model:"text-embedding-3-small",distance_metric:"cosine",metadata:{}}
+    {catalog_ref:"docs.embedding",tenant_id:"",dimensions:1536,key_column:"id",content_column:"content",model:"text-embedding-3-small",distance_metric:"cosine",metadata:{}}
   ]);
   assert.deepEqual(catalog,{
     version:"v1",
     graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[{name:"KNOWS",from:"Person",to:"Person",properties:{}}]}},
-    vectors:{"docs.embedding":{visibility:"shared",tenantId:null,dimensions:1536,model:"text-embedding-3-small",distanceMetric:"cosine",metadata:{}}}
+    vectors:{"docs.embedding":{visibility:"shared",tenantId:null,dimensions:1536,keyColumn:"id",contentColumn:"content",model:"text-embedding-3-small",distanceMetric:"cosine",metadata:{}}}
   });
 });
 
@@ -58,9 +58,9 @@ test("catalog filters private graph and vector metadata to the verified tenant",
     {graph_name:"shared",tenant_id:"",graph_object_kind:"label",object_name:"Public",from_label:null,to_label:null,properties:{}},
     {graph_name:"private_a",tenant_id:"tenant_a",graph_object_kind:"label",object_name:"PrivateA",from_label:null,to_label:null,properties:{}},
     {graph_name:"private_b",tenant_id:"tenant_b",graph_object_kind:"label",object_name:"PrivateB",from_label:null,to_label:null,properties:{}},
-    {catalog_ref:"shared.embedding",tenant_id:"",dimensions:1536,model:"shared-model",distance_metric:"cosine",metadata:{}},
-    {catalog_ref:"tenant-a.embedding",tenant_id:"tenant_a",dimensions:768,model:"tenant-a-model",distance_metric:"cosine",metadata:{}},
-    {catalog_ref:"tenant-b.embedding",tenant_id:"tenant_b",dimensions:768,model:"tenant-b-model",distance_metric:"cosine",metadata:{}}
+    {catalog_ref:"shared.embedding",tenant_id:"",dimensions:1536,key_column:"id",content_column:"content",model:"shared-model",distance_metric:"cosine",metadata:{}},
+    {catalog_ref:"tenant-a.embedding",tenant_id:"tenant_a",dimensions:768,key_column:"id",content_column:"content",model:"tenant-a-model",distance_metric:"cosine",metadata:{}},
+    {catalog_ref:"tenant-b.embedding",tenant_id:"tenant_b",dimensions:768,key_column:"id",content_column:"content",model:"tenant-b-model",distance_metric:"cosine",metadata:{}}
   ],"tenant_a");
   assert.deepEqual(Object.keys(catalog.graphs).sort(),["private_a","shared"]);
   assert.equal(catalog.graphs.private_a.labels[0],"PrivateA");
