@@ -23,7 +23,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
     let auditInput=null;
     const record=async(outcome,errorCode=null)=>{try{await emitAudit(auditSink,createAuditEvent({
       requestId,context,route:req.url,tool:req.headers["x-vibe-mcp-tool"]??null,
-      operation:auditInput?.ir?.operation??null,graph:auditInput?.ir?.graph??null,outcome,errorCode,
+      operation:auditInput?.ir?.operation??auditInput?.ir?.kind??null,graph:auditInput?.ir?.graph??null,outcome,errorCode,
       approvalId:auditInput?.execution?.approval?.id??null
     }));}catch{}};
     try{
