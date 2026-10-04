@@ -5,7 +5,7 @@ const accessToken=process.env.VIBE_MCP_ACCESS_TOKEN??"";
 
 export const MCP_TOOLS=[
   {name:"schema.discover",description:"Discover the authenticated tenant-scoped VibeDB Schema Catalog.",inputSchema:{type:"object",properties:{},additionalProperties:false}},
-  {name:"graph.query",description:"Execute a validated VibeDB Query IR read through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}}}},
+  {name:"graph.query",description:"Execute a validated VibeDB Query IR read through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}},additionalProperties:false}},
   {name:"graph.traverse",description:"Execute a bounded structured graph traversal expressed as Query IR. No free-form Cypher.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}}}},
   {name:"graph.mutate",description:"Execute a validated VibeDB Mutation IR write through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}}}}
 ];
@@ -33,6 +33,7 @@ export async function handleMcpMessage(message){
     if(message.method!=="tools/call")return {jsonrpc:"2.0",id,error:{code:-32601,message:"Method not found"}};
     const name=message.params?.name;
     const args=message.params?.arguments??{};
+    if(Object.hasOwn(args,"tenant_id")||Object.hasOwn(args,"tenantId"))throw new Error("Tenant identity is derived from the authenticated access token and cannot be supplied as tool input");
     let data;
     if(name==="schema.discover")data=await api("/v1/schema/catalog");
     else if(name==="graph.query"||name==="graph.traverse")data=await api("/v1/graph/query",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{}})});
