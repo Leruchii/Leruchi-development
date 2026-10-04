@@ -78,6 +78,7 @@ CREATE INDEX IF NOT EXISTS graph_event_outbox_pending_idx
 CREATE INDEX IF NOT EXISTS graph_event_outbox_tenant_cursor_idx
   ON vibe_meta.graph_event_outbox (tenant_id, event_seq);
 
+GRANT USAGE ON SCHEMA vibe_meta TO vibe_realtime;
 GRANT SELECT, INSERT ON vibe_meta.graph_event_outbox TO vibe_runtime;
 GRANT USAGE, SELECT ON SEQUENCE vibe_meta.graph_event_outbox_event_seq_seq TO vibe_runtime, vibe_realtime;
 GRANT SELECT, UPDATE ON vibe_meta.graph_event_outbox TO vibe_realtime;
