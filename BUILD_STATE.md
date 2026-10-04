@@ -7,11 +7,11 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 12 — Graph Realtime
-- Current status: IMPLEMENTED — NOT YET VALIDATED
-- Last completed stage: 11 — CLI
-- Last validated commit: `b296635451e6bc24b4bb37ecbe9867ecaf920e98`
+- Current status: VALIDATED
+- Last completed stage: 12 — Graph Realtime
+- Last validated commit: `d5a072cc83f6b6182c9d2e3e11c751d70885f472`
 - Default branch: `main`
-- Next implementation target: Complete Stage 12 Graph Realtime validation
+- Next implementation target: Stage 13 — Graph Studio
 
 ## Verified state
 
@@ -136,7 +136,7 @@ Do not backfill Realtime, Storage, or Supavisor merely to make Stage 03 broader.
 
 ## Stage 12 implementation
 
-Implemented — awaiting final executable validation:
+Validated:
 - durable tenant-scoped graph event outbox;
 - commit-bound PostgreSQL NOTIFY wakeup;
 - mutation executor outbox integration;
@@ -147,7 +147,7 @@ Implemented — awaiting final executable validation:
 
 The hosted transport remains adapter-pluggable; Supabase Realtime Broadcast is a production candidate, while the outbox/relay contract remains transport-neutral.
 
-Prior Stage 12 workflow run `37206100297` was cancelled before completion and therefore does not constitute validation. PR #16 was merged, but the merge occurred without a completed Stage 12 validation gate. Follow-up validation is required.
+Validation evidence: PR #18 follow-up workflow run `37209970650` passed realtime contract tests, fresh PostgreSQL/AGE migration execution, relay-role security, architecture audit, and database-backed outbox/NOTIFY/tenant-isolation integration. The earlier PR #16 workflow was cancelled; its merge is not treated as validation evidence.
 
 ## Known unresolved decisions
 
@@ -220,7 +220,7 @@ CI evidence:
 - Stage 10 workflow run `37195877514` — success.
 - Stage 11 workflow run `37195984686` — success.
 - Stage 11 PR #13 merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`.
-- Stage 12 PR #16 merged as `4cd510944efbc551dd296b35052a561146aecd77`, but its validation workflow was cancelled before the database-backed integration completed.
+- Stage 12 PR #16 introduced the implementation and PR #18 merged the validation hardening as `d5a072cc83f6b6182c9d2e3e11c751d70885f472`.
 
 Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 - shared/tenant-owned graph catalog scopes with RLS;
@@ -232,4 +232,4 @@ Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 
 Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
-Exact next action: run the Stage 12 follow-up validation workflow, fix any failures, and only then advance to Stage 13.
+Exact next action: begin Stage 13 — Graph Studio.
