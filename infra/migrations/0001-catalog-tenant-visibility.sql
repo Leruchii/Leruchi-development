@@ -36,7 +36,7 @@ ALTER TABLE vibe_meta.schema_catalog_entries FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS graph_catalog_visibility ON vibe_meta.graph_catalog_registry;
 CREATE POLICY graph_catalog_visibility
   ON vibe_meta.graph_catalog_registry FOR SELECT
-  TO vibe_runtime, anon, authenticated
+  TO PUBLIC
   USING (
     tenant_id = ''
     OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', '')
