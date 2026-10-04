@@ -9,7 +9,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current stage: 13 — Graph Studio
 - Current status: IN_PROGRESS
 - Last completed stage: 12 — Graph Realtime
-- Last validated commit: `fa81c5192ffcda113e6db834139cc560c6482952`
+- Last validated commit: `5bd58b431f50c72745d4b7264d6e456d77bd2ed4`
 - Default branch: `main`
 - Next implementation target: Complete Stage 13 Graph Studio backend integration and renderer validation
 
@@ -261,7 +261,7 @@ Current branch: `stage13-runtime-hardening`
 Current PR: #25
 PR #24 remains open as the preceding Studio correctness follow-up.
 Latest implementation commits: `385244ca211f185a6fa663b92908951e9ffa1cc9` (AGE runtime RLS fix), preceded by `443e34dc817c1a9e993ddedc1b82dbe4b3fc7fc0`.
-Validation status: IMPLEMENTED — NOT YET VALIDATED. The first PR #25 matrix exposed a real runtime/RLS integration defect: the Graph API executes through the pooled `vibe_runtime` role, but the Stage 02 AGE test policies granted schema/table access only to tenant-specific roles. The runtime path therefore failed with PostgreSQL `permission denied for schema vibe_security` before the isolation proof could run.
+Validation status: IMPLEMENTED — NOT YET VALIDATED. PR #25 merged after the corrected security matrix passed. The first PR #25 matrix exposed a real runtime/RLS integration defect: the Graph API executes through the pooled `vibe_runtime` role, but the Stage 02 AGE test policies granted schema/table access only to tenant-specific roles. The runtime path therefore failed with PostgreSQL `permission denied for schema vibe_security` before the isolation proof could run.
 The fix now grants `vibe_runtime` access to the test graph and adds separate FORCE RLS policies that derive the tenant from transaction-local `request.jwt.claims`, while preserving the direct `vibe_tenant_a`/`vibe_tenant_b` role policies.
 The corrected commit has a fresh CI matrix in progress; Stage 02 is queued.
 New runtime invariants:
@@ -270,4 +270,16 @@ New runtime invariants:
 - mutation execution uses the same rollback-on-claim-binding-failure rule;
 - malformed, unsupported, expired, or missing-tenant JWTs are classified as unauthorized;
 - AGE `lt` compiles to strict `<`, with regression coverage for all comparison operators.
-Exact next action: let the corrected PR #25 matrix complete; if Stage 02 passes, continue with live authenticated tenant A/B browser evidence, responsive/accessibility evidence, renderer benchmark, and full Graph API → PostgreSQL/AGE runtime composition. Do not merge PR #25 until the required security gates are green.
+Exact next action: complete and validate the shared ExecutionContext contract across Graph API, Schema Catalog, query execution, and mutation execution; then use that contract to finish live authenticated tenant A/B browser evidence, responsive/accessibility evidence, renderer benchmark, and full Graph API → PostgreSQL/AGE runtime composition. Stage 13 remains the canonical active stage until its exit gate is satisfied.
+
+
+## ExecutionContext hardening continuation
+
+Implemented on `stage14-execution-context-contract`:
+- added `packages/execution-context/index.mjs` as the shared trusted execution-context contract;
+- Graph API now creates the context directly from verified JWT claims and preserves request ID;
+- Schema Catalog, query execution and mutation execution derive PostgreSQL `request.jwt.claims` from the shared context rather than duplicating claim-shaping logic;
+- invalid/missing tenant context fails closed and Graph API classifies it as unauthorized;
+- added focused execution-context regression tests.
+
+Validation pending: local/runtime test execution and CI. This hardening is intentionally supporting Stage 13's remaining live runtime composition and will also become the mandatory context boundary for Stage 14 MCP.
