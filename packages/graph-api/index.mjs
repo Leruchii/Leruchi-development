@@ -29,7 +29,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
       const client=await pool.connect();
       try{
         if(req.url==="/v1/graph/query"){
-          const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile:compileAge,db:createPgExecutor(client),requestId});
+          const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile:compileAge,db:createPgExecutor(client,context),requestId});
           return json(res,200,result);
         }
         const result=await executeGraphMutation({ir:input.ir,context,catalog,requestParameters:input.parameters??{},db:createPgMutationExecutor(client,context),requestId});
