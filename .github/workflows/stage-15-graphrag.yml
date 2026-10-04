@@ -5,10 +5,13 @@ on:
     paths:
       - "packages/retrieval-ir/**"
       - "packages/retrieval-fusion/**"
+      - "packages/retrieval-contract/**"
+      - "packages/retrieval-execution/**"
       - "packages/schema-catalog-api/**"
       - "packages/vector-execution/**"
       - "tests/retrieval-ir/**"
       - "tests/retrieval-fusion/**"
+      - "tests/retrieval-execution/**"
       - "tests/schema-catalog-api/**"
       - "tests/vector-execution/**"
       - "packages/capability-policy/**"
@@ -34,6 +37,8 @@ jobs:
         run: node --test tests/retrieval-ir/retrieval-ir.test.mjs
       - name: Retrieval fusion contract tests
         run: node --test tests/retrieval-fusion/retrieval-fusion.test.mjs
+      - name: Secure hybrid retrieval execution contract tests
+        run: node --test tests/retrieval-execution/retrieval-execution.test.mjs
       - name: Tenant-scoped vector catalog contract tests
         run: node --test tests/schema-catalog-api/api.test.mjs
       - name: Capability policy contract tests
