@@ -3,7 +3,6 @@
 import {useEffect,useMemo,useState} from "react";
 
 type Node={id:string;label:string;x:number;y:number;name:string};
-type Edge={id:string;from:string;to:string;label:string};
 type Graph={visibility:"shared"|"tenant";tenantId:string|null;labels:string[];edges:{name:string;from:string|null;to:string|null;properties:Record<string,unknown>}[]};
 type Catalog={version:string;graphs:Record<string,Graph>};
 
@@ -60,7 +59,6 @@ export default function GraphStudio(){
           <div className="controls">
             <label>Graph<select value={selectedGraph} onChange={e=>{setSelectedGraph(e.target.value);setRows([])}}>{Object.keys(catalog?.graphs??{}).map(g=><option key={g}>{g}</option>)}</select></label>
             <label>Label<select value={selectedLabel} onChange={e=>setSelectedLabel(e.target.value)}>{graph?.labels.map(l=><option key={l}>{l}</option>)}</select></label>
-            <label>Depth<select value={depth} onChange={e=>setDepth(Number(e.target.value))}>{[1,2,3,4,5,6].map(v=><option key={v} value={v}>{v}</option>)}</select></label>
             <label>Limit<select value={limit} onChange={e=>setLimit(Number(e.target.value))}>{[100,250,500,1000].map(v=><option key={v} value={v}>{v}</option>)}</select></label>
             <button className="primary" onClick={runExplorer} disabled={loading}>{loading?"Running…":"Run exploration"}</button>
           </div>
@@ -68,7 +66,7 @@ export default function GraphStudio(){
         {catalogError&&<div className="state error" role="alert"><strong>Schema Catalog unavailable.</strong><span>{catalogError}</span><button className="secondary" onClick={()=>location.reload()}>Retry</button></div>}
         {view==="explorer"&&<div className="canvas-grid">
           <section className="graph-panel" aria-label="Graph visualization">
-            <div className="panel-toolbar"><span>{displayNodes.length} authorized nodes</span><span>depth {depth} · cap {limit}</span><div><button aria-label="Fit graph">Fit</button><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div></div>
+            <div className="panel-toolbar"><span>{displayNodes.length} authorized nodes</span><span>tenant-authorized · cap {limit}</span><div><button aria-label="Fit graph">Fit</button><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div></div>
             {loading?<div className="state"><strong>Running authorized graph query…</strong><span>Results are filtered by the authenticated tenant context on the server.</span></div>:!catalog&&!catalogError?<div className="state"><strong>Loading Schema Catalog…</strong><span>Waiting for the authenticated project schema.</span></div>:catalog&&!rows.length&&!queryError?<div className="state"><strong>No authorized nodes returned.</strong><span>Run the exploration to query this tenant's data, or verify that the selected label has data.</span></div>:<svg className="graph-canvas" viewBox="0 0 100 100" role="img" aria-label={selectedLabel+" nodes returned by the authorized graph query"}>
               {displayNodes.map(n=><g key={n.id} onClick={()=>setSelected(n.id)} tabIndex={0} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")setSelected(n.id)}} role="button" aria-label={n.name+" "+n.label}>
                 <circle cx={n.x} cy={n.y} r={selected===n.id?5:4} className={selected===n.id?"node selected":"node"}/><text x={n.x} y={n.y+1} className="node-id">{n.id}</text><text x={n.x} y={n.y+9} className="node-name">{n.name}</text>
