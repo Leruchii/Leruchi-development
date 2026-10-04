@@ -30,3 +30,13 @@ Status: IN_PROGRESS.
 - loading/empty/error states wired to real requests;
 - responsive/browser accessibility evidence;
 - 1,000-node/3,000-edge benchmark and production renderer decision.
+
+
+## Stage 13 continuation decisions
+
+- The Graph API is now an explicit authenticated server boundary over the existing Query IR, Mutation IR, Schema Catalog, validation, compilers and Secure Execution Engine.
+- Graph Studio does not call PostgreSQL directly. Browser requests use server-side Next.js proxy routes and a session cookie; service credentials are never embedded in browser code.
+- Graph API errors use the existing Vibe normalized error shape at the response root so the JavaScript SDK and Studio share one error contract.
+- Graph Schema is catalog-driven. The Studio does not invent labels, edges or ownership metadata.
+- Traversal Builder sends/represents structured traversal specifications only; it does not expose a free-text Cypher editor.
+- The current renderer benchmark is a synthetic SVG string-generation baseline. It is evidence for regression detection, not production renderer selection. Browser FPS/mobile interaction evidence is still required before choosing a production renderer.
