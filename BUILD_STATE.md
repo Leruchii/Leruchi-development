@@ -496,7 +496,7 @@ Security invariants:
 Validation:
 - Stage 16 workflow run 37237020122 passed on the earlier branch head before the final Graph API telemetry regression test was added.
 - Architecture Regression Audit also passed on that earlier run.
-- Final branch head is b19000bd82e26b6bf2a2b6ffcfdf60241fd947fb after documentation commits; a fresh Stage 16 run is required before merge.
+- Final implementation head before this handoff update is ecb18a32b7af9024b712d0d426900b897506e00d; a fresh Stage 16 run is required before merge.
 - Other repository workflows triggered by the PR are still running in the shared GitHub Actions queue; no failed conclusion has been observed for the final head yet.
 
 Files/packages changed:
