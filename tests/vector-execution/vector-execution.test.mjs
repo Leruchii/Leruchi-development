@@ -22,11 +22,11 @@ test("resolves only Schema Catalog vector sources",()=>{
 });
 
 test("compiles parameterized pgvector retrieval with catalog-trusted identifiers",()=>{
-  const compiled=compileVectorRetrieval({catalog,catalogRef:"docs.embedding",embedding:[1,0,0],topK:5,maxResults:20,maxCost:20});
+  const compiled=compileVectorRetrieval({catalog,catalogRef:"docs.embedding",embedding:[1,0,0],topK:5,maxResults:20,maxCost:20,identityField:"document_id"});
   assert.match(compiled.sql,/FROM "vibe_app"\."documents"/);
   assert.match(compiled.sql,/"embedding" <=> \$1::vector/);
   assert.deepEqual(compiled.values,["[1,0,0]",5]);
-  assert.deepEqual(compiled.columns,["id","content","distance"]);
+  assert.deepEqual(compiled.columns,["document_id","content","distance"]);
 });
 
 test("fails closed on vector dimension and budget violations",()=>{
