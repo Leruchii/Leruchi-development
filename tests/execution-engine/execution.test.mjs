@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { Client } from "pg";
 import { compileAge } from "../../packages/compiler-age/index.mjs";
 import { validateQuery } from "../../packages/query-validation/index.mjs";
-import { ExecutionError, executeGraphQuery } from "../../packages/execution-engine/index.mjs";
+import { ExecutionError, executeGraphQuery, createPgExecutor } from "../../packages/execution-engine/index.mjs";
 
 const ir = JSON.parse(fs.readFileSync("packages/execution-engine/fixture.json","utf8"));
 const catalog = JSON.parse(fs.readFileSync("packages/execution-engine/catalog-fixture.json","utf8"));
@@ -106,3 +106,17 @@ function createDbAdapter(client) {
     async rollback(){ await client.query("ROLLBACK"); }
   };
 }
+
+test("PostgreSQL graph executor binds trusted JWT claims inside the transaction", async()=>{
+  const queries=[];
+  const client={query:async query=>{queries.push(query);return {rows:[]};}};
+  const db=createPgExecutor(client,{tenantId:"tenant_a",role:"authenticated",capabilities:["graph:read"]});
+  await db.begin();
+  assert.equal(queries[0],"BEGIN");
+  assert.equal(queries[1].text,"SELECT set_config($1, $2, true)");
+  assert.deepEqual(JSON.parse(queries[1].values[1]),{
+    tenant_id:"tenant_a",
+    role:"authenticated",
+    capabilities:["graph:read"]
+  });
+});
