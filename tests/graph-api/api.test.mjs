@@ -14,6 +14,17 @@ test("Graph API requires bearer authentication",async()=>{
   await server.close();
 });
 
+test("Graph API rejects malformed bearer tokens before database access",async()=>{
+  const pool={connect:async()=>{throw new Error("database must not be touched")}};
+  const server=createGraphApiServer({pool,jwtSecret:"secret"});
+  const address=await server.listen();
+  const response=await fetch(`http://${address.address}:${address.port}/v1/graph/query`,{method:"POST",headers:{authorization:"Bearer malformed", "content-type":"application/json"},body:"{}"});
+  assert.equal(response.status,401);
+  const payload=await response.json();
+  assert.equal(payload.error.code,"UNAUTHORIZED");
+  await server.close();
+});
+
 test("Graph API rejects unknown routes before database access",async()=>{
   const pool={connect:async()=>{throw new Error("database must not be touched")}};
   const server=createGraphApiServer({pool,jwtSecret:"secret"});
