@@ -44,7 +44,7 @@ test("rejects combined cost before any branch executes",async()=>{
 test("requires the vector query parameter before execution",async()=>{
   const calls=[];
   await assert.rejects(()=>executeRetrieval({ir,context,catalog:{},requestParameters:{},db:{},...deps(calls)}),/Vector query parameter is missing/);
-  assert.deepEqual(calls.map(x=>x[0]),["graph"]);
+  assert.deepEqual(calls,[]);
 });
 
 test("fails closed for untrusted execution context",async()=>{
