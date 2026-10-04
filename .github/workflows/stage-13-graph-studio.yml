@@ -28,6 +28,9 @@ jobs:
       - name: Renderer benchmark
         working-directory: .
         run: node scripts/benchmark-graph-renderer.mjs
+      - name: Studio tenant-render contract
+        working-directory: .
+        run: node --test tests/studio/tenant-render-contract.test.mjs
       - name: Typecheck
         run: npm run typecheck
       - name: Build
