@@ -46,6 +46,7 @@ test("tenant isolation matrix rejects anonymous, malformed, expired, and tenant-
     const cases=[
       {name:"anonymous",headers:{},body:JSON.stringify({ir:queryIr()})},
       {name:"malformed",headers:{authorization:"Bearer not-a-jwt","content-type":"application/json"},body:JSON.stringify({ir:queryIr()})},
+      {name:"malformed jwt payload",headers:{authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.not-json.signature","content-type":"application/json"},body:JSON.stringify({ir:queryIr()})},
       {name:"expired",headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",exp:1}),"content-type":"application/json"},body:JSON.stringify({ir:queryIr()})},
       {name:"missing tenant",headers:{authorization:"Bearer "+token({sub:"u",capabilities:["graph:read"]}),"content-type":"application/json"},body:JSON.stringify({ir:queryIr()})}
     ];
