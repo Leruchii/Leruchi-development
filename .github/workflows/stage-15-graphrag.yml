@@ -4,7 +4,11 @@ on:
   pull_request:
     paths:
       - "packages/retrieval-ir/**"
+      - "packages/schema-catalog-api/**"
       - "tests/retrieval-ir/**"
+      - "tests/schema-catalog-api/**"
+      - "infra/catalog/**"
+      - "infra/migrations/0003-vector-catalog.sql"
       - "knowledge/decisions/stage-15-graphrag.md"
       - ".github/workflows/stage-15-graphrag.yml"
   push:
@@ -22,5 +26,7 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Retrieval IR contract tests
         run: node --test tests/retrieval-ir/retrieval-ir.test.mjs
+      - name: Tenant-scoped vector catalog contract tests
+        run: node --test tests/schema-catalog-api/api.test.mjs
       - name: Architecture regression audit
         run: node scripts/architecture-regression-audit.mjs
