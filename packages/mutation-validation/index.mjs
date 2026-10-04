@@ -1,3 +1,4 @@
+import {CAPABILITIES,hasCapability} from "../capability-policy/index.mjs";
 const IDENT=/^[A-Za-z_][A-Za-z0-9_]*$/;
 const FIELD=/^[A-Za-z_][A-Za-z0-9_.]*$/;
 const OPS=new Set(["create_vertex","create_edge","update_vertex","update_edge","delete_vertex","delete_edge"]);
