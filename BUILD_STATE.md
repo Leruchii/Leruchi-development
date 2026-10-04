@@ -316,3 +316,16 @@ The Stage 13 workflow now provisions the real PostgreSQL/AGE database, seeds the
 The live browser test signs in as `vibe_tenant_a`, goes through the Next.js Studio proxy, reaches the Graph API, executes Query IR through ExecutionContext and PostgreSQL/AGE/RLS, and asserts that Studio renders A1/A2 while B1/B2 are absent. This is distinct from mocked browser evidence.
 
 Status: **IMPLEMENTED — CI VALIDATION PENDING**.
+
+
+## Stage 14 — MCP agent gateway started
+
+Implemented the first agent-native MCP boundary:
+- `packages/mcp-server/index.mjs` provides JSON-RPC MCP stdio handling.
+- Current tools: `schema.discover`, `graph.query`, `graph.traverse`, `graph.mutate`.
+- MCP never accepts tenant identity as tool input; the authenticated access token is the authority and the Graph API remains the security/execution boundary.
+- MCP tools reuse the canonical Query/Mutation IR through the Graph API rather than creating an agent-specific query language.
+- Free-form Cypher and arbitrary SQL are intentionally not exposed. `sql.query` and `execution.explain` remain gated on canonical relational execution/planning contracts.
+- Added MCP contract tests and a Stage 14 CI gate.
+
+Status: **Stage 14 STARTED — MCP CONTRACT IMPLEMENTED, INTEGRATION VALIDATION PENDING**.
