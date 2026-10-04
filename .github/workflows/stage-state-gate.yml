@@ -21,7 +21,7 @@ jobs:
           const fs = require('node:fs');
           const cp = fs.readFileSync('BUILD_STATE.md','utf8');
           const status = cp.match(/^- Current status: (.+)$/m)?.[1]?.trim();
-          const evidence = cp.match(/Validation evidence: Stage (\\d+) workflow run \\`(\\d+)\\`/);
+          const evidence = cp.match(/Validation evidence: Stage (\d+) workflow run `(\d+)`/);
           if (status !== 'VALIDATED') {
             console.log(JSON.stringify({status, result:'ok', reason:'current stage is not claiming validation'}));
             process.exit(0);
