@@ -31,7 +31,25 @@ jobs:
         run: |
           docker compose exec -T db psql -U postgres -d vibedb -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
 
-      - name: Run catalog assertions
+      - name: Prove deterministic refresh
+        run: |
+          docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          SELECT md5(string_agg(
+            catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
+            object_name || '|' || parent_name || '|' || metadata::text,
+            E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
+          )) AS before_hash
+          FROM vibe_meta.schema_catalog_entries;
+          SELECT vibe_meta.refresh_schema_catalog();
+          SELECT md5(string_agg(
+            catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
+            object_name || '|' || parent_name || '|' || metadata::text,
+            E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
+          )) AS after_hash
+          FROM vibe_meta.schema_catalog_entries;
+          SQL
+
+      - name: Run runtime catalog assertions
         run: |
           docker compose exec -T db psql -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/catalog/stage-04.sql
 
