@@ -6,8 +6,8 @@ const accessToken=process.env.VIBE_MCP_ACCESS_TOKEN??"";
 export const MCP_TOOLS=[
   {name:"schema.discover",description:"Discover the authenticated tenant-scoped VibeDB Schema Catalog.",inputSchema:{type:"object",properties:{},additionalProperties:false}},
   {name:"graph.query",description:"Execute a validated VibeDB Query IR read through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}},additionalProperties:false}},
-  {name:"graph.traverse",description:"Execute a bounded structured graph traversal expressed as Query IR. No free-form Cypher.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}}}},
-  {name:"graph.mutate",description:"Execute a validated VibeDB Mutation IR write through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}}}}
+  {name:"graph.traverse",description:"Execute a bounded structured graph traversal expressed as Query IR. No free-form Cypher.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}},additionalProperties:false}},
+  {name:"graph.mutate",description:"Execute a validated VibeDB Mutation IR write through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}},additionalProperties:false}}
 ];
 
 function result(data){return {content:[{type:"text",text:JSON.stringify(data)}]};}
