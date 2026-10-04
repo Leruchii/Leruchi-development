@@ -7,11 +7,11 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 11 — CLI
-- Current status: IN_PROGRESS
+- Current status: VALIDATED
 - Last completed stage: 10 — JavaScript SDK
-- Last validated commit: `62366581a44183ed500a121ec3c9890d72ef21c5`
+- Last validated commit: `193877e9c785f40d8dc8dd3d8f7128d82a6f81e9`
 - Default branch: `main`
-- Next implementation target: Run Stage 11 + Stage 04 revalidation CI, fix any failures, then merge only with green evidence
+- Next implementation target: Stage 12 — Graph Realtime
 
 ## Verified state
 
@@ -205,14 +205,14 @@ Use these terms exactly:
 
 Stage 10 is validated and merged.
 
-Stage 11 is in progress: migration execution, remote Schema Catalog inspection, tenant-private metadata isolation, and architecture regression automation are implemented and awaiting executable CI evidence.
+Stage 11 is validated: migration execution, remote Schema Catalog inspection, tenant-private metadata isolation, and architecture regression automation all have executable CI evidence. Stage 04 catalog tenancy hardening is also revalidated.
 
 CI evidence:
 - Stage 10 workflow run `37195877514` — success.
 - Stage 11 workflow run `37195984686` — success.
 - Stage 11 PR #13 merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`.
 
-Hardening work now in branch `hardening/catalog-tenancy-automation`:
+Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 - shared/tenant-owned graph catalog scopes with RLS;
 - forced-RLS-safe migrator maintenance policy;
 - numbered migration ledger and migrator-only CLI execution;
@@ -220,6 +220,6 @@ Hardening work now in branch `hardening/catalog-tenancy-automation`:
 - tenant-private metadata adversarial tests;
 - repository-wide architecture regression audit.
 
-Stage 04 must be revalidated because its catalog security contract changed. Stage 11 remains unvalidated until both workflows pass in GitHub Actions.
+Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
-Exact next action: run the branch CI, inspect failures automatically, fix them, then merge only after executable evidence satisfies the updated exit gates.
+Exact next action: begin Stage 12 — Graph Realtime using the validated mutation/audit model and durable event/outbox boundary.
