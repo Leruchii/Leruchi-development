@@ -1,9 +1,8 @@
 export function createAuditEvent({requestId,context,route,tool,operation,graph,outcome,errorCode,approvalId,durationMs,traceId}){
-  return Object.freeze({
+  const event={
     version:"v1",
     timestamp:new Date().toISOString(),
     request_id:requestId,
-    trace_id:traceId??null,
     tenant_id:context?.tenantId??null,
     actor_role:context?.role??null,
     capabilities:Array.isArray(context?.capabilities)?[...context.capabilities]:[],
@@ -13,9 +12,11 @@ export function createAuditEvent({requestId,context,route,tool,operation,graph,o
     graph:graph??null,
     outcome,
     error_code:errorCode??null,
-    approval_id:approvalId??null,
-    duration_ms:Number.isFinite(durationMs)?Math.max(0,durationMs):null
-  });
+    approval_id:approvalId??null
+  };
+  if(traceId)event.trace_id=traceId;
+  if(Number.isFinite(durationMs))event.duration_ms=Math.max(0,durationMs);
+  return Object.freeze(event);
 }
 
 export async function emitAudit(auditSink,event){
