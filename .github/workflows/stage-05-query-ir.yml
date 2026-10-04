@@ -1,0 +1,16 @@
+name: Stage 05 Query IR
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  query-ir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Query IR v1
+        run: python3 tests/query-ir/test_query_ir.py
