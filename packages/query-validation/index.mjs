@@ -60,6 +60,9 @@ export function validateQuery(ir, context, catalog, limits = DEFAULT_LIMITS) {
   if (!graph) {
     errors.push(makeError("UNKNOWN_GRAPH","Graph is not present in the Schema Catalog",["graph"]));
   } else {
+    if (graph.visibility === "tenant" && graph.tenantId !== context.tenantId) {
+      errors.push(makeError("GRAPH_ACCESS_DENIED", "Graph is not authorized for the current tenant", ["graph"]));
+    }
     if (!graph.labels?.includes(ir.root.label)) {
       errors.push(makeError("UNKNOWN_LABEL","Root label is not present in the Schema Catalog",["root","label"]));
     }
