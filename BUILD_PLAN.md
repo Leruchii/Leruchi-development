@@ -4,11 +4,13 @@ This is the canonical execution guide for coding agents working on VibePlatform.
 
 ## Current state
 
-Stages 00, 01, 02 and the Stage 03 core compatibility gate are validated by executable repository/CI evidence.
+Stages 00 through 04 are validated by executable repository/CI evidence.
 
 Stage 03 core enables Supabase Auth and PostgREST. Realtime, Storage and Supavisor remain explicit compatibility candidates until their own health/security evidence exists.
 
-The next implementation target is Stage 04 — Schema Catalog.
+Stage 04 provides the authoritative, versioned Schema Catalog consumed by later layers.
+
+The next implementation target is Stage 05 — Vibe Query IR.
 
 Do not skip directly to Graph Studio, MCP, GraphRAG, billing or cloud.
 
@@ -28,15 +30,9 @@ Every agent must:
 
 ## Stage 00 — Repository Bootstrap
 
-Establish a clean, reproducible repository.
-
-Exit gate: repository structure, agent instructions, knowledge base, skills, prompts, Git hygiene, local development entrypoint and test conventions are understandable and usable.
-
 Status: VALIDATED.
 
 ## Stage 01 — PostgreSQL + AGE + pgvector
-
-Prove pinned PostgreSQL, compatible AGE, pgvector, reproducible Docker/dev environment, separated roles, graph creation/traversal, vector query, automated tests and no runtime superuser dependency.
 
 Exit gate: all Prompt 01 acceptance tests pass.
 
@@ -44,37 +40,13 @@ Status: VALIDATED by .github/workflows/stage-01-db.yml.
 
 ## Stage 02 — RLS + AGE Security
 
-Create at least two tenants and prove:
-
-- A → A allowed;
-- A → B read denied;
-- A → B update denied;
-- A → B delete denied;
-- A → B graph traversal denied;
-- cross-tenant inference paths denied;
-- B → A denied.
-
-The Stage 02 spike uses tenant-bound database roles to validate the database boundary. Auth/JWT context propagation into a shared runtime role remains a compatibility concern addressed by Stage 03.
-
 Exit gate: adversarial tenant-isolation suite passes.
 
 Status: VALIDATED by .github/workflows/stage-02-security.yml.
 
 ## Stage 03 — Supabase Compatibility
 
-Integrate only services that reduce duplication:
-
-- Auth;
-- PostgREST;
-- Realtime;
-- Storage;
-- pooling.
-
-The validated Stage 03 core enables Supabase Auth and PostgREST against the Vibe database. PostgREST verifies a signed JWT before its claims reach PostgreSQL RLS, and the executable probe proves tenant_a cannot see tenant_b through the REST boundary.
-
-Realtime, Storage and Supavisor are configured as explicit candidates but are not marked validated until their own executable health/security tests exist.
-
-Do not reimplement these services unnecessarily.
+Auth + PostgREST core is validated. Realtime, Storage and Supavisor remain unvalidated candidates requiring their own evidence.
 
 Exit gate: selected services run within the Vibe security model.
 
@@ -82,13 +54,24 @@ Status: VALIDATED for Auth + PostgREST core by .github/workflows/stage-03-supaba
 
 ## Stage 04 — Schema Catalog
 
-Create one authoritative metadata source for relational schema, graph labels, edge types, relationships, relevant properties, vector metadata and policy metadata.
+The catalog is versioned as v1 and stores:
 
-The catalog must be deterministic, programmatically inspectable and independent of UI assumptions.
+- relational tables;
+- relational columns;
+- foreign-key relationships;
+- graph labels;
+- graph edge types and endpoints;
+- graph properties;
+- vector metadata;
+- RLS policy metadata.
+
+Graph metadata is explicitly registered rather than automatically reflected.
+
+The catalog is populated by a privileged migrator function, while vibe_runtime has read-only access. The catalog refresh is deterministic.
 
 Exit gate: metadata can be inspected programmatically and consumed by later layers.
 
-Status: NEXT.
+Status: VALIDATED by .github/workflows/stage-04-schema-catalog.yml.
 
 ## Stage 05 — Vibe Query IR
 
@@ -106,6 +89,8 @@ Define a versioned, engine-neutral contract for graph operations:
 Do not expose AGE/Cypher details in the public IR.
 
 Exit gate: representative graph queries have deterministic IR representations.
+
+Status: NEXT.
 
 ## Stage 06 — Query Validation + Cost Guardrails
 
