@@ -5,11 +5,6 @@ import {createGraphApiServer} from "../../packages/graph-api/index.mjs";
 function fakePool(){
   return {connect:async()=>({query:async()=>({rows:[]}),release(){}})};
 }
-function token(secret,payload){
-  const enc=v=>Buffer.from(JSON.stringify(v)).toString("base64url");
-  const h=enc({alg:"HS256",typ:"JWT"}),p=enc(payload);
-  const {createHmac}=await import("node:crypto");
-}
 test("Graph API rejects missing bearer credentials",async()=>{
   const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",catalogProvider:async()=>({graphs:{}}),port:0});
   const address=await api.listen();
