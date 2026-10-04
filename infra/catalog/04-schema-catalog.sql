@@ -118,7 +118,7 @@ END;
 $$;
 
 ALTER FUNCTION vibe_meta.refresh_schema_catalog() OWNER TO vibe_migrator;
-GRANT SELECT ON vibe_meta.schema_catalog_entries, vibe_meta.graph_catalog_registry TO PUBLIC;
+GRANT SELECT ON vibe_meta.schema_catalog_entries, vibe_meta.graph_catalog_registry TO vibe_runtime;
 GRANT EXECUTE ON FUNCTION vibe_meta.refresh_schema_catalog() TO vibe_migrator;
 
 INSERT INTO vibe_meta.graph_catalog_registry
