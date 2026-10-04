@@ -120,8 +120,8 @@ CREATE POLICY knows_runtime_claims_isolation
   )
   WITH CHECK (
     ag_catalog.agtype_access_operator(
-      VARIADIC ARRAY[properties, '"tenant_id"'::agtype]
-    ) = format('"%s"', current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::agtype
+      VARIADIC ARRAY[properties, '"tenant_id"'::ag_catalog.agtype]
+    ) = format('"%s"', current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::ag_catalog.agtype
   );
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON vibe_security."Account", vibe_security."KNOWS" TO vibe_tenant_a, vibe_tenant_b;
