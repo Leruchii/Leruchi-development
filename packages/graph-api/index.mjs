@@ -2,6 +2,7 @@ import http from "node:http";
 import {randomUUID} from "node:crypto";
 import {Pool} from "pg";
 import {verifyHs256Jwt} from "../schema-catalog-api/index.mjs";
+import {createExecutionContext} from "../execution-context/index.mjs";
 import {validateQuery} from "../query-validation/index.mjs";
 import {compileAge} from "../compiler-age/index.mjs";
 import {executeGraphQuery,createPgExecutor,ExecutionError} from "../execution-engine/index.mjs";
@@ -11,7 +12,7 @@ import {executeGraphMutation,createPgMutationExecutor,MutationExecutionError} fr
 
 function json(res,status,payload){res.writeHead(status,{"content-type":"application/json","cache-control":"no-store"});res.end(JSON.stringify(payload));}
 async function body(req){let data="";for await(const chunk of req)data+=chunk;if(data.length>1024*1024)throw new Error("BODY_TOO_LARGE");return data?JSON.parse(data):{};}
-function contextFromClaims(claims){return{trusted:true,tenantId:claims.tenant_id,role:claims.role??"authenticated",capabilities:Array.isArray(claims.capabilities)?claims.capabilities:[],trustedBackend:claims.trusted_backend===true};}
+function contextFromClaims(claims,requestId){return createExecutionContext(claims,{requestId});}
 
 export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0.0.1",port=0}={}){
   if(!pool||!jwtSecret||typeof catalogProvider!=="function")throw new Error("pool, jwtSecret and catalogProvider are required");
