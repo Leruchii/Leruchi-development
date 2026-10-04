@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import {assertTrustedExecutionContext,postgresRequestClaims} from "../execution-context/index.mjs";
 
 export class ExecutionError extends Error {
   constructor(code, message, details = undefined, requestId = randomUUID()) {
@@ -48,14 +49,10 @@ function parseAgtype(value) {
 export function createPgExecutor(client, context) {
   return {
     async begin() {
-      if (!context?.tenantId) throw new Error("TRUSTED_TENANT_CONTEXT_REQUIRED");
+      assertTrustedExecutionContext(context);
       await client.query("BEGIN");
       try {
-        await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify({
-          tenant_id: context.tenantId,
-          role: context.role ?? "authenticated",
-          capabilities: context.capabilities ?? []
-        })]);
+        await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify(postgresRequestClaims(context))]);
       } catch (error) {
         try { await client.query("ROLLBACK"); } catch {}
         throw error;
@@ -86,7 +83,7 @@ export async function executeGraphQuery({
   db,
   requestId = randomUUID()
 }) {
-  if (context?.trusted !== true) {
+  try { assertTrustedExecutionContext(context); } catch (error) {
     throw new ExecutionError("UNTRUSTED_CONTEXT", "Trusted execution context is required", undefined, requestId);
   }
 

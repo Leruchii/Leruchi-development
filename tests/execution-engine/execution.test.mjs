@@ -5,10 +5,11 @@ import { Client } from "pg";
 import { compileAge } from "../../packages/compiler-age/index.mjs";
 import { validateQuery } from "../../packages/query-validation/index.mjs";
 import { ExecutionError, executeGraphQuery, createPgExecutor } from "../../packages/execution-engine/index.mjs";
+import { createExecutionContext } from "../../packages/execution-context/index.mjs";
 
 const ir = JSON.parse(fs.readFileSync("packages/execution-engine/fixture.json","utf8"));
 const catalog = JSON.parse(fs.readFileSync("packages/execution-engine/catalog-fixture.json","utf8"));
-const baseContext = { trusted:true, tenantId:"vibe_tenant_a", role:"authenticated", capabilities:["graph:read"] };
+const baseContext = createExecutionContext({ tenant_id:"vibe_tenant_a", role:"authenticated", capabilities:["graph:read"] });
 
 function fakeDb({ fail = false } = {}) {
   const calls = [];
@@ -24,7 +25,7 @@ function fakeDb({ fail = false } = {}) {
 test("validation failure executes zero database calls", async () => {
   const db = fakeDb();
   await assert.rejects(() => executeGraphQuery({
-    ir, context:{...baseContext,tenantId:""}, catalog, requestParameters:{name:"A1"},
+    ir:{...ir,graph:"missing"}, context:baseContext, catalog, requestParameters:{name:"A1"},
     validate:validateQuery, compile:compileAge, db
   }), error => error.code === "VALIDATION_FAILED");
   assert.deepEqual(db.calls, []);
@@ -110,7 +111,7 @@ function createDbAdapter(client) {
 test("PostgreSQL graph executor binds trusted JWT claims inside the transaction", async()=>{
   const queries=[];
   const client={query:async (...args)=>{queries.push(args);return {rows:[]};}};
-  const db=createPgExecutor(client,{tenantId:"tenant_a",role:"authenticated",capabilities:["graph:read"]});
+  const db=createPgExecutor(client,createExecutionContext({tenant_id:"tenant_a",role:"authenticated",capabilities:["graph:read"]}));
   await db.begin();
   assert.equal(queries[0][0],"BEGIN");
   assert.equal(queries[1][0],"SELECT set_config($1, $2, true)");

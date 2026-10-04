@@ -1,0 +1,7 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {createExecutionContext,assertTrustedExecutionContext,postgresRequestClaims,ExecutionContextError} from "../../packages/execution-context/index.mjs";
+test("execution context is created only from verified tenant claims",()=>{const context=createExecutionContext({tenant_id:"tenant-a",role:"authenticated",capabilities:["graph:read","graph:read"],trusted_backend:true},{requestId:"req-1"});assert.equal(context.trusted,true);assert.equal(context.tenantId,"tenant-a");assert.deepEqual(context.capabilities,["graph:read"]);assert.equal(context.requestId,"req-1");});
+test("missing tenant identity fails closed",()=>{assert.throws(()=>createExecutionContext({role:"authenticated"}),error=>error instanceof ExecutionContextError&&error.code==="INVALID_EXECUTION_CONTEXT");});
+test("postgres claims are derived only from trusted execution context",()=>{const context=createExecutionContext({tenant_id:"tenant-b",role:"authenticated",capabilities:["graph:read"]});assert.deepEqual(postgresRequestClaims(context),{tenant_id:"tenant-b",role:"authenticated",capabilities:["graph:read"]});assert.throws(()=>postgresRequestClaims({trusted:true,tenantId:""}),ExecutionContextError);});
+test("untrusted context cannot enter execution",()=>{assert.throws(()=>assertTrustedExecutionContext({tenantId:"tenant-a"}),error=>error.code==="UNTRUSTED_CONTEXT");});

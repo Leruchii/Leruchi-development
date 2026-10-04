@@ -1,6 +1,7 @@
 import http from "node:http";
 import {createHmac, timingSafeEqual} from "node:crypto";
 import {Pool} from "pg";
+import {createExecutionContext,postgresRequestClaims} from "../execution-context/index.mjs";
 
 function decodePart(value) {
   return JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
@@ -61,15 +62,11 @@ export function buildCatalog(rows, tenantId = null) {
 export function createTenantCatalogProvider(pool) {
   if (!pool) throw new Error("pool is required");
   return async function catalogProvider(context) {
-    if (!context?.tenantId) throw new Error("Trusted tenant context is required");
+    const trustedContext = createExecutionContext({tenant_id:context?.tenantId,role:context?.role,capabilities:context?.capabilities},{requestId:context?.requestId});
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify({
-        tenant_id: context.tenantId,
-        role: context.role ?? "authenticated",
-        capabilities: context.capabilities ?? []
-      })]);
+      await client.query("SELECT set_config($1, $2, true)", ["request.jwt.claims", JSON.stringify(postgresRequestClaims(trustedContext))]);
       const result = await client.query(
         `SELECT object_name AS graph_name,
                 tenant_id,
@@ -108,11 +105,7 @@ export function createSchemaCatalogServer({pool, jwtSecret, host="127.0.0.1", po
       const auth = req.headers.authorization ?? "";
       if (!auth.startsWith("Bearer ")) throw new Error("Bearer token required");
       const claims = verifyHs256Jwt(auth.slice(7), jwtSecret);
-      const catalog = await catalogProvider({
-        tenantId: claims.tenant_id,
-        role: claims.role ?? "authenticated",
-        capabilities: Array.isArray(claims.capabilities) ? claims.capabilities : []
-      });
+      const catalog = await catalogProvider(createExecutionContext(claims));
       res.writeHead(200, {"content-type":"application/json","cache-control":"no-store"});
       res.end(JSON.stringify(catalog));
     } catch (error) {
