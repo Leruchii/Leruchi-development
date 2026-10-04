@@ -50,8 +50,6 @@ jobs:
           cat /tmp/vibedb-studio.log
           exit 1
       - name: Install Chromium
-        working-directory: .
         run: npx playwright install --with-deps chromium
       - name: Browser tenant and responsive evidence
-        working-directory: .
         run: npx playwright test tests/browser.spec.mjs
