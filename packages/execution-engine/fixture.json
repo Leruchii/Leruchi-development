@@ -1,0 +1,14 @@
+{
+  "version":"v1",
+  "kind":"graph_query",
+  "graph":"vibe_security",
+  "root":{"label":"Account","alias":"account"},
+  "steps":[{"edge":"KNOWS","direction":"out","target":{"label":"Account","alias":"friend"}}],
+  "filters":[{"field":"account.name","op":"eq","value":{"param":"name"}}],
+  "projection":[{"field":"account.name","alias":"account_name"},{"field":"friend.name","alias":"friend_name"}],
+  "orderBy":[],
+  "limit":10,
+  "offset":0,
+  "depth":1,
+  "parameters":[{"name":"name","type":"string","required":true}]
+}
