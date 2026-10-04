@@ -35,6 +35,6 @@ jobs:
       - name: Backup contract tests
         run: node --test tests/backup-recovery/backup-recovery.test.mjs
       - name: Recovery drill
-        run: bash tests/backup-recovery/backup-recovery-drill.sh
+        run: docker run --rm --network host -v "$GITHUB_WORKSPACE:/workspace" -w /workspace -e DATABASE_URL="$DATABASE_URL" postgres:17 bash tests/backup-recovery/backup-recovery-drill.sh
       - name: Architecture regression audit
         run: node tests/architecture/contract-audit.mjs
