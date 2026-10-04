@@ -44,6 +44,8 @@ SELECT ag_catalog.create_graph('vibe_security');
 SELECT ag_catalog.create_vlabel('vibe_security', 'Account');
 SELECT ag_catalog.create_elabel('vibe_security', 'KNOWS');
 
+GRANT USAGE ON SCHEMA vibe_security TO vibe_tenant_a, vibe_tenant_b;
+
 SELECT * FROM ag_catalog.cypher('vibe_security', $cypher$
   CREATE
     (a1:Account {name:'A1', tenant_id:'vibe_tenant_a'}),
