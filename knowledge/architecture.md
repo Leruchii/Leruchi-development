@@ -2,7 +2,7 @@
 
 > **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
 
-Status: DECIDED design / partially VALIDATED through Stage 08
+Status: DECIDED design / VALIDATED through Stage 10
 
 ## Validated execution path
 
@@ -47,14 +47,15 @@ The engine is read-only in v1. Mutations are Stage 09.
 - Query validation + cost guardrails: VALIDATED
 - AGE compiler: VALIDATED
 - Secure execution engine: VALIDATED
-- Graph mutations: NOT IMPLEMENTED/VALIDATED
+- Graph mutations: VALIDATED
+- JavaScript SDK: VALIDATED
 - Realtime: NOT IMPLEMENTED/VALIDATED
 - Storage: NOT IMPLEMENTED/VALIDATED
 - Pooling: NOT IMPLEMENTED/VALIDATED
-- SDK: NOT IMPLEMENTED/VALIDATED
+- SDK: VALIDATED
 - Graph Studio: NOT IMPLEMENTED/VALIDATED
 - MCP: NOT IMPLEMENTED/VALIDATED
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Next implementation target: Stage 09 — Graph Mutations.
+Next implementation target: Stage 11 — CLI.
