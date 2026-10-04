@@ -3,12 +3,10 @@ set -euo pipefail
 
 : "${VIBE_MIGRATOR_PASSWORD:?VIBE_MIGRATOR_PASSWORD is required}"
 : "${VIBE_RUNTIME_PASSWORD:?VIBE_RUNTIME_PASSWORD is required}"
-: "${VIBE_REALTIME_PASSWORD:?VIBE_REALTIME_PASSWORD is required}"
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
   --set=vibe_migrator_password="$VIBE_MIGRATOR_PASSWORD" \
-  --set=vibe_runtime_password="$VIBE_RUNTIME_PASSWORD" \
-  --set=vibe_realtime_password="$VIBE_REALTIME_PASSWORD" <<'SQL'
+  --set=vibe_runtime_password="$VIBE_RUNTIME_PASSWORD" <<'SQL'
 CREATE ROLE vibe_migrator
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
   PASSWORD :'vibe_migrator_password';
@@ -17,15 +15,22 @@ CREATE ROLE vibe_runtime
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
   PASSWORD :'vibe_runtime_password';
 
+ALTER ROLE vibe_migrator SET search_path = "$user", public, ag_catalog;
+ALTER ROLE vibe_runtime SET search_path = "$user", public, ag_catalog;
+
+GRANT CONNECT ON DATABASE vibedb TO vibe_migrator, vibe_runtime;
+GRANT USAGE ON SCHEMA ag_catalog TO vibe_migrator, vibe_runtime;
+GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, ag_catalog.agtype) TO vibe_migrator, vibe_runtime;
+SQL
+
+if [[ -n "${VIBE_REALTIME_PASSWORD:-}" ]]; then
+  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
+    --set=vibe_realtime_password="$VIBE_REALTIME_PASSWORD" <<'SQL'
 CREATE ROLE vibe_realtime
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
   PASSWORD :'vibe_realtime_password';
 
-ALTER ROLE vibe_migrator SET search_path = "$user", public, ag_catalog;
-ALTER ROLE vibe_runtime SET search_path = "$user", public, ag_catalog;
 ALTER ROLE vibe_realtime SET search_path = "$user", public, ag_catalog;
-
-GRANT CONNECT ON DATABASE vibedb TO vibe_migrator, vibe_runtime, vibe_realtime;
-GRANT USAGE ON SCHEMA ag_catalog TO vibe_migrator, vibe_runtime;
-GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, ag_catalog.agtype) TO vibe_migrator, vibe_runtime;
+GRANT CONNECT ON DATABASE vibedb TO vibe_realtime;
 SQL
+fi
