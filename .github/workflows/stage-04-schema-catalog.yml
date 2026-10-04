@@ -70,7 +70,7 @@ jobs:
           docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
           SET ROLE vibe_runtime;
           SELECT set_config('request.jwt.claims', '{"tenant_id":"tenant_a"}', true);
-          DO $
+          DO $vibe$
           BEGIN
             IF NOT EXISTS (
               SELECT 1 FROM vibe_meta.schema_catalog_entries
@@ -80,9 +80,9 @@ jobs:
               SELECT 1 FROM vibe_meta.schema_catalog_entries
               WHERE object_kind='graph' AND tenant_id='tenant_b'
             ) THEN RAISE EXCEPTION 'tenant_a can see tenant_b metadata'; END IF;
-          END $;
+          END $vibe$;
           SELECT set_config('request.jwt.claims', '{"tenant_id":"tenant_b"}', true);
-          DO $
+          DO $vibe$
           BEGIN
             IF NOT EXISTS (
               SELECT 1 FROM vibe_meta.schema_catalog_entries
@@ -92,7 +92,7 @@ jobs:
               SELECT 1 FROM vibe_meta.schema_catalog_entries
               WHERE object_kind='graph' AND tenant_id='tenant_a'
             ) THEN RAISE EXCEPTION 'tenant_b can see tenant_a metadata'; END IF;
-          END $;
+          END $vibe$;
           SQL
 
       - name: Show database logs on failure
