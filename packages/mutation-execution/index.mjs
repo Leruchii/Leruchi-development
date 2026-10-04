@@ -19,8 +19,18 @@ function targetKind(operation){return operation.endsWith("_edge")?"edge":"vertex
 export function createPgMutationExecutor(client,context){
   return {
     async begin(){
+      if(!context?.tenantId) throw new Error("TRUSTED_TENANT_CONTEXT_REQUIRED");
       await client.query("BEGIN");
-      await client.query("SELECT set_config($1,$2,true)",["request.jwt.claims",JSON.stringify({tenant_id:context.tenantId,role:context.role??"authenticated"})]);
+      try{
+        await client.query("SELECT set_config($1,$2,true)",["request.jwt.claims",JSON.stringify({
+          tenant_id:context.tenantId,
+          role:context.role??"authenticated",
+          capabilities:context.capabilities??[]
+        })]);
+      }catch(error){
+        try{await client.query("ROLLBACK")}catch{}
+        throw error;
+      }
     },
     async execute(compiled,parameterMap){
       const statementName="vibe_mutation_"+createHash("sha256").update(compiled.sql).digest("hex").slice(0,20);
