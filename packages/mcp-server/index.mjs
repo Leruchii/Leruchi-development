@@ -1,8 +1,5 @@
 import readline from "node:readline";
 
-const apiBase=(process.env.VIBE_API_URL??"").replace(/\/$/,"");
-const accessToken=process.env.VIBE_MCP_ACCESS_TOKEN??"";
-
 export const MCP_TOOLS=[
   {name:"schema.discover",description:"Discover the authenticated tenant-scoped VibeDB Schema Catalog.",inputSchema:{type:"object",properties:{},additionalProperties:false}},
   {name:"graph.query",description:"Execute a validated VibeDB Query IR read through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:{type:"object"},parameters:{type:"object"}},additionalProperties:false}},
@@ -14,6 +11,8 @@ function result(data){return {content:[{type:"text",text:JSON.stringify(data)}]}
 function error(message){return {isError:true,content:[{type:"text",text:message}]};}
 
 async function api(path,options={}){
+  const apiBase=(process.env.VIBE_API_URL??"").replace(/\/$/,"");
+  const accessToken=process.env.VIBE_MCP_ACCESS_TOKEN??"";
   if(!apiBase||!accessToken)throw new Error("VIBE_API_URL and VIBE_MCP_ACCESS_TOKEN are required");
   const response=await fetch(apiBase+path,{...options,headers:{authorization:"Bearer "+accessToken,"content-type":"application/json",...(options.headers??{})}});
   const body=await response.json().catch(()=>({error:{code:"INVALID_UPSTREAM_RESPONSE",message:"Invalid VibeDB response"}}));

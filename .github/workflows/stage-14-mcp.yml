@@ -18,5 +18,44 @@ jobs:
         run: node --test tests/graph-api/graph-api-catalog.test.mjs
       - name: MCP contract tests
         run: node --test tests/mcp/mcp-server.test.mjs
+      - name: Build database image
+        run: docker compose build db
+      - name: Start database
+        run: docker compose up -d db
+      - name: Wait for database
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+      - name: Seed MCP tenant fixture
+        run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
+      - name: Start live Graph API
+        env:
+          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+          VIBE_JWT_SECRET: stage-14-e2e-secret
+          VIBE_GRAPH_API_PORT: 4100
+        run: node scripts/start-stage13-graph-api.mjs > /tmp/vibedb-stage14-api.log 2>&1 &
+      - name: Wait for live Graph API
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4100/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/vibedb-stage14-api.log || true
+          exit 1
+      - name: Live MCP integration
+        env:
+          VIBE_API_URL: http://127.0.0.1:4100
+          VIBE_JWT_SECRET: stage-14-e2e-secret
+        run: node --test tests/mcp/live-mcp-graph-api.test.mjs
+      - name: Show live Graph API logs on failure
+        if: failure()
+        run: cat /tmp/vibedb-stage14-api.log || true
+      - name: Cleanup live database
+        if: always()
+        run: docker compose down -v
       - name: Architecture regression audit
         run: bash scripts/audit-baseui.sh apps/studio
