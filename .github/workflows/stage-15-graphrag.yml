@@ -4,9 +4,11 @@ on:
   pull_request:
     paths:
       - "packages/retrieval-ir/**"
+      - "packages/retrieval-fusion/**"
       - "packages/schema-catalog-api/**"
       - "packages/vector-execution/**"
       - "tests/retrieval-ir/**"
+      - "tests/retrieval-fusion/**"
       - "tests/schema-catalog-api/**"
       - "tests/vector-execution/**"
       - "packages/capability-policy/**"
@@ -30,6 +32,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Retrieval IR contract tests
         run: node --test tests/retrieval-ir/retrieval-ir.test.mjs
+      - name: Retrieval fusion contract tests
+        run: node --test tests/retrieval-fusion/retrieval-fusion.test.mjs
       - name: Tenant-scoped vector catalog contract tests
         run: node --test tests/schema-catalog-api/api.test.mjs
       - name: Capability policy contract tests
