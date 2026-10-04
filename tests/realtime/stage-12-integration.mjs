@@ -21,6 +21,22 @@ test("tenant-scoped outbox and relay lifecycle",{timeout:20000},async()=>{
   let a;
   let rollbackClient;
   try {
+  const mutationClient=new Client({connectionString:runtimeUrl});await mutationClient.connect();
+  const mutationDb=createPgMutationExecutor(mutationClient,{tenantId:"tenant_a",role:"authenticated"});
+  const mutationCatalog={graphs:{vibe_stage01:{labels:["Person"],edges:[{name:"KNOWS",from:"Person",to:"Person",directions:["out","in","both"]}]}}};
+  const {executeGraphMutation}=await import("../../packages/mutation-execution/index.mjs");
+  const mutation=await executeGraphMutation({
+    ir:{version:"v1",kind:"graph_mutation",graph:"vibe_stage01",operation:"create_vertex",target:{label:"Person"},properties:{name:{param:"name"}},parameters:[{name:"name",type:"string",required:true}]},
+    context:{trusted:true,tenantId:"tenant_a",role:"authenticated",capabilities:["graph:write"]},
+    catalog:mutationCatalog,requestParameters:{name:"Stage12Person"},db:mutationDb
+  });
+  assert.equal(mutation.count,1);
+  const mutationEvent=await mutationClient.query("SELECT event_id,operation,target_label,target_id FROM vibe_meta.graph_event_outbox WHERE request_id=$1",[mutation.request_id]);
+  assert.equal(mutationEvent.rowCount,1);
+  assert.equal(mutationEvent.rows[0].operation,"create_vertex");
+  assert.equal(mutationEvent.rows[0].target_label,"Person");
+  await mutationClient.end();
+
   const event={
     eventId:"stage12-"+Date.now(),
     requestId:"request-stage12",
