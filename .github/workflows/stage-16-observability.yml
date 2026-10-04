@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Observability contract tests
-        run: node --test tests/observability/observability.test.mjs tests/audit/audit.test.mjs
+        run: node --test tests/observability/observability.test.mjs tests/observability/graph-api-observability.test.mjs tests/audit/audit.test.mjs
       - name: Graph API contract tests
         run: node --test tests/graph-api/api.test.mjs
       - name: Execution and mutation contract tests
