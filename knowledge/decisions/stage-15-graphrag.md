@@ -1,6 +1,6 @@
 # Stage 15 GraphRAG — Retrieval Contract
 
-Status: IN_PROGRESS — hybrid data-plane validated; agent exposure pending.
+Status: VALIDATED — hybrid data-plane, MCP integration and explainability validated.
 
 ## Decision
 
@@ -43,10 +43,17 @@ v1 uses weighted reciprocal-rank fusion as the engine-neutral composition rule. 
 - Real PostgreSQL + Apache AGE + pgvector CI proves tenant A receives A1/A2 and tenant B receives B1/B2, with no cross-tenant candidates.
 - The Stage 15 data-plane gate passed in workflow run 37235543756.
 
+## Stage 15 exit evidence
+
+- Contract-level Retrieval IR, candidate normalization, weighted RRF and budget tests passed.
+- Real PostgreSQL + Apache AGE + pgvector hybrid tenant-isolation proof passed.
+- Live MCP retrieval passed for tenant A and tenant B through the Graph API boundary.
+- MCP rejects caller-supplied tenant identity and preserves source-specific capability enforcement.
+- Deterministic explanation metadata exposes fusion strategy, source weights and bounded candidate budgets without exposing tenant data or raw query fragments.
+- Stage 15 workflow run 37236216996 passed, including the live MCP GraphRAG gate and architecture audit.
+
 ## Next executable gates
 
-1. expose retrieval through MCP only after preserving the same ExecutionContext, capability and no-tenant-payload rules;
-2. add live MCP retrieval integration against the real GraphRAG data-plane;
-3. prove MCP retrieval cannot bypass graph/vector capabilities or tenant isolation;
-4. add retrieval audit/explainability metadata suitable for agent/tool responses;
-5. then evaluate Stage 15 exit status against the complete GraphRAG gate.
+1. Stage 16 Observability: add structured retrieval/execution logs, metrics and traces without leaking tenant data or secrets.
+2. Preserve the existing GraphRAG security contract while adding operational telemetry.
+3. Revisit vector index strategy only with evidence from real workload benchmarks.
