@@ -200,6 +200,18 @@ If work stops mid-stage, this file must say exactly:
 
 Never leave the next agent dependent on conversation history.
 
+### Cross-agent IR handoff contract
+
+The repository must make the IR boundary obvious to any coding agent without relying on conversation history. The canonical concepts are:
+
+- Query IR v1 — engine-neutral read intent consumed by validation/planning/compiler/execution.
+- Mutation IR v1 — engine-neutral write intent consumed by mutation validation/compiler/execution.
+- Schema Catalog — authoritative metadata used to validate and compile both IRs.
+- ExecutionContext — trusted tenant/role/capability context surrounding IR execution; tenant identity is never supplied by untrusted query or mutation payload fields.
+- Secure Execution Engine — the only normal path from validated IR to PostgreSQL/AGE execution.
+
+Before implementing a new API, MCP tool, SDK feature, Studio action, compiler feature, or agent capability, inspect the existing IR definitions/builders/validators and reuse them. Do not create a parallel representation merely because a new surface has different terminology.
+
 ## Status vocabulary
 
 Use these terms exactly:
