@@ -1,3 +1,4 @@
+import {CAPABILITIES,hasCapability} from "../capability-policy/index.mjs";
 const DEFAULT_LIMITS = Object.freeze({ maxDepth: 6, maxResults: 1000, maxCost: 100 });
 const ENGINE_KEYS = new Set(["cypher", "sql", "age", "query", "statement", "raw"]);
 
