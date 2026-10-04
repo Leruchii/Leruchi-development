@@ -4,7 +4,11 @@ This is the canonical execution guide for coding agents working on VibePlatform.
 
 ## Current state
 
-Stages 00, 01 and 02 are validated by executable repository/CI evidence.
+Stages 00, 01, 02 and the Stage 03 core compatibility gate are validated by executable repository/CI evidence.
+
+Stage 03 core enables Supabase Auth and PostgREST. Realtime, Storage and Supavisor remain explicit compatibility candidates until their own health/security evidence exists.
+
+The next implementation target is Stage 04 — Schema Catalog.
 
 Do not skip directly to Graph Studio, MCP, GraphRAG, billing or cloud.
 
@@ -50,7 +54,7 @@ Create at least two tenants and prove:
 - cross-tenant inference paths denied;
 - B → A denied.
 
-The Stage 02 spike uses tenant-bound database roles to validate the database boundary. Auth/JWT context propagation into a shared runtime role remains UNKNOWN.
+The Stage 02 spike uses tenant-bound database roles to validate the database boundary. Auth/JWT context propagation into a shared runtime role remains a compatibility concern addressed by Stage 03.
 
 Exit gate: adversarial tenant-isolation suite passes.
 
@@ -66,19 +70,25 @@ Integrate only services that reduce duplication:
 - Storage;
 - pooling.
 
-Do not reimplement these unnecessarily.
+The validated Stage 03 core enables Supabase Auth and PostgREST against the Vibe database. PostgREST verifies a signed JWT before its claims reach PostgreSQL RLS, and the executable probe proves tenant_a cannot see tenant_b through the REST boundary.
 
-Stage 03 must resolve how Supabase Auth/PostgREST establishes trusted tenant context for RLS without allowing an untrusted client to select another tenant.
+Realtime, Storage and Supavisor are configured as explicit candidates but are not marked validated until their own executable health/security tests exist.
+
+Do not reimplement these services unnecessarily.
 
 Exit gate: selected services run within the Vibe security model.
 
-Status: NEXT.
+Status: VALIDATED for Auth + PostgREST core by .github/workflows/stage-03-supabase.yml.
 
 ## Stage 04 — Schema Catalog
 
 Create one authoritative metadata source for relational schema, graph labels, edge types, relationships, relevant properties, vector metadata and policy metadata.
 
+The catalog must be deterministic, programmatically inspectable and independent of UI assumptions.
+
 Exit gate: metadata can be inspected programmatically and consumed by later layers.
+
+Status: NEXT.
 
 ## Stage 05 — Vibe Query IR
 
