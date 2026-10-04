@@ -88,6 +88,7 @@ export function createSchemaCatalogServer({pool, jwtSecret, host="127.0.0.1", po
   if (!pool) throw new Error("pool is required");
   if (!jwtSecret) throw new Error("jwtSecret is required");
 
+  const catalogProvider = createTenantCatalogProvider(pool);
   const server = http.createServer(async (req,res) => {
     if (req.method !== "GET" || req.url !== "/v1/schema/catalog") {
       res.writeHead(404, {"content-type":"application/json"});
@@ -98,18 +99,13 @@ export function createSchemaCatalogServer({pool, jwtSecret, host="127.0.0.1", po
       const auth = req.headers.authorization ?? "";
       if (!auth.startsWith("Bearer ")) throw new Error("Bearer token required");
       const claims = verifyHs256Jwt(auth.slice(7), jwtSecret);
-      const catalogProvider = createTenantCatalogProvider(pool);
-    const claimsContext = { tenantId: claims.tenant_id, role: claims.role ?? "authenticated", capabilities: Array.isArray(claims.capabilities) ? claims.capabilities : [] };
-    const catalog = await catalogProvider(claimsContext);
-    res.writeHead(200, {"content-type":"application/json","cache-control":"no-store"});
-    res.end(JSON.stringify(catalog));
-    return;
-    } catch (error) {
-        await client.query("ROLLBACK");
-        throw error;
-      } finally {
-        client.release();
-      }
+      const catalog = await catalogProvider({
+        tenantId: claims.tenant_id,
+        role: claims.role ?? "authenticated",
+        capabilities: Array.isArray(claims.capabilities) ? claims.capabilities : []
+      });
+      res.writeHead(200, {"content-type":"application/json","cache-control":"no-store"});
+      res.end(JSON.stringify(catalog));
     } catch (error) {
       res.writeHead(401, {"content-type":"application/json"});
       res.end(JSON.stringify({error:{code:"UNAUTHORIZED",message:error.message}}));
