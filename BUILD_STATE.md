@@ -9,9 +9,9 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current stage: 15 — GraphRAG
 - Current status: IN_PROGRESS
 - Last completed stage: 14 — MCP Server
-- Last validated commit: `b55d9b415086daa40bd999f1d66b479b71c41a6b`
+- Last validated commit: `f8d6b2ff07ce19c04e316a23fc3a74faa6024279` (Stage 15 hybrid contract CI passed; merged implementation is `9ca0487ff7dbb8101eda10ec8b3c2e9db9b8c029`)
 - Default branch: `main`
-- Next implementation target: Build the secure graph + vector retrieval bridge on the same ExecutionContext, Schema Catalog, IR and RLS boundary
+- Next implementation target: Prove real database-backed hybrid graph + vector retrieval with tenant isolation, unified cost enforcement, deterministic fusion, then expose retrieval through MCP
 
 ## Verified state
 
@@ -438,3 +438,29 @@ Next gate:
 4. only after hybrid data-plane validation expose retrieval through MCP.
 
 Do not mark Stage 15 VALIDATED until those gates have executable evidence.
+
+
+## Stage 15 — GraphRAG progress
+
+The Stage 15 hybrid retrieval contract is now merged and CI-validated.
+
+Implemented:
+- explicit identity_field in vector and graph Retrieval IR sources;
+- canonical retrieval result normalization in packages/retrieval-contract;
+- deterministic weighted reciprocal-rank fusion using canonical candidates;
+- explicit vector candidate identity projection through Schema Catalog metadata;
+- secure hybrid orchestration in packages/retrieval-execution using the existing trusted ExecutionContext and execution boundaries;
+- combined graph/vector cost preflight so over-budget retrieval is rejected before branch execution;
+- adversarial contract tests for candidate identity, cost budgets, deterministic fusion and untrusted contexts;
+- Stage 15 CI gate for hybrid retrieval execution.
+
+Validation evidence:
+- Stage 15 workflow run 37234787250 passed on the pre-merge implementation head.
+- Architecture Regression Audit passed on the same validation cycle.
+- The implementation was merged as 9ca0487ff7dbb8101eda10ec8b3c2e9db9b8c029.
+
+Important remaining gate:
+- The current hybrid executor has contract-level branch tests but does not yet constitute full database-backed graph+vector integration proof. Do not mark Stage 15 VALIDATED until a real PostgreSQL/AGE/pgvector fixture proves tenant isolation, candidate identity alignment, RLS enforcement, combined budget behavior and deterministic fusion end-to-end.
+- MCP retrieval remains intentionally unexposed until that data-plane proof passes.
+
+Exact next action: build the real Stage 15 hybrid database integration fixture using the existing tenant-scoped graph and vector security setup, then add adversarial cross-tenant retrieval tests and only afterward add the MCP retrieval adapter.
