@@ -31,6 +31,10 @@ jobs:
       - name: Studio tenant-render contract
         working-directory: .
         run: node --test tests/studio/tenant-render-contract.test.mjs
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser tenant/responsive evidence
+        run: npm run test:browser
       - name: Typecheck
         run: npm run typecheck
       - name: Build
