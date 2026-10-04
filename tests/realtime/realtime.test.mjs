@@ -31,3 +31,14 @@ test("client event contains ids and no tenant payload",()=>{
   assert.equal("tenant_id" in event,false);
   assert.equal("payload" in event,false);
 });
+
+
+test("replay requires an internal trusted relay context",async()=>{
+  const fakeDb={query:async()=>{throw new Error("database must not be touched")}};
+  await assert.rejects(
+    () => import("../../packages/realtime-outbox/index.mjs").then(({replayTenantGraph}) =>
+      replayTenantGraph(fakeDb,{tenantId:"tenant_a",graph:"shared"})
+    ),
+    /trusted realtime relay context is required/
+  );
+});
