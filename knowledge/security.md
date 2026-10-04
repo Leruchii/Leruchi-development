@@ -1,6 +1,6 @@
 # Security
 
-Status: DECIDED policy / Stage 02 tenant isolation validated
+Status: DECIDED policy / Stage 03 Auth + PostgREST core validated
 
 ## Non-negotiable rules
 
@@ -13,6 +13,7 @@ Status: DECIDED policy / Stage 02 tenant isolation validated
 - Security tests are merge blockers.
 - UI visibility is never authorisation.
 - No success claim without executable evidence.
+- Client-controlled tenant identifiers or GUCs must never become authoritative authorization state.
 
 ## Stage 01 evidence
 
@@ -42,8 +43,24 @@ AGE RLS proves:
 
 All tested tenant roles are NOSUPERUSER and NOBYPASSRLS.
 
-## Important limitation
+## Stage 03 Auth + PostgREST evidence
 
-Tenant context propagation from Auth/JWT into a shared runtime role is NOT resolved here. The spike uses tenant-bound database roles so the database enforcement itself can be tested without treating a client-controlled session GUC as trusted.
+The Stage 03 CI workflow proves:
 
-Stage 03 must resolve how Auth/PostgREST establishes trusted tenant context without weakening the database boundary.
+- Supabase Auth v2.196.0 initializes against the Vibe PostgreSQL database.
+- PostgREST v14.17 connects using a limited authenticator role.
+- PostgREST exposes only the explicitly allowlisted vibe_app schema.
+- PostgREST verifies a signed HS256 JWT before applying its role and request claims.
+- PostgreSQL RLS consumes request.jwt.claims and returns only the matching tenant rows.
+- Tenant B data is not returned through the REST boundary.
+
+The CI token is generated only to isolate the signed-JWT verification boundary. It is not a production token issuance design.
+
+## Important remaining security questions
+
+- The production mechanism for issuing tenant authorization claims from Supabase Auth is UNKNOWN.
+- Auth user metadata must not be used as authorization state because end users can modify it.
+- A production tenant claim should come from trusted app metadata or a validated custom access-token hook, with the exact design decided before shared-role production deployment.
+- Realtime authorization, Storage authorization and pooler isolation require separate executable tests before being marked compatible.
+
+Stage 04 must preserve this boundary when the Schema Catalog is introduced.
