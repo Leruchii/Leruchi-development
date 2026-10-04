@@ -22,3 +22,15 @@ GRANT CONNECT ON DATABASE vibedb TO vibe_migrator, vibe_runtime;
 GRANT USAGE ON SCHEMA ag_catalog TO vibe_migrator, vibe_runtime;
 GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, ag_catalog.agtype) TO vibe_migrator, vibe_runtime;
 SQL
+
+if [[ -n "${VIBE_REALTIME_PASSWORD:-}" ]]; then
+  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
+    --set=vibe_realtime_password="$VIBE_REALTIME_PASSWORD" <<'SQL'
+CREATE ROLE vibe_realtime
+  LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
+  PASSWORD :'vibe_realtime_password';
+
+ALTER ROLE vibe_realtime SET search_path = "$user", public, ag_catalog;
+GRANT CONNECT ON DATABASE vibedb TO vibe_realtime;
+SQL
+fi

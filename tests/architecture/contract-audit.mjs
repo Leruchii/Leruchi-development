@@ -19,6 +19,7 @@ if (/GRANT SELECT.*TO PUBLIC/.test(catalog)) fail("catalog data grants must not 
 const roles = read("infra/docker/postgres/init/01-vibe-bootstrap.sh");
 assert.match(roles, /CREATE ROLE vibe_runtime[\s\S]*NOBYPASSRLS/, "runtime role must not bypass RLS");
 assert.match(roles, /CREATE ROLE vibe_migrator[\s\S]*NOBYPASSRLS/, "migrator role must not bypass RLS");
+if (roles.includes("CREATE ROLE vibe_realtime")) assert.match(roles, /CREATE ROLE vibe_realtime[\s\S]*NOBYPASSRLS/, "realtime role must not bypass RLS");
 
 const migrationsDir = path.join(root, "infra", "migrations");
 const migrations = fs.readdirSync(migrationsDir)

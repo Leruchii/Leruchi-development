@@ -609,7 +609,7 @@ Required:
 - subscription lifecycle
 - adversarial event-isolation tests
 
-**Status:** DEFERRED / NOT STARTED.
+**Status:** VALIDATED.
 
 ## Stage 13 — Graph Studio
 
@@ -825,7 +825,7 @@ At the time this plan was expanded:
 - Stage 09: **READY_TO_BUILD / NEXT**
 - Stage 10+: **NOT STARTED / DEFERRED as individually marked**
 
-The next implementation task is **Stage 12 — Graph Realtime**.
+The next implementation task is **Stage 13 — Graph Studio**.
 
 The first Stage 09 action is not to code blindly. Inspect the existing Query IR, Schema Catalog, AGE compiler, Secure Execution Engine, Stage 02 security model, database fixtures and tests, then design the smallest safe mutation boundary consistent with this architecture.
 
