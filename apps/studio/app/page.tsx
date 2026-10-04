@@ -72,7 +72,7 @@ export default function GraphStudio(){
                 <circle cx={n.x} cy={n.y} r={selected===n.id?5:4} className={selected===n.id?"node selected":"node"}/><text x={n.x} y={n.y+1} className="node-id">{n.id}</text><text x={n.x} y={n.y+9} className="node-name">{n.name}</text>
               </g>)}
             </svg>
-            <div className="canvas-footer"><span>Layout: bounded canvas</span><span>Only authenticated Graph API results are rendered</span></div>
+            <div className="canvas-footer"><span>Layout: bounded canvas</span><span>Only authenticated Graph API results are rendered</span></div></>}
           </section>
           <aside className="inspector" aria-label="Selection inspector">
             {current?<><div className="inspector-head"><div><p className="eyebrow">SELECTED NODE</p><h2>{current.name}</h2></div><span className="badge">{current.label}</span></div>
