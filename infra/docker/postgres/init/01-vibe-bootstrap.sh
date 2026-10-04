@@ -20,5 +20,5 @@ ALTER ROLE vibe_runtime SET search_path = "$user", public, ag_catalog;
 
 GRANT CONNECT ON DATABASE vibedb TO vibe_migrator, vibe_runtime;
 GRANT USAGE ON SCHEMA ag_catalog TO vibe_migrator, vibe_runtime;
-GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring) TO vibe_migrator, vibe_runtime;
+GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, agtype) TO vibe_migrator, vibe_runtime;
 SQL
