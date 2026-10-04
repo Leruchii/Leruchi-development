@@ -12,7 +12,7 @@ test("Graph API rejects missing bearer credentials",async()=>{
     const res=await fetch(`http://127.0.0.1:${address.port}/v1/graph/query`,{method:"POST",headers:{"content-type":"application/json"},body:"{}"});
     assert.equal(res.status,401);
     const body=await res.json();
-    assert.equal(body.error.code,"UNAUTHORIZED");
+    assert.equal(body.code,"UNAUTHORIZED");
   }finally{await api.close();}
 });
 test("Graph API health is public and versioned",async()=>{
