@@ -1,6 +1,7 @@
 import {createHash, randomUUID} from "node:crypto";
 import {validateMutation} from "../mutation-validation/index.mjs";
 import {compileAgeMutation} from "../compiler-age-mutation/index.mjs";
+import {assertTrustedExecutionContext,postgresRequestClaims} from "../execution-context/index.mjs";
 
 export class MutationExecutionError extends Error{
   constructor(code,message,details,requestId=randomUUID()){super(message);this.name="MutationExecutionError";this.code=code;this.details=details;this.requestId=requestId}
@@ -19,14 +20,10 @@ function targetKind(operation){return operation.endsWith("_edge")?"edge":"vertex
 export function createPgMutationExecutor(client,context){
   return {
     async begin(){
-      if(!context?.tenantId) throw new Error("TRUSTED_TENANT_CONTEXT_REQUIRED");
+      assertTrustedExecutionContext(context);
       await client.query("BEGIN");
       try{
-        await client.query("SELECT set_config($1,$2,true)",["request.jwt.claims",JSON.stringify({
-          tenant_id:context.tenantId,
-          role:context.role??"authenticated",
-          capabilities:context.capabilities??[]
-        })]);
+        await client.query("SELECT set_config($1,$2,true)",["request.jwt.claims",JSON.stringify(postgresRequestClaims(context))]);
       }catch(error){
         try{await client.query("ROLLBACK")}catch{}
         throw error;
@@ -51,7 +48,7 @@ export function createPgMutationExecutor(client,context){
 }
 
 export async function executeGraphMutation({ir,context,catalog,requestParameters={},db,requestId=randomUUID()}){
-  if(context?.trusted!==true)throw new MutationExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required",undefined,requestId);
+  try{assertTrustedExecutionContext(context)}catch{throw new MutationExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required",undefined,requestId)}
   const v=validateMutation(ir,context,catalog);if(!v.ok)throw new MutationExecutionError("VALIDATION_FAILED","Mutation validation failed",v.errors,requestId);
   const declared=new Map(ir.parameters.map(p=>[p.name,p]));
   for(const k of Object.keys(requestParameters))if(!declared.has(k))throw new MutationExecutionError("UNDECLARED_PARAMETER","Request contains an undeclared parameter",{parameter:k},requestId);
