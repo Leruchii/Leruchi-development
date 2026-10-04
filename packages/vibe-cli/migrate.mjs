@@ -4,11 +4,21 @@ import {execFile} from "node:child_process";
 import {promisify} from "node:util";
 
 const execFileAsync = promisify(execFile);
-const MIGRATION_PATTERN = /^(\\d{4})-([a-z0-9][a-z0-9-]*)\\.sql$/;
+
+function isNumberedMigration(name) {
+  const prefix = name.slice(0, 4);
+  const rest = name.slice(5, -4);
+  return name.endsWith(".sql")
+    && prefix.length === 4
+    && [...prefix].every(char => char >= "0" && char <= "9")
+    && name[4] === "-"
+    && rest.length > 0
+    && [...rest].every(char => /[a-z0-9-]/.test(char));
+}
 
 export function listMigrationFiles(root) {
   return fs.readdirSync(root)
-    .filter(name => MIGRATION_PATTERN.test(name))
+    .filter(isNumberedMigration)
     .sort()
     .map(name => ({name, id: name.slice(0, -4), file: path.join(root, name)}));
 }
@@ -43,7 +53,7 @@ export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(
 
   await psql(url, ["--single-transaction", "-f", bootstrap.file]);
   const {stdout} = await psql(url, ["-At", "-c", "SELECT migration_id FROM vibe_meta.schema_migrations ORDER BY migration_id"]);
-  const applied = new Set(stdout.split(/\\r?\\n/).map(v => v.trim()).filter(Boolean));
+  const applied = new Set(stdout.split("\n").map(v => v.trim()).filter(Boolean));
 
   const pending = files.filter(file => !applied.has(file.id));
   for (const migration of pending) {
