@@ -17,7 +17,7 @@ The Stage 01 Docker image and CI test suite establish:
 - PostgreSQL 17.11 is the database baseline.
 - Apache AGE 1.7.0 is loaded.
 - pgvector 0.8.7 is loaded.
-- The official Apache AGE PG17 1.7.0 image is pinned by image digest.
+- The official Apache AGE PG17 1.7.0 release tag is used as the base image.
 - AGE and vector extensions are created during initialization.
 - vibe_migrator and vibe_runtime are separate login roles.
 - Both roles are NOSUPERUSER, NOCREATEDB, NOCREATEROLE, NOREPLICATION, and NOBYPASSRLS.
