@@ -51,13 +51,16 @@ export async function executeRetrieval({
   }
 
   if(vector){
-    const embedding=requestParameters[vector.query_parameter];
     if(!Object.hasOwn(requestParameters,vector.query_parameter)) throw new RetrievalExecutionError("MISSING_VECTOR_PARAMETER","Vector query parameter is missing",{parameter:vector.query_parameter});
     vectorCost=vector.top_k;
-    vectorResult=await executeVector({catalog,catalogRef:vector.catalog_ref,embedding,topK:vector.top_k,maxResults:ir.limits.max_results,maxCost:ir.limits.max_cost,identityField:vector.identity_field,context,db,requestId});
   }
 
   if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
+
+  if(vector){
+    const embedding=requestParameters[vector.query_parameter];
+    vectorResult=await executeVector({catalog,catalogRef:vector.catalog_ref,embedding,topK:vector.top_k,maxResults:ir.limits.max_results,maxCost:ir.limits.max_cost-graphCost,identityField:vector.identity_field,context,db,requestId});
+  }
 
   const graphCandidates=graph?normalizeRetrievalRows({rows:graphResult.rows,columns:graphResult.columns,identityField:graph.identity_field,source:"graph"}):[];
   const vectorCandidates=vector?normalizeRetrievalRows({rows:vectorResult.rows,columns:vectorResult.columns,identityField:vector.identity_field,source:"vector"}):[];
