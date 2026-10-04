@@ -240,15 +240,25 @@ Exact next action: continue Stage 13 Graph Studio with live Graph API/Schema Cat
 In progress:
 - Vibe UI design-system reference contracts restored;
 - Next.js Graph Studio shell and first SVG canvas spike implemented;
-- semantic-token/Base UI audit added;
-- typecheck/build CI added.
+- authenticated Next.js proxy routes for Schema Catalog and Graph API;
+- tenant-scoped Schema Catalog provider with PostgreSQL request.jwt.claims binding;
+- Graph Schema and Traversal Builder foundations;
+- explicit loading/empty/error states;
+- regression test preventing static demo data from appearing in the authenticated Explorer.
+
+Correctness finding resolved:
+- the prior Explorer fetched authenticated Graph API rows but rendered a hard-coded five-node demo graph instead of those rows;
+- this could make different authenticated users appear to see identical graph data even when backend isolation was working;
+- the Explorer now renders only authorized query results and shows an explicit empty state when no rows are returned.
 
 Remaining before VALIDATED:
-1. authenticated Graph API integration;
-2. live Schema Catalog integration;
-3. Graph Schema and Traversal Builder screens;
-4. complete loading/empty/error states;
-5. responsive/accessibility browser evidence;
-6. 1,000-node/3,000-edge renderer benchmark and production renderer decision.
+1. browser-level authenticated tenant A/B evidence;
+2. responsive/accessibility browser evidence;
+3. production graph renderer benchmark and decision;
+4. complete end-to-end Graph API runtime composition against a live PostgreSQL/AGE environment.
 
-Exact next action: run Stage 13 CI, fix build/audit failures, then add live backend integration and benchmark evidence.
+Current branch: `stage13-tenant-ui-correctness`
+Current PR: #24
+Last commit: `1b9e83938dae6670531845df8c2871d337c3a415`
+Validation status: code/contract changes pushed; GitHub Actions result not yet available at handoff.
+Exact next action: run/observe the Stage 13 workflow for PR #24, fix any CI failures, then perform live authenticated tenant A/B browser evidence before marking Stage 13 VALIDATED.
