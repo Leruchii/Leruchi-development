@@ -18,6 +18,7 @@ test("resolves only Schema Catalog vector sources",()=>{
   assert.equal(source.operator,"<=>");
   assert.throws(()=>resolveVectorCatalog(catalog,"unknown.embedding"),/not visible/);
   assert.throws(()=>resolveVectorCatalog(catalog,"documents;DROP"),/Invalid vector catalog/);
+  assert.throws(()=>resolveVectorCatalog({vectors:{"incomplete.embedding":{dimensions:3,distanceMetric:"cosine"}}},"incomplete.embedding"),/Invalid schema/);
 });
 
 test("compiles parameterized pgvector retrieval with catalog-trusted identifiers",()=>{
