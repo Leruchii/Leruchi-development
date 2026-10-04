@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 09 — Graph Mutations
+- Current stage: 10 — JavaScript SDK
 - Current status: VALIDATED
-- Last completed stage: 09 — Graph Mutations
-- Last validated commit: `05dfa5205df61f7158a750b60bb9c81b1a20f437`
+- Last completed stage: 10 — JavaScript SDK
+- Last validated commit: `62366581a44183ed500a121ec3c9890d72ef21c5`
 - Default branch: `main`
-- Next implementation target: Stage 10 — JavaScript SDK
+- Next implementation target: Stage 11 — CLI
 
 ## Verified state
 
@@ -22,6 +22,16 @@ Stage 03 is the Supabase Compatibility Core:
 - DEFERRED: Realtime to Stage 12, Storage until a concrete product requirement, Supavisor/pooling to infrastructure/cloud work when topology and connection requirements are known.
 
 Stage 09 implementation passed unit, adversarial, and database-backed RLS mutation CI on the Stage 09 branch.
+
+Stage 10 implementation passed focused JavaScript SDK CI:
+- query builder tests passed;
+- typed parameter binding tests passed;
+- mutation builder tests passed;
+- unsafe identifier/depth/result guardrail tests passed;
+- engine-fragment rejection tests passed;
+- HTTP transport bearer-token/path test passed;
+- SDK module import passed.
+- Stage 10 PR #12 was merged to main as `62366581a44183ed500a121ec3c9890d72ef21c5`.
 
 ## Stage 09 objective
 
@@ -78,11 +88,25 @@ Stage 09 may be marked `VALIDATED` only when:
 - blockers and unknowns are explicit;
 - the next stage is identified.
 
+## Stage 10 implementation
+
+Implemented:
+- `packages/vibe-sdk/index.mjs`
+- `packages/vibe-sdk/package.json`
+- `packages/vibe-sdk/README.md`
+- `tests/sdk/sdk.test.mjs`
+- `.github/workflows/stage-10-javascript-sdk.yml`
+- `prompts/10-javascript-sdk.md`
+- `knowledge/decisions/stage-10-javascript-sdk.md`
+
+The SDK exposes engine-neutral Query IR v1 and Mutation IR v1 builders, typed parameter binding, client-side guardrails, injectable transport, and a default authenticated HTTP transport.
+
+The SDK does not claim server authorization, Schema Catalog validation, tenant assignment, compilation, RLS, or database execution. The default HTTP route names are a transport contract and require later Graph API/runtime validation.
+
 ## Do not start yet
 
-Do not start these stages while Stage 09 remains unfinished:
+Do not start these stages while Stage 10 remains unfinished:
 
-- 10 — JavaScript SDK
 - 11 — CLI
 - 12 — Graph Realtime
 - 13 — Graph Studio
@@ -99,9 +123,6 @@ The following remain open unless newer repository evidence resolves them:
 - shared runtime-role context propagation from PostgREST into the execution engine;
 - planner/compiler selection beyond the current AGE path;
 - recursive CTE fallback;
-- exact mutation IR shape and authorization model;
-- AGE mutation privilege matrix;
-- mutation conflict/concurrency semantics;
 - vector index strategy;
 - Realtime transport and authorization;
 - Storage authorization/object isolation;
@@ -157,6 +178,14 @@ Use these terms exactly:
 
 ## Last handoff update
 
-Repository handoff/checkpoint protocol introduced after Stage 08 validation.
+Stage 10 is validated and merged.
 
-Exact next action: begin Stage 10 — JavaScript SDK from the repository checkpoint.
+CI evidence:
+- Stage 10 workflow run `37195877514` — success.
+- Job `sdk-tests` passed all SDK tests and import verification.
+- PR #12 merged as `62366581a44183ed500a121ec3c9890d72ef21c5`.
+
+Known limitation:
+- Local container execution in this assistant environment could not reach GitHub, so executable validation was performed by repository GitHub Actions.
+
+Exact next action: begin Stage 11 — CLI from the repository checkpoint.
