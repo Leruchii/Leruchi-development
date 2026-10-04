@@ -16,7 +16,7 @@ export function validateMutation(ir,context,catalog){
   if(hasEngine(ir))e.push(err("ENGINE_FRAGMENT","Engine-specific query fragments are forbidden",[]));
   if(!OPS.has(ir.operation))e.push(err("INVALID_OPERATION","Unsupported mutation operation",["operation"]));
   if(!context?.tenantId)e.push(err("MISSING_TENANT_CONTEXT","Trusted tenant context is required",["context","tenantId"]));
-  if(!context?.capabilities?.includes("graph:write"))e.push(err("CAPABILITY_DENIED","graph:write capability is required",["context","capabilities"]));
+  if(!hasCapability(context,CAPABILITIES.GRAPH_WRITE))e.push(err("CAPABILITY_DENIED","graph:write capability is required",["context","capabilities"]));
   if(DESTRUCTIVE.has(ir.operation)&&!context?.capabilities?.includes("graph:delete"))e.push(err("CAPABILITY_DENIED","graph:delete capability is required",["context","capabilities"]));
   if(context?.role==="service_role"&&context?.trustedBackend!==true)e.push(err("SERVICE_ROLE_REQUIRES_TRUSTED_BACKEND","service_role is restricted to trusted backend execution",["context","trustedBackend"]));
   const g=catalog?.graphs?.[ir.graph];if(!g)e.push(err("UNKNOWN_GRAPH","Graph is not present in the Schema Catalog",["graph"]));
