@@ -59,11 +59,18 @@ export function createPgExecutor(client, context) {
       }
     },
     async execute(compiled, parameterMap) {
+      return this.executeBound({
+        ...compiled,
+        sql: compiled.sql,
+        values: [JSON.stringify(parameterMap)]
+      });
+    },
+    async executeBound(compiled) {
       const statementName = "vibe_" + createHash("sha256").update(compiled.sql).digest("hex").slice(0, 20);
       return client.query({
         name: statementName,
         text: compiled.sql,
-        values: [JSON.stringify(parameterMap)],
+        values: compiled.values,
         rowMode: "array"
       });
     },
