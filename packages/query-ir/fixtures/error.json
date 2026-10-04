@@ -1,0 +1,7 @@
+{
+  "version":"v1",
+  "code":"INVALID_IR",
+  "message":"The query IR is invalid",
+  "path":["steps",0,"edge"],
+  "details":{"reason":"unknown edge type"}
+}
