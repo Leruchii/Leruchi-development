@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install pinned Node dependencies
+        run: npm install --no-audit --no-fund
       - name: Run mutation unit and adversarial tests
         run: node --test tests/mutation/mutation.test.mjs
       - name: Build database image
