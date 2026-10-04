@@ -60,3 +60,23 @@ test("Graph API catalog discovery requires graph:read capability",async()=>{
     assert.equal(providerCalls,0);
   }finally{await api.close();}
 });
+
+test("Graph API retrieval enforces source-specific capabilities before catalog or execution",async()=>{
+  const secret="catalog-test-secret";
+  let providerCalls=0;
+  const api=createGraphApiServer({
+    pool:{connect:async()=>{throw new Error("database connection must not be required");}},
+    jwtSecret:secret,
+    catalogProvider:async()=>{providerCalls+=1;return {version:"v1",graphs:{},vectors:{}};},
+    port:0
+  });
+  const address=await api.listen();
+  const ir={version:"v1",kind:"retrieval_query",sources:{vector:{catalog_ref:"docs.embedding",query_parameter:"embedding",top_k:1,identity_field:"id"}},fusion:{strategy:"weighted_rrf",vector_weight:1,graph_weight:1},limits:{max_results:1,max_cost:10}};
+  try{
+    const response=await fetch("http://127.0.0.1:"+address.port+"/v1/retrieval/query",{method:"POST",headers:{authorization:"Bearer "+token("tenant_a",secret,["graph:read"]),"content-type":"application/json"},body:JSON.stringify({ir,parameters:{embedding:[1,0,0]}})});
+    const body=await response.json();
+    assert.equal(response.status,403);
+    assert.equal(body.code,"CAPABILITY_DENIED");
+    assert.equal(providerCalls,0);
+  }finally{await api.close();}
+});
