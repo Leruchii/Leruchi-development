@@ -31,14 +31,14 @@ test.describe("authenticated Graph Studio browser contract",()=>{
     const a=await browser.newPage({viewport:{width:1440,height:900}});
     await boot(a,"tenant_a");
     await a.getByRole("button",{name:"Run exploration"}).click();
-    await expect(a.getByText("Ada")).toBeVisible();
+    await expect(a.getByRole("button",{name:"Ada Person"})).toBeVisible();
     await expect(a.getByText("Grace")).toHaveCount(0);
     await a.close();
 
     const b=await browser.newPage({viewport:{width:1440,height:900}});
     await boot(b,"tenant_b");
     await b.getByRole("button",{name:"Run exploration"}).click();
-    await expect(b.getByText("Grace")).toBeVisible();
+    await expect(b.getByRole("button",{name:"Grace Person"})).toBeVisible();
     await expect(b.getByText("Ada")).toHaveCount(0);
     await b.close();
   });
