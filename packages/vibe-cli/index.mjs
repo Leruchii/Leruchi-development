@@ -3,6 +3,7 @@ import path from "node:path";
 import {execFile} from "node:child_process";
 import {promisify} from "node:util";
 import {createClient} from "../vibe-sdk/index.mjs";
+import {runMigrations} from "./migrate.mjs";
 
 const execFileAsync=promisify(execFile);
 const CONFIG_DIR=".vibe";
@@ -78,6 +79,10 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
       stdout(print({baseUrl:process.env.VIBE_BASE_URL||config.baseUrl||null,token:process.env.VIBE_TOKEN?"configured":"not configured"},true));return 0;
     }
     throw new Error("Usage: vibe config set|show");
+  }
+  if(command==="db"&&subcommand==="migrate"){
+    const result=await runMigrations({cwd});
+    stdout(print(result,Boolean(args.pretty)));return 0;
   }
   if(command==="schema"&&subcommand==="types"){
     const file=required(args,"file");
