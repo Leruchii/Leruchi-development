@@ -117,7 +117,9 @@ BEGIN
       'content_column', r.content_column, 'model', r.model, 'distance_metric', r.distance_metric,
       'source', 'explicit_registry', 'visibility', CASE WHEN r.tenant_id = '' THEN 'shared' ELSE 'tenant' END,
       'metadata', r.metadata)
-  FROM vibe_meta.vector_catalog_registry r;
+  FROM vibe_meta.vector_catalog_registry r
+  ON CONFLICT (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id)
+  DO UPDATE SET metadata = EXCLUDED.metadata;
 END;
 $$;
 
