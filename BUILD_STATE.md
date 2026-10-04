@@ -7,7 +7,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 14 — MCP Server
-- Current status: IN_PROGRESS
+- Current status: IMPLEMENTED — NOT YET VALIDATED
 - Last completed stage: 13 — Graph Studio
 - Last validated commit: `0cf069de83457decfe4f9667e8d687a4be7c1328`
 - Default branch: `main`
@@ -392,3 +392,38 @@ Remaining exit-gate work:
 4. update durable Stage 14 knowledge and final CI exit evidence.
 
 Do not mark Stage 14 VALIDATED until those exit conditions have executable evidence.
+
+
+## Stage 14 governance continuation — current handoff
+
+Implemented on branch `stage14-agent-governance` after the Stage 14 MCP live-integration checkpoint.
+
+Completed in this session:
+- added a scoped capability-grant contract in `packages/capability-policy/grants.mjs`;
+- defined `jti`, tenant, canonical capabilities, audience, expiry and optional scope requirements;
+- defined external control-plane revocation lookup semantics without adding an authorization database to the data plane;
+- added `packages/mutation-approval/index.mjs` for exact-mutation approval digests and tenant/expiry/control-plane verification;
+- added mutation preview mode that validates and reports bounded impact without executing;
+- destructive mutations now require an approval artifact in execute mode even when `graph:delete` is present;
+- added `packages/audit/index.mjs` and a Graph API audit-sink boundary;
+- audit events contain request ID, tenant, role, capabilities, route/tool, operation, graph, outcome, error code and approval ID only; secrets, JWTs and raw parameters are excluded;
+- MCP `graph.mutate` now exposes explicit `preview`/`execute` modes and a closed approval artifact schema;
+- Stage 14 CI now runs capability-grant, mutation-approval and audit contract tests.
+
+Security/architecture decision:
+- capability issuance and revocation remain control-plane responsibilities;
+- the data plane validates scoped capability artifacts and may consult an injected revocation verifier, but does not mint, persist, or mutate authorization state;
+- destructive agent actions require explicit, tenant-scoped, exact-mutation, time-bounded approval;
+- MCP remains an adapter over the Graph API and canonical Mutation IR.
+
+Not yet validated:
+- branch CI has not yet run on this checkpoint;
+- live MCP integration must be rerun with the new contracts;
+- no Stage 14 VALIDATED claim is permitted until all gates pass.
+
+Exact next action:
+1. run Stage 14 CI through a pull request;
+2. fix any executable failures;
+3. merge only after all required checks pass;
+4. update this checkpoint to VALIDATED only with CI evidence;
+5. then begin Stage 15 GraphRAG on the same ExecutionContext/IR/security boundary.

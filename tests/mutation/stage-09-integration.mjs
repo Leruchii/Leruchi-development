@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {Client} from "pg";
 import {executeGraphMutation} from "../../packages/mutation-execution/index.mjs";
+import {createMutationApprovalDigest} from "../../packages/mutation-approval/index.mjs";
 const catalog={graphs:{vibe_security:{labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",directions:["out","in","both"]}]}}};
 const context={trusted:true,tenantId:"vibe_tenant_a",role:"authenticated",capabilities:["graph:write","graph:delete"]};
 const dbClient=new Client({host:"127.0.0.1",port:5432,database:"vibedb",user:"vibe_tenant_a",password:"tenant-a-ci"});
@@ -12,7 +13,9 @@ const own=await executeGraphMutation({ir:create,context,catalog,requestParameter
 const updateB={version:"v1",kind:"graph_mutation",graph:"vibe_security",operation:"update_vertex",target:{label:"Account",field:"name",value:{param:"name"}},properties:{secret:"should-not-change"},parameters:[{name:"name",type:"string",required:true}]};
 assert.equal((await executeGraphMutation({ir:updateB,context,catalog,requestParameters:{name:"B1"},db})).count,0);
 const deleteB={version:"v1",kind:"graph_mutation",graph:"vibe_security",operation:"delete_vertex",target:updateB.target,parameters:updateB.parameters};
-assert.equal((await executeGraphMutation({ir:deleteB,context,catalog,requestParameters:{name:"B1"},db})).count,0);
+const deleteParameters={name:"B1"};
+const deleteApproval={id:"stage09-approval",tenant_id:"vibe_tenant_a",digest:createMutationApprovalDigest(deleteB,deleteParameters),expires_at:new Date(Date.now()+60000).toISOString()};
+assert.equal((await executeGraphMutation({ir:deleteB,context,catalog,requestParameters:deleteParameters,db,approval:deleteApproval,verifyApproval:async()=>true})).count,0);
 const cross={version:"v1",kind:"graph_mutation",graph:"vibe_security",operation:"create_edge",target:{label:"Account",edge:"KNOWS",from:{label:"Account",field:"name",value:{param:"from"}},to:{label:"Account",field:"name",value:{param:"to"}}},properties:{kind:"blocked"},parameters:[{name:"from",type:"string",required:true},{name:"to",type:"string",required:true}]};
 assert.equal((await executeGraphMutation({ir:cross,context,catalog,requestParameters:{from:"A1",to:"B1"},db})).count,0);
 }finally{await dbClient.end()}};

@@ -30,3 +30,9 @@ test("MCP tool schemas reject undeclared input fields",()=>{
     assert.equal(tool.inputSchema.additionalProperties,false,tool.name);
   }
 });
+
+test("MCP graph.mutate exposes preview and scoped approval controls",()=>{
+  const tool=MCP_TOOLS.find(tool=>tool.name==="graph.mutate");
+  assert.deepEqual(tool.inputSchema.properties.execution.properties.mode.enum,["preview","execute"]);
+  assert.equal(tool.inputSchema.properties.execution.properties.approval.additionalProperties,false);
+});
