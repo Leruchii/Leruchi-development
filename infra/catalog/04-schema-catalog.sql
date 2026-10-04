@@ -40,61 +40,76 @@ BEGIN
   SELECT
     v_catalog_version,
     'table',
-    t.table_schema,
-    t.table_name,
+    n.nspname,
+    c.relname,
     '',
     jsonb_build_object(
-      'table_type', t.table_type
+      'table_type', CASE c.relkind
+        WHEN 'p' THEN 'partitioned_table'
+        ELSE 'table'
+      END
     )
-  FROM information_schema.tables t
-  WHERE t.table_schema IN ('vibe_app', 'vibe_meta')
-    AND t.table_name NOT IN ('schema_catalog_entries', 'graph_catalog_registry');
+  FROM pg_catalog.pg_class c
+  JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname IN ('vibe_app', 'vibe_meta')
+    AND c.relkind IN ('r', 'p')
+    AND c.relname NOT IN ('schema_catalog_entries', 'graph_catalog_registry');
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
     v_catalog_version,
     'column',
-    c.table_schema,
-    c.table_name,
-    c.column_name,
+    n.nspname,
+    c.relname,
+    a.attname,
     jsonb_build_object(
-      'ordinal_position', c.ordinal_position,
-      'data_type', c.data_type,
-      'udt_schema', c.udt_schema,
-      'udt_name', c.udt_name,
-      'is_nullable', c.is_nullable,
-      'is_identity', c.is_identity,
-      'identity_generation', c.identity_generation
+      'ordinal_position', a.attnum,
+      'sql_type', format_type(a.atttypid, a.atttypmod),
+      'udt_name', t.typname,
+      'is_nullable', NOT a.attnotnull,
+      'is_identity', a.attidentity <> '',
+      'identity_generation', NULLIF(a.attidentity, ''),
+      'is_generated', a.attgenerated <> ''
     )
-  FROM information_schema.columns c
-  WHERE c.table_schema IN ('vibe_app', 'vibe_meta')
-    AND c.table_name NOT IN ('schema_catalog_entries', 'graph_catalog_registry');
+  FROM pg_catalog.pg_attribute a
+  JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+  JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+  JOIN pg_catalog.pg_type t ON t.oid = a.atttypid
+  WHERE n.nspname IN ('vibe_app', 'vibe_meta')
+    AND c.relkind IN ('r', 'p')
+    AND a.attnum > 0
+    AND NOT a.attisdropped
+    AND c.relname NOT IN ('schema_catalog_entries', 'graph_catalog_registry');
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
     v_catalog_version,
     'relationship',
-    tc.constraint_schema,
-    tc.table_name,
-    kcu.column_name,
+    src_n.nspname,
+    src_c.relname,
+    src_a.attname,
     jsonb_build_object(
-      'constraint_name', tc.constraint_name,
-      'foreign_table_schema', ccu.table_schema,
-      'foreign_table_name', ccu.table_name,
-      'foreign_column_name', ccu.column_name
+      'constraint_name', con.conname,
+      'foreign_table_schema', dst_n.nspname,
+      'foreign_table_name', dst_c.relname,
+      'foreign_column_name', dst_a.attname
     )
-  FROM information_schema.table_constraints tc
-  JOIN information_schema.key_column_usage kcu
-    ON kcu.constraint_schema = tc.constraint_schema
-   AND kcu.constraint_name = tc.constraint_name
-   AND kcu.table_name = tc.table_name
-  JOIN information_schema.constraint_column_usage ccu
-    ON ccu.constraint_schema = tc.constraint_schema
-   AND ccu.constraint_name = tc.constraint_name
-  WHERE tc.constraint_type = 'FOREIGN KEY'
-    AND tc.constraint_schema IN ('vibe_app', 'vibe_meta');
+  FROM pg_catalog.pg_constraint con
+  JOIN pg_catalog.pg_class src_c ON src_c.oid = con.conrelid
+  JOIN pg_catalog.pg_namespace src_n ON src_n.oid = src_c.relnamespace
+  JOIN pg_catalog.pg_class dst_c ON dst_c.oid = con.confrelid
+  JOIN pg_catalog.pg_namespace dst_n ON dst_n.oid = dst_c.relnamespace
+  JOIN LATERAL generate_subscripts(con.conkey, 1) s(i) ON true
+  JOIN pg_catalog.pg_attribute src_a
+    ON src_a.attrelid = con.conrelid
+   AND src_a.attnum = con.conkey[s.i]
+  JOIN pg_catalog.pg_attribute dst_a
+    ON dst_a.attrelid = con.confrelid
+   AND dst_a.attnum = con.confkey[s.i]
+  WHERE con.contype = 'f'
+    AND src_n.nspname IN ('vibe_app', 'vibe_meta');
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
