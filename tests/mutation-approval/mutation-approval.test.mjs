@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createMutationApprovalDigest,verifyMutationApproval,mutationImpact} from "../../packages/mutation-approval/index.mjs";
 
-const context={tenantId:"tenant_a",role:"authenticated",capabilities:["graph:write","graph:delete"]};
+const context={trusted:true,tenantId:"tenant_a",role:"authenticated",capabilities:["graph:write","graph:delete"],trustedBackend:false};
 const ir={version:"v1",kind:"graph_mutation",graph:"g",operation:"delete_vertex",target:{label:"Person",field:"id",value:1},parameters:[]};
 
 test("destructive mutations require approval and preview is represented as impact",async()=>{
