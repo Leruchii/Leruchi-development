@@ -10,7 +10,7 @@ function token(tenant_id:string){
 }
 
 test("Studio proxy composes authenticated Graph API results from PostgreSQL/AGE/RLS",async({page,context})=>{
-  await context.addCookies([{name:"vibe_access_token",value:token("vibe_tenant_a"),url:"http://127.0.0.1:3000"}]);
+  await context.addCookies([{name:"vibe_access_token",value:token("vibe_tenant_a"),url:"http://127.0.0.1:3100"}]);
   const catalog=page.waitForResponse(response=>response.url().endsWith("/api/studio/catalog")&&response.status()===200);
   await page.goto("/");
   await catalog;
