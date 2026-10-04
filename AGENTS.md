@@ -1,626 +1,246 @@
-# VibePlatform AI Engineering Constitution — UI Rules
+# VibePlatform AI Engineering Constitution
 
-## UI Engineering Rules
+VibePlatform is a secure developer platform that makes relational, graph, vector, realtime, and AI-agent access feel like one database.
 
-The VibePlatform dashboard and Graph Studio use:
+This file is the top-level engineering contract for coding agents. It governs architecture, security, implementation order, evidence, and UI work.
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS v4
-- shadcn/ui
-- Base UI
-- lucide-react
-- React Hook Form
-- Zod
-- Sonner for toast notifications
+## 1. Core architecture
 
-Base UI is the primitive layer.
+VibePlatform is organised into five planes:
 
-Radix UI is NOT permitted in VibePlatform UI code.
+1. **Developer Plane** — JavaScript SDK, CLI, Dashboard, Graph Studio, MCP and REST surfaces.
+2. **API / Compiler Plane** — Graph API, Query IR, validation, planner, compilers, Schema Catalog, RAG API, mutation engine and policy evaluation.
+3. **Data Plane** — PostgreSQL, Apache AGE, pgvector, RLS, migrations and outbox/event data.
+4. **Platform Services Plane** — Auth, PostgREST, Realtime, Storage and connection pooling, reusing Supabase services where appropriate.
+5. **Cloud Control Plane** — project lifecycle, provisioning, metering, billing, backups, observability, regions and hosted operations.
 
-The project must use the VibePlatform vibe-ui skill whenever implementing, modifying, reviewing, or testing UI.
+The public product contract must not depend directly on Apache AGE. AGE is an implementation detail behind Vibe abstractions.
 
-## 1. UI is a System, Not Page-by-Page Styling
+## 2. Core database rules
 
-Do not invent visual styling independently for individual pages.
+- PostgreSQL is the system of record and the primary security boundary.
+- Apache AGE provides graph execution.
+- pgvector provides vector search.
+- Versions must be pinned.
+- Runtime application paths must not require PostgreSQL superuser privileges.
+- RLS must remain enabled wherever tenant/user isolation depends on it.
+- Do not add Neo4j, ArangoDB, Pinecone, a second graph engine, or another database without an explicit architecture decision.
 
-Every page must use the shared:
+## 3. Query boundary
 
-- design tokens
-- page layouts
-- app shell
-- UI primitives
-- UI patterns
-- spacing rules
-- typography rules
-- accessibility rules
-- loading/empty/error states
+All graph-capable client surfaces converge on Vibe Query IR.
 
-Build reusable patterns once and compose pages from them.
+Canonical flow:
 
-Preferred shared patterns include:
+```
+SDK / REST / MCP / AI Agent
+        ↓
+     Query IR
+        ↓
+Schema + security validation
+        ↓
+Cost / depth / limit validation
+        ↓
+Query planner
+        ↓
+AGE compiler or PostgreSQL compiler
+        ↓
+Secure execution
+        ↓
+PostgreSQL / AGE
+```
 
-- PageHeader
-- PageContainer
-- PageSection
-- MetricCard
-- FilterBar
-- CommandMenu
-- CodeBlock
-- EmptyState
-- DataTable
-- ShimmeringLoader
+Rules:
 
-## 2. Colour Rules
+- Query IR is engine-neutral.
+- The backend owns compilation.
+- Normal clients never submit unrestricted raw Cypher.
+- Raw Cypher, if supported, is limited to explicitly trusted backend/service roles.
+- Parameterise values; never build SQL/Cypher by concatenating untrusted strings.
+- The recursive-CTE PostgreSQL path is a fallback implementation, not a second public API.
 
-Never hard-code colours in components.
+## 4. Schema Catalog
 
-Never use:
+The Schema Catalog is the authoritative source for relational, graph and vector metadata consumed by:
 
-- hex colours
-- RGB colours
-- HSL colours
-- Tailwind palette colours such as `bg-blue-500`
-- arbitrary colour values
+- Graph API
+- validation
+- compilers
+- SDK type generation
+- MCP
+- Graph Studio
+- GraphRAG
 
-Use VibePlatform semantic tokens.
+Studio and agents must not invent schema metadata independently.
 
-Approved examples:
+## 5. Security is a merge blocker
 
-- `bg-background`
-- `bg-card`
-- `bg-popover`
-- `bg-muted`
-- `bg-accent`
-- `text-foreground`
-- `text-muted-foreground`
-- `text-foreground-lighter`
-- `border-border`
-- `border-border-control`
-- `ring-ring`
-- `bg-primary-solid`
-- `text-primary-solid-foreground`
-- `text-primary`
-- `text-warning`
-- `text-info`
-- `bg-destructive`
+Tenant isolation is non-negotiable.
 
-Colour changes must be made through the VibePlatform token system.
+A tenant must not be able to:
 
-Do not modify component colours to compensate for a token problem.
+- read another tenant's rows;
+- update or delete another tenant's rows;
+- traverse into another tenant's graph data;
+- infer another tenant's data through graph relationships;
+- receive another tenant's realtime events.
 
-## 3. Token Rules
+Security requirements:
 
-The design system is based on semantic OKLCH tokens.
+- PostgreSQL/RLS enforcement is authoritative.
+- UI hiding is never authorisation.
+- service_role bypasses RLS and must never be handed unrestricted to normal clients or AI agents.
+- AI/MCP operations use scoped capabilities.
+- Destructive agent operations require an explicit workflow such as dry-run/diff/impact review/approval/audit.
+- Security tests block merging when they fail.
 
-The primary branding control is:
+## 6. Realtime
+
+Graph realtime events are ID-only/minimal events.
+
+Preferred flow:
+
+```
+database mutation
+→ outbox/trigger event
+→ realtime notification with identifiers
+→ client refetches through Graph API
+→ RLS applies
+→ UI updates
+```
+
+Do not place sensitive row/graph payloads directly in realtime events.
+
+## 7. Supabase compatibility
+
+Reuse Supabase services where they help the product instead of reimplementing them prematurely:
+
+- Auth
+- PostgREST
+- Realtime
+- Storage
+- pooler / connection infrastructure
 
-`--hue`
+Vibe's differentiated layer is the graph/vector/compiler/security developer experience, not a wholesale rewrite of Supabase.
 
-The default hue is currently 250.
-
-The hue is a placeholder and may be changed centrally.
-
-Do not redesign individual component colours when rebranding.
-
-The token system controls:
-
-- surface
-- foreground
-- muted foreground
-- tertiary foreground
-- card
-- popover
-- borders
-- primary
-- destructive
-- warning
-- info
-- focus ring
-- elevation
-
-Elevation is primarily represented through lightness rather than heavy shadows.
-
-## 4. Density Rules
-
-Use the established VibePlatform density system.
-
-Tables:
-
-- 28px row height
-
-Inputs:
-
-- 28px small
-- 40px default
-- 44px large
-
-Buttons:
-
-- h-9 compact
-- h-10 default
-- h-11 large
-
-Radii:
-
-- 4px small
-- 8px large
-- 16px extra large
-
-Icons:
-
-- 12px
-- 16px
-- 18px
-
-Spacing:
-
-- 4px
-- 8px
-- 16px
-- 32px
-- 64px
-
-Typography:
-
-- Inter for interface text
-- Source Code Pro or equivalent monospace for code, IDs and keys
-
-Do not invent arbitrary spacing unless it is explicitly part of an approved layout constant.
-
-## 5. Layout Rules
-
-Every page must be classified as exactly one of:
-
-### Type A — Settings/Form
-
-Use for:
-
-- project settings
-- API keys
-- JWT configuration
-- auth providers
-- billing
-- database settings
-
-Use PageLayout and PageSection.
-
-Default maximum width:
-
-1200px.
-
-Use the established 4/8 column relationship.
-
-### Type B — Data
-
-Use for:
-
-- users
-- storage
-- logs
-- policy lists
-- project data
-
-Structure:
-
-- Page header
-- Optional tabs
-- Filter bar
-- Primary action
-- Table
-- Pagination/infinite scroll
-
-Tables use 28px rows and sticky headers.
-
-Small record details should generally open in a side sheet rather than navigating away.
-
-### Type C — Canvas
-
-Use for:
-
-- Graph Explorer
-- Traversal Builder
-- SQL Editor
-- Table Editor
-- Policy Tester
-- other workspace-style editors
-
-Canvas pages must not use a normal page container.
-
-They fill the available height.
-
-Default panel proportions:
-
-- list: 20%
-- canvas: 55%
-- inspector: 25%
-
-Use:
-
-`ResizablePanelGroup orientation="horizontal"`
-
-Never use `direction`.
-
-## 6. App Shell
-
-Every signed-in VibePlatform page uses the shared application shell.
-
-Structure:
-
-- Skip link
-- Optional banner
-- Header
-- Icon rail
-- Section sidebar
-- Main content
-- Optional right panel
-
-The shell:
-
-- occupies the viewport
-- does not scroll
-- allows the main content to scroll independently
-
-The main content must have:
-
-`id="main"`
-
-The skip link must be the first focusable element.
-
-The right panel is optional and may contain:
-
-- assistant
-- inspector
-- logs
-
-Below the xl breakpoint it may become an overlay.
-
-## 7. Container Rules
-
-Use Tailwind v4 container queries.
-
-Do not design pages exclusively around viewport breakpoints.
-
-Approved container sizes:
-
-- small: 768px
-- default: 1200px
-- large: 1600px
-- full: unrestricted
-
-Approved horizontal padding:
-
-- `px-4`
-- `@lg:px-6`
-- `@xl:px-10`
-
-Use:
-
-`@container`
-
-on page wrappers.
-
-## 8. Base UI Rules
-
-Never introduce Radix code.
-
-Forbidden:
-
-- `@radix-ui/*`
-- `radix-ui`
-- `@base-ui-components/react`
-- `asChild`
-- Radix `data-[state=...]`
-- Radix CSS variables
-
-Use:
-
-- `@base-ui/react`
-- `render`
-- Base UI state attributes
-- Base UI CSS variables
-- Positioner
-- Popup
-- Backdrop
-- Tab
-- Panel
-
-For non-button rendered elements, use:
-
-`nativeButton={false}`
-
-where required.
-
-## 9. Base UI State Rules
-
-Use Base UI state attributes.
-
-Examples:
-
-- `data-open`
-- `data-closed`
-- `data-popup-open`
-- `data-panel-open`
-- `data-checked`
-- `data-unchecked`
-- `data-active`
-- `data-starting-style`
-- `data-ending-style`
-- `data-highlighted`
-
-Do not use Radix state selectors.
-
-## 10. Popup Rules
-
-Base UI popups must use the appropriate positioning structure.
-
-Do not copy Radix popup structure blindly.
-
-For popovers, menus and similar components, use:
-
-- Portal
-- Positioner
-- Popup
-
-Positioning properties such as:
-
-- side
-- align
-- sideOffset
-
-belong on the Positioner.
-
-## 11. Accessibility
-
-Every page must support:
-
-- keyboard navigation
-- visible focus
-- skip navigation
-- focus restoration
-- screen-reader labels
-- accessible tables
-- accessible icon-only buttons
-- status information that does not depend solely on colour
-
-Icon-only buttons require:
-
-`aria-label`
-
-Tables require a caption or appropriate aria-label.
-
-Dialogs must restore focus to their trigger.
-
-## 12. UI States
-
-Every meaningful UI must account for:
-
-### Loading
-
-Use a skeleton matching the final geometry.
-
-Do not use a bare full-page spinner.
-
-### Empty
-
-Provide:
-
-- icon
-- concise explanation
-- primary action
-- documentation link where useful
-
-### Error
-
-Provide:
-
-- what failed
-- request ID where available
-- retry action
-
-Never display raw stack traces to users.
-
-### Truncated
-
-Graph and data views must clearly indicate when result limits have been reached.
-
-## 13. Graph UI Rules
-
-Graph Explorer is a Type C canvas.
-
-It contains:
-
-### Left
-
-- labels
-- edge types
-- counts
-- search
-
-### Centre
-
-- graph canvas
-- zoom
-- fit
-- layout
-- depth control
-
-### Right
-
-- selected node/edge inspector
-- properties
-- ID
-- expand neighbours
-
-Always show the row/result cap.
-
-Default graph result cap:
-
-Maximum:
-
-Depth must remain bounded.
-
-The current UI guide specifies a default depth of 2 for the Graph Explorer presentation and an architecture-level maximum of 6; implementation must follow the validated backend contract rather than silently changing these limits.
-
-## 14. Traversal Builder Rules
-
-Traversal Builder is Type C.
-
-Left:
-
-- start node
-- edge
-- direction
-- depth range
-- target label
-
-Centre:
-
-- result table
-- graph preview
-
-Right:
-
-- compiled query
-- JSON traversal specification
-- copy controls
-
-Compiled query and traversal specification are read-only.
-
-Normal users must never receive a free-text Cypher editor.
-
-Clients send a structured traversal specification.
-
-The backend owns compilation.
-
-## 15. Policy Tester Rules
-
-Policy Tester is Type C.
-
-Left:
-
-- role selection
-- JWT claims
-
-Centre:
-
-- request execution
-- visible rows
-- hidden rows
-
-Right:
-
-- policies that applied
-- matching policy clause
-
-Clearly explain that service_role bypasses RLS.
-
-Never imply that Policy Tester can safely emulate service-role RLS behaviour.
-
-## 16. UI Audit Is Mandatory
-
-Before considering UI work complete, run:
-
-`scripts/audit-baseui.sh src`
-
-The audit must exit successfully.
-
-Error findings include:
-
-- Radix imports
-- asChild
-- Radix state selectors
-- Radix CSS variables
-- deprecated Base UI package
-- delayDuration
-- incorrect resizable direction
-- incorrect checkbox indeterminate usage
-
-Warnings must also be reviewed.
-
-Do not increase existing UI lint violations.
-
-The preferred ratchet direction is:
-
-current violations <= previous violations
-
-Never allow a UI change to increase technical debt without explicit approval.
-
-## 17. UI Testing
-
-Every UI implementation must be checked at:
-
-- 360px
-- 768px
-- 1440px
-
-and in:
-
-- dark theme
-- light theme
-
-For interactive components verify:
-
-- Keyboard-only operation
-- Focus visibility
-- Focus restoration
-- Correct open/close behaviour
-- Correct loading state
-- Correct empty state
-- Correct error state
-- Correct responsive behaviour
-- Correct semantic tokens
-- Base UI audit
-
-## 18. Source of Truth
-
-When UI instructions conflict:
-
-1. Repository implementation and tests
-2. Current VibePlatform UI skill
-3. VibePlatform knowledge base
-4. Approved architecture decisions
-5. This constitution
-6. General framework knowledge
-
-Do not silently invent a solution when VibePlatform-specific guidance is missing.
-
-Mark the issue as an architectural or UI decision requiring validation.
-
-## 19. Do Not Overbuild
-
-Do not introduce a new:
-
-- component library
-- primitive library
-- styling system
-- colour system
-- layout system
-- graph canvas library
-
-without an explicit architecture decision or spike.
-
-Use the existing VibePlatform system first.
-
-## 20. Definition of Done for UI
-
-A UI feature is not complete merely because it renders.
-
-It is complete when:
-
-- the correct page type is used
-- shared patterns are reused
-- semantic tokens are used
-- no raw colours exist
-- no arbitrary layout values exist outside approved constants
-- no Radix code exists
-- Base UI patterns are correct
-- loading/empty/error states exist
-- keyboard navigation works
-- focus behaviour works
-- light and dark themes work
-- responsive layouts work
-- audit-baseui.sh passes
-- relevant tests pass
-- documentation/knowledge is updated
+## 8. OSS and Cloud separation
+
+The open-source repository contains the self-hostable product/runtime and developer tooling.
+
+The private Vibe Cloud control plane may contain hosted provisioning, billing, metering, regional orchestration and commercial operations.
+
+Do not leak private-cloud-only dependencies into the OSS runtime contract.
+
+## 9. Canonical build order
+
+Build stages are sequential unless an explicit architecture decision changes them:
+
+00. Repository Bootstrap
+01. PostgreSQL + AGE + pgvector Spike
+02. RLS + AGE Security Spike
+03. Supabase Compatibility Stack
+04. Schema Catalog
+05. Vibe Query IR
+06. Query Validation and Cost Guardrails
+07. Apache AGE Compiler
+08. Secure Execution Engine
+09. Graph Mutations
+10. JavaScript SDK
+11. CLI
+12. Graph Realtime
+13. Graph Studio
+14. MCP Server
+15. GraphRAG
+16. Observability
+17. Backup and Recovery
+18. Vibe Cloud Control Plane
+19. Billing and Metering
+20. Production Readiness
+
+Do not implement later stages simply because they are interesting.
+
+## 10. First technical milestone
+
+Before dashboard, MCP, GraphRAG, billing or cloud work, prove:
+
+- PostgreSQL starts;
+- AGE loads;
+- pgvector loads;
+- versions are pinned;
+- runtime roles are separated;
+- graph creation works;
+- vertex/edge creation and traversal work;
+- vector storage/query works;
+- two-tenant RLS isolation works;
+- adversarial cross-tenant graph tests fail closed.
+
+## 11. Agent workflow
+
+Before coding:
+
+1. Read this file.
+2. Read the relevant `knowledge/*.md` files.
+3. Load the relevant `.agents/skills/*/SKILL.md` files.
+4. Inspect the repository and existing tests.
+5. Identify the current build stage.
+6. Make the smallest change that completes that stage.
+7. Run the relevant tests.
+8. Update knowledge/decisions when a new fact is learned.
+
+When finished, report:
+
+- what changed;
+- files changed;
+- commands/tests executed;
+- results;
+- architecture decisions discovered;
+- security implications;
+- unresolved UNKNOWN items;
+- the next stage.
+
+Never claim a feature works without evidence from an executed test or verified runtime check.
+
+## 12. Knowledge states
+
+Use these statuses consistently:
+
+- DECIDED — approved design decision.
+- VALIDATED — proven by executable evidence.
+- PROPOSED — candidate design awaiting approval/proof.
+- EXPERIMENTAL — being tested; not a contract.
+- DEFERRED — intentionally later.
+- REJECTED — intentionally not used.
+- UNKNOWN — insufficient evidence/decision.
+
+Do not silently convert UNKNOWN or PROPOSED items into product contracts.
+
+## 13. UI constitution
+
+UI work additionally follows `.agents/skills/vibe-ui/SKILL.md`.
+
+Core UI constraints:
+
+- Next.js + React + TypeScript.
+- Tailwind CSS v4.
+- shadcn/ui backed by Base UI.
+- Do not introduce Radix.
+- Semantic OKLCH tokens only; no component-local hex/rgb/Tailwind palette colours.
+- Type A Settings/Form, Type B Data, Type C Canvas.
+- Loading, empty and error states are required.
+- Test 360px, 768px and 1440px; dark and light themes.
+- Graph query UI must not expose unrestricted free-form Cypher to normal users.
+- Run `scripts/audit-baseui.sh src` once that script exists in the UI stage.
+
+## 14. Do not overbuild
+
+Until justified by evidence, do not add:
+
+- automatic graph reflection;
+- AI-generated production schemas;
+- dynamic multi-engine routing;
+- distributed cache layers;
+- multi-engine optimisers;
+- automatic index advisors;
+- unrelated microservices.
+
+Prefer a small, auditable PostgreSQL-centred implementation.
