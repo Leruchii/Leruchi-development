@@ -7,11 +7,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 16 — Observability
-- Current status: READY_TO_BUILD
+- Current status: IMPLEMENTED — NOT YET VALIDATED
 - Last completed stage: 15 — GraphRAG
 - Last validated commit: `cb17e926ea668f0815923634aa46351bc0072ca9` (Stage 15 GraphRAG exit evidence passed; documentation checkpoints are `777efa73e98c624da605f58a5009673a03101334` and `7e7d132f55c127ccf3e4b5ded3726f704b3e5f2c`)
 - Default branch: `main`
-- Next implementation target: Build Stage 16 Observability around the existing request IDs, audit events, execution timings and retrieval metadata without leaking tenant data or secrets
+- Current branch: `stage16-observability` (PR #42)
+- Next implementation target: Validate Stage 16 telemetry end-to-end in CI, then merge and advance to Stage 17
 
 ## Verified state
 
@@ -469,3 +470,50 @@ Stage 15 exit gate passed:
 - Stage 15 is now VALIDATED and merged through PRs #39, #40 and #41.
 
 Exact next action: begin Stage 16 Observability; preserve the existing security and IR boundaries while adding structured telemetry, timing, metrics and traces.
+
+
+## Stage 16 — Observability handoff
+
+Implementation started on branch stage16-observability in PR #42.
+
+Implemented:
+- packages/observability/index.mjs: redaction-safe structured telemetry, bounded metric names/labels, histogram observations, W3C traceparent parsing, generated trace/span IDs;
+- Graph API request tracing, request/trace response headers, HTTP request metrics and bounded security-event metrics;
+- audit events can carry trace ID and duration while preserving the prior shape when those fields are absent;
+- graph query timing and database execution timing;
+- mutation timing and database execution timing;
+- hybrid GraphRAG retrieval timing;
+- focused observability and Graph API telemetry tests;
+- Stage 16 CI workflow and stage-specific knowledge/prompt.
+
+Security invariants:
+- telemetry hashes tenant identifiers;
+- credentials, raw query text, SQL/Cypher, request parameters and embeddings are excluded from telemetry;
+- metric names and labels are bounded;
+- observability does not authorize, execute, or bypass PostgreSQL/RLS;
+- existing audit and ExecutionContext boundaries remain authoritative.
+
+Validation:
+- Stage 16 workflow run 37237020122 passed on the earlier branch head before the final Graph API telemetry regression test was added.
+- Architecture Regression Audit also passed on that earlier run.
+- Final branch head is b19000bd82e26b6bf2a2b6ffcfdf60241fd947fb after documentation commits; a fresh Stage 16 run is required before merge.
+- Other repository workflows triggered by the PR are still running in the shared GitHub Actions queue; no failed conclusion has been observed for the final head yet.
+
+Files/packages changed:
+- packages/observability/index.mjs
+- packages/audit/index.mjs
+- packages/graph-api/index.mjs
+- packages/execution-engine/index.mjs
+- packages/mutation-execution/index.mjs
+- packages/retrieval-execution/index.mjs
+- tests/observability/observability.test.mjs
+- tests/observability/graph-api-observability.test.mjs
+- .github/workflows/stage-16-observability.yml
+- knowledge/decisions/stage-16-observability.md
+- prompts/16-observability.md
+
+Exact next action:
+1. Wait for the fresh Stage 16 workflow on the final head and inspect its job result.
+2. If green, inspect the repository-wide required checks for failures; fix real regressions rather than ignoring them.
+3. Merge PR #42 only after required checks are green.
+4. Update BUILD_STATE on main to Stage 16 VALIDATED and Stage 17 READY_TO_BUILD.
