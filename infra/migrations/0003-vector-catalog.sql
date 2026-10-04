@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS vibe_meta.vector_catalog_registry (
   schema_name text NOT NULL,
   relation_name text NOT NULL,
   embedding_column text NOT NULL,
+  key_column text NOT NULL,
+  content_column text NOT NULL DEFAULT '',
   dimensions integer NOT NULL CHECK (dimensions > 0 AND dimensions <= 65536),
   model text NOT NULL DEFAULT '',
   distance_metric text NOT NULL CHECK (distance_metric IN ('cosine', 'inner_product', 'l2')),
@@ -113,7 +115,7 @@ BEGIN
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id, metadata)
   SELECT v_catalog_version, 'vector', r.schema_name, r.relation_name, r.embedding_column, r.tenant_id,
-    jsonb_build_object('catalog_ref', r.catalog_ref, 'dimensions', r.dimensions, 'model', r.model,
+    jsonb_build_object('catalog_ref', r.catalog_ref, 'dimensions', r.dimensions, 'key_column', r.key_column, 'content_column', r.content_column, 'model', r.model,
       'distance_metric', r.distance_metric, 'source', 'explicit_registry',
       'visibility', CASE WHEN r.tenant_id = '' THEN 'shared' ELSE 'tenant' END,
       'metadata', r.metadata)
