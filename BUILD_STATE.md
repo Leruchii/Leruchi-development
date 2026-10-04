@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 13 — Graph Studio
-- Current status: VALIDATED
-- Last completed stage: 12 — Graph Realtime
-- Last validated commit: `69842c6fa6dd43c5b44b3a96a962bed6aa177565`
+- Current stage: 14 — MCP Server
+- Current status: IN_PROGRESS
+- Last completed stage: 13 — Graph Studio
+- Last validated commit: `0cf069de83457decfe4f9667e8d687a4be7c1328`
 - Default branch: `main`
-- Next implementation target: Stage 14 MCP integration hardening / scoped capability issuance, then Stage 15 GraphRAG
+- Next implementation target: Finish Stage 14 destructive-operation approval, auditability, and capability issuance/revocation design; then Stage 15 GraphRAG
 
 ## Verified state
 
@@ -359,3 +359,36 @@ Current active PR: #30.
 PR #29 was confirmed stale/unmerged; its missing browser renderer evidence was folded into PR #30 rather than treated as merged history.
 
 Next exact action after PR #30 merges: begin the next canonical unfinished stage, Stage 14 integration hardening, with scoped AI/MCP capability issuance, revocation/audit semantics, and live Graph API integration evidence. Do not jump to cloud control-plane work.
+
+
+## Stage 14 current checkpoint
+
+Stage 14 is IN_PROGRESS.
+
+Validated implementation now merged to main:
+- PR #32: live MCP stdio → Graph API → PostgreSQL/AGE/RLS integration;
+- PR #33: canonical capability vocabulary/route policy and request-ID propagation into ExecutionContext.
+
+Current MCP tools:
+- schema.discover
+- graph.query
+- graph.traverse
+- graph.mutate
+
+Security invariants:
+- tenant identity is derived exclusively from the authenticated access token;
+- tool schemas reject undeclared fields;
+- Schema Catalog discovery requires graph:read;
+- Query IR requires graph:read;
+- graph mutations require graph:write;
+- destructive mutations require graph:delete;
+- MCP delegates execution to the existing Graph API and Secure Execution Engine;
+- arbitrary SQL/free-form Cypher remain unavailable.
+
+Remaining exit-gate work:
+1. define scoped capability issuance and revocation without putting an auth control-plane implementation into the data plane;
+2. define destructive-agent approval semantics (dry-run/impact/approval/audit) before allowing destructive MCP mutations;
+3. add structured audit events with request ID, tenant, capability, tool, operation, graph and outcome while excluding secrets/raw query values;
+4. update durable Stage 14 knowledge and final CI exit evidence.
+
+Do not mark Stage 14 VALIDATED until those exit conditions have executable evidence.

@@ -631,7 +631,9 @@ Required areas:
 
 Normal users must not receive unrestricted free-form Cypher.
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED.
+
+Validated: authenticated tenant A/B browser evidence, responsive/accessibility evidence, live Graph API/Schema Catalog composition against PostgreSQL/AGE/RLS, and SVG renderer browser benchmark at 100/500/1,000 nodes. SVG acceptance is scoped to the current bounded node canvas; visible-edge topology remains a future performance gate.
 
 Implemented: Graph Studio shell, Type C Graph Explorer spike, Vibe UI reference contracts, source-only Base UI audit, and typecheck/build CI.
 
@@ -655,7 +657,11 @@ Required:
 
 Never give normal agents unrestricted `service_role`.
 
-**Status:** NOT STARTED.
+**Status:** IN_PROGRESS.
+
+Validated within current scope: MCP JSON-RPC stdio contract, tenant-authority rejection, closed tool schemas, Schema Catalog capability gating, live MCP → Graph API → PostgreSQL/AGE/RLS integration, and canonical capability-policy/request-context hardening.
+
+Remaining Stage 14 exit work: scoped capability issuance/revocation design, destructive-operation approval workflow, durable/structured auditability, and final security/knowledge evidence. Do not expose unrestricted `service_role` or free-form SQL/Cypher.
 
 ## Stage 15 — GraphRAG
 
