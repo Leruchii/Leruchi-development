@@ -84,9 +84,21 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     const result=await runMigrations({cwd});
     stdout(print(result,Boolean(args.pretty)));return 0;
   }
-  if(command==="schema"&&subcommand==="types"){
-    const file=required(args,"file");
-    const catalog=JSON.parse(fs.readFileSync(path.resolve(cwd,file),"utf8"));
+  if(command==="schema"&&(subcommand==="inspect"||subcommand==="types")){
+    const baseUrl=(args["base-url"]||process.env.VIBE_BASE_URL||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
+    if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
+    let catalog;
+    if(args.remote||subcommand==="inspect"){
+      if(!process.env.VIBE_TOKEN)throw new Error("VIBE_TOKEN is required for remote Schema Catalog inspection");
+      const response=await fetchImpl(baseUrl+"/v1/schema/catalog",{headers:{authorization:`Bearer ${process.env.VIBE_TOKEN}`}});
+      const payload=await response.json();
+      if(!response.ok)throw new Error(payload?.error?.message||`Schema Catalog failed with HTTP ${response.status}`);
+      catalog=payload;
+    } else {
+      const file=required(args,"file");
+      catalog=JSON.parse(fs.readFileSync(path.resolve(cwd,file),"utf8"));
+    }
+    if(subcommand==="inspect"){stdout(print(catalog,Boolean(args.pretty)));return 0;}
     const generated=generateTypes(catalog);
     if(args.out){fs.writeFileSync(path.resolve(cwd,args.out),generated);stdout(`Wrote ${args.out}`);}else stdout(generated);
     return 0;
