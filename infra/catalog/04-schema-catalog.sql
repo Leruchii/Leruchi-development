@@ -36,7 +36,7 @@ CREATE POLICY schema_catalog_visibility ON vibe_meta.schema_catalog_entries FOR 
 
 DROP POLICY IF EXISTS graph_catalog_visibility ON vibe_meta.graph_catalog_registry;
 CREATE POLICY graph_catalog_visibility ON vibe_meta.graph_catalog_registry FOR SELECT
-  TO vibe_runtime, anon, authenticated
+  TO PUBLIC
   USING (tenant_id = '' OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', ''));
 
 DROP POLICY IF EXISTS graph_catalog_migrator_maintenance ON vibe_meta.graph_catalog_registry;
@@ -62,7 +62,7 @@ BEGIN
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id, metadata)
-  SELECT v_catalog_version, 'table', n.nspname, c.relname, '', NULL,
+  SELECT v_catalog_version, 'table', n.nspname, c.relname, '', '',
     jsonb_build_object('table_type', CASE c.relkind WHEN 'p' THEN 'partitioned_table' ELSE 'table' END)
   FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
   WHERE n.nspname IN ('vibe_app', 'vibe_meta') AND c.relkind IN ('r', 'p')
@@ -70,7 +70,7 @@ BEGIN
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id, metadata)
-  SELECT v_catalog_version, 'column', n.nspname, c.relname, a.attname, NULL,
+  SELECT v_catalog_version, 'column', n.nspname, c.relname, a.attname, '',
     jsonb_build_object('ordinal_position', a.attnum, 'sql_type', format_type(a.atttypid, a.atttypmod),
       'udt_name', t.typname, 'is_nullable', NOT a.attnotnull, 'is_identity', a.attidentity <> '',
       'identity_generation', NULLIF(a.attidentity, ''), 'is_generated', a.attgenerated <> '')
@@ -81,7 +81,7 @@ BEGIN
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id, metadata)
-  SELECT v_catalog_version, 'relationship', src_n.nspname, src_c.relname, src_a.attname, NULL,
+  SELECT v_catalog_version, 'relationship', src_n.nspname, src_c.relname, src_a.attname, '',
     jsonb_build_object('constraint_name', con.conname, 'foreign_table_schema', dst_n.nspname,
       'foreign_table_name', dst_c.relname, 'foreign_column_name', dst_a.attname)
   FROM pg_catalog.pg_constraint con JOIN pg_catalog.pg_class src_c ON src_c.oid = con.conrelid
@@ -94,7 +94,7 @@ BEGIN
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id, metadata)
-  SELECT v_catalog_version, 'vector', n.nspname, c.relname, a.attname, NULL,
+  SELECT v_catalog_version, 'vector', n.nspname, c.relname, a.attname, '',
     jsonb_build_object('sql_type', format_type(a.atttypid, a.atttypmod), 'udt_name', t.typname)
   FROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
   JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace JOIN pg_catalog.pg_type t ON t.oid = a.atttypid
@@ -103,7 +103,7 @@ BEGIN
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id, metadata)
-  SELECT v_catalog_version, 'policy', p.schemaname, p.tablename, p.policyname, NULL,
+  SELECT v_catalog_version, 'policy', p.schemaname, p.tablename, p.policyname, '',
     jsonb_build_object('permissive', p.permissive, 'roles', p.roles, 'command', p.cmd, 'using', p.qual, 'with_check', p.with_check)
   FROM pg_catalog.pg_policies p WHERE p.schemaname IN ('vibe_app', 'vibe_meta');
 
@@ -118,7 +118,7 @@ END;
 $$;
 
 ALTER FUNCTION vibe_meta.refresh_schema_catalog() OWNER TO vibe_migrator;
-GRANT SELECT ON vibe_meta.schema_catalog_entries, vibe_meta.graph_catalog_registry TO vibe_runtime, anon, authenticated;
+GRANT SELECT ON vibe_meta.schema_catalog_entries, vibe_meta.graph_catalog_registry TO PUBLIC;
 GRANT EXECUTE ON FUNCTION vibe_meta.refresh_schema_catalog() TO vibe_migrator;
 
 INSERT INTO vibe_meta.graph_catalog_registry
