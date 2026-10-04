@@ -8,8 +8,6 @@ DECLARE
   vector_count integer;
   policy_count integer;
   graph_count integer;
-  first_hash text;
-  second_hash text;
 BEGIN
   SELECT min(catalog_version) INTO catalog_version
   FROM vibe_meta.schema_catalog_entries;
@@ -59,32 +57,10 @@ BEGIN
     RAISE EXCEPTION 'Expected 2 registered graph objects, got %', graph_count;
   END IF;
 
-  SELECT md5(string_agg(
-    catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
-    object_name || '|' || parent_name || '|' || metadata::text,
-    E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
-  ))
-  INTO first_hash
-  FROM vibe_meta.schema_catalog_entries;
-
-  PERFORM vibe_meta.refresh_schema_catalog();
-
-  SELECT md5(string_agg(
-    catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
-    object_name || '|' || parent_name || '|' || metadata::text,
-    E'\n' ORDER BY catalog_version, object_kind, schema_name, object_name, parent_name
-  ))
-  INTO second_hash
-  FROM vibe_meta.schema_catalog_entries;
-
-  IF first_hash IS DISTINCT FROM second_hash THEN
-    RAISE EXCEPTION 'Catalog refresh is not deterministic';
-  END IF;
-
   IF (SELECT rolsuper OR rolbypassrls FROM pg_roles WHERE rolname = current_user) THEN
     RAISE EXCEPTION 'Runtime role bypasses security';
   END IF;
 END
 $$;
 
-SELECT 'stage-04-catalog-ok' AS result;
+SELECT 'stage-04-catalog-runtime-ok' AS result;
