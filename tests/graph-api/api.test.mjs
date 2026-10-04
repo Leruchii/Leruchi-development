@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {createGraphApiServer} from "../../packages/graph-api/index.mjs";\nimport {createHmac} from "node:crypto";
+import {createGraphApiServer} from "../../packages/graph-api/index.mjs";
+import {createHmac} from "node:crypto";
 
 function fakePool(){
   return {connect:async()=>({query:async()=>({rows:[]}),release(){}})};
