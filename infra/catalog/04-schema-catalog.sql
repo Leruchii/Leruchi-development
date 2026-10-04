@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS vibe_meta.graph_catalog_registry (
   graph_name text NOT NULL,
   object_kind text NOT NULL CHECK (object_kind IN ('label', 'edge')),
   object_name text NOT NULL,
-  from_label text,
-  to_label text,
+  from_label text NOT NULL DEFAULT '',
+  to_label text NOT NULL DEFAULT '',
   properties jsonb NOT NULL DEFAULT '{}'::jsonb,
   PRIMARY KEY (graph_name, object_kind, object_name, from_label, to_label)
 );
@@ -27,15 +27,15 @@ SECURITY DEFINER
 SET search_path = pg_catalog, information_schema, vibe_meta
 AS $$
 DECLARE
-  catalog_version constant text := 'v1';
+  v_catalog_version constant text := 'v1';
 BEGIN
-  DELETE FROM vibe_meta.schema_catalog_entries
-  WHERE catalog_version = refresh_schema_catalog.catalog_version;
+  DELETE FROM vibe_meta.schema_catalog_entries e
+  WHERE e.catalog_version = v_catalog_version;
 
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
-    catalog_version,
+    v_catalog_version,
     'table',
     t.table_schema,
     t.table_name,
@@ -50,7 +50,7 @@ BEGIN
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
-    catalog_version,
+    v_catalog_version,
     'column',
     c.table_schema,
     c.table_name,
@@ -71,7 +71,7 @@ BEGIN
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
-    catalog_version,
+    v_catalog_version,
     'relationship',
     tc.constraint_schema,
     tc.table_name,
@@ -96,7 +96,7 @@ BEGIN
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
-    catalog_version,
+    v_catalog_version,
     'vector',
     n.nspname,
     c.relname,
@@ -118,7 +118,7 @@ BEGIN
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
-    catalog_version,
+    v_catalog_version,
     'policy',
     p.schemaname,
     p.tablename,
@@ -136,15 +136,15 @@ BEGIN
   INSERT INTO vibe_meta.schema_catalog_entries
     (catalog_version, object_kind, schema_name, object_name, parent_name, metadata)
   SELECT
-    catalog_version,
+    v_catalog_version,
     'graph',
     'ag_catalog',
     r.graph_name,
     r.object_name,
     jsonb_build_object(
       'graph_object_kind', r.object_kind,
-      'from_label', r.from_label,
-      'to_label', r.to_label,
+      'from_label', NULLIF(r.from_label, ''),
+      'to_label', NULLIF(r.to_label, ''),
       'properties', r.properties,
       'source', 'explicit_registry'
     )
@@ -161,7 +161,7 @@ GRANT EXECUTE ON FUNCTION vibe_meta.refresh_schema_catalog() TO vibe_migrator;
 INSERT INTO vibe_meta.graph_catalog_registry
   (graph_name, object_kind, object_name, from_label, to_label, properties)
 VALUES
-  ('vibe_stage01', 'label', 'Person', NULL, NULL, '{"name":"text"}'),
+  ('vibe_stage01', 'label', 'Person', '', '', '{"name":"text"}'),
   ('vibe_stage01', 'edge', 'KNOWS', 'Person', 'Person', '{}')
 ON CONFLICT DO NOTHING;
 
