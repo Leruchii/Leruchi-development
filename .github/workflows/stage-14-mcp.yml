@@ -14,6 +14,8 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Capability tests
+        run: node --test tests/capability-policy/capability-policy.test.mjs
       - name: Graph API catalog capability tests
         run: node --test tests/graph-api/graph-api-catalog.test.mjs
       - name: MCP contract tests
