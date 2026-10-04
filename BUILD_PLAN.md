@@ -2,16 +2,13 @@
 
 ## Current state
 
-Stages 00 through 07 are validated by executable repository/CI evidence.
+Stages 00 through 08 are validated by executable repository/CI evidence.
 
 Stage 03 core enables Supabase Auth and PostgREST. Realtime, Storage and Supavisor remain explicit compatibility candidates until separately validated.
 
-Stage 04 provides the authoritative Schema Catalog.
-Stage 05 provides Query IR v1.
-Stage 06 provides pre-execution validation and cost guardrails.
-Stage 07 provides the Apache AGE compiler.
+Stage 04 Schema Catalog, Stage 05 Query IR, Stage 06 validation/guardrails, Stage 07 AGE compiler and Stage 08 Secure Execution Engine are validated.
 
-The next implementation target is Stage 08 — Secure Execution Engine.
+The next implementation target is Stage 09 — Graph Mutations.
 
 ## Stage 01 — PostgreSQL + AGE + pgvector
 Status: VALIDATED.
@@ -32,35 +29,31 @@ Status: VALIDATED.
 Status: VALIDATED.
 
 ## Stage 07 — Apache AGE Compiler
-
-The compiler converts validated read-only Query IR v1 into deterministic AGE prepared-statement SQL.
-
-It:
-- validates identifiers defensively;
-- uses Cypher parameters and the PostgreSQL agtype parameter map;
-- never interpolates filter values;
-- derives deterministic output columns;
-- rejects invalid identifiers and duplicate aliases.
-
-The live CI gate seeds the Stage 01 graph and executes the generated prepared statement.
-
-Exit gate: golden IR → AGE query tests pass.
-
-Status: VALIDATED by .github/workflows/stage-07-age-compiler.yml.
+Status: VALIDATED.
 
 ## Stage 08 — Secure Execution Engine
 
-Centralise:
-request → authentication → Query IR → Schema/security/cost validation → planner → compiler → transaction → RLS → execution → normalized response.
+The engine enforces:
 
-The execution engine must prevent any client surface from bypassing validation or RLS.
+trusted context → Query IR validation → AGE compilation → declared parameter binding → single-client transaction → PostgreSQL/AGE/RLS → normalized result.
+
+It rejects untrusted context and validation failures before any database call, rejects undeclared/missing parameters before BEGIN, rolls back failed execution, normalizes database errors, and never exposes raw database details.
+
+The live integration uses the Stage 02 tenant roles and proves tenant A can retrieve its own graph path while a tenant-B graph target remains invisible.
 
 Exit gate: end-to-end execution and adversarial security tests pass.
 
-Status: NEXT.
+Status: VALIDATED by .github/workflows/stage-08-secure-execution.yml.
 
 ## Stage 09 — Graph Mutations
+
 Implement safe graph create/update/delete using mutation IR, authorization, validation, transactions, conflict handling and auditability.
+
+No mutation may bypass the Secure Execution Engine or PostgreSQL RLS.
+
+Exit gate: mutation and adversarial tenant-isolation tests pass.
+
+Status: NEXT.
 
 ## Stage 10 — JavaScript SDK
 Expose Vibe concepts rather than AGE internals.
