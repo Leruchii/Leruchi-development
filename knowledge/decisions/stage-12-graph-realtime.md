@@ -48,7 +48,7 @@ The outbox and relay are transport-neutral. Supabase Realtime Broadcast is the p
 
 ## Validation
 
-Stage 12 was previously validated by workflow run `37209970650`, but the subsequent replay/topic hardening changed the contract. A fresh validation run is required.
+Stage 12 is VALIDATED by fresh workflow run `37210250276` after replay/topic hardening.
 - atomic mutation + outbox commit;
 - rollback leaves no event;
 - commit emits the wakeup;
