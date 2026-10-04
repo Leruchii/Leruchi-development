@@ -1,6 +1,6 @@
 # Testing
 
-Status: VALIDATED for Stage 01 database foundation
+Status: VALIDATED through Stage 02 — tenant isolation
 
 ## Core policy
 
@@ -21,23 +21,29 @@ Every build prompt must report:
 
 ## Stage 01 executable coverage
 
-.github/workflows/stage-01-db.yml builds the database image, starts PostgreSQL, waits for readiness, and runs tests/db/stage-01.sql as the non-superuser vibe_runtime role.
+The Stage 01 workflow proves the PostgreSQL + AGE + pgvector foundation and runtime non-superuser boundary.
 
-Assertions cover:
+## Stage 02 executable coverage
 
-- PostgreSQL 17+;
-- exact AGE 1.7.0;
-- exact pgvector 0.8.7;
-- runtime role separation and no superuser/RLS bypass;
-- vector storage and nearest-neighbour query;
-- AGE graph traversal;
-- graph vertex and edge creation;
-- graph traversal after mutation.
+.github/workflows/stage-02-security.yml builds the same database image, creates two tenant-bound roles and runs adversarial suites for both tenants.
+
+The suite proves:
+
+- same-tenant relational reads;
+- cross-tenant relational read denial;
+- cross-tenant update denial;
+- cross-tenant delete denial;
+- same-tenant graph visibility;
+- cross-tenant graph read denial;
+- same-tenant graph traversal;
+- cross-tenant graph traversal denial;
+- cross-tenant graph inference denial through an intentionally cross-tenant edge;
+- tenant roles do not bypass RLS.
+
+## Security limitation captured by tests
+
+Tenant roles are used only as a database-boundary spike. Auth/JWT-to-database tenant context propagation remains UNKNOWN and is a Stage 03 compatibility/security decision.
 
 ## Merge blocker
 
-The Stage 01 workflow is required evidence for the database foundation. Configuration-only claims are insufficient.
-
-## Next security stage
-
-Stage 02 must add adversarial tenant isolation tests for relational reads/writes/deletes and graph traversal/inference.
+Stage 01 and Stage 02 workflows are executable evidence. Configuration-only claims are insufficient.

@@ -1,0 +1,50 @@
+name: Stage 02 RLS and AGE security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  tenant-isolation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build database image
+        run: docker compose build db
+
+      - name: Start database
+        run: docker compose up -d db
+
+      - name: Wait for database
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+
+      - name: Seed tenant security spike
+        run: |
+          docker compose exec -T db             bash -lc 'bash -s' < tests/security/stage-02-setup.sh
+
+      - name: Prove tenant A isolation
+        run: |
+          docker compose exec -T db             psql -U vibe_tenant_a -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-a.sql
+
+      - name: Prove tenant B isolation
+        run: |
+          docker compose exec -T db             psql -U vibe_tenant_b -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-b.sql
+
+      - name: Show database logs on failure
+        if: failure()
+        run: docker compose logs db
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v

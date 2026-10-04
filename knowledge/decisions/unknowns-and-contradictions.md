@@ -21,16 +21,25 @@ Provisional UI values are depth default 2, maximum 6, result default 100, maximu
 - PostgreSQL baseline: 17.11.
 - Apache AGE baseline: 1.7.0 for PG17.
 - pgvector baseline: 0.8.7.
-- Database image strategy: official Apache AGE PG17 1.7.0 image pinned by digest, with pgvector compiled into the image.
+- Database image strategy: official Apache AGE PG17 1.7.0 release tag with pgvector compiled into the image.
 - Role separation: vibe_migrator and vibe_runtime, both non-superuser and without RLS bypass.
 - Foundation migration approach: deterministic SQL initialization with psql; no framework added prematurely.
 - Vector smoke-test dimension: 3; production dimension remains undecided.
 - AGE graph initialization requires an explicit ag_catalog search path in this baseline.
 
+## Resolved by Stage 02
+
+- PostgreSQL RLS can enforce tenant-bound relational read/write/delete isolation.
+- AGE label tables can carry PostgreSQL RLS policies.
+- AGE graph queries respect those RLS policies in the tested PG17/AGE 1.7.0 runtime.
+- A cross-tenant graph edge does not expose the protected destination vertex through the tested traversal/inference path.
+- Tenant-bound database roles can provide a secure proof boundary without superuser or BYPASSRLS privileges.
+
 ## Remaining UNKNOWNs
 
-- Exact tenant claims and RLS context propagation.
-- Exact AGE graph/RLS privilege matrix for tenant isolation.
+- Auth/JWT-to-database tenant context propagation for a shared runtime role.
+- Whether PostgREST/Supabase can establish that context without a client-controlled GUC becoming authoritative.
+- Exact production AGE graph/RLS privilege matrix for every mutation operation, especially complex deletes and variable-length traversal.
 - Query IR schema and versioning.
 - Query planner and compiler boundaries.
 - Recursive-CTE fallback routing and supported operations.
