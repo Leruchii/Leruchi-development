@@ -11,8 +11,16 @@ export function verifyHs256Jwt(token, secret, now=Math.floor(Date.now()/1000)) {
   const parts = token.split(".");
   if (parts.length !== 3) { const error = new Error("Invalid JWT"); error.code = "UNAUTHORIZED"; throw error; }
   const [encodedHeader, encodedPayload, signature] = parts;
-  const header = decodePart(encodedHeader);
-  const payload = decodePart(encodedPayload);
+  let header;
+  let payload;
+  try {
+    header = decodePart(encodedHeader);
+    payload = decodePart(encodedPayload);
+  } catch {
+    const error = new Error("Invalid JWT");
+    error.code = "UNAUTHORIZED";
+    throw error;
+  }
   if (header.alg !== "HS256" || header.typ !== "JWT") { const error = new Error("Unsupported JWT"); error.code = "UNAUTHORIZED"; throw error; }
   const expected = createHmac("sha256", secret).update(encodedHeader + "." + encodedPayload).digest();
   const supplied = Buffer.from(signature, "base64url");
