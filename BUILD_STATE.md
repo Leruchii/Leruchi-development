@@ -6,13 +6,13 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 16 — Observability
-- Current status: IMPLEMENTED — NOT YET VALIDATED
+- Current stage: 17 — Backup + Recovery
+- Current status: READY_TO_BUILD
 - Last completed stage: 15 — GraphRAG
 - Last validated commit: `cb17e926ea668f0815923634aa46351bc0072ca9` (Stage 15 GraphRAG exit evidence passed; documentation checkpoints are `777efa73e98c624da605f58a5009673a03101334` and `7e7d132f55c127ccf3e4b5ded3726f704b3e5f2c`)
 - Default branch: `main`
-- Current branch: `stage16-observability` (PR #42)
-- Next implementation target: Validate Stage 16 telemetry end-to-end in CI, then merge and advance to Stage 17
+- Stage 16 merged: PR #42 as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`
+- Next implementation target: Prove backup, restore, integrity verification, migration compatibility, RPO/RTO and failure/recovery drills
 
 ## Verified state
 
@@ -472,7 +472,7 @@ Stage 15 exit gate passed:
 Exact next action: begin Stage 16 Observability; preserve the existing security and IR boundaries while adding structured telemetry, timing, metrics and traces.
 
 
-## Stage 16 — Observability handoff
+## Stage 16 — Observability handoff (validated)
 
 Implementation started on branch stage16-observability in PR #42.
 
@@ -517,3 +517,10 @@ Exact next action:
 2. If green, inspect the repository-wide required checks for failures; fix real regressions rather than ignoring them.
 3. Merge PR #42 only after required checks are green.
 4. Update BUILD_STATE on main to Stage 16 VALIDATED and Stage 17 READY_TO_BUILD.
+
+
+## Stage 17 handoff
+
+Stage 16 is merged to main. Repository-wide checks on the final Stage 16 head were green for the product test suites, including the dedicated observability gate, tenant isolation, query validation, retrieval, SDK, CLI and state checks. The GitHub Advanced Security `github-advanced-security` job failed in its external Processing Request step; it is not a VibeDB test or architecture regression and is not treated as a code failure.
+
+Stage 17 is now READY_TO_BUILD.
