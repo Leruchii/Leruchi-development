@@ -55,7 +55,6 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
           return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"vector:read capability is required for vector retrieval",request_id:requestId});
         }
       }
-      const catalog=await catalogProvider(context);
       if(isRetrievalRequest){
         const client=await pool.connect();
         try{
