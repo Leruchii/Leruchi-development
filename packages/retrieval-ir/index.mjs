@@ -20,11 +20,13 @@ export function validateRetrievalIR(ir){
     const v=ir.sources.vector;
     if(typeof v.catalog_ref!=="string"||!/^[A-Za-z_][A-Za-z0-9_.]*$/.test(v.catalog_ref))throw fail("INVALID_RETRIEVAL_IR","Vector catalog_ref must be a safe catalog reference");
     if(typeof v.query_parameter!=="string"||!IDENTIFIER.test(v.query_parameter))throw fail("INVALID_RETRIEVAL_IR","Vector query_parameter must be a safe identifier");
+    if(typeof v.identity_field!=="string"||!IDENTIFIER.test(v.identity_field))throw fail("INVALID_RETRIEVAL_IR","Vector identity_field must be a safe identifier");
     if(!Number.isInteger(v.top_k)||v.top_k<1||v.top_k>MAX_RESULTS)throw fail("RETRIEVAL_LIMIT_EXCEEDED","Vector top_k must be between 1 and 1000");
   }
   if(ir.sources.graph){
     const g=ir.sources.graph;
     if(!g.query||typeof g.query!=="object"||g.query.tenant_id||g.query.tenantId)throw fail("INVALID_RETRIEVAL_IR","Graph source must use canonical Query IR without tenant override fields");
+    if(typeof g.identity_field!=="string"||!IDENTIFIER.test(g.identity_field))throw fail("INVALID_RETRIEVAL_IR","Graph identity_field must be a safe identifier");
     if(g.candidate_limit!==undefined&&(!Number.isInteger(g.candidate_limit)||g.candidate_limit<1||g.candidate_limit>MAX_RESULTS))throw fail("RETRIEVAL_LIMIT_EXCEEDED","Graph candidate_limit must be between 1 and 1000");
   }
   if(!ir.fusion||ir.fusion.strategy!=="weighted_rrf")throw fail("INVALID_RETRIEVAL_IR","Only weighted_rrf fusion is supported in v1");

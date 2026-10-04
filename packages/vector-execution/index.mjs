@@ -43,28 +43,29 @@ export function resolveVectorCatalog(catalog,catalogRef){
   };
 }
 
-export function compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults=1000,maxCost=100}){
+export function compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults=1000,maxCost=100,identityField="id"}){
   const source=resolveVectorCatalog(catalog,catalogRef);
+  if(typeof identityField!=="string"||!IDENTIFIER.test(identityField)) throw new VectorExecutionError("INVALID_IDENTITY_FIELD","identityField must be a safe identifier");
   if(!Number.isInteger(topK)||topK<1||topK>1000) throw new VectorExecutionError("INVALID_LIMIT","top_k must be between 1 and 1000");
   if(topK>maxResults||topK>maxCost) throw new VectorExecutionError("COST_LIMIT_EXCEEDED","Vector retrieval exceeds the request budget",{top_k:topK,max_results:maxResults,max_cost:maxCost});
   const vector=vectorLiteral(embedding,source.dimensions);
   const distance=`${source.embeddingColumn} ${source.operator} $1::vector`;
-  const columns=[`${source.keyColumn} AS id`];
+  const columns=[`${source.keyColumn} AS "${identityField}"`];
   if(source.contentColumn) columns.push(`${source.contentColumn} AS content`);
   columns.push(`${distance} AS distance`);
   return {
     sql:`SELECT ${columns.join(", ")} FROM ${source.schemaName}.${source.relationName} ORDER BY ${distance} LIMIT $2`,
     values:[vector,topK],
-    columns:["id",...(source.contentColumn?["content"]:[]),"distance"],
+    columns:[identityField,...(source.contentColumn?["content"]:[]),"distance"],
     catalog_ref:catalogRef
   };
 }
 
-export async function executeVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost,context,db,requestId=randomUUID()}){
+export async function executeVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost,identityField="id",context,db,requestId=randomUUID()}){
   try{assertTrustedExecutionContext(context);}catch{throw new VectorExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   const capability=requireCapability(context,CAPABILITIES.VECTOR_READ);
   if(!capability.ok) throw new VectorExecutionError(capability.code,capability.message);
-  const compiled=compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost});
+  const compiled=compileVectorRetrieval({catalog,catalogRef,embedding,topK,maxResults,maxCost,identityField});
   let began=false;
   try{
     await db.begin(); began=true;

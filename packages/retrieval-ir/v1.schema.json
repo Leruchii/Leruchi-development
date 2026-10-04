@@ -13,18 +13,20 @@
       "properties":{
         "vector":{
           "type":"object","additionalProperties":false,
-          "required":["catalog_ref","query_parameter","top_k"],
+          "required":["catalog_ref","query_parameter","top_k","identity_field"],
           "properties":{
             "catalog_ref":{"type":"string","minLength":1,"pattern":"^[A-Za-z_][A-Za-z0-9_.]*$"},
             "query_parameter":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},
+            "identity_field":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},
             "top_k":{"type":"integer","minimum":1,"maximum":1000}
           }
         },
         "graph":{
           "type":"object","additionalProperties":false,
-          "required":["query"],
+          "required":["query","identity_field"],
           "properties":{
             "query":{"type":"object"},
+            "identity_field":{"type":"string","pattern":"^[A-Za-z_][A-Za-z0-9_]*$"},
             "candidate_limit":{"type":"integer","minimum":1,"maximum":1000}
           }
         }
