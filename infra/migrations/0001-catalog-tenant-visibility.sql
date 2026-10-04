@@ -56,4 +56,6 @@ CREATE INDEX IF NOT EXISTS graph_catalog_tenant_graph_idx
 CREATE INDEX IF NOT EXISTS schema_catalog_tenant_idx
   ON vibe_meta.schema_catalog_entries (tenant_id);
 
+INSERT INTO vibe_meta.schema_migrations (migration_id) VALUES ('0001-catalog-tenant-visibility') ON CONFLICT (migration_id) DO NOTHING;
+
 SELECT 'catalog-tenant-visibility-migration-ok' AS result;
