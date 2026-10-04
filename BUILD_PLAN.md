@@ -583,7 +583,7 @@ Implemented so far:
 
 CLI does not become a second compiler/security boundary.
 
-**Status:** IN_PROGRESS — catalog tenancy hardening and automated exit-gate validation are being completed.
+**Status:** VALIDATED — catalog tenancy hardening and automated exit-gate validation passed.
 
 Implemented in this hardening pass:
 - forward-only numbered migrations with a migrator-only ledger;
@@ -593,7 +593,7 @@ Implemented in this hardening pass:
 - adversarial tenant-private catalog visibility tests;
 - repository-wide architecture regression audit.
 
-Exit gate now requires the Stage 11 workflow to prove all of the above against a fresh PostgreSQL/AGE environment. The stage must not be marked VALIDATED from source inspection alone.
+Exit gate passed on commit `193877e9c785f40d8dc8dd3d8f7128d82a6f81e9`: fresh PostgreSQL/AGE environment, migration runner, remote Schema Catalog, tenant-private metadata isolation, and architecture audit all passed.
 
 ## Stage 12 — Graph Realtime
 
@@ -825,7 +825,7 @@ At the time this plan was expanded:
 - Stage 09: **READY_TO_BUILD / NEXT**
 - Stage 10+: **NOT STARTED / DEFERRED as individually marked**
 
-The current implementation task is **Stage 11 — CLI hardening and Schema Catalog tenancy**.
+The next implementation task is **Stage 12 — Graph Realtime**.
 
 The first Stage 09 action is not to code blindly. Inspect the existing Query IR, Schema Catalog, AGE compiler, Secure Execution Engine, Stage 02 security model, database fixtures and tests, then design the smallest safe mutation boundary consistent with this architecture.
 
