@@ -1,3 +1,4 @@
+import {CAPABILITIES,hasCapability} from "../capability-policy/index.mjs";
 import http from "node:http";
 import {randomUUID} from "node:crypto";
 import {Pool} from "pg";
