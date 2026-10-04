@@ -415,26 +415,26 @@ The Stage 14 exit gate is satisfied. Do not reopen Stage 14 unless new executabl
 
 ## Stage 15 — GraphRAG in progress
 
-The canonical retrieval contract is established and the tenant-scoped vector catalog gate is now being implemented.
+The canonical retrieval contract, tenant-scoped vector catalog, and first secure pgvector execution path are now implemented behind the existing security boundary.
 
 Current implementation:
-- packages/retrieval-ir/ defines Retrieval IR v1 with bounded weighted-RRF fusion, graph Query IR reuse, Schema Catalog references, deterministic hashing, and fail-closed limits.
-- Retrieval requests cannot provide tenant identity, raw SQL/Cypher, vector operators, or unsafe catalog/parameter identifiers.
-- infra/migrations/0003-vector-catalog.sql adds a tenant-scoped vector catalog registry protected by RLS.
-- Vector registry metadata includes logical catalog reference, trusted physical source mapping, embedding dimensions/model/distance metric, and stable result identity metadata.
-- packages/schema-catalog-api/ now exposes tenant-filtered vector metadata alongside graph metadata; physical vector source identifiers remain control-plane/catalog metadata rather than Retrieval IR input.
-- Stage 15 CI now gates Retrieval IR and vector-catalog contract tests plus the architecture regression audit.
+- Retrieval IR v1 is engine-neutral, bounded, deterministic and rejects tenant overrides plus unsafe catalog/parameter identifiers.
+- `0003-vector-catalog.sql` adds a tenant-scoped vector registry with RLS and trusted physical source metadata.
+- Schema Catalog exposes only tenant-visible vector metadata.
+- Secure vector execution resolves physical identifiers only from Schema Catalog metadata, uses parameterized pgvector operators, enforces vector dimensions and request budgets, and requires the canonical `vector:read` capability.
+- Vector execution uses the existing transaction boundary and transaction-local PostgreSQL JWT claims; no second authorization boundary was introduced.
+- Database-backed Stage 15 evidence now seeds tenant-private vector rows and proves tenant A cannot discover or execute against tenant B's registered vector source.
+- Stage 15 CI includes Retrieval IR, capability policy, vector execution, architecture audit, and database-backed tenant-isolation gates.
 
-Security boundary:
-- verified JWT -> trusted ExecutionContext -> transaction-local PostgreSQL claims -> Schema Catalog/RLS -> retrieval execution.
-- RLS remains the physical tenant-isolation authority.
-- No vector public endpoint or MCP retrieval tool is exposed yet.
+Recent regression fixes:
+- repaired the Stage 15 workflow's architecture-audit path;
+- reconstructed the vector migration after CI exposed malformed SQL;
+- the Stage 11/12 migration failures were traced to that same migration defect rather than unrelated stage regressions.
 
 Next gate:
-1. validate the new migration/catalog behavior in CI and database-backed tests;
-2. implement a secure pgvector execution compiler/resolver using catalog-trusted physical metadata and the existing transaction-local ExecutionContext;
-3. prove tenant isolation, vector dimension/metric validation, result/cost limits and deterministic retrieval metadata;
-4. then implement hybrid graph/vector execution and fusion;
-5. expose retrieval through MCP only after the data-plane gate is validated.
+1. wait for and inspect the fresh CI runs from the repaired branch;
+2. merge Stage 15 only after all relevant gates are green;
+3. then implement deterministic hybrid graph/vector execution and weighted-RRF fusion;
+4. only after hybrid data-plane validation expose retrieval through MCP.
 
 Do not mark Stage 15 VALIDATED until those gates have executable evidence.
