@@ -51,6 +51,16 @@ CREATE POLICY schema_catalog_visibility
     OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', '')
   );
 
+DROP POLICY IF EXISTS graph_catalog_migrator_maintenance ON vibe_meta.graph_catalog_registry;
+CREATE POLICY graph_catalog_migrator_maintenance
+  ON vibe_meta.graph_catalog_registry FOR ALL TO vibe_migrator
+  USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS schema_catalog_migrator_maintenance ON vibe_meta.schema_catalog_entries;
+CREATE POLICY schema_catalog_migrator_maintenance
+  ON vibe_meta.schema_catalog_entries FOR ALL TO vibe_migrator
+  USING (true) WITH CHECK (true);
+
 CREATE INDEX IF NOT EXISTS graph_catalog_tenant_graph_idx
   ON vibe_meta.graph_catalog_registry (tenant_id, graph_name);
 CREATE INDEX IF NOT EXISTS schema_catalog_tenant_idx
