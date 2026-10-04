@@ -531,19 +531,29 @@ Validation evidence: Stage 09 CI passed unit/adversarial tests and database-back
 
 Expose Vibe concepts, not AGE internals.
 
-Expected areas:
+Implemented:
+- authenticated bearer-token HTTP transport;
+- graph query builder over Query IR v1;
+- graph mutation builder over Mutation IR v1;
+- typed parameter declarations with values kept outside IR;
+- client-side identifier, depth and result-limit guardrails;
+- injectable transport for deterministic tests;
+- normalized client error model;
+- package metadata and usage documentation.
 
-- authenticated client
-- graph reads
-- graph mutations
-- typed schema access
-- error model
-- capability-aware operations
-- safe defaults
+Security boundary:
+- the SDK never accepts raw Cypher or SQL;
+- tenant identity is not a client authorization input;
+- client-side checks are fail-fast UX only;
+- server-side Schema Catalog validation, capabilities, RLS, cost controls and execution remain authoritative.
 
-SDK behavior must map onto proven backend contracts.
+Scope boundary:
+- default HTTP routes are an SDK transport contract;
+- production Graph API/runtime implementation and end-to-end server execution are validated outside Stage 10.
 
-**Status:** NOT STARTED.
+**Status:** VALIDATED.
+
+**Evidence:** PR #12 merged as `62366581a44183ed500a121ec3c9890d72ef21c5`; Stage 10 workflow run `37195877514` passed all SDK tests and import verification.
 
 ## Stage 11 — CLI
 
