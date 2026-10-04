@@ -8,11 +8,10 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 - Current stage: 09 — Graph Mutations
 - Current status: VALIDATED
-- Last completed stage: 08 — Secure Execution Engine
-- Last validated commit: `072623ca5af5e5ec344d299ac6ef0c7361a1ed7f`
-- Stage 09 working branch: `stage-09-graph-mutations`
+- Last completed stage: 09 — Graph Mutations
+- Last validated commit: `05dfa5205df61f7158a750b60bb9c81b1a20f437`
 - Default branch: `main`
-- Next implementation target: Stage 09 — Graph Mutations
+- Next implementation target: Stage 10 — JavaScript SDK
 
 ## Verified state
 
@@ -160,4 +159,4 @@ Use these terms exactly:
 
 Repository handoff/checkpoint protocol introduced after Stage 08 validation.
 
-Exact next action: merge Stage 09 after final CI is green; then begin Stage 10 — JavaScript SDK from the repository checkpoint.
+Exact next action: begin Stage 10 — JavaScript SDK from the repository checkpoint.
