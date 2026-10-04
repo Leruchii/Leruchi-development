@@ -20,6 +20,7 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Graph API contract tests
+        timeout-minutes: 2
         working-directory: .
         run: node --test tests/graph-api/api.test.mjs
       - name: Typecheck
