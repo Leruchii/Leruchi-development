@@ -3,6 +3,8 @@ import path from "node:path";
 import {execFile} from "node:child_process";
 import {promisify} from "node:util";
 import {createClient} from "../vibe-sdk/index.mjs";
+import {MigrationError,connectMigrator,migrationStatus,runMigrations,scaffoldMigration,verifyMigrations,redact} from "./migrations.mjs";
+import {DEFAULT_CATALOG_PATH,fetchCatalog} from "./catalog.mjs";
 
 const execFileAsync=promisify(execFile);
 const CONFIG_DIR=".vibe";
@@ -63,7 +65,21 @@ export function generateTypes(catalog){
   ].join("\n");
 }
 
-export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,stdout=console.log,stderr=console.error,exec=execFileAsync}={}) {
+function resolveMigrationsDir(cwd,dir){
+  if(dir!==undefined&&(typeof dir!=="string"||dir===""))throw new Error("--dir requires a path");
+  const resolved=path.resolve(cwd,dir??"migrations");
+  const relative=path.relative(cwd,resolved);
+  if(relative===""||relative.startsWith("..")||path.isAbsolute(relative))throw new Error("--dir must be a directory inside the project");
+  return resolved;
+}
+
+function resolveBaseUrl(cwd,args){
+  const baseUrl=(args["base-url"]||process.env.VIBE_BASE_URL||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
+  if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
+  return baseUrl;
+}
+
+export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,stdout=console.log,stderr=console.error,exec=execFileAsync,connect=connectMigrator}={}) {
   const args=parseArgs(argv);
   const [command,subcommand,...rest]=args._;
   if(command==="config"){
@@ -85,6 +101,38 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     const generated=generateTypes(catalog);
     if(args.out){fs.writeFileSync(path.resolve(cwd,args.out),generated);stdout(`Wrote ${args.out}`);}else stdout(generated);
     return 0;
+  }
+  if(command==="schema"&&(subcommand==="inspect"||subcommand==="pull")){
+    const catalog=await fetchCatalog({baseUrl:resolveBaseUrl(cwd,args),token:process.env.VIBE_TOKEN,catalogPath:args["catalog-path"]===undefined?DEFAULT_CATALOG_PATH:args["catalog-path"],fetchImpl});
+    if(subcommand==="inspect"){stdout(print(catalog,true));return 0;}
+    if(args["catalog-out"])fs.writeFileSync(path.resolve(cwd,args["catalog-out"]),print(catalog,true)+"\n");
+    const generated=generateTypes(catalog);
+    if(args.out){fs.writeFileSync(path.resolve(cwd,args.out),generated);stdout(`Wrote ${args.out}`);}else stdout(generated);
+    return 0;
+  }
+  if(command==="migrate"){
+    const dir=resolveMigrationsDir(cwd,args.dir);
+    if(subcommand==="new"){
+      const name=rest[0]||args.name;
+      if(typeof name!=="string")throw new Error("Usage: vibe migrate new <name>");
+      stdout(print({created:path.join(path.relative(cwd,dir),scaffoldMigration(dir,name))},true));return 0;
+    }
+    if(!["status","verify","up"].includes(subcommand))throw new Error("Usage: vibe migrate new|status|verify|up [--dry-run]");
+    const url=process.env.VIBE_MIGRATOR_URL;
+    if(!url)throw new Error("VIBE_MIGRATOR_URL is required (migrator role connection string; it is never stored in project configuration)");
+    const client=await connect(url);
+    try{
+      let result;
+      if(subcommand==="status")result=await migrationStatus(client,{dir});
+      else if(subcommand==="verify")result=await verifyMigrations(client,{dir});
+      else result=await runMigrations(client,{dir,dryRun:Boolean(args["dry-run"])});
+      stdout(print(result,true));return 0;
+    }catch(error){
+      if(error instanceof MigrationError)throw error;
+      throw new MigrationError("MIGRATION_FAILED",redact(error.message,url));
+    }finally{
+      try{await client.end();}catch{/* connection already closed */}
+    }
   }
   if(command==="local"&&subcommand==="status"){
     const {stdout:out}=await exec("docker",["compose","ps"],{cwd});
@@ -139,5 +187,5 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
 }
 
 export async function main(argv=process.argv.slice(2),io={}) {
-  try{return await run(argv,io);}catch(error){io.stderr?.(error.message);return 1;}
+  try{return await run(argv,io);}catch(error){(io.stderr??console.error)(error.message);return 1;}
 }

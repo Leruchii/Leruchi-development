@@ -3,6 +3,8 @@ on:
   pull_request:
   push:
     branches: [main]
+permissions:
+  contents: read
 jobs:
   cli-tests:
     runs-on: ubuntu-latest
@@ -14,7 +16,99 @@ jobs:
           node-version: 22
       - name: Install CLI dependencies
         run: npm install --no-audit --no-fund
-      - name: Run CLI tests
-        run: node --test tests/cli/cli.test.mjs
+      - name: Run CLI unit and adversarial tests
+        run: node --test tests/cli/*.test.mjs
       - name: Import CLI
         run: node -e "import('./packages/vibe-cli/index.mjs').then(() => console.log('CLI import OK'))"
+
+  cli-migrations-and-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VIBE_MIGRATOR_URL: postgres://vibe_migrator:migrator@127.0.0.1:5432/vibedb
+      VIBE_RUNTIME_URL: postgres://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+      VIBE_ADMIN_URL: postgres://postgres:postgres@127.0.0.1:5432/vibedb
+      VIBE_BASE_URL: http://127.0.0.1:3000
+      VIBE_TEST_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pinned Node dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build and start database
+        run: |
+          docker compose build db
+          docker compose up -d db
+      - name: Wait for database
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+
+      - name: Install Schema Catalog (Stage 04 bootstrap)
+        run: docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
+      - name: Install Supabase compatibility roles (Stage 03 bootstrap)
+        run: docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/supabase/roles.sql
+
+      - name: Start PostgREST before any migration runs
+        run: |
+          docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d rest
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null 2>&1; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:3000/ >/dev/null
+
+      - name: Prove the remote catalog does not exist before migrations
+        run: |
+          TOKEN=$(python3 - <<'PY'
+          import base64, hashlib, hmac, json, time
+          secret=b"vibe-stage-03-jwt-secret-change-me-32"
+          def b64(v): return base64.urlsafe_b64encode(v).rstrip(b"=").decode()
+          h=b64(json.dumps({"alg":"HS256","typ":"JWT"},separators=(",",":")).encode())
+          p=b64(json.dumps({"role":"authenticated","tenant_id":"tenant_a","aud":"authenticated","exp":int(time.time())+300},separators=(",",":")).encode())
+          print(f"{h}.{p}."+b64(hmac.new(secret,f"{h}.{p}".encode(),hashlib.sha256).digest()))
+          PY
+          )
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${TOKEN}" http://127.0.0.1:3000/rpc/vibe_schema_catalog)
+          echo "HTTP ${CODE} before migration"
+          test "${CODE}" != "200"
+
+      - name: Run database-backed migration tests (adversarial, concurrency, rollback, drift)
+        env:
+          RUN_STAGE11_INTEGRATION: "1"
+        run: node --test tests/cli/migrations.integration.mjs
+
+      - name: Preview, apply, re-apply and verify real migrations with the CLI
+        run: |
+          node packages/vibe-cli/bin/vibe.mjs migrate status
+          node packages/vibe-cli/bin/vibe.mjs migrate up --dry-run
+          node packages/vibe-cli/bin/vibe.mjs migrate up
+          node packages/vibe-cli/bin/vibe.mjs migrate up
+          node packages/vibe-cli/bin/vibe.mjs migrate verify
+
+      - name: Refuse superuser migrations through the CLI
+        run: |
+          if VIBE_MIGRATOR_URL="${VIBE_ADMIN_URL}" node packages/vibe-cli/bin/vibe.mjs migrate up; then
+            echo "CLI accepted a superuser connection"
+            exit 1
+          fi
+
+      - name: Remote Schema Catalog contract and type generation against PostgREST
+        env:
+          RUN_STAGE11_REMOTE: "1"
+        run: node --test tests/cli/catalog-remote.integration.mjs
+
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml logs rest db
+
+      - name: Cleanup
+        if: always()
+        run: docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml down -v
