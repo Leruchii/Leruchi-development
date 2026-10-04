@@ -38,3 +38,43 @@ jobs:
         run: node --test tests/vector-execution/vector-execution.test.mjs
       - name: Architecture regression audit
         run: node tests/architecture/contract-audit.mjs
+
+  vector-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build VibeDB database image
+        run: docker compose build db
+      - name: Start database
+        run: docker compose up -d db
+      - name: Wait for database
+        run: |
+          for i in {1..90}; do
+            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs db
+          exit 1
+      - name: Install Schema Catalog baseline
+        run: docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
+      - name: Run approved migrations
+        env:
+          VIBE_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/vibedb
+        run: node -e "import('./packages/vibe-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
+      - name: Prove tenant-isolated vector retrieval
+        env:
+          VIBE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/vibedb
+          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+        run: node tests/vector-execution/integration.mjs
+      - name: Show database logs on failure
+        if: failure()
+        run: docker compose logs db
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
