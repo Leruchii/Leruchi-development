@@ -22,9 +22,10 @@ export function verifyHs256Jwt(token, secret, now=Math.floor(Date.now()/1000)) {
   return payload;
 }
 
-export function buildCatalog(rows) {
+export function buildCatalog(rows, tenantId = null) {
   const graphs = {};
   for (const row of rows) {
+    if (row.tenant_id !== "" && row.tenant_id !== tenantId) continue;
     const graph = graphs[row.graph_name] ??= {
       visibility: row.tenant_id === "" ? "shared" : "tenant",
       tenantId: row.tenant_id === "" ? null : row.tenant_id,
