@@ -38,6 +38,14 @@ test("tenant-scoped outbox and relay lifecycle",async()=>{
   await insertEvent("tenant_a",event);
   assert.equal(await notification,event.eventId);
 
+  const rolledBack={...event,eventId:event.eventId+"-rollback",requestId:"request-stage12-rollback"};
+  const rollbackClient=new Client({connectionString:runtimeUrl});await rollbackClient.connect();
+  const rollbackDb=createPgMutationExecutor(rollbackClient,{tenantId:"tenant_a",role:"authenticated"});
+  await rollbackDb.begin();
+  await rollbackDb.insertOutbox(rolledBack);
+  await rollbackDb.rollback();
+  await rollbackClient.end();
+
   const a=new Client({connectionString:runtimeUrl});await a.connect();
   await a.query("SELECT set_config($1,$2,false)",["request.jwt.claims",JSON.stringify({tenant_id:"tenant_a"})]);
   const own=await a.query("SELECT event_id,tenant_id,graph_name,target_id FROM vibe_meta.graph_event_outbox WHERE event_id=$1",[event.eventId]);
