@@ -25,7 +25,7 @@ function fakeDb({ fail = false } = {}) {
 test("validation failure executes zero database calls", async () => {
   const db = fakeDb();
   await assert.rejects(() => executeGraphQuery({
-    ir:{...ir,limit:0}, context:baseContext, catalog, requestParameters:{name:"A1"},
+    ir:{...ir,graph:"missing"}, context:baseContext, catalog, requestParameters:{name:"A1"},
     validate:validateQuery, compile:compileAge, db
   }), error => error.code === "VALIDATION_FAILED");
   assert.deepEqual(db.calls, []);
