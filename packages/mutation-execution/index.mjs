@@ -2,6 +2,7 @@ import {createHash, randomUUID} from "node:crypto";
 import {validateMutation} from "../mutation-validation/index.mjs";
 import {compileAgeMutation} from "../compiler-age-mutation/index.mjs";
 import {assertTrustedExecutionContext,postgresRequestClaims} from "../execution-context/index.mjs";
+import {isDestructiveMutation,mutationImpact,verifyMutationApproval} from "../mutation-approval/index.mjs";
 
 export class MutationExecutionError extends Error{
   constructor(code,message,details,requestId=randomUUID()){super(message);this.name="MutationExecutionError";this.code=code;this.details=details;this.requestId=requestId}
@@ -47,9 +48,14 @@ export function createPgMutationExecutor(client,context){
   };
 }
 
-export async function executeGraphMutation({ir,context,catalog,requestParameters={},db,requestId=randomUUID()}){
+export async function executeGraphMutation({ir,context,catalog,requestParameters={},db,requestId=randomUUID(),mode="execute",approval,verifyApproval}){
   try{assertTrustedExecutionContext(context)}catch{throw new MutationExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required",undefined,requestId)}
   const v=validateMutation(ir,context,catalog);if(!v.ok)throw new MutationExecutionError("VALIDATION_FAILED","Mutation validation failed",v.errors,requestId);
+  if(mode!=="execute"&&mode!=="preview")throw new MutationExecutionError("INVALID_EXECUTION_MODE","Mutation execution mode must be execute or preview",undefined,requestId);
+  const impact=mutationImpact(ir);
+  if(mode==="preview")return{version:"v1",request_id:requestId,mode:"preview",impact,approval_required:isDestructiveMutation(ir),columns:[],rows:[],count:0};
+  const approvalCheck=await verifyMutationApproval({ir,parameters:requestParameters,context,approval,verifyApproval});
+  if(!approvalCheck.ok)throw new MutationExecutionError(approvalCheck.code,approvalCheck.message,undefined,requestId);
   const declared=new Map(ir.parameters.map(p=>[p.name,p]));
   for(const k of Object.keys(requestParameters))if(!declared.has(k))throw new MutationExecutionError("UNDECLARED_PARAMETER","Request contains an undeclared parameter",{parameter:k},requestId);
   for(const [name,p] of declared)if(p.required&&!Object.hasOwn(requestParameters,name))throw new MutationExecutionError("MISSING_PARAMETER","A required mutation parameter is missing",{parameter:name},requestId);
