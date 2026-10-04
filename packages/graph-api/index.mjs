@@ -10,12 +10,13 @@ import {executeGraphQuery,createPgExecutor,ExecutionError} from "../execution-en
 import {validateMutation} from "../mutation-validation/index.mjs";
 import {compileAgeMutation} from "../compiler-age-mutation/index.mjs";
 import {executeGraphMutation,createPgMutationExecutor,MutationExecutionError} from "../mutation-execution/index.mjs";
+import {createAuditEvent,emitAudit} from "../audit/index.mjs";
 
 function json(res,status,payload){res.writeHead(status,{"content-type":"application/json","cache-control":"no-store"});res.end(JSON.stringify(payload));}
 async function body(req){let data="";for await(const chunk of req)data+=chunk;if(data.length>1024*1024)throw new Error("BODY_TOO_LARGE");return data?JSON.parse(data):{};}
 function contextFromClaims(claims,requestId){return createExecutionContext(claims,{requestId});}
 
-export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0.0.1",port=0}={}){
+export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,verifyApproval,host="127.0.0.1",port=0}={}){
   if(!pool||!jwtSecret||typeof catalogProvider!=="function")throw new Error("pool, jwtSecret and catalogProvider are required");
   const server=http.createServer(async(req,res)=>{
     const requestId=randomUUID();
@@ -27,21 +28,21 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,host="127.0
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer "))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
-      const context=contextFromClaims(claims,requestId);
-      if(isCatalog&&!hasCapability(context,CAPABILITIES.GRAPH_READ))return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for Schema Catalog discovery",request_id:requestId});
+      context=contextFromClaims(claims,requestId);
+      if(isCatalog&&!hasCapability(context,CAPABILITIES.GRAPH_READ)){await record("denied","CAPABILITY_DENIED");return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for Schema Catalog discovery",request_id:requestId});}
       const catalog=await catalogProvider(context);
       if(isCatalog)return json(res,200,catalog);
-      const input=await body(req);
+      const input=await body(req);\n      auditInput=input;
       const client=await pool.connect();
       try{
         if(req.url==="/v1/graph/query"){
           const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile:compileAge,db:createPgExecutor(client,context),requestId});
-          return json(res,200,result);
+          await record("success");\n          return json(res,200,result);
         }
         const result=await executeGraphMutation({ir:input.ir,context,catalog,requestParameters:input.parameters??{},db:createPgMutationExecutor(client,context),requestId});
         return json(res,200,result);
       }finally{client.release();}
-    }catch(error){
+    }catch(error){\n      await record("error",error?.code??"INTERNAL_ERROR");
       if(error?.code==="BODY_TOO_LARGE")return json(res,413,{error:{version:"v1",code:"BODY_TOO_LARGE",message:"Request body is too large",request_id:requestId}});
       if(error?.code==="UNAUTHORIZED"||error instanceof ExecutionContextError||error?.message?.includes("Bearer token"))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId});
       if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
