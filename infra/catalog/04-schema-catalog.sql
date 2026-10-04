@@ -6,13 +6,13 @@ CREATE TABLE IF NOT EXISTS vibe_meta.schema_catalog_entries (
   schema_name text NOT NULL,
   object_name text NOT NULL,
   parent_name text NOT NULL DEFAULT '',
-  tenant_id text,
+  tenant_id text NOT NULL DEFAULT '',
   metadata jsonb NOT NULL,
   PRIMARY KEY (catalog_version, object_kind, schema_name, object_name, parent_name, tenant_id)
 );
 
 CREATE TABLE IF NOT EXISTS vibe_meta.graph_catalog_registry (
-  tenant_id text,
+  tenant_id text NOT NULL DEFAULT '',
   graph_name text NOT NULL,
   object_kind text NOT NULL CHECK (object_kind IN ('label', 'edge')),
   object_name text NOT NULL,
@@ -32,12 +32,12 @@ ALTER TABLE vibe_meta.graph_catalog_registry FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS schema_catalog_visibility ON vibe_meta.schema_catalog_entries;
 CREATE POLICY schema_catalog_visibility ON vibe_meta.schema_catalog_entries FOR SELECT
   TO vibe_runtime, anon, authenticated
-  USING (tenant_id IS NULL OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', ''));
+  USING (tenant_id = '' OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', ''));
 
 DROP POLICY IF EXISTS graph_catalog_visibility ON vibe_meta.graph_catalog_registry;
 CREATE POLICY graph_catalog_visibility ON vibe_meta.graph_catalog_registry FOR SELECT
   TO vibe_runtime, anon, authenticated
-  USING (tenant_id IS NULL OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', ''));
+  USING (tenant_id = '' OR tenant_id = COALESCE(current_setting('request.jwt.claims', true)::json ->> 'tenant_id', ''));
 
 CREATE INDEX IF NOT EXISTS schema_catalog_tenant_idx ON vibe_meta.schema_catalog_entries (tenant_id);
 CREATE INDEX IF NOT EXISTS graph_catalog_tenant_graph_idx ON vibe_meta.graph_catalog_registry (tenant_id, graph_name);
@@ -102,7 +102,7 @@ BEGIN
   SELECT v_catalog_version, 'graph', 'ag_catalog', r.graph_name, r.object_name, r.tenant_id,
     jsonb_build_object('graph_object_kind', r.object_kind, 'from_label', NULLIF(r.from_label, ''),
       'to_label', NULLIF(r.to_label, ''), 'properties', r.properties, 'source', 'explicit_registry',
-      'visibility', CASE WHEN r.tenant_id IS NULL THEN 'shared' ELSE 'tenant' END)
+      'visibility', CASE WHEN r.tenant_id = '' THEN 'shared' ELSE 'tenant' END)
   FROM vibe_meta.graph_catalog_registry r;
 END;
 $$;
@@ -114,8 +114,8 @@ GRANT EXECUTE ON FUNCTION vibe_meta.refresh_schema_catalog() TO vibe_migrator;
 INSERT INTO vibe_meta.graph_catalog_registry
   (tenant_id, graph_name, object_kind, object_name, from_label, to_label, properties)
 VALUES
-  (NULL, 'vibe_stage01', 'label', 'Person', '', '', '{"name":"text"}'),
-  (NULL, 'vibe_stage01', 'edge', 'KNOWS', 'Person', 'Person', '{}')
+  ('', 'vibe_stage01', 'label', 'Person', '', '', '{"name":"text"}'),
+  ('', 'vibe_stage01', 'edge', 'KNOWS', 'Person', 'Person', '{}')
 ON CONFLICT DO NOTHING;
 
 SELECT vibe_meta.refresh_schema_catalog();
