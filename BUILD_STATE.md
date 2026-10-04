@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 11 — CLI
-- Current status: VALIDATED
-- Last completed stage: 10 — JavaScript SDK
-- Last validated commit: `193877e9c785f40d8dc8dd3d8f7128d82a6f81e9`
+- Current stage: 12 — Graph Realtime
+- Current status: IN_PROGRESS
+- Last completed stage: 11 — CLI
+- Last validated commit: `b296635451e6bc24b4bb37ecbe9867ecaf920e98`
 - Default branch: `main`
-- Next implementation target: Stage 12 — Graph Realtime
+- Next implementation target: Complete Stage 12 realtime outbox/relay exit gate
 
 ## Verified state
 
@@ -40,7 +40,7 @@ Stage 11 implementation passed focused CLI CI:
 - graph query delegation tests passed;
 - unsafe identifier tests passed;
 - CLI import passed.
-Stage 11 PR #13 was merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`, but the stage exit gate is not yet satisfied because the repository has no established migration execution contract and remote Schema Catalog inspection has not been validated.
+Stage 11 PR #13 was merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`. The later catalog-tenancy hardening was merged in PR #15 as `b296635451e6bc24b4bb37ecbe9867ecaf920e98`. Stage 11 now has executable evidence for migrations, remote Schema Catalog inspection, tenant-private metadata isolation and architecture regression auditing.
 
 ## Stage 09 objective
 
@@ -130,15 +130,22 @@ Validated within current scope:
 - local Docker Compose status command;
 - parser and unsafe-input tests.
 
-Remaining Stage 11 work before `VALIDATED`:
-1. establish a safe migration file/execution contract;
-2. implement and execute migration workflow using the repository's approved migrator role;
-3. validate remote Schema Catalog inspection/type generation against an actual server contract;
-4. add executable CI evidence for those workflows.
-
-Do not start Stage 12 until these Stage 11 exit-gate items are resolved.
+Stage 11 exit gate is satisfied by the merged hardening work. Do not reopen Stage 11 unless new executable evidence contradicts the contract.
 
 Do not backfill Realtime, Storage, or Supavisor merely to make Stage 03 broader. Their current deferral is intentional.
+
+## Stage 12 implementation
+
+In progress:
+- durable tenant-scoped graph event outbox;
+- commit-bound PostgreSQL NOTIFY wakeup;
+- mutation executor outbox integration;
+- tenant-scoped opaque subscription topics;
+- relay claim/ack/retry primitives;
+- adversarial tenant replay and RLS tests;
+- relay-role NOBYPASSRLS proof.
+
+The hosted transport remains adapter-pluggable; Supabase Realtime Broadcast is a production candidate, while the outbox/relay contract remains transport-neutral.
 
 ## Known unresolved decisions
 
@@ -222,4 +229,4 @@ Validated hardening now merged from `hardening/catalog-tenancy-automation`:
 
 Stage 04 was revalidated after the catalog security contract changed. Stage 11 passed its full exit gate.
 
-Exact next action: begin Stage 12 — Graph Realtime using the validated mutation/audit model and durable event/outbox boundary.
+Exact next action: run the Stage 12 database-backed realtime workflow, fix all failures, and mark Stage 12 VALIDATED only after the full exit gate passes.
