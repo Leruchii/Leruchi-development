@@ -9,6 +9,8 @@ on:
       - "tests/retrieval-ir/**"
       - "tests/schema-catalog-api/**"
       - "tests/vector-execution/**"
+      - "packages/capability-policy/**"
+      - "tests/capability-policy/**"
       - "infra/catalog/**"
       - "infra/migrations/0003-vector-catalog.sql"
       - "knowledge/decisions/stage-15-graphrag.md"
@@ -30,6 +32,8 @@ jobs:
         run: node --test tests/retrieval-ir/retrieval-ir.test.mjs
       - name: Tenant-scoped vector catalog contract tests
         run: node --test tests/schema-catalog-api/api.test.mjs
+      - name: Capability policy contract tests
+        run: node --test tests/capability-policy/capability-policy.test.mjs tests/capability-policy/capability-grants.test.mjs
       - name: Secure vector execution contract tests
         run: node --test tests/vector-execution/vector-execution.test.mjs
       - name: Architecture regression audit
