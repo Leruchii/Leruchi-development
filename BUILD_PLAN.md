@@ -680,7 +680,7 @@ Required:
 
 Do not add a second vector/graph database without an explicit architecture decision. AGE and pgvector remain implementation targets behind the existing execution/security boundary.
 
-**Status:** IN_PROGRESS — architecture contract first.
+**Status:** VALIDATED — hybrid data-plane, security, agent integration and explainability gates passed.
 
 ## Stage 16 — Observability
 
