@@ -631,7 +631,11 @@ Required areas:
 
 Normal users must not receive unrestricted free-form Cypher.
 
-**Status:** NOT STARTED.
+**Status:** IN_PROGRESS.
+
+Implemented: Graph Studio shell, Type C Graph Explorer spike, Vibe UI reference contracts, source-only Base UI audit, and typecheck/build CI.
+
+Remaining: authenticated Graph API integration, live Schema Catalog integration, Graph Schema, Traversal Builder, loading/empty/error states against real requests, browser accessibility/responsive evidence, and 1,000-node/3,000-edge renderer benchmark.
 
 ## Stage 14 — MCP Server
 
