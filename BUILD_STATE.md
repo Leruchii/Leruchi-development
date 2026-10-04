@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 11 — CLI
-- Current status: IMPLEMENTED — NOT YET VALIDATED
-- Last completed stage: 10 — JavaScript SDK
-- Last validated commit: `62366581a44183ed500a121ec3c9890d72ef21c5`
+- Current stage: 12 — Graph Realtime
+- Current status: READY_TO_BUILD (after PR #14 is merged to `main`)
+- Last completed stage: 11 — CLI
+- Last validated commit: `10d660138873377718cc2aca7c1e6aad75223c48` (head of PR #14, branch `stage-11-cli-validation`; Stage 11 CI run `37196737029`, all steps success)
 - Default branch: `main`
-- Next implementation target: Continue Stage 11 — CLI
+- Next implementation target: merge PR #14, then start Stage 12 — Graph Realtime
 
 ## Verified state
 
@@ -40,7 +40,7 @@ Stage 11 implementation passed focused CLI CI:
 - graph query delegation tests passed;
 - unsafe identifier tests passed;
 - CLI import passed.
-Stage 11 PR #13 was merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`, but the stage exit gate is not yet satisfied because the repository has no established migration execution contract and remote Schema Catalog inspection has not been validated.
+Stage 11 PR #13 was merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b` with the CLI core. The remaining exit-gate items were completed in PR #14 and are VALIDATED by CI (see "Stage 11 validation").
 
 ## Stage 09 objective
 
@@ -114,31 +114,40 @@ The SDK does not claim server authorization, Schema Catalog validation, tenant a
 
 ## Stage 11 implementation
 
-Implemented:
-- `packages/vibe-cli/index.mjs`
-- `packages/vibe-cli/package.json`
-- `packages/vibe-cli/bin/vibe.mjs`
-- `packages/vibe-cli/README.md`
+Implemented in PR #13:
+- `packages/vibe-cli/index.mjs`, `bin/vibe.mjs`, `package.json`, `README.md`
 - `tests/cli/cli.test.mjs`
-- `.github/workflows/stage-11-cli.yml`
-
-Validated within current scope:
 - project base-URL configuration without token persistence;
 - graph query/mutation delegation to the SDK;
 - Schema Catalog type generation from catalog JSON;
-- diagnostics endpoint command;
-- local Docker Compose status command;
-- parser and unsafe-input tests.
+- diagnostics endpoint command and local Docker Compose status command.
 
-Remaining Stage 11 work before `VALIDATED`:
-1. establish a safe migration file/execution contract;
-2. implement and execute migration workflow using the repository's approved migrator role;
-3. validate remote Schema Catalog inspection/type generation against an actual server contract;
-4. add executable CI evidence for those workflows.
+Implemented in PR #14 (completes the exit gate):
+- `packages/vibe-cli/migrations.mjs` — migration execution contract (forward-only SQL files, `vibe_migrator`-only, per-migration transaction + advisory lock, SHA-256 checksum tracking in `vibe_meta.schema_migrations`, drift/out-of-order/missing-file refusal, rollback on failure, secret redaction);
+- `packages/vibe-cli/catalog.mjs` — remote Schema Catalog contract client (`GET /rpc/vibe_schema_catalog`, v1 response validation, https/loopback-only bearer transport, no redirects, size/time limits);
+- CLI commands `vibe migrate new|status|up|verify` and `vibe schema inspect|pull`;
+- `migrations/0001_expose_schema_catalog.sql` — exposes catalog structure to `authenticated` through PostgREST;
+- fix: the CLI binary now prints error messages (previously exited 1 silently);
+- `tests/cli/migrations.test.mjs`, `tests/cli/catalog.test.mjs`, `tests/cli/migrations.integration.mjs`, `tests/cli/catalog-remote.integration.mjs`;
+- extended `.github/workflows/stage-11-cli.yml` with a database-backed job;
+- `knowledge/decisions/stage-11-cli.md` records both contracts.
 
-Do not start Stage 12 until these Stage 11 exit-gate items are resolved.
+## Stage 11 validation
 
-Do not backfill Realtime, Storage, or Supavisor merely to make Stage 03 broader. Their current deferral is intentional.
+Stage 11 is VALIDATED by executable evidence. Workflow run `37196737029` (commit `10d660138873377718cc2aca7c1e6aad75223c48`) succeeded for both jobs:
+
+- `cli-tests`: CLI unit and adversarial tests (`tests/cli/*.test.mjs`) and CLI import.
+- `cli-migrations-and-catalog` (real VibeDB Postgres image + PostgREST):
+  - PostgREST started before migrations; the remote catalog endpoint was proven absent (not HTTP 200) beforehand;
+  - database-backed migration tests passed: superuser and runtime-role connections refused; apply-once and idempotency; atomic rollback on failure; checksum drift, missing-file and out-of-order refusal; privilege-escalation attempts from a migration fail; concurrent runners apply each migration exactly once; tracking table unreadable by `vibe_runtime`;
+  - the real CLI previewed, applied, re-applied and verified `migrations/`;
+  - the CLI refused a superuser migration connection;
+  - remote catalog contract tests passed against PostgREST: no token / anon / forged / expired JWTs refused; authenticated callers receive the v1 structure; `vibe schema pull` generated types; response contains structure only (no properties, policies or row data); structure is shared across tenants.
+- Stages 01–10 workflows also passed on the same commit (no regression).
+
+Local replication during development (PostgreSQL 16 without AGE, PostgREST 14.17): 26 CLI unit tests, 10 migration integration tests and 6 remote-catalog tests passed. CI used the repository's real database image.
+
+The merge of PR #14 into `main` is required before Stage 12 starts. The separate GitHub "Code scanning AI findings" check on PR #14 failed during its own agent run ("Processing Request"); it is not one of the repository's workflows and reported no repository finding.
 
 ## Known unresolved decisions
 
@@ -152,6 +161,8 @@ The following remain open unless newer repository evidence resolves them:
 - Realtime transport and authorization;
 - Storage authorization/object isolation;
 - Supavisor topology/security;
+- per-tenant Schema Catalog visibility (catalog v1 structure is shared across tenants);
+- whether remote catalog inspection moves behind the future Graph API instead of PostgREST;
 - scoped AI/MCP capability issuance, revocation, and audit;
 - cloud topology, backups, RPO/RTO, billing, and metering.
 
@@ -203,17 +214,16 @@ Use these terms exactly:
 
 ## Last handoff update
 
-Stage 10 is validated and merged.
+Stage 11 is VALIDATED (PR #14, run `37196737029`). Stages 01–11 are validated.
 
-Stage 11 is implemented but not yet validated.
+What was implemented: migration execution contract and runner, remote Schema Catalog contract and client, `vibe migrate` and `vibe schema inspect|pull`, first migration, CLI error-output fix, tests, CI job, documentation.
 
-CI evidence:
-- Stage 10 workflow run `37195877514` — success.
-- Stage 11 workflow run `37195984686` — success.
-- Stage 11 PR #13 merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`.
+What passed: all steps of both Stage 11 jobs and all Stage 01–10 workflows on commit `10d660138873377718cc2aca7c1e6aad75223c48`.
 
-Known limitation:
-- Local container execution in this assistant environment could not reach GitHub, so executable validation was performed by repository GitHub Actions.
-- Stage 11 must not be called `VALIDATED` until migration execution and remote Schema Catalog workflows have executable evidence.
+What was not run / known limits: raw CI logs were not retrievable from the assistant environment (blocked host), so evidence is workflow step conclusions; local replication used PostgreSQL 16 without AGE. Down migrations are intentionally unsupported. Realtime, Storage and Supavisor remain deferred.
 
-Exact next action: continue Stage 11 by defining the migration and remote Schema Catalog contracts; then run the full CLI exit gate.
+Branch/PR: `stage-11-cli-validation`, PR #14 (open until merged).
+
+Blockers: none.
+
+Exact next action: review and merge PR #14, then start Stage 12 — Graph Realtime following `BUILD_PLAN.md`; the Stage 09 mutation audit metadata is the intended outbox input.

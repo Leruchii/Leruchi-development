@@ -39,3 +39,5 @@ Authentication is supplied through environment variables only: `VIBE_TOKEN` (API
 - Per-tenant catalog visibility (see above).
 - Rollback/down migrations are intentionally not supported (forward-only).
 - Whether remote catalog inspection should move behind the future Graph API instead of PostgREST.
+
+Status: VALIDATED (PR #14; Stage 11 CI run 37196737029).

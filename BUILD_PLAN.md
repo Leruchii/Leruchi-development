@@ -568,19 +568,18 @@ Provide validated workflows for:
 - diagnostics
 - local development
 
-Implemented so far:
+Implemented and validated:
 - project base-URL configuration without token persistence;
 - graph query and mutation commands delegated to the JavaScript SDK;
-- Schema Catalog type generation from local catalog JSON;
+- Schema Catalog type generation from local catalog JSON and from the remote catalog (`vibe schema inspect|pull`, `GET /rpc/vibe_schema_catalog` through PostgREST);
+- migrations (`vibe migrate new|status|up|verify`): forward-only SQL files, run only as `vibe_migrator`, one transaction per migration, advisory-lock serialization, SHA-256 drift detection, rollback on failure;
 - diagnostics endpoint check;
 - local Docker Compose status;
-- CLI parser and adversarial tests.
+- CLI parser, adversarial, database-backed migration and remote-catalog tests in CI.
 
 CLI does not become a second compiler/security boundary.
 
-**Status:** IMPLEMENTED — NOT YET VALIDATED.
-
-**Remaining exit-gate work:** establish the repository migration execution contract, implement and execute migrations using the approved migrator role, validate remote Schema Catalog inspection/type generation against a real server contract, and add executable CI evidence for those workflows.
+**Status:** VALIDATED (PR #14; Stage 11 CI run `37196737029`).
 
 ## Stage 12 — Graph Realtime
 

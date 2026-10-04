@@ -1,3 +1,5 @@
+> Stage 11 is VALIDATED (PR #14, CI run 37196737029). This prompt is retained for history; do not re-run it.
+
 # Stage 11 — CLI
 
 Continue only the unfinished CLI stage.

@@ -13,7 +13,15 @@
 - Transaction rollback and raw database-error normalization are validated.
 - Live tenant-A execution cannot retrieve tenant-B graph data through the engine.
 
+## Resolved in Stage 11
+
+- Migration execution contract (migrator-only, forward-only, checksum-tracked, transactional) is validated.
+- Remote Schema Catalog contract (`GET /rpc/vibe_schema_catalog`, v1 response) is validated against PostgREST.
+
 ## Remaining UNKNOWNs
+
+- Per-tenant Schema Catalog visibility (v1 structure is shared across tenants).
+- Whether remote catalog inspection moves behind the future Graph API.
 
 - Production Auth tenant-authorization claim issuance.
 - Shared runtime-role context propagation from PostgREST into the Secure Execution Engine.
