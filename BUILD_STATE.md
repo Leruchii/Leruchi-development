@@ -257,8 +257,15 @@ Remaining before VALIDATED:
 3. production graph renderer benchmark and decision;
 4. complete end-to-end Graph API runtime composition against a live PostgreSQL/AGE environment.
 
-Current branch: `stage13-tenant-ui-correctness`
-Current PR: #24
-Latest implementation commit before this checkpoint: `e80ce71f845ece37a87d899683c636bec6a52e59`
-Validation status: code/contract changes pushed; GitHub Actions result not yet available at handoff.
-Exact next action: run/observe the Stage 13 workflow for PR #24, fix any CI failures, then perform live authenticated tenant A/B browser evidence before marking Stage 13 VALIDATED.
+Current branch: `stage13-runtime-hardening`
+Current PR: #25
+PR #24 remains open as the preceding Studio correctness follow-up.
+Latest implementation commit before this checkpoint: `e846032256c80d2ffe55adc15ef73e14a6c600f8`
+Validation status: runtime hardening pushed; repository PR workflows are queued and have not yet produced pass/fail evidence.
+New runtime invariants:
+- Graph API query execution binds verified JWT tenant/role/capabilities to PostgreSQL `request.jwt.claims` inside the same transaction used for execution;
+- claim-binding failure rolls back before a pooled connection is released;
+- mutation execution uses the same rollback-on-claim-binding-failure rule;
+- malformed, unsupported, expired, or missing-tenant JWTs are classified as unauthorized;
+- AGE `lt` compiles to strict `<`, with regression coverage for all comparison operators.
+Exact next action: observe PR #25 CI, fix any failures, then complete live authenticated tenant A/B browser evidence and the Stage 13 renderer/accessibility gates before marking Stage 13 VALIDATED.
