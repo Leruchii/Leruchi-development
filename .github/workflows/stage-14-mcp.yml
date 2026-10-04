@@ -1,0 +1,21 @@
+name: Stage 14 MCP Agent Gateway
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  mcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: MCP contract tests
+        run: node --test tests/mcp/mcp-server.test.mjs
+      - name: Architecture regression audit
+        run: bash scripts/audit-baseui.sh apps/studio
