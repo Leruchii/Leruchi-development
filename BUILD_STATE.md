@@ -307,3 +307,16 @@ Validated and merged in PR #28 as `6966240c82ef33619514f429953f368016964396`.
 Remaining Stage 13 exit work:
 - production renderer benchmark and explicit renderer decision;
 - final live Graph API → PostgreSQL/AGE runtime composition evidence (the Stage 02 security E2E already proves the core JWT → Graph API → transaction-local claims → AGE/RLS path; Stage 13 needs the final composition evidence recorded against the Studio contract).
+
+
+## Current continuation — Stage 13 renderer evidence
+
+Implemented on branch `stage13-renderer-browser-benchmark`:
+- Added `apps/studio/tests/browser/renderer-benchmark.spec.ts`.
+- Browser benchmark exercises the real Graph Studio SVG DOM at 100, 500 and 1,000 returned nodes.
+- Benchmark records render-to-node-completion and node interaction latency and fails only on a deliberately generous 5-second regression budget per operation.
+- Updated `knowledge/decisions/stage-13-graph-studio.md` so the synthetic renderer benchmark is explicitly non-authoritative and the browser benchmark is the next production-renderer evidence gate.
+
+Validation status: IMPLEMENTED — NOT YET VALIDATED. CI execution is required before treating benchmark numbers as evidence.
+
+Exact next action: run the Stage 13 CI/browser suite, inspect benchmark results, then complete the live Graph API → Schema Catalog → Query IR → ExecutionContext → PostgreSQL/AGE/RLS → Studio composition evidence. Do not mark Stage 13 VALIDATED until both renderer and live-composition gates have executable evidence.
