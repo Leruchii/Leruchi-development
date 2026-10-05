@@ -28,13 +28,13 @@ source_extensions="$(psql "$SOURCE_DATABASE_URL" -Atqc "SELECT string_agg(extnam
 }
 
 source_vector="$(psql "$SOURCE_DATABASE_URL" -Atqc "SELECT count(*) || ':' || min(embedding::text) FROM vibe_meta.extension_probe")"
-source_graph="$(psql "$SOURCE_DATABASE_URL" -Atq <<'SQL'
+source_graph="$(psql "$SOURCE_DATABASE_URL" -v ON_ERROR_STOP=1 -Atq <<'SQL'
 LOAD 'age';
 SET search_path = ag_catalog, "$user", public;
 SELECT count(*)
 FROM ag_catalog.cypher(
   'vibe_stage01',
-  $ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p $
+  $$ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p $$
 ) AS (p ag_catalog.agtype);
 SQL
 )"
@@ -59,13 +59,13 @@ restore_finished="$(date +%s%N)"
 
 target_extensions="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT string_agg(extname, ',' ORDER BY extname) FROM pg_extension WHERE extname IN ('age','vector')")"
 target_vector="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) || ':' || min(embedding::text) FROM vibe_meta.extension_probe")"
-target_graph="$(psql "$TARGET_DATABASE_URL" -Atq <<'SQL'
+target_graph="$(psql "$TARGET_DATABASE_URL" -v ON_ERROR_STOP=1 -Atq <<'SQL'
 LOAD 'age';
 SET search_path = ag_catalog, "$user", public;
 SELECT count(*)
 FROM ag_catalog.cypher(
   'vibe_stage01',
-  $ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p $
+  $$ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p $$
 ) AS (p ag_catalog.agtype);
 SQL
 )"
