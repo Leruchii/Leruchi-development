@@ -45,3 +45,11 @@ test("span duration is emitted and parent trace is preserved",()=>{
   assert.equal(traces[0].duration_ms,45);
   assert.equal(traces[0].error_code,"DATABASE_EXECUTION_FAILED");
 });
+
+
+test("planner metric allows only bounded engine and reason labels",()=>{
+  const metrics=[];
+  const obs=createObservability({metricSink:event=>metrics.push(event)});
+  obs.increment("vibe_query_planner_total",1,{engine:"postgresql-recursive",reason:"fallback",tenant_id:"tenant_a",query:"hidden"});
+  assert.deepEqual(metrics[0].labels,{engine:"postgresql-recursive",reason:"fallback"});
+});
