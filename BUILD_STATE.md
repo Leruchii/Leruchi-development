@@ -7,15 +7,15 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 20 — Production Readiness
-- Current status: IN_PROGRESS
-- Last completed stage: 17 — Backup + Recovery
-- Last validated commit: `5b8902d57afda8eafa2868bd188a2d28e784e998` (Stage 17 merged through PR #43 after final-head product and architecture checks passed)
+- Current status: VALIDATED
+- Last completed stage: 20 — Production Readiness
+- Last validated commit: `139966a5a4a6a432d00a1924c967dabb969b3908` (Stage 20 PR #44 head; full repository product/architecture matrix passed)
 - Default branch: `main`
 - Stage 16 merged: PR #42 as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`
 - Stage 17 merged: PR #43 as `5b8902d57afda8eafa2868bd188a2d28e784e998`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `stage20-production-readiness`
-- Next implementation target: validate the Stage 20 dependency/version and migration-policy gate, then implement the prior-schema upgrade drill and capacity/concurrency evidence before any production-readiness claim
+- Current branch: `main`
+- Next implementation target: no Stage 21 is defined in the canonical build plan; continue only with a newly approved stage or architecture decision rather than inventing one.
 
 Validation evidence: Stage 17 workflow run `37289821553` passed on the final PR head; all final-head product/architecture workflows were green before merge.
 
@@ -572,3 +572,23 @@ Audit findings at entry:
 - incident/upgrade/dependency-update procedures still require durable documentation.
 
 Stage 20 remains IN_PROGRESS. Do not mark it VALIDATED until those gaps are closed and the full repository regression matrix is green.
+
+
+## Stage 20 — Production Readiness validation
+
+Stage 20 is **VALIDATED**.
+
+Validation evidence on commit `139966a5a4a6a432d00a1924c967dabb969b3908`:
+- Stage 20 Production Readiness workflow `37297799623` passed.
+- Stage 11 CLI workflow `37297799604` passed after migration checksum persistence was corrected.
+- Stage 12 Graph Realtime workflow `37297799687` passed.
+- Stage 15 GraphRAG workflow `37297799696` passed.
+- Architecture Regression Audit `37297799715` passed.
+- Stage State Gate `37297799678` passed.
+- The Stage 20 upgrade drill proved supported prior-schema → current migration, checksum recording, checksum-drift rejection, preservation of prior data, and idempotent rerun.
+- The Stage 20 concurrency smoke exercised 32 concurrent database tasks through a reference pool capped at 4 connections.
+- Operations, testing, unknowns, and production-readiness runbook documentation were reconciled.
+
+The checksum failure discovered during validation was a real migration-runner defect: psql `-v` variables were incorrectly relied upon inside a `-c` SQL string. The runner now uses strictly validated SQL literals for the checksum update, and the corrected full matrix passes.
+
+Production boundary remains explicit: this validation does not claim universal capacity, hosted SLA, regional recovery, commercial RPO/RTO, billing, or cloud-control-plane guarantees. Stages 18 and 19 remain deferred.
