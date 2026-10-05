@@ -95,7 +95,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
           return json(res,status,{version:"v1",code:error?.code??"INVALID_AGENT_INTENT",message:error?.message??"Invalid Agent Intent",request_id:requestId});
         }
         const catalog=await catalogProvider(context);
-        const explanation=explainAgentIntent({intent:input.intent,context,catalog});
+        const explanation=explainAgentIntent({intent:input.intent,context,catalog,observability,requestId});
         await record(explanation.status==="ready"?"success":"denied",explanation.reason_code);
         return json(res,200,{...explanation,request_id:requestId});
       }
