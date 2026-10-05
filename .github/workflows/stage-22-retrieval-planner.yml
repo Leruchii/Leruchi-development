@@ -1,0 +1,24 @@
+name: Stage 22 Retrieval Planner
+
+on:
+  pull_request:
+    paths:
+      - "packages/planner/**"
+      - "packages/retrieval-contract/**"
+      - "packages/retrieval-ir/**"
+      - "packages/retrieval-execution/**"
+      - "packages/retrieval-fusion/**"
+      - "tests/planner/**"
+      - "tests/retrieval-execution/**"
+      - ".github/workflows/stage-22-retrieval-planner.yml"
+
+jobs:
+  retrieval-planner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --test tests/planner/retrieval-planner.test.mjs tests/retrieval-execution/retrieval-execution.test.mjs
+      - run: node --test tests/planner/planner.test.mjs

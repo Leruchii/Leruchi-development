@@ -3,10 +3,12 @@ import {assertTrustedExecutionContext} from "../execution-context/index.mjs";
 import {validateRetrievalIR} from "../retrieval-ir/index.mjs";
 import {validateQuery} from "../query-validation/index.mjs";
 import {compileAge} from "../compiler-age/index.mjs";
+import {compilePostgresqlRecursive} from "../compiler-postgresql-recursive/index.mjs";
 import {executeGraphQuery} from "../execution-engine/index.mjs";
 import {executeVectorRetrieval} from "../vector-execution/index.mjs";
 import {normalizeRetrievalRows} from "../retrieval-contract/index.mjs";
 import {fuseWeightedRRF} from "../retrieval-fusion/index.mjs";
+import {planRetrieval, retrievalEngineCapabilities} from "../planner/retrieval.mjs";
 
 export class RetrievalExecutionError extends Error {
   constructor(code,message,details=undefined){super(message);this.name="RetrievalExecutionError";this.code=code;this.details=details;}
@@ -26,12 +28,30 @@ export async function executeRetrieval({
   requestId=randomUUID(),
   validate=validateQuery,
   compile=compileAge,
+  recursiveCompile=compilePostgresqlRecursive,
   executeGraph=executeGraphQuery,
   executeVector=executeVectorRetrieval,
-  observability
+  observability,
+  retrievalCapabilities = retrievalEngineCapabilities({
+    apacheAge: {available: true, features: ["graph_query"]},
+    postgresqlRecursive: {available: false, features: []},
+    postgresqlVector: {available: true, features: ["vector"]}
+  }),
+  preferredGraphEngines,
+  preferredVectorEngines
 }){
   try{assertTrustedExecutionContext(context);}catch{throw new RetrievalExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   try{validateRetrievalIR(ir);}catch(error){throw new RetrievalExecutionError(error.code??"INVALID_RETRIEVAL_IR",error.message);}
+  let plan;
+  try {
+    plan = planRetrieval(ir, {
+      capabilities: retrievalCapabilities,
+      preferredGraph: preferredGraphEngines,
+      preferredVector: preferredVectorEngines
+    });
+  } catch(error) {
+    throw new RetrievalExecutionError(error.code??"NO_RETRIEVAL_ENGINE",error.message,error.details);
+  }
 
   const started=Date.now();
   const graph=ir.sources.graph;
@@ -51,7 +71,8 @@ export async function executeRetrieval({
     if(candidateLimit>ir.limits.max_results) throw new RetrievalExecutionError("RETRIEVAL_LIMIT_EXCEEDED","Graph candidate limit exceeds retrieval max_results");
     const boundedQuery={...graph.query,limit:candidateLimit};
     const graphParams=graphParameters(graph.query,requestParameters);
-    graphResult=await executeGraph({ir:boundedQuery,context,catalog,requestParameters:graphParams,validate,compile,db,requestId});
+    const plannedCompile = plan.graph.engine === "postgresql-recursive" ? recursiveCompile : compile;
+    graphResult=await executeGraph({ir:boundedQuery,context,catalog,requestParameters:graphParams,validate,compile:plannedCompile,db,requestId});
   }
 
   if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
@@ -79,6 +100,7 @@ export async function executeRetrieval({
     timing_ms:{execution:executionMs},
     cost:{graph:graphCost,vector:vectorCost,total:graphCost+vectorCost,max:ir.limits.max_cost},
     sources:{graph:graphCandidates.length,vector:vectorCandidates.length},
+    plan:{mode:plan.mode,graph:plan.graph?.engine??null,vector:plan.vector?.engine??null},
     explain:{
       fusion:{strategy:ir.fusion.strategy,vector_weight:ir.fusion.vector_weight,graph_weight:ir.fusion.graph_weight},
       candidate_limits:{max_results:ir.limits.max_results,max_cost:ir.limits.max_cost}
