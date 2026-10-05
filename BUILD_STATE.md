@@ -6,16 +6,18 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 17 — Backup + Recovery
-- Current status: VALIDATED
+- Current stage: 20 — Production Readiness
+- Current status: READY_TO_BUILD
 - Last completed stage: 17 — Backup + Recovery
-- Last validated commit: `c1baae1739d5b0984a82da71d1733e68966ae3ca` (Stage 17 production-image recovery evidence passed in workflow run `37289351363`; final documentation-only commits follow on the same PR)
+- Last validated commit: `5b8902d57afda8eafa2868bd188a2d28e784e998` (Stage 17 merged through PR #43 after final-head product and architecture checks passed)
 - Default branch: `main`
 - Stage 16 merged: PR #42 as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`
-- Current branch: `stage17-backup-recovery`
-- Next implementation target: Merge PR #43 after final-head regression checks, then hand off to Stage 18 Vibe Cloud Control Plane as a private/deferred control-plane stage without leaking cloud-only dependencies into the OSS runtime
+- Stage 17 merged: PR #43 as `5b8902d57afda8eafa2868bd188a2d28e784e998`
+- Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
+- Current branch: `main`
+- Next implementation target: begin Stage 20 Production Readiness by auditing the final gates and turning uncovered reliability, upgrade, capacity, dependency-policy, documentation and operations gaps into executable evidence
 
-Validation evidence: Stage 17 workflow run `37289351363` passed.
+Validation evidence: Stage 17 workflow run `37289821553` passed on the final PR head; all final-head product/architecture workflows were green before merge.
 
 ## Verified state
 
