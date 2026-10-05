@@ -239,3 +239,5 @@ export function createClient(options = {}) {
   };
   return client;
 }
+
+export {RetrievalBuilder,RetrievalBuilderError,createRetrievalBuilder} from "./retrieval.mjs";
