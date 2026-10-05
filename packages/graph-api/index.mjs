@@ -176,7 +176,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       if(error?.code==="UNAUTHORIZED"||error instanceof ExecutionContextError||error?.message?.includes("Bearer token"))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId});
       if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
       if(error instanceof RetrievalExecutionError)return json(res,400,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});
-      if(error instanceof ContextResolutionError)return json(res,400,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});
+      if(error instanceof ContextResolutionError){const status=error.code==="CONTEXT_CAPABILITY_DENIED"?403:error.code==="UNTRUSTED_CONTEXT"?401:400;return json(res,status,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});}
       return json(res,500,{version:"v1",code:"INTERNAL_ERROR",message:"Graph API request failed",request_id:requestId});
     }finally{
       const statusClass=Math.floor((res.statusCode||500)/100)+"xx";
