@@ -13,11 +13,11 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
 - Current branch: `stage21-agent-developer-contract`
-- Current work: durable bidirectional MCP + developer-first contract; Schema Catalog relational mapping extension; constrained PostgreSQL recursive compiler; live RLS/depth/limit/parameter-safety evidence
+- Current work: durable bidirectional MCP + developer-first contract; backward-compatible Schema Catalog relational mappings; constrained PostgreSQL recursive compiler; Graph API planner integration; live RLS/depth/limit/parameter-safety and AGE-equivalence evidence
 - Current PR: #46
-- Latest known compiler CI: previous failures were real test/SQL-generation defects and have been corrected; the latest Stage 21 run for the current head is queued.
+- Latest known compiler CI: Stage 21, Stage 11, Stage 15 and Architecture Regression Audit were green on the preceding corrected head. The newest head adds AGE-equivalence evidence and is currently running.
 - Architecture Regression Audit: green on the preceding corrected head; latest audit is running/queued with the current head.
-- Next exact action: inspect the current Stage 21 workflow result; fix any real database/compiler failure; then wire planner capability registration and complete AGE-equivalence + observability evidence.
+- Next exact action: inspect the current Stage 21 workflow result; fix any real equivalence/database failure; then run the full final-head regression matrix and only after all relevant checks are green update Stage 21 validation evidence and merge PR #46.
 
 The Stage 21 planner foundation is merged. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered. Do not mark Stage 21 VALIDATED until recursive compilation, authoritative Schema Catalog mapping, tenant/RLS isolation, cost/depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration and planner observability all have executable evidence.
 
