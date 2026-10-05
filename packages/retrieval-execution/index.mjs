@@ -42,6 +42,16 @@ export async function executeRetrieval({
 }){
   try{assertTrustedExecutionContext(context);}catch{throw new RetrievalExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   try{validateRetrievalIR(ir);}catch(error){throw new RetrievalExecutionError(error.code??"INVALID_RETRIEVAL_IR",error.message);}
+  let plan;
+  try {
+    plan = planRetrieval(ir, {
+      capabilities: retrievalCapabilities,
+      preferredGraph: preferredGraphEngines,
+      preferredVector: preferredVectorEngines
+    });
+  } catch(error) {
+    throw new RetrievalExecutionError(error.code??"NO_RETRIEVAL_ENGINE",error.message,error.details);
+  }
 
   const started=Date.now();
   const graph=ir.sources.graph;
