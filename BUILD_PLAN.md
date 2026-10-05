@@ -889,8 +889,8 @@ The canonical execution checkpoint is **Stage 22 — Retrieval-Aware Engine-Neut
 Current state:
 - Stages 00–21: **VALIDATED**.
 - Stages 18 — Vibe Cloud Control Plane and 19 — Billing + Metering: **DEFERRED**.
-- Stage 22: **IN_PROGRESS** on `stage22-retrieval-planner`.
-- Stage 22 corrected head `bfc6c8ecb0a689fd976f3af2441ed47d6cbc08ac` has a green dedicated Stage 22 workflow; the repository-wide matrix is still completing.
+- Stage 22: **VALIDATED** and merged to `main` as `c6f0c41025f52ad14bc30be97adeeff4edaf2593`.
+- Final exact Stage 22 candidate `e80f9bc91ed275ff2e6051d27fc32c003bb9209` passed all 21 triggered repository workflows; Architecture Regression Audit and Stage State Gate also passed.
 - A real shared retrieval execution defect was fixed: `plan` was referenced before initialization, breaking both Stage 22 tests and the existing Stage 15 hybrid integration. The fix initializes the plan immediately after Retrieval IR validation and before execution branches.
 - The canonical handoff is maintained in `BUILD_STATE.md`.
 
@@ -1019,3 +1019,20 @@ Validation evidence:
 - Stage 15 GraphRAG workflow `37314794593` passed, including the live PostgreSQL/AGE/pgvector hybrid database job.
 - Architecture Regression Audit `37314794555` and Stage State Gate `37314794572` passed.
 - The shared `plan` initialization defect was fixed before validation and its regression impact on Stage 15 was explicitly re-exercised.
+
+
+## Stage 23 — Unified Retrieval Developer/Agent Surface
+
+**Status:** READY_TO_BUILD.
+
+Stage 23 is the next OSS stage. Its purpose is to make the validated Stage 22 retrieval planner a first-class developer and agent capability without exposing physical engine details or creating another execution/security boundary.
+
+Required direction:
+- expose engine-neutral retrieval through the developer-facing SDK/API/CLI contracts where retrieval is currently available only through lower-level execution paths;
+- expose the same retrieval intent to MCP/agents using the canonical Retrieval IR and existing scoped capabilities;
+- preserve trusted ExecutionContext, Schema Catalog, RLS, cost/result guardrails, deterministic weighted-RRF and Secure Execution Engine semantics;
+- provide bounded, explainable plan metadata without exposing SQL/Cypher, tenant identifiers, embeddings, raw parameters or internal credentials;
+- prove developer and MCP retrieval paths converge on the same validation/planner/execution semantics;
+- add adversarial tests for tenant override, capability misuse, unsafe identifiers and plan-metadata leakage.
+
+Do not introduce a new database, a second retrieval execution path, or a public physical-engine contract.
