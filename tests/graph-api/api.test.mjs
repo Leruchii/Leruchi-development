@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {createGraphApiServer} from "../../packages/graph-api/index.mjs";
+import {createGraphApiServer,resolveQueryCompiler} from "../../packages/graph-api/index.mjs";
+import {engineCapabilities} from "../../packages/planner/index.mjs";
 import {createHmac} from "node:crypto";
 
 function fakePool(){
@@ -68,4 +69,30 @@ test("Graph API rejects expired JWTs with 401", async()=>{
     const body=await res.json();
     assert.equal(body.code,"UNAUTHORIZED");
   }finally{await api.close();}
+});
+
+
+test("Graph API planner keeps AGE as the default execution engine",()=>{
+  const ir={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"p"},steps:[{edge:"KNOWS",direction:"out",target:{label:"Person",alias:"f"}}],filters:[],projection:[{field:"f.name",alias:"name"}],orderBy:[],limit:10,offset:0,depth:1,parameters:[]};
+  const catalog={graphs:{g:{labels:["Person"],edges:[{name:"KNOWS",from:"Person",to:"Person"}]}}};
+  const {plan,compile}=resolveQueryCompiler(ir,catalog);
+  assert.equal(plan.engine,"apache-age");
+  assert.equal(compile(ir).engine,"apache-age");
+});
+
+test("Graph API planner selects PostgreSQL fallback only when explicitly registered",()=>{
+  const ir={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"p"},steps:[{edge:"KNOWS",direction:"out",target:{label:"Person",alias:"f"}}],filters:[],projection:[{field:"f.name",alias:"name"}],orderBy:[],limit:10,offset:0,depth:1,parameters:[]};
+  const catalog={graphs:{g:{labels:["Person"],edges:[{name:"KNOWS",from:"Person",to:"Person"}],relational:{labels:{Person:{schema:"vibe_app",table:"people",id_column:"id",tenant_column:"tenant_id"}},edges:{KNOWS:{schema:"vibe_app",table:"person_knows",from_column:"from_id",to_column:"to_id"}}}}}};
+  const observed=[];
+  const observability={increment:(name,value,labels)=>observed.push({name,value,labels})};
+  const engines=engineCapabilities({
+    age:{available:false,features:[]},
+    postgresqlRecursive:{available:true,features:["graph_query"]}
+  });
+  const {plan,compile}=resolveQueryCompiler(ir,catalog,{engines,observability});
+  assert.equal(plan.engine,"postgresql-recursive");
+  assert.equal(plan.reason,"fallback");
+  assert.equal(compile(ir).engine,"postgresql-recursive");
+  assert.deepEqual(observed,[{name:"vibe_query_planner_total",value:1,labels:{engine:"postgresql-recursive",reason:"fallback"}}]);
+  assert.equal(JSON.stringify(observed).includes("tenant"),false);
 });
