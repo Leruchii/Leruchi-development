@@ -99,3 +99,23 @@ test("MCP rejects excessively nested agent arguments before the data plane",asyn
   assert.equal(response.result.isError,true);
   assert.match(response.result.content[0].text,/bounded nesting depth/);
 });
+
+test("MCP context.explain is diagnostic and validates Context IR before transport", async () => {
+  const contextTool = MCP_TOOLS.find((tool) => tool.name === "context.explain");
+  assert.equal(contextTool?.annotations.readOnlyHint, true);
+  assert.equal(contextTool?.annotations.destructiveHint, false);
+  assert.deepEqual(Object.keys(contextTool.inputSchema.properties), ["ir"]);
+  let calls = 0;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => { calls += 1; return new Response(JSON.stringify({ ok: true }), { status: 200 }); };
+  try {
+    const response = await handleMcpMessage({
+      jsonrpc: "2.0", id: "context-invalid", method: "tools/call",
+      params: { name: "context.explain", arguments: { ir: { version: "v1", kind: "context_request", tenant_id: "other" } } }
+    });
+    assert.equal(response.result.isError, true);
+    assert.equal(calls, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
