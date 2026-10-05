@@ -72,3 +72,24 @@ test("retrieval CLI fails before transport when vector embedding is missing",asy
   fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));
   await assert.rejects(()=>run(["retrieval","query","--vector-catalog-ref","docs.embedding"],{cwd,fetchImpl:async()=>{throw new Error("transport should not run")},stdout:()=>{},stderr:()=>{}}),/Missing --embedding/);
 });
+
+
+test("CLI retrieval explain sends canonical IR without raw parameters",async()=>{
+  const {run}=await import("../../packages/vibe-cli/index.mjs");
+  const fs=await import("node:fs");
+  const os=await import("node:os");
+  const path=await import("node:path");
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-stage24-"));
+  fs.writeFileSync(path.join(cwd,"retrieval.json"),JSON.stringify({
+    version:"v1",kind:"retrieval_query",
+    sources:{vector:{catalog_ref:"documents.embedding",query_parameter:"embedding",top_k:2,identity_field:"id"}},
+    fusion:{strategy:"weighted_rrf"},limits:{max_results:2,max_cost:20}
+  }));
+  const seen=[];
+  await run(["retrieval","explain","--ir","retrieval.json"],{
+    cwd,fetchImpl:async(url,options)=>{seen.push({url,body:JSON.parse(options.body)});return new Response(JSON.stringify({status:"ready",mode:"vector"}),{status:200,headers:{"content-type":"application/json"}})},
+    stdout:()=>{},stderr:()=>{}
+  });
+  assert.equal(seen[0].url,"http://127.0.0.1/v1/retrieval/explain");
+  assert.deepEqual(Object.keys(seen[0].body),["ir"]);
+});
