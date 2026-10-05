@@ -712,7 +712,18 @@ Prove:
 - evidence-backed RTO
 - failure/recovery drills
 
-**Status:** NOT STARTED.
+**Status:** VALIDATED.
+
+Validation evidence:
+- PostgreSQL custom-format backup plus SHA-256 and byte-size manifest verification;
+- explicit `fresh` and `replace` restore modes;
+- migration-ledger equality after restore;
+- production-image restore using PostgreSQL 17.11 + Apache AGE 1.7.0 + pgvector 0.8.7;
+- restored AGE graph data and pgvector-backed data;
+- recovery-point proof that pre-backup data is present and a post-backup write is absent;
+- Stage 17 workflow run `37289351363` passed with a production-image reference backup duration of 232 ms and restore duration of 146 ms.
+
+The measured timings are controlled CI benchmark evidence, not a hosted-service SLA. Numeric operational RPO depends on backup cadence and hosted topology; commercial/hosted RPO and RTO targets, retention, replication and regional recovery belong to Stage 18 rather than the OSS runtime contract.
 
 ## Stage 18 — Vibe Cloud Control Plane
 

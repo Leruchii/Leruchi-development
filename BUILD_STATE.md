@@ -7,12 +7,15 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 17 — Backup + Recovery
-- Current status: READY_TO_BUILD
-- Last completed stage: 15 — GraphRAG
-- Last validated commit: `cb17e926ea668f0815923634aa46351bc0072ca9` (Stage 15 GraphRAG exit evidence passed; documentation checkpoints are `777efa73e98c624da605f58a5009673a03101334` and `7e7d132f55c127ccf3e4b5ded3726f704b3e5f2c`)
+- Current status: VALIDATED
+- Last completed stage: 17 — Backup + Recovery
+- Last validated commit: `c1baae1739d5b0984a82da71d1733e68966ae3ca` (Stage 17 production-image recovery evidence passed in workflow run `37289351363`; final documentation-only commits follow on the same PR)
 - Default branch: `main`
 - Stage 16 merged: PR #42 as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`
-- Next implementation target: Prove backup, restore, integrity verification, migration compatibility, RPO/RTO and failure/recovery drills
+- Current branch: `stage17-backup-recovery`
+- Next implementation target: Merge PR #43 after final-head regression checks, then hand off to Stage 18 Vibe Cloud Control Plane as a private/deferred control-plane stage without leaking cloud-only dependencies into the OSS runtime
+
+Validation evidence: Stage 17 workflow run `37289351363` passed.
 
 ## Verified state
 
@@ -524,3 +527,27 @@ Exact next action:
 Stage 16 is merged to main. Repository-wide checks on the final Stage 16 head were green for the product test suites, including the dedicated observability gate, tenant isolation, query validation, retrieval, SDK, CLI and state checks. The GitHub Advanced Security `github-advanced-security` job failed in its external Processing Request step; it is not a VibeDB test or architecture regression and is not treated as a code failure.
 
 Stage 17 is now READY_TO_BUILD.
+
+
+## Stage 17 — Backup + Recovery validation
+
+Stage 17 is VALIDATED on branch `stage17-backup-recovery` pending final PR merge.
+
+Validated contract:
+- PostgreSQL custom-format backups with SHA-256, byte-size, server/tool version, migration digest and measured timing metadata;
+- restore integrity verification rejects checksum and byte-size mismatch before `pg_restore`;
+- explicit `fresh` and `replace` restore modes;
+- migration-ledger equality after restore;
+- production-image recovery against PostgreSQL 17.11 + Apache AGE 1.7.0 + pgvector 0.8.7;
+- restored real AGE graph data and pgvector-backed data;
+- executable recovery-point boundary: pre-backup fixture data is restored and a post-backup committed write is absent;
+- controlled CI benchmark evidence from Stage 17 workflow run `37289351363`: 232 ms production-image backup, 146 ms fresh restore.
+
+Validation also discovered and fixed a clean-install defect: the database bootstrap attempted AGE grants before `ag_catalog` existed. AGE is now initialized before AGE-specific grants, and Stage 01 clean database foundation passed after the fix.
+
+The measured timings are reference CI evidence only. Hosted backup cadence, retention, replication, regional recovery and numeric production RPO/RTO commitments belong to Stage 18 Vibe Cloud Control Plane.
+
+Exact next action:
+1. Run final-head repository checks after the documentation/state updates.
+2. Merge PR #43 only if meaningful product/architecture checks are green.
+3. On `main`, advance the canonical checkpoint to Stage 18 while keeping its private/deferred control-plane boundary explicit.
