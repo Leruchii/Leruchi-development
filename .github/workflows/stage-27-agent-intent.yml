@@ -1,0 +1,40 @@
+name: Stage 27 - Agent Intent Boundary
+
+on:
+  pull_request:
+    paths:
+      - "packages/agent-intent/**"
+      - "packages/graph-api/**"
+      - "packages/vibe-sdk/**"
+      - "packages/mcp-server/**"
+      - "tests/agent-intent/**"
+      - "tests/vibe-sdk/agent-intent.test.mjs"
+      - "tests/mcp/mcp-server.test.mjs"
+      - "tests/graph-api/api.test.mjs"
+      - "packages/vibe-cli/**"
+      - "tests/cli/cli.test.mjs"
+  push:
+    branches:
+      - "stage27-*"
+
+jobs:
+  agent-intent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Agent Intent contract tests
+        run: node --test tests/agent-intent/*.test.mjs
+      - name: SDK Agent Intent tests
+        run: node --test tests/vibe-sdk/agent-intent.test.mjs
+      - name: MCP contract tests
+        run: node --test tests/mcp/mcp-server.test.mjs
+      - name: Graph API Agent Intent tests
+        run: node --test tests/graph-api/api.test.mjs
+      - name: CLI Agent Intent tests
+        run: node --test tests/cli/cli.test.mjs

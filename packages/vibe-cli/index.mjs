@@ -4,6 +4,7 @@ import {execFile} from "node:child_process";
 import {promisify} from "node:util";
 import {createClient} from "../vibe-sdk/index.mjs";
 import {runMigrations} from "./migrate.mjs";
+import {validateAgentIntent} from "../agent-intent/index.mjs";
 
 const execFileAsync=promisify(execFile);
 const CONFIG_DIR=".vibe";
@@ -115,6 +116,14 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     const payload=await response.text();
     if(!response.ok)throw new Error(`Diagnostics failed with HTTP ${response.status}`);
     stdout(payload);return 0;
+  }
+  if(command==="agent"&&subcommand==="intent"&&rest[0]==="explain"){
+    const client=createClient(clientOptions(cwd,args,fetchImpl));
+    const file=required(args,"intent");
+    const intent=parseJson(fs.readFileSync(path.resolve(cwd,file),"utf8"),"--intent");
+    validateAgentIntent(intent);
+    const result=await client.request("agent-intent-explain",{intent});
+    stdout(print(result,Boolean(args.pretty)));return 0;
   }
   if(command==="retrieval"&&subcommand==="explain"){
     const client=createClient(clientOptions(cwd,args,fetchImpl));

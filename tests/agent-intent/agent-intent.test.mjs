@@ -1,0 +1,52 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {createExecutionContext} from "../../packages/execution-context/index.mjs";
+import {validateAgentIntent,preflightAgentIntent,explainAgentIntent,hashAgentIntent} from "../../packages/agent-intent/index.mjs";
+
+const catalog={graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[]}}};
+const query={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:5,offset:0,depth:0,parameters:[]};
+const graphRead=createExecutionContext({tenant_id:"tenant-a",capabilities:["graph:read"]});
+const allRead=createExecutionContext({tenant_id:"tenant-a",capabilities:["graph:read","vector:read"]});
+
+test("accepts a canonical query intent and hashes deterministically",()=>{const intent={version:"v1",kind:"agent_intent",action:"query",ir:query,bindings:{}};assert.equal(validateAgentIntent(intent),intent);assert.match(hashAgentIntent(intent),/^[a-f0-9]{64}$/);assert.equal(hashAgentIntent(intent),hashAgentIntent(JSON.parse(JSON.stringify(intent))));});
+test("rejects action and IR kind mismatch",()=>assert.throws(()=>validateAgentIntent({version:"v1",kind:"agent_intent",action:"retrieval",ir:query}),e=>e.code==="AGENT_INTENT_KIND_MISMATCH"));
+test("rejects client tenant override",()=>assert.throws(()=>validateAgentIntent({version:"v1",kind:"agent_intent",action:"query",tenant_id:"other",ir:query}),e=>e.code==="AGENT_INTENT_TENANT_OVERRIDE"));
+test("preflight denies missing capability",()=>assert.throws(()=>preflightAgentIntent({intent:{version:"v1",kind:"agent_intent",action:"query",ir:query},context:createExecutionContext({tenant_id:"tenant-a",capabilities:[]})}),e=>e.code==="AGENT_INTENT_CAPABILITY_DENIED"));
+test("query intent explanation is ready and non-executing",()=>{const result=explainAgentIntent({intent:{version:"v1",kind:"agent_intent",action:"query",ir:query},context:graphRead,catalog});assert.equal(result.status,"ready");assert.equal(result.execution,"not_executed");assert.deepEqual(result.required_capabilities,["graph:read"]);});
+test("vector retrieval intent derives vector capability",()=>{const retrieval={version:"v1",kind:"retrieval_query",sources:{vector:{catalog_ref:"docs.embedding",query_parameter:"embedding",top_k:2,identity_field:"id"}},fusion:{strategy:"weighted_rrf"},limits:{max_results:2,max_cost:10}};const result=explainAgentIntent({intent:{version:"v1",kind:"agent_intent",action:"retrieval",ir:retrieval,bindings:{embedding:[1,0]}},context:allRead,catalog});assert.equal(result.status,"ready");assert.deepEqual(result.required_capabilities,["vector:read"]);});
+test("delete mutation intent is destructive and approval-requiring",()=>{const mutation={version:"v1",kind:"graph_mutation",graph:"g",operation:"delete_vertex",target:{label:"Person",field:"id",value:"p1"},parameters:[]};const context=createExecutionContext({tenant_id:"tenant-a",capabilities:["graph:write","graph:delete"]});const result=explainAgentIntent({intent:{version:"v1",kind:"agent_intent",action:"mutation",ir:mutation},context,catalog});assert.equal(result.status,"ready");assert.equal(result.destructive,true);assert.equal(result.approval_required,true);assert.equal(result.execution,"not_executed");});
+test("records context intent fails closed",()=>{const contextIr={version:"v1",kind:"context_request",purpose:"records",sources:[{type:"records",catalog_ref:"public.people"}],budget:{max_items:5,max_bytes:4096},freshness:{mode:"current"}};const result=explainAgentIntent({intent:{version:"v1",kind:"agent_intent",action:"context",ir:contextIr},context:graphRead,catalog});assert.equal(result.status,"rejected");assert.equal(result.reason_code,"CONTEXT_SOURCE_UNSUPPORTED");});
+test("oversized bindings are rejected before planning",()=>assert.throws(()=>validateAgentIntent({version:"v1",kind:"agent_intent",action:"query",ir:query,bindings:{x:"x".repeat(70*1024)}}),e=>e.code==="AGENT_INTENT_BINDING_LIMIT_EXCEEDED"));
+
+test("omitted and default empty bindings hash identically",()=>{const a={version:"v1",kind:"agent_intent",action:"query",ir:query};const b={...a,bindings:{}};assert.equal(hashAgentIntent(a),hashAgentIntent(b));});
+
+test("Agent Intent diagnostics are bounded and do not leak tenant, bindings, or target IR",()=>{
+  const logs=[];
+  const intent={version:"v1",kind:"agent_intent",action:"query",ir:query,bindings:{secret_marker:"do-not-log"}};
+  const result=explainAgentIntent({
+    intent,
+    context:graphRead,
+    catalog,
+    requestId:"req-safe",
+    observability:{emitLog:event=>logs.push(event)}
+  });
+  assert.equal(result.status,"ready");
+  assert.equal(logs.length,1);
+  assert.deepEqual(logs[0],{
+    event:"agent.intent.explain",
+    request_id:"req-safe",
+    action:"query",
+    outcome:"ready",
+    reason_code:"AGENT_INTENT_READY",
+    destructive:false
+  });
+  const serialized=JSON.stringify(logs);
+  assert.equal(serialized.includes("tenant-a"),false);
+  assert.equal(serialized.includes("do-not-log"),false);
+  assert.equal(serialized.includes('"graph":"g"'),false);
+});
+
+test("records Context intent fails during preflight before target validation",()=>{
+  const contextIr={version:"v1",kind:"context_request",purpose:"records",sources:[{type:"records",catalog_ref:"public.people"}],budget:{max_items:5,max_bytes:4096},freshness:{mode:"current"}};
+  assert.throws(()=>preflightAgentIntent({intent:{version:"v1",kind:"agent_intent",action:"context",ir:contextIr},context:graphRead}),e=>e.code==="CONTEXT_SOURCE_UNSUPPORTED");
+});

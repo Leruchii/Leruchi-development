@@ -1,0 +1,20 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://vibedb.dev/agent-intent/v1.schema.json",
+  "title":"VibeDB Agent Intent v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["version","kind","action","ir"],
+  "properties":{
+    "version":{"const":"v1"},
+    "kind":{"const":"agent_intent"},
+    "action":{"enum":["query","retrieval","context","mutation"]},
+    "ir":{"type":"object"},
+    "bindings":{
+      "oneOf":[
+        {"type":"object"},
+        {"type":"array","maxItems":32,"items":{"type":"object"}}
+      ]
+    }
+  }
+}

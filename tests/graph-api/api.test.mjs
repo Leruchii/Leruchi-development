@@ -181,3 +181,54 @@ test("Graph API context resolution denies before catalog/data-plane access",asyn
     assert.equal(dbConnects,0);
   }finally{await api.close();}
 });
+
+
+test("Graph API Agent Intent explanation validates canonical query intent without execution",async()=>{
+  let catalogCalls=0;
+  let dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return {query:async()=>({rows:[]}),release(){}};}};
+  const catalog={graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[]}}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return catalog;},port:0});
+  const address=await api.listen();
+  try{
+    const queryIr={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:5,offset:0,depth:0,parameters:[]};
+    const intent={version:"v1",kind:"agent_intent",action:"query",ir:queryIr};
+    const res=await fetch(`http://127.0.0.1:${address.port}/v1/agent/intent/explain`,{
+      method:"POST",
+      headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({intent})
+    });
+    assert.equal(res.status,200);
+    const body=await res.json();
+    assert.equal(body.status,"ready");
+    assert.equal(body.execution,"not_executed");
+    assert.equal(body.action,"query");
+    assert.deepEqual(body.required_capabilities,["graph:read"]);
+    assert.equal(catalogCalls,1);
+    assert.equal(dbConnects,0);
+    assert.equal(JSON.stringify(body).includes("tenant_a"),false);
+    assert.equal(JSON.stringify(body).includes('"graph":"g"'),false);
+  }finally{await api.close();}
+});
+
+test("Graph API Agent Intent capability denial occurs before catalog/database access",async()=>{
+  let catalogCalls=0;
+  let dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return {query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return {graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const retrieval={version:"v1",kind:"retrieval_query",sources:{vector:{catalog_ref:"docs.embedding",query_parameter:"embedding",top_k:1,identity_field:"id"}},fusion:{strategy:"weighted_rrf"},limits:{max_results:1,max_cost:10}};
+    const intent={version:"v1",kind:"agent_intent",action:"retrieval",ir:retrieval,bindings:{embedding:[1,0,0]}};
+    const res=await fetch(`http://127.0.0.1:${address.port}/v1/agent/intent/explain`,{
+      method:"POST",
+      headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({intent})
+    });
+    assert.equal(res.status,403);
+    const body=await res.json();
+    assert.equal(body.code,"AGENT_INTENT_CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});

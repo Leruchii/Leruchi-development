@@ -14,6 +14,7 @@ import {executeRetrieval,RetrievalExecutionError} from "../retrieval-execution/i
 import {explainRetrieval} from "../retrieval-explainability/index.mjs";
 import {explainContext} from "../context-ir/explain.mjs";
 import {resolveContext,preflightContext,ContextResolutionError} from "../context-resolution/index.mjs";
+import {validateAgentIntent,preflightAgentIntent,explainAgentIntent,AgentIntentError} from "../agent-intent/index.mjs";
 import {createAuditEvent,emitAudit} from "../audit/index.mjs";
 import {createObservability} from "../observability/index.mjs";
 
@@ -68,7 +69,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const isRetrievalExplain=req.method==="POST"&&req.url==="/v1/retrieval/explain";
       const isContextExplain=req.method==="POST"&&req.url==="/v1/context/explain";
       const isContextResolve=req.method==="POST"&&req.url==="/v1/context/resolve";
-      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
+      const isAgentIntentExplain=req.method==="POST"&&req.url==="/v1/agent/intent/explain";
+      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
@@ -83,6 +85,20 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
         return json(res,200,catalog);
       }
       const input=await body(req);
+      if(isAgentIntentExplain){
+        try{
+          validateAgentIntent(input.intent);
+          preflightAgentIntent({intent:input.intent,context});
+        }catch(error){
+          const status=error?.code==="AGENT_INTENT_CAPABILITY_DENIED"?403:error?.code==="UNTRUSTED_CONTEXT"?401:400;
+          await record("denied",error?.code??"INVALID_AGENT_INTENT");
+          return json(res,status,{version:"v1",code:error?.code??"INVALID_AGENT_INTENT",message:error?.message??"Invalid Agent Intent",request_id:requestId});
+        }
+        const catalog=await catalogProvider(context);
+        const explanation=explainAgentIntent({intent:input.intent,context,catalog,observability,requestId});
+        await record(explanation.status==="ready"?"success":"denied",explanation.reason_code);
+        return json(res,200,{...explanation,request_id:requestId});
+      }
       if(isContextExplain){
         const explanation=explainContext({ir:input.ir,context});
         await record(explanation.status==="ready"?"success":"denied",explanation.reason_code);
@@ -178,6 +194,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
       if(error instanceof RetrievalExecutionError)return json(res,400,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});
       if(error instanceof ContextResolutionError){const status=error.code==="CONTEXT_CAPABILITY_DENIED"?403:error.code==="UNTRUSTED_CONTEXT"?401:400;return json(res,status,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});}
+      if(error instanceof AgentIntentError){const status=error.code==="AGENT_INTENT_CAPABILITY_DENIED"?403:error.code==="UNTRUSTED_CONTEXT"?401:400;return json(res,status,{version:"v1",code:error.code,message:error.message,request_id:requestId});}
       return json(res,500,{version:"v1",code:"INTERNAL_ERROR",message:"Graph API request failed",request_id:requestId});
     }finally{
       const statusClass=Math.floor((res.statusCode||500)/100)+"xx";

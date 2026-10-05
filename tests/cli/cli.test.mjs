@@ -93,3 +93,27 @@ test("CLI retrieval explain sends canonical IR without raw parameters",async()=>
   assert.equal(seen[0].url,"http://127.0.0.1/v1/retrieval/explain");
   assert.deepEqual(Object.keys(seen[0].body),["ir"]);
 });
+
+
+test("CLI Agent Intent explain validates and uses the SDK transport route",async()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-agent-intent-"));
+  fs.mkdirSync(path.join(cwd,".vibe"));
+  fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));
+  const query={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:5,offset:0,depth:0,parameters:[]};
+  fs.writeFileSync(path.join(cwd,"intent.json"),JSON.stringify({version:"v1",kind:"agent_intent",action:"query",ir:query}));
+  const calls=[];
+  const code=await run(["agent","intent","explain","--intent","intent.json"],{cwd,fetchImpl:async(url,init)=>{calls.push({url,body:JSON.parse(init.body)});return new Response(JSON.stringify({status:"ready"}),{status:200,headers:{"content-type":"application/json"}})},stdout:()=>{},stderr:()=>{}});
+  assert.equal(code,0);
+  assert.equal(calls[0].url,"https://api.example/v1/agent/intent/explain");
+  assert.equal(calls[0].body.intent.kind,"agent_intent");
+});
+
+test("CLI Agent Intent rejects action/IR mismatch before transport",async()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-agent-intent-"));
+  fs.mkdirSync(path.join(cwd,".vibe"));
+  fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));
+  fs.writeFileSync(path.join(cwd,"intent.json"),JSON.stringify({version:"v1",kind:"agent_intent",action:"retrieval",ir:{version:"v1",kind:"graph_query"}}));
+  let calls=0;
+  await assert.rejects(()=>run(["agent","intent","explain","--intent","intent.json"],{cwd,fetchImpl:async()=>{calls++;throw new Error("transport should not run")},stdout:()=>{},stderr:()=>{}}),/does not match target IR kind/);
+  assert.equal(calls,0);
+});
