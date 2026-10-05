@@ -10,7 +10,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current status: IMPLEMENTED — NOT YET VALIDATED
 - Last completed stage: 23 — Unified Retrieval Developer/Agent Surface
 - Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
-- Last validated commit: `c6f0c41025f52ad14bc30be97adeeff4edaf2593` (Stage 22 merge to main; final exact-head regression and architecture/state gates passed)
+- Last validated commit: `7ff5523dfa982632965cb7e46cede4f96cb4c834` (Stage 23 merge to main; unified retrieval surface validation passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
 - Current branch: `stage24-retrieval-explainability-agent-safety`
