@@ -31,10 +31,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install runtime dependencies
+        run: npm install --ignore-scripts
       - name: Version, dependency and migration policy audit
         run: node scripts/production-readiness-audit.mjs
       - name: Production readiness policy tests
-        run: node --test tests/production-readiness/readiness-audit.test.mjs
+        run: node --test tests/production-readiness/*.test.mjs
       - name: Build production VibeDB database image
         run: docker build -t vibedb-stage20 -f infra/docker/postgres/Dockerfile .
       - name: Start upgrade source database
@@ -62,6 +64,10 @@ jobs:
           DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:55434/vibedb
           ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55434/vibedb
         run: bash tests/production-readiness/upgrade-drill.sh
+      - name: Bounded database pool concurrency smoke
+        env:
+          DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:55434/vibedb
+        run: node tests/production-readiness/concurrency-smoke.mjs
       - name: Database logs on failure
         if: failure()
         run: docker logs vibedb-stage20-db || true
