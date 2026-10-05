@@ -43,3 +43,22 @@ test("MCP retrieval schema is closed and tenant identity is not an input",()=>{
   assert.equal(tool.inputSchema.additionalProperties,false);
   assert.equal(tool.inputSchema.required.includes("ir"),true);
 });
+
+
+test("MCP validates retrieval IR before transport",async()=>{
+  const response=await handleMcpMessage({jsonrpc:"2.0",id:5,method:"tools/call",params:{
+    name:"retrieval.query",
+    arguments:{ir:{version:"v1",kind:"retrieval_query",sources:{vector:{catalog_ref:"docs;DROP",query_parameter:"embedding",identity_field:"id",top_k:5}},fusion:{strategy:"weighted_rrf"},limits:{max_results:5,max_cost:20}}}
+  }});
+  assert.equal(response.result.isError,true);
+  assert.match(response.result.content[0].text,/safe catalog reference/);
+});
+
+test("MCP retrieval rejects tenant overrides inside graph Query IR",async()=>{
+  const response=await handleMcpMessage({jsonrpc:"2.0",id:6,method:"tools/call",params:{
+    name:"retrieval.query",
+    arguments:{ir:{version:"v1",kind:"retrieval_query",sources:{graph:{query:{version:"v1",kind:"graph_query",tenant_id:"attacker"},identity_field:"id"}},fusion:{strategy:"weighted_rrf"},limits:{max_results:5,max_cost:20}}}
+  }});
+  assert.equal(response.result.isError,true);
+  assert.match(response.result.content[0].text,/tenant override|tenant identity/i);
+});
