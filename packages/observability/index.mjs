@@ -7,6 +7,7 @@ const ALLOWED_METRICS=new Set([
   "vibe_http_request_duration_ms",
   "vibe_query_duration_ms",
   "vibe_query_db_duration_ms",
+  "vibe_query_planner_total",
   "vibe_mutation_duration_ms",
   "vibe_mutation_db_duration_ms",
   "vibe_retrieval_duration_ms",
@@ -36,7 +37,7 @@ function metricName(name){
   return name;
 }
 function fixedLabels(labels={}){
-  const allowed=["method","route","operation","outcome","error_code","status_class","source"];
+  const allowed=["method","route","operation","outcome","error_code","status_class","source","engine","reason"];
   const out={};
   for(const key of allowed){
     if(typeof labels[key]==="string"&&labels[key].length<=80)out[key]=labels[key];

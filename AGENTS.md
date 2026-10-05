@@ -71,6 +71,19 @@ Vibe's Intermediate Representation is not an implementation detail and must be r
 - New features must extend or compose the existing IR and Schema Catalog contracts before introducing a new representation. Do not duplicate equivalent request semantics in another package.
 - When an agent encounters an existing IR type, builder, validator, compiler input, or execution boundary, it must inspect and reuse it before designing a new abstraction.
 
+## 3B. Agent action + developer-first product priority
+
+VibeDB is explicitly a two-way platform for AI agents and a first-class developer database.
+
+- MCP must support both **read/retrieval** and **authorized write/action** workflows.
+- An agent may act on behalf of a human only through the same trusted identity, tenant, capability, validation, RLS, mutation-approval and audit boundaries used by other Vibe clients.
+- MCP is an interface, not a privileged execution path. It must never receive unrestricted `service_role` authority.
+- Destructive or high-impact agent actions require explicit policy such as preview/dry-run, impact/diff review, approval and audit before execution.
+- MCP tools must converge on Query IR / Mutation IR; do not create an agent-only query or mutation language.
+- Developers are a first-class audience: SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio must remain comfortable without requiring knowledge of planners, compilers, AGE or MCP internals.
+- Engine selection is an implementation concern. A developer or agent expresses intent once; VibeDB chooses a safe execution target behind the contract.
+- Every new agent capability must be evaluated for both developer ergonomics and safe autonomous operation before it becomes a product contract.
+
 ## 4. Schema Catalog
 
 The Schema Catalog is the authoritative source for relational, graph and vector metadata consumed by:

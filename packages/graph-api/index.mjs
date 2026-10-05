@@ -6,6 +6,8 @@ import {verifyHs256Jwt} from "../schema-catalog-api/index.mjs";
 import {createExecutionContext,ExecutionContextError} from "../execution-context/index.mjs";
 import {validateQuery} from "../query-validation/index.mjs";
 import {compileAge} from "../compiler-age/index.mjs";
+import {compilePostgresqlRecursive} from "../compiler-postgresql-recursive/index.mjs";
+import {engineCapabilities,planQuery} from "../planner/index.mjs";
 import {executeGraphQuery,createPgExecutor,ExecutionError} from "../execution-engine/index.mjs";
 import {executeGraphMutation,createPgMutationExecutor,MutationExecutionError} from "../mutation-execution/index.mjs";
 import {executeRetrieval,RetrievalExecutionError} from "../retrieval-execution/index.mjs";
@@ -16,7 +18,31 @@ function json(res,status,payload){res.writeHead(status,{"content-type":"applicat
 async function body(req){let data="";for await(const chunk of req)data+=chunk;if(data.length>1024*1024)throw new Error("BODY_TOO_LARGE");return data?JSON.parse(data):{};}
 function contextFromClaims(claims,requestId){return createExecutionContext(claims,{requestId});}
 
-export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,verifyApproval,observability=createObservability(),host="127.0.0.1",port=0}={}){
+export const DEFAULT_QUERY_ENGINE_CAPABILITIES=engineCapabilities({
+  age:{available:true,features:["graph_query"]}
+});
+
+export function resolveQueryCompiler(ir,catalog,{
+  engines=DEFAULT_QUERY_ENGINE_CAPABILITIES,
+  preferred=["apache-age","postgresql-recursive"],
+  observability
+}={}){
+  const plan=planQuery(ir,{engines,preferred});
+  let compile;
+  if(plan.engine==="apache-age") compile=queryIr=>compileAge(queryIr);
+  else if(plan.engine==="postgresql-recursive") compile=queryIr=>compilePostgresqlRecursive(queryIr,catalog);
+  else throw new Error("UNSUPPORTED_PLANNED_ENGINE");
+
+  if(observability){
+    observability.increment("vibe_query_planner_total",1,{
+      engine:plan.engine,
+      reason:plan.reason
+    });
+  }
+  return {plan,compile};
+}
+
+export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,verifyApproval,observability=createObservability(),queryEngines=DEFAULT_QUERY_ENGINE_CAPABILITIES,preferredQueryEngines=["apache-age","postgresql-recursive"],host="127.0.0.1",port=0}={}){
   if(!pool||!jwtSecret||typeof catalogProvider!=="function")throw new Error("pool, jwtSecret and catalogProvider are required");
   const server=http.createServer(async(req,res)=>{
     const requestId=randomUUID();
@@ -75,7 +101,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const client=await pool.connect();
       try{
         if(req.url==="/v1/graph/query"){
-          const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile:compileAge,db:createPgExecutor(client,context),requestId,observability});
+          const compile=queryIr=>resolveQueryCompiler(queryIr,catalog,{engines:queryEngines,preferred:preferredQueryEngines,observability}).compile(queryIr);
+          const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile,db:createPgExecutor(client,context),requestId,observability});
           await record("success");
           return json(res,200,result);
         }

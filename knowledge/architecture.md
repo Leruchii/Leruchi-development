@@ -60,3 +60,48 @@ The engine is read-only in v1. Mutations are Stage 09.
 - Cloud: DEFERRED
 
 Current implementation target: complete Stage 13 — Graph Studio.
+
+
+## Durable agent + developer architecture priority
+
+VibeDB is intentionally designed for both humans/developers and AI agents.
+
+### Developer path
+
+```
+SDK / REST / SQL / CLI / Studio
+             ↓
+       Query IR / Mutation IR
+             ↓
+     validation + capabilities
+             ↓
+        planner/compiler
+             ↓
+     Secure Execution Engine
+             ↓
+       PostgreSQL / AGE / RLS
+```
+
+### Agent action path
+
+```
+Human instruction
+       ↓
+     AI Agent
+       ↓
+       MCP
+       ↓
+trusted identity + scoped capability
+       ↓
+Query IR / Mutation IR
+       ↓
+validation + approval policy
+       ↓
+planner/compiler + Secure Execution Engine
+       ↓
+PostgreSQL / AGE / RLS
+       ↓
+audit/outbox + normalized result
+```
+
+MCP must support both read and authorized write/action workflows, but must never receive unrestricted database authority. Developers must be able to use VibeDB comfortably without understanding the internal execution engine. This is a durable product and architecture priority for all future coding agents.

@@ -168,6 +168,39 @@ Normalized mutation result
 
 ---
 
+## 3A. Agent action and developer experience priority
+
+VibeDB must support two complementary usage modes without creating separate database semantics:
+
+1. **Developer-first:** SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio provide ergonomic direct access.
+2. **Agent-first:** MCP and AI agents can read data and, when explicitly authorized, create/update/delete data and relationships on behalf of a human.
+
+Both modes converge on the same trusted contracts:
+
+```
+Developer / Agent / MCP
+          ↓
+Query IR or Mutation IR
+          ↓
+identity + capability + Schema Catalog validation
+          ↓
+cost / depth / mutation safety / approval policy
+          ↓
+Planner / compiler
+          ↓
+Secure Execution Engine
+          ↓
+PostgreSQL / AGE / pgvector / RLS
+          ↓
+normalized result + audit/outbox metadata
+```
+
+MCP is never a privileged bypass. Tenant identity comes from trusted authentication context; capabilities are scoped; destructive actions require explicit approval semantics; auditability is mandatory. The developer experience must remain usable without exposing internal compiler or engine details.
+
+This is a durable architecture priority for all future stages.
+
+---
+
 ## 4. Authoritative metadata and security model
 
 ### Schema Catalog
@@ -783,7 +816,7 @@ Final gates:
 
 Validation evidence: commit `139966a5a4a6a432d00a1924c967dabb969b3908`; Stage 20 workflow `37297799623`, Stage 11 `37297799604`, Stage 12 `37297799687`, Stage 15 `37297799696`, Architecture Regression Audit `37297799715`, and Stage State Gate `37297799678` all passed. The upgrade drill proved prior-schema compatibility, checksum persistence/drift rejection, data preservation and idempotent rerun; the concurrency smoke proved bounded reference-pool behavior under 32 concurrent tasks.
 
-Stage 20 is the final currently defined OSS readiness stage. No Stage 21 is defined; future work requires an explicit architecture/product decision rather than an invented continuation.
+Stage 20 is the validated OSS production-readiness baseline. Stage 21 is now explicitly approved as the engine-neutral planner and PostgreSQL fallback foundation; it must preserve all Stage 20 security, reliability and operational guarantees.
 
 Stage 20 starts from the validated Stage 00–17 evidence and must not duplicate security or execution boundaries. The initial production-readiness audit adds executable dependency/version and migration-policy enforcement. Remaining open gates are a supported-schema upgrade drill, capacity/concurrency evidence, current operations/testing/unknowns documentation, durable incident/upgrade procedures, and a final repository-wide regression pass.
 
@@ -898,3 +931,50 @@ A coding agent should read the smallest relevant subset after reading the first 
 Stage 20 production readiness is validated on the corrected head `139966a5a4a6a432d00a1924c967dabb969b3908`. A migration-runner checksum persistence defect was found during the full matrix and fixed by replacing ineffective psql variable substitution with strictly validated SQL literals. The corrected head passed the full relevant repository matrix and architecture/state gates.
 
 Stages 18 and 19 remain intentionally deferred. No Stage 21 is currently defined in this build plan; the next implementation stage must be established through an explicit product/architecture decision.
+## Stage 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
+
+Stage 21 makes engine selection explicit while preserving Query IR as the public read contract.
+
+### 21.1 Durable agent/developer priority
+
+- MCP supports both read/retrieval and authorized write/action workflows.
+- Agent writes use Mutation IR, scoped capabilities, tenant/RLS enforcement, mutation approval and audit.
+- Developers remain first-class users through SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio.
+- No client needs to understand AGE, Cypher, recursive CTEs or planner internals.
+
+### 21.2 Planner foundation
+
+Implemented and merged:
+- capability-driven deterministic planner;
+- explicit Apache AGE preferred path;
+- explicit PostgreSQL recursive fallback target;
+- no silent fallback;
+- planner does not authorize, compile or execute.
+
+### 21.3 PostgreSQL recursive compiler — current work
+
+Implemented on branch stage21-agent-developer-contract:
+- constrained Query IR to PostgreSQL recursive CTE compiler;
+- explicit Schema Catalog relational mappings;
+- trusted transaction JWT tenant context;
+- canonical JSON parameter binding;
+- traversal cycle protection;
+- bounded depth, result limit and offset;
+- parameterized filters/projections/order expressions;
+- no raw SQL/Cypher input.
+
+Current executable evidence:
+- compiler contract tests;
+- live PostgreSQL/RLS traversal, depth, result-limit and parameter-injection test gate.
+
+Still required before Stage 21 VALIDATED:
+- authoritative Schema Catalog relational graph-to-table mapping contract;
+- AGE vs recursive-CTE normalized-result equivalence fixtures;
+- planner capability registration wired into actual execution;
+- complete cost/depth/result guardrail parity;
+- planner observability with selected engine/fallback reason and no tenant data;
+- full repository regression matrix.
+
+Do not expose PostgreSQL recursive fallback as generally available until these gates are green.
+
+

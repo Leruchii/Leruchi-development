@@ -40,3 +40,25 @@ This makes the bridge between SQL and graph a real architectural boundary instea
 - prove cost/depth/result guardrails survive fallback;
 - prove normalized results match AGE for equivalent fixtures;
 - add planner observability showing selected engine and fallback reason without exposing tenant data.
+
+
+## Stage 21 recursive compiler progress
+
+Status: IMPLEMENTED — NOT YET VALIDATED.
+
+The first constrained PostgreSQL recursive compiler now exists in packages/compiler-postgresql-recursive. It consumes explicit relational mappings supplied by the Schema Catalog and emits parameterized recursive CTE SQL.
+
+The compiler does not invent physical graph metadata, authorize requests, or execute SQL. It uses the existing transaction-local JWT claims for tenant identity and the existing JSON parameter-map binding convention.
+
+Current evidence includes focused compiler tests and a database-backed Stage 21 workflow covering traversal, RLS isolation, depth, result limits and injection-safe parameter handling.
+
+Remaining exit evidence includes AGE-equivalent normalized results, authoritative Schema Catalog mapping, execution/planner integration, full guardrail parity and planner observability.
+
+
+## Planner execution integration
+
+The Graph API now resolves a compiler through the planner before read execution. Backward compatibility is preserved: Apache AGE is the only default registered engine. PostgreSQL recursive fallback is selectable only when a deployment explicitly registers the `postgresql-recursive` capability.
+
+Planner telemetry records only bounded `engine` and `reason` labels. It does not emit tenant identifiers, query values, SQL, Cypher or parameters.
+
+The Stage 21 database gate also compares the same logical two-hop traversal through Apache AGE and the PostgreSQL recursive compiler and requires equivalent normalized results before the stage can be validated.
