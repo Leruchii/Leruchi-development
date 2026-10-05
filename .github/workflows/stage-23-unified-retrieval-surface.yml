@@ -1,0 +1,27 @@
+name: Stage 23 Unified Retrieval Surface
+
+on:
+  pull_request:
+    paths:
+      - "packages/vibe-sdk/**"
+      - "packages/vibe-cli/**"
+      - "packages/mcp-server/**"
+      - "packages/retrieval-ir/**"
+      - "packages/retrieval-execution/**"
+      - "packages/graph-api/**"
+      - "tests/sdk/**"
+      - "tests/cli/**"
+      - "tests/mcp/**"
+      - "tests/retrieval-execution/**"
+      - "tests/graph-api/**"
+      - ".github/workflows/stage-23-unified-retrieval-surface.yml"
+
+jobs:
+  unified-retrieval-surface:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs tests/mcp/mcp-server.test.mjs tests/retrieval-execution/retrieval-execution.test.mjs tests/graph-api/api.test.mjs
