@@ -4,9 +4,12 @@ on:
     paths:
       - "packages/compiler-postgresql-recursive/**"
       - "packages/planner/**"
+      - "packages/graph-api/**"
       - "packages/query-ir/**"
       - "infra/docker/postgres/**"
       - "tests/postgresql-recursive-compiler/**"
+      - "tests/planner/**"
+      - "tests/graph-api/**"
       - "knowledge/decisions/bidirectional-mcp-developer-first.md"
       - "knowledge/decisions/engine-neutral-planner.md"
       - "knowledge/mcp.md"
@@ -26,8 +29,11 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --ignore-scripts
-      - name: Compiler contract tests
-        run: node --test tests/postgresql-recursive-compiler/*.test.mjs
+      - name: Compiler and planner contract tests
+        run: |
+          node --test tests/postgresql-recursive-compiler/*.test.mjs
+          node tests/planner/planner.test.mjs
+          node --test tests/graph-api/api.test.mjs
       - name: Build PostgreSQL image
         run: docker build -t vibedb-stage21 -f infra/docker/postgres/Dockerfile .
       - name: Start PostgreSQL
