@@ -4,7 +4,7 @@ import {handleMcpMessage,MCP_TOOLS} from "../../packages/mcp-server/index.mjs";
 
 test("MCP advertises the canonical agent-native graph tools",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/list"});
-  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query","context.explain"]);
+  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query","context.explain","context.resolve"]);
 });
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
@@ -118,4 +118,20 @@ test("MCP context.explain is diagnostic and validates Context IR before transpor
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("MCP context.resolve is read-only and validates Context IR before transport",async()=>{
+  const tool=MCP_TOOLS.find(tool=>tool.name==="context.resolve");
+  assert.ok(tool);
+  assert.equal(tool.annotations.readOnlyHint,true);
+  assert.equal(tool.annotations.destructiveHint,false);
+  assert.deepEqual(Object.keys(tool.inputSchema.properties),["ir","parameters"]);
+  let calls=0;
+  const originalFetch=globalThis.fetch;
+  globalThis.fetch=async()=>{calls++;return new Response(JSON.stringify({ok:true}),{status:200});};
+  try{
+    const response=await handleMcpMessage({jsonrpc:"2.0",id:"context-resolve-invalid",method:"tools/call",params:{name:"context.resolve",arguments:{ir:{version:"v1",kind:"context_request"}}}});
+    assert.equal(response.result.isError,true);
+    assert.equal(calls,0);
+  }finally{globalThis.fetch=originalFetch;}
 });
