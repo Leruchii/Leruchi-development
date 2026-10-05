@@ -19,6 +19,12 @@ ALTER ROLE vibe_migrator SET search_path = "$user", public, ag_catalog;
 ALTER ROLE vibe_runtime SET search_path = "$user", public, ag_catalog;
 
 GRANT CONNECT ON DATABASE vibedb TO vibe_migrator, vibe_runtime;
+
+-- AGE must exist before granting access to ag_catalog. Keeping this in the
+-- bootstrap phase makes clean cluster initialization deterministic; the
+-- foundation migration may safely repeat CREATE EXTENSION IF NOT EXISTS age.
+CREATE EXTENSION IF NOT EXISTS age;
+
 GRANT USAGE ON SCHEMA ag_catalog TO vibe_migrator, vibe_runtime;
 GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, ag_catalog.agtype) TO vibe_migrator, vibe_runtime;
 SQL
