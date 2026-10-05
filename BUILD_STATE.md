@@ -6,18 +6,17 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 20 — Production Readiness
-- Current status: VALIDATED
+- Current stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
+- Current status: IN_PROGRESS
 - Last completed stage: 20 — Production Readiness
-- Last validated commit: `139966a5a4a6a432d00a1924c967dabb969b3908` (Stage 20 PR #44 head; full repository product/architecture matrix passed)
+- Last validated commit: `41adf8e04598e7f00c38945b88c6db4d6bbd7e71` (Stage 21 planner foundation merged to main; broad regression and architecture/state gates passed)
 - Default branch: `main`
-- Stage 16 merged: PR #42 as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`
-- Stage 17 merged: PR #43 as `5b8902d57afda8eafa2868bd188a2d28e784e998`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `main`
-- Next implementation target: no Stage 21 is defined in the canonical build plan; continue only with a newly approved stage or architecture decision rather than inventing one.
+- Current branch: `stage21-agent-developer-contract`
+- Current work: durable bidirectional MCP + developer-first architecture contract, then Stage 21 PostgreSQL recursive compiler implementation
+- Next exact action: finish the architecture/docs checkpoint, inspect the existing Schema Catalog graph registry and Query IR fixtures, then implement the smallest database-backed PostgreSQL recursive compiler path without creating a second public API.
 
-Validation evidence: Stage 17 workflow run `37289821553` passed on the final PR head; all final-head product/architecture workflows were green before merge.
+The Stage 21 planner foundation is merged. PostgreSQL recursive execution is still a fallback target only when a compatible compiler is explicitly registered. Do not mark Stage 21 VALIDATED until recursive compilation, Schema Catalog mapping, tenant/RLS isolation, guardrails, parameter safety, AGE-equivalent fixtures and planner observability have executable evidence.
 
 ## Verified state
 
