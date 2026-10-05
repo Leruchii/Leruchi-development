@@ -54,6 +54,7 @@ export async function executeRetrieval({
   }
 
   const started=Date.now();
+  const emitRetrievalEvent=(outcome,reasonCode)=>{try{observability?.emitLog?.({event:"retrieval.execution",request_id:requestId,retrieval_mode:plan.mode,planner_decision:plan.mode,outcome,reason_code:reasonCode});}catch{}};
   const graph=ir.sources.graph;
   const vector=ir.sources.vector;
   if(vector&&!Object.hasOwn(requestParameters,vector.query_parameter)) throw new RetrievalExecutionError("MISSING_VECTOR_PARAMETER","Vector query parameter is missing",{parameter:vector.query_parameter});
@@ -94,6 +95,7 @@ export async function executeRetrieval({
 
   const executionMs=Date.now()-started;
   if(observability) observability.observe("vibe_retrieval_duration_ms",executionMs,{source:plan.mode});
+  emitRetrievalEvent("success",plan.mode==="hybrid"?"PLANNER_SELECTED_HYBRID":plan.mode==="graph"?"PLANNER_SELECTED_GRAPH":"PLANNER_SELECTED_VECTOR");
   return {
     version:"v1",
     request_id:requestId,
