@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import {createHash} from "node:crypto";
 import {execFile} from "node:child_process";
 import {promisify} from "node:util";
 
@@ -23,6 +24,10 @@ export function listMigrationFiles(root) {
     .map(name => ({name, id: name.slice(0, -4), file: path.join(root, name)}));
 }
 
+export function migrationChecksum(file) {
+  return createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+}
+
 function requireMigratorUrl() {
   const value = process.env.VIBE_MIGRATOR_DATABASE_URL;
   if (!value) throw new Error("VIBE_MIGRATOR_DATABASE_URL is required for migrations");
@@ -40,6 +45,14 @@ async function psql(url, args) {
   });
 }
 
+async function recordChecksum(url, migrationId, checksum) {
+  await psql(url, [
+    "-v", `migration_id=${migrationId}`,
+    "-v", `checksum=${checksum}`,
+    "-c", "UPDATE vibe_meta.schema_migrations SET checksum = :'checksum' WHERE migration_id = :'migration_id'"
+  ]);
+}
+
 export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(cwd,"infra","migrations")}={}) {
   const url = requireMigratorUrl();
   if (!fs.existsSync(migrationsDir)) throw new Error("Migration directory not found");
@@ -51,13 +64,41 @@ export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(
     throw new Error("Migration history must begin with 0000-migration-ledger.sql");
   }
 
+  // The bootstrap is intentionally idempotent and always executes so older
+  // ledgers can adopt new metadata columns before checksum verification.
   await psql(url, ["--single-transaction", "-f", bootstrap.file]);
-  const {stdout} = await psql(url, ["-At", "-c", "SELECT migration_id FROM vibe_meta.schema_migrations ORDER BY migration_id"]);
-  const applied = new Set(stdout.split("\n").map(v => v.trim()).filter(Boolean));
 
+  const {stdout} = await psql(url, [
+    "-At",
+    "-F", "\t",
+    "-c", "SELECT migration_id, COALESCE(checksum, '') FROM vibe_meta.schema_migrations ORDER BY migration_id"
+  ]);
+  const ledger = new Map(
+    stdout.split("\n").map(line => line.trimEnd()).filter(Boolean).map(line => {
+      const [id, checksum=""] = line.split("\t");
+      return [id, checksum];
+    })
+  );
+  const byId = new Map(files.map(file => [file.id, file]));
+
+  for (const [id, storedChecksum] of ledger) {
+    const file = byId.get(id);
+    if (!file) throw new Error(`Applied migration is missing from repository: ${id}`);
+    const expected = migrationChecksum(file);
+    if (storedChecksum && storedChecksum !== expected) {
+      throw new Error(`Migration checksum mismatch: ${id}`);
+    }
+    if (!storedChecksum) {
+      await recordChecksum(url, id, expected);
+      ledger.set(id, expected);
+    }
+  }
+
+  const applied = new Set(ledger.keys());
   const pending = files.filter(file => !applied.has(file.id));
   for (const migration of pending) {
     await psql(url, ["--single-transaction", "-f", migration.file]);
+    await recordChecksum(url, migration.id, migrationChecksum(migration.file));
   }
 
   return {applied: [...applied], migrated: pending.map(file => file.id)};
