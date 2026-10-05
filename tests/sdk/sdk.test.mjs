@@ -126,3 +126,13 @@ test("HTTP transport sends retrieval requests to the canonical retrieval endpoin
   assert.equal(calls[0].url,"https://api.example/v1/retrieval/query");
   assert.equal(calls[0].init.headers.authorization,"Bearer test-token");
 });
+
+
+test("retrieval explain uses the same canonical builder without sending parameters",async()=>{
+  const calls=[];
+  const client=createClient({transport:{request:async(kind,body)=>{calls.push({kind,body});return {status:"ready",mode:"vector"};}}});
+  const result=await client.retrieval().vector({catalogRef:"documents.embedding"}).explain();
+  assert.deepEqual(result,{status:"ready",mode:"vector"});
+  assert.equal(calls[0].kind,"retrieval-explain");
+  assert.deepEqual(Object.keys(calls[0].body),["ir"]);
+});
