@@ -9,7 +9,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current stage: 22 — Retrieval-Aware Engine-Neutral Planner
 - Current status: VALIDATED
 - Last completed stage: 22 — Retrieval-Aware Engine-Neutral Planner
-- Previous completed stage: 20 — Production Readiness
+- Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
 - Last validated commit: `c6f0c41025f52ad14bc30be97adeeff4edaf2593` (Stage 22 merge to main; final exact-head regression and architecture/state gates passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
