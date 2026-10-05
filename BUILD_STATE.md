@@ -6,22 +6,31 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 26A — OSS Product Boundary & Repository Separation
-- Current status: IN_PROGRESS — repository separation established; public export bootstrap underway
-- Last completed stage: 25 — MCP Agent Tool Contract & Input-Safety Boundary
-- Default branch: main
-- Development repository: Fikunmii/vibeDB-development (PRIVATE)
+- Current stage: 26B — Agent-Native Context IR
+- Current status: IMPLEMENTED — NOT YET VALIDATED
+- Last validated stage: 26A — OSS Product Boundary & Repository Separation
+- Last validated main commit: 337fe0dd8da74863378dd30c9e3784b2200eb144
+- Active branch: stage26b-agent-context-ir
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
+- Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
-- Current work: enforce explicit allowlisted OSS export from private development to public Core
-- Exact next engineering stage after 26A: Stage 26B — Agent-Native Context IR
+
+Stage 26B implementation checkpoint:
+- Context IR v1 schema and deterministic canonical hash.
+- Server-side Context IR validation rejecting tenant identity and credentials.
+- Bounded source count, result count, byte budget and freshness constraints.
+- Non-executing Context explanation boundary.
+- SDK Context Builder with non-executing explain path.
+- MCP `context.explain` read-only diagnostic tool with bounded agent input.
+- Authenticated Graph API `POST /v1/context/explain`.
+- Focused Stage 26B workflow added.
+- Validation evidence is not complete until focused tests and the required full regression matrix pass.
 
 Repository authority:
 - `vibeDB-internal` is authoritative for internal agent instructions, build state/plan, product strategy, internal decisions and development controls.
 - `vibeDB-development` is authoritative for private implementation history and active engineering branches.
-- `vibeDB` is the public OSS release target and must contain only explicitly exported public-safe Core content.
-- No private repository is copied wholesale into the public repository.
-- Denylists are supplementary only; the public export is allowlist-driven.
+- `vibeDB` is the public OSS release target and only receives explicitly exported public-safe content.
+- Core must never depend on private Cloud/Enterprise implementation.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
