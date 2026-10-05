@@ -163,6 +163,28 @@ Retrieval execution now emits a sanitized correlation event containing request I
 Stage 24 remains unvalidated until focused and repository-wide CI evidence is green.
 
 
+## Stage 26A architecture — OSS-first product boundary
+
+VibeDB Core is the public, self-hostable product. Developer and agent capabilities that are fundamental to using VibeDB belong in Core, including CLI, SDK, REST/API, Studio, MCP, portable IR contracts, validation, security, planning and secure execution.
+
+Future Cloud and Enterprise implementation is outside the public Core repository.
+
+Dependency direction:
+
+    VibeDB Cloud / Enterprise
+              ↓
+          VibeDB Core
+
+Never:
+
+    VibeDB Core
+          ↓
+      Cloud / Enterprise
+
+Every new component is classified as OSS_CORE, OSS_ADAPTER, CLOUD_PRIVATE, ENTERPRISE_PRIVATE, or UNKNOWN. UNKNOWN requires an explicit decision before coding.
+
+The public repository must not require Cloud for local development, tests, core execution, CLI/SDK/API use, or safe MCP use. See NORTH_STAR.md and OSS_BOUNDARY.md.
+
 ## Stage 25 architecture — MCP Agent Tool Contract & Input Safety
 
 The MCP gateway remains an agent-facing contract over the existing VibeDB API. Stage 25 adds deterministic safety metadata and bounded input admission before transport.
