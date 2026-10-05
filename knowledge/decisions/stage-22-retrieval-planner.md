@@ -23,7 +23,7 @@ Stage 15 already validated graph/vector hybrid retrieval, but Stage 21 initially
 
 - packages/planner/retrieval.mjs provides deterministic capability-driven retrieval planning.
 - packages/retrieval-execution/index.mjs consumes the plan and selects the planned graph compiler.
-- Normalized retrieval metadata exposes only selected source engines and mode; it does not expose tenant data, SQL, Cypher, embeddings or raw parameters.
+- The internal planner selects source engines, but public retrieval metadata exposes only the engine-neutral mode; physical engine names are not returned to developers or agents. Public metadata does not expose tenant data, SQL, Cypher, embeddings or raw parameters.
 - Focused tests cover vector, graph, hybrid, fallback and fail-closed planning.
 
 ## Exit evidence required
