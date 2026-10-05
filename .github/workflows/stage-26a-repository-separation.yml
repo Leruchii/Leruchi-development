@@ -1,0 +1,24 @@
+name: Stage 26A - Repository Separation
+
+on:
+  pull_request:
+    paths:
+      - "OSS_EXPORT_MANIFEST.json"
+      - "scripts/public-oss-export-audit.mjs"
+      - "BUILD_STATE.md"
+      - "BUILD_PLAN.md"
+  push:
+    branches:
+      - main
+      - "stage26a-*"
+
+jobs:
+  export-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate explicit OSS export contract
+        run: node scripts/public-oss-export-audit.mjs
