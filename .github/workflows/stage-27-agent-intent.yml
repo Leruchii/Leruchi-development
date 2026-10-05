@@ -11,6 +11,8 @@ on:
       - "tests/vibe-sdk/agent-intent.test.mjs"
       - "tests/mcp/mcp-server.test.mjs"
       - "tests/graph-api/api.test.mjs"
+      - "packages/vibe-cli/**"
+      - "tests/cli/cli.test.mjs"
   push:
     branches:
       - "stage27-*"
@@ -34,3 +36,5 @@ jobs:
         run: node --test tests/mcp/mcp-server.test.mjs
       - name: Graph API Agent Intent tests
         run: node --test tests/graph-api/api.test.mjs
+      - name: CLI Agent Intent tests
+        run: node --test tests/cli/cli.test.mjs
