@@ -93,7 +93,7 @@ export async function executeRetrieval({
   });
 
   const executionMs=Date.now()-started;
-  if(observability) observability.observe("vibe_retrieval_duration_ms",executionMs,{source:"hybrid"});
+  if(observability) observability.observe("vibe_retrieval_duration_ms",executionMs,{source:plan.mode});
   return {
     version:"v1",
     request_id:requestId,
