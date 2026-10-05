@@ -1023,7 +1023,7 @@ Validation evidence:
 
 ## Stage 23 — Unified Retrieval Developer/Agent Surface
 
-**Status:** READY_TO_BUILD.
+**Status:** IN_PROGRESS.
 
 Stage 23 is the next OSS stage. Its purpose is to make the validated Stage 22 retrieval planner a first-class developer and agent capability without exposing physical engine details or creating another execution/security boundary.
 
