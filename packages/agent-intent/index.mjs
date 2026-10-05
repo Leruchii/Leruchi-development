@@ -25,13 +25,21 @@ function fail(code,message,details){throw new AgentIntentError(code,message,deta
 
 export function validateAgentIntent(intent){
   if(!intent||typeof intent!=="object"||Array.isArray(intent))fail("INVALID_AGENT_INTENT","Agent Intent must be an object");
+  if(directTenantOverride(intent))fail("AGENT_INTENT_TENANT_OVERRIDE","Tenant identity cannot be supplied by Agent Intent");
+  if(credentialOverride(intent))fail("AGENT_INTENT_CREDENTIAL_OVERRIDE","Credentials cannot be supplied by Agent Intent");
   for(const key of Object.keys(intent))if(!ALLOWED_KEYS.has(key))fail("INVALID_AGENT_INTENT","Agent Intent contains an undeclared field",{field:key});
   if(intent.version!=="v1"||intent.kind!=="agent_intent")fail("INVALID_AGENT_INTENT","Unsupported Agent Intent version or kind");
   if(!ACTIONS.has(intent.action))fail("INVALID_AGENT_INTENT","Unsupported Agent Intent action");
   if(!intent.ir||typeof intent.ir!=="object"||Array.isArray(intent.ir))fail("INVALID_AGENT_INTENT","Agent Intent requires a canonical target IR");
   if(intent.ir.kind!==KINDS[intent.action])fail("AGENT_INTENT_KIND_MISMATCH","Agent Intent action does not match target IR kind");
-  if(directTenantOverride(intent)||directTenantOverride(intent.ir))fail("AGENT_INTENT_TENANT_OVERRIDE","Tenant identity cannot be supplied by Agent Intent");
-  if(credentialOverride(intent)||credentialOverride(intent.ir))fail("AGENT_INTENT_CREDENTIAL_OVERRIDE","Credentials cannot be supplied by Agent Intent");
+  if(directTenantOverride(intent.ir))fail("AGENT_INTENT_TENANT_OVERRIDE","Tenant identity cannot be supplied by Agent Intent");
+  if(credentialOverride(intent.ir))fail("AGENT_INTENT_CREDENTIAL_OVERRIDE","Credentials cannot be supplied by Agent Intent");
+  if(intent.action==="context"){
+    for(const source of intent.ir.sources??[]){
+      if(directTenantOverride(source?.ir))fail("AGENT_INTENT_TENANT_OVERRIDE","Tenant identity cannot be supplied inside Context target IR");
+      if(credentialOverride(source?.ir))fail("AGENT_INTENT_CREDENTIAL_OVERRIDE","Credentials cannot be supplied inside Context target IR");
+    }
+  }
 
   const bindings=intent.bindings??(intent.action==="context"?[]:{});
   if(intent.action==="context"){
@@ -163,5 +171,9 @@ export function explainAgentIntent({intent,context,catalog}={}){
   });
 }
 
-export function canonicalizeAgentIntent(intent){validateAgentIntent(intent);return canonical(intent);}
+export function canonicalizeAgentIntent(intent){
+  validateAgentIntent(intent);
+  const normalized={...intent,bindings:intent.bindings??(intent.action==="context"?[]:{})};
+  return canonical(normalized);
+}
 export function hashAgentIntent(intent){return createHash("sha256").update(canonicalizeAgentIntent(intent)).digest("hex");}
