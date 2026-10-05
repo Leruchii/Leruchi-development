@@ -27,6 +27,8 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --ignore-scripts
+      - name: Reject deprecated Node 20 references
+        run: node scripts/assert-no-node20.mjs
       - name: Cross-modal planner tests
         run: node --test tests/cross-modal-planner/*.test.mjs
       - name: SDK plan tests
