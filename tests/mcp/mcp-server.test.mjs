@@ -4,7 +4,7 @@ import {handleMcpMessage,MCP_TOOLS} from "../../packages/mcp-server/index.mjs";
 
 test("MCP advertises the canonical agent-native graph tools",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/list"});
-  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query","context.explain","context.resolve","agent.intent.explain"]);
+  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query","context.explain","context.resolve","agent.intent.explain","agent.plan.explain"]);
 });
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
@@ -150,4 +150,10 @@ test("MCP agent.intent.explain is diagnostic and rejects malformed intent before
     assert.equal(response.result.isError,true);
     assert.equal(calls,0);
   }finally{globalThis.fetch=originalFetch;}
+});
+
+test("MCP agent.plan.explain is diagnostic", async () => {
+  const tool = MCP_TOOLS.find(item => item.name === "agent.plan.explain");
+  assert.equal(tool?.annotations.readOnlyHint, true);
+  assert.equal(tool?.annotations.destructiveHint, false);
 });
