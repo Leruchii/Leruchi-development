@@ -61,7 +61,8 @@ export async function executeRetrieval({
     if(candidateLimit>ir.limits.max_results) throw new RetrievalExecutionError("RETRIEVAL_LIMIT_EXCEEDED","Graph candidate limit exceeds retrieval max_results");
     const boundedQuery={...graph.query,limit:candidateLimit};
     const graphParams=graphParameters(graph.query,requestParameters);
-    const plannedCompile = plan.graph.engine === "postgresql-recursive" ? recursiveCompile : compile;\n    graphResult=await executeGraph({ir:boundedQuery,context,catalog,requestParameters:graphParams,validate,compile:plannedCompile,db,requestId});
+    const plannedCompile = plan.graph.engine === "postgresql-recursive" ? recursiveCompile : compile;
+    graphResult=await executeGraph({ir:boundedQuery,context,catalog,requestParameters:graphParams,validate,compile:plannedCompile,db,requestId});
   }
 
   if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
