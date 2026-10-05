@@ -5,12 +5,17 @@ import {
   auditPackageManifest,
   auditMigrations,
   auditDatabaseImage,
+  migrationChecksum,
   runReadinessAudit
 } from "../../scripts/production-readiness-audit.mjs";
+import {migrationChecksum as computeMigrationChecksum} from "../../packages/vibe-cli/migrate.mjs";
+import {mkdtempSync,writeFileSync} from "node:fs";
+import {tmpdir} from "node:os";
+import {join} from "node:path";
 
 test("dependency policy accepts exact versions and local workspace links",()=>{
   assert.equal(isPinnedDependencyVersion("8.23.1"),true);
-  assert.equal(isPinnedDependencyVersion("file:../vibe-sdk"),true);
+  assert.equal(isPinnedDependencyVersion("file:../local"),true);
   assert.equal(isPinnedDependencyVersion("^8.23.1"),false);
   assert.equal(isPinnedDependencyVersion("~8.23.1"),false);
   assert.equal(isPinnedDependencyVersion("latest"),false);
@@ -46,6 +51,14 @@ test("database image policy rejects floating AGE/pgvector versions",()=>{
     "PGVECTOR_VERSION_NOT_PINNED",
     "DATABASE_VERSION_LABEL_MISSING"
   ]);
+});
+
+test("migration checksum accepts descriptor objects as used by the runner",()=>{
+  const root=mkdtempSync(join(tmpdir(),"vibedb-migration-checksum-"));
+  const file=join(root,"0001-fixture.sql");
+  writeFileSync(file,"fixture");
+  const descriptor={name:"0001-fixture.sql",id:"0001-fixture",file};
+  assert.equal(computeMigrationChecksum(descriptor),migrationChecksum(file));
 });
 
 test("repository satisfies the Stage 20 version and migration policy",()=>{
