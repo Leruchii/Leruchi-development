@@ -779,7 +779,11 @@ Final gates:
 - capacity/concurrency testing
 - dependency/version policy
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED.
+
+Validation evidence: commit `139966a5a4a6a432d00a1924c967dabb969b3908`; Stage 20 workflow `37297799623`, Stage 11 `37297799604`, Stage 12 `37297799687`, Stage 15 `37297799696`, Architecture Regression Audit `37297799715`, and Stage State Gate `37297799678` all passed. The upgrade drill proved prior-schema compatibility, checksum persistence/drift rejection, data preservation and idempotent rerun; the concurrency smoke proved bounded reference-pool behavior under 32 concurrent tasks.
+
+Stage 20 is the final currently defined OSS readiness stage. No Stage 21 is defined; future work requires an explicit architecture/product decision rather than an invented continuation.
 
 Stage 20 starts from the validated Stage 00–17 evidence and must not duplicate security or execution boundaries. The initial production-readiness audit adds executable dependency/version and migration-policy enforcement. Remaining open gates are a supported-schema upgrade drill, capacity/concurrency evidence, current operations/testing/unknowns documentation, durable incident/upgrade procedures, and a final repository-wide regression pass.
 
@@ -852,8 +856,8 @@ The canonical execution checkpoint is **Stage 20 — Production Readiness**.
 Current state:
 - Stages 00–17: **VALIDATED**.
 - Stages 18 — Vibe Cloud Control Plane and 19 — Billing + Metering: **DEFERRED**.
-- Stage 20: **IN_PROGRESS**.
-- The active branch is `stage20-production-readiness`.
+- Stage 20: **VALIDATED**.
+- The validated implementation was completed on `stage20-production-readiness` at commit `139966a5a4a6a432d00a1924c967dabb969b3908` and is ready to merge to `main`.
 - The canonical handoff is maintained in `BUILD_STATE.md`; this section intentionally mirrors the current stage rather than pointing back to an obsolete Stage 15 checkpoint.
 
 Stage 20 exit evidence must include:
@@ -865,7 +869,7 @@ Stage 20 exit evidence must include:
 6. final repository-wide regression evidence;
 7. explicit separation of OSS guarantees from cloud-only operational commitments.
 
-Do not mark Stage 20 VALIDATED until every exit gate has executable evidence.
+All Stage 20 exit gates have executable evidence. Do not claim universal capacity, hosted SLA, regional recovery, commercial RPO/RTO, billing, or cloud-control-plane guarantees from OSS validation.
 
 ---
 
@@ -887,3 +891,10 @@ Use these files together:
 | `prompts/` | Stage-specific build prompts |
 
 A coding agent should read the smallest relevant subset after reading the first three canonical files, but it must know that these sources exist.
+
+
+## Stage 20 — Final validation record
+
+Stage 20 production readiness is validated on the corrected head `139966a5a4a6a432d00a1924c967dabb969b3908`. A migration-runner checksum persistence defect was found during the full matrix and fixed by replacing ineffective psql variable substitution with strictly validated SQL literals. The corrected head passed the full relevant repository matrix and architecture/state gates.
+
+Stages 18 and 19 remain intentionally deferred. No Stage 21 is currently defined in this build plan; the next implementation stage must be established through an explicit product/architecture decision.
