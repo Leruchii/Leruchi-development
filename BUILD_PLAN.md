@@ -816,7 +816,7 @@ Final gates:
 
 Validation evidence: commit `139966a5a4a6a432d00a1924c967dabb969b3908`; Stage 20 workflow `37297799623`, Stage 11 `37297799604`, Stage 12 `37297799687`, Stage 15 `37297799696`, Architecture Regression Audit `37297799715`, and Stage State Gate `37297799678` all passed. The upgrade drill proved prior-schema compatibility, checksum persistence/drift rejection, data preservation and idempotent rerun; the concurrency smoke proved bounded reference-pool behavior under 32 concurrent tasks.
 
-Stage 20 is the final currently defined OSS readiness stage. No Stage 21 is defined; future work requires an explicit architecture/product decision rather than an invented continuation.
+Stage 20 is the validated OSS production-readiness baseline. Stage 21 is now explicitly approved as the engine-neutral planner and PostgreSQL fallback foundation; it must preserve all Stage 20 security, reliability and operational guarantees.
 
 Stage 20 starts from the validated Stage 00–17 evidence and must not duplicate security or execution boundaries. The initial production-readiness audit adds executable dependency/version and migration-policy enforcement. Remaining open gates are a supported-schema upgrade drill, capacity/concurrency evidence, current operations/testing/unknowns documentation, durable incident/upgrade procedures, and a final repository-wide regression pass.
 
