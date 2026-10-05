@@ -931,3 +931,50 @@ A coding agent should read the smallest relevant subset after reading the first 
 Stage 20 production readiness is validated on the corrected head `139966a5a4a6a432d00a1924c967dabb969b3908`. A migration-runner checksum persistence defect was found during the full matrix and fixed by replacing ineffective psql variable substitution with strictly validated SQL literals. The corrected head passed the full relevant repository matrix and architecture/state gates.
 
 Stages 18 and 19 remain intentionally deferred. No Stage 21 is currently defined in this build plan; the next implementation stage must be established through an explicit product/architecture decision.
+## Stage 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
+
+Stage 21 makes engine selection explicit while preserving Query IR as the public read contract.
+
+### 21.1 Durable agent/developer priority
+
+- MCP supports both read/retrieval and authorized write/action workflows.
+- Agent writes use Mutation IR, scoped capabilities, tenant/RLS enforcement, mutation approval and audit.
+- Developers remain first-class users through SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio.
+- No client needs to understand AGE, Cypher, recursive CTEs or planner internals.
+
+### 21.2 Planner foundation
+
+Implemented and merged:
+- capability-driven deterministic planner;
+- explicit Apache AGE preferred path;
+- explicit PostgreSQL recursive fallback target;
+- no silent fallback;
+- planner does not authorize, compile or execute.
+
+### 21.3 PostgreSQL recursive compiler — current work
+
+Implemented on branch stage21-agent-developer-contract:
+- constrained Query IR to PostgreSQL recursive CTE compiler;
+- explicit Schema Catalog relational mappings;
+- trusted transaction JWT tenant context;
+- canonical JSON parameter binding;
+- traversal cycle protection;
+- bounded depth, result limit and offset;
+- parameterized filters/projections/order expressions;
+- no raw SQL/Cypher input.
+
+Current executable evidence:
+- compiler contract tests;
+- live PostgreSQL/RLS traversal, depth, result-limit and parameter-injection test gate.
+
+Still required before Stage 21 VALIDATED:
+- authoritative Schema Catalog relational graph-to-table mapping contract;
+- AGE vs recursive-CTE normalized-result equivalence fixtures;
+- planner capability registration wired into actual execution;
+- complete cost/depth/result guardrail parity;
+- planner observability with selected engine/fallback reason and no tenant data;
+- full repository regression matrix.
+
+Do not expose PostgreSQL recursive fallback as generally available until these gates are green.
+
+
