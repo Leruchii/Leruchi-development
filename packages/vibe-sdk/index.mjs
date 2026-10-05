@@ -1,3 +1,4 @@
+import {RetrievalBuilder} from "./retrieval.mjs";
 const IDENT = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const FIELD = /^[A-Za-z_][A-Za-z0-9_.]*$/;
 const DIRECTIONS = new Set(["out", "in", "both"]);
