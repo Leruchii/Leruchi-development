@@ -6,14 +6,14 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
-- Current status: VALIDATED
+- Current stage: 22 — Retrieval-Aware Engine-Neutral Planner
+- Current status: IN_PROGRESS
 - Last completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
 - Previous completed stage: 20 — Production Readiness
 - Last validated commit: `41adf8e04598e7f00c38945b88c6db4d6bbd7e71` (Stage 21 planner foundation merged to main; broad regression and architecture/state gates passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `main`
+- Current branch: `stage22-retrieval-planner`
 - Current work: durable bidirectional MCP + developer-first contract; backward-compatible Schema Catalog relational mappings; constrained PostgreSQL recursive compiler; Graph API planner integration; live RLS/depth/limit/parameter-safety and AGE-equivalence evidence
 - Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
@@ -595,3 +595,19 @@ Validation evidence on commit `139966a5a4a6a432d00a1924c967dabb969b3908`:
 The checksum failure discovered during validation was a real migration-runner defect: psql `-v` variables were incorrectly relied upon inside a `-c` SQL string. The runner now uses strictly validated SQL literals for the checksum update, and the corrected full matrix passes.
 
 Production boundary remains explicit: this validation does not claim universal capacity, hosted SLA, regional recovery, commercial RPO/RTO, billing, or cloud-control-plane guarantees. Stages 18 and 19 remain deferred.
+
+## Stage 22 — Retrieval-Aware Engine-Neutral Planner
+
+Status: IN_PROGRESS.
+
+Stage 21 is validated and merged. Stage 22 is the next canonical OSS stage: extend engine-neutral planning to vector and hybrid retrieval while preserving the existing Retrieval IR, Schema Catalog, ExecutionContext, cost/result guardrails, RLS and deterministic weighted-RRF fusion.
+
+Implemented on branch `stage22-retrieval-planner`:
+- deterministic retrieval planner;
+- explicit graph/vector engine capability registry;
+- graph compiler selection integration in retrieval execution;
+- normalized retrieval plan metadata;
+- focused planner/retrieval execution tests;
+- Stage 22 CI workflow.
+
+Remaining exit evidence: Stage 22 CI, full repository regression, capability fail-closed evidence, deterministic vector/graph/hybrid planning, and confirmation that planner selection does not weaken existing security/guardrail boundaries.
