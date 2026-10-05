@@ -7,21 +7,21 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary
-- Current status: VALIDATED
-- Last completed stage: 22 — Retrieval-Aware Engine-Neutral Planner
+- Current status: IMPLEMENTED — NOT YET VALIDATED
+- Last completed stage: 23 — Unified Retrieval Developer/Agent Surface
 - Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
 - Last validated commit: `c6f0c41025f52ad14bc30be97adeeff4edaf2593` (Stage 22 merge to main; final exact-head regression and architecture/state gates passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `main`
-- Current work: Stage 23 unified developer/agent retrieval surface over the validated Stage 22 planner, preserving Retrieval IR, ExecutionContext, Schema Catalog, RLS, guardrails and Secure Execution Engine
+- Current branch: `stage24-retrieval-explainability-agent-safety`
+- Current work: Stage 24 retrieval explainability/evaluation and agent-safety boundary over the validated Retrieval IR + planner + secure execution path
 - Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
 - Architecture Regression Audit and Stage State Gate passed on the final head.
 - Stage 22 PR #47 merged to `main` as `c6f0c41025f52ad14bc30be97adeeff4edaf2593`.
 - Final exact Stage 22 candidate `e80f9bc91d6669c88f7f4a1cbad391192a2465` passed the complete 21-workflow matrix; the merge commit is the durable main checkpoint.
 - Stage 22 had a real shared execution defect (`plan` referenced before initialization) that caused both the new Stage 22 tests and the existing Stage 15 hybrid integration to fail; this was fixed in the current branch head.
-- Next exact action: run the Stage 23 focused suite, inspect CI for real failures, fix them at the shared boundary, then trigger the complete repository regression matrix before merge.
+- Next exact action: run the Stage 24 focused suite and inspect CI; fix any real failures at the shared boundary, then run the complete repository regression matrix before merge.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
@@ -689,3 +689,19 @@ Exact next action:
 3. add cross-surface golden fixtures and adversarial agent-safety tests;
 4. connect observability correlation without recording sensitive retrieval payloads;
 5. run the full regression matrix before validation.
+
+
+## Stage 24 implementation handoff
+
+Implemented on branch `stage24-retrieval-explainability-agent-safety`:
+- non-executing retrieval explanation contract in `packages/retrieval-explainability/index.mjs`;
+- authenticated Graph API `POST /v1/retrieval/explain` boundary;
+- SDK `RetrievalBuilder.explain()` and transport routing;
+- CLI `vibe retrieval explain --ir <file>`;
+- MCP `retrieval.explain` closed tool;
+- bounded deterministic reason codes and Retrieval IR hash;
+- adversarial tests for capability denial, invalid input and metadata leakage;
+- retrieval execution correlation event containing request ID, mode, planner decision and outcome without payload capture;
+- Stage 24 focused workflow and durable decision record.
+
+Validation is not yet complete. Do not mark Stage 24 VALIDATED until focused CI, relevant regressions, architecture/state gates and the final repository matrix pass.
