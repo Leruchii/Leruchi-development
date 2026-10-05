@@ -53,7 +53,8 @@ test("selects the capability-registered recursive compiler when explicitly prefe
     },
     preferredGraphEngines:["postgresql-recursive"]
   });
-  assert.equal(result.plan.graph,"postgresql-recursive");
+  assert.equal(result.plan.mode,"graph");
+  assert.equal(JSON.stringify(result).includes("postgresql-recursive"),false);
   assert.equal(selected,"recursive");
   assert.deepEqual(calls.map(x=>x[0]),["graph"]);
 });
