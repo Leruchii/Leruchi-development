@@ -884,14 +884,15 @@ Conversation history is not required for a correct handoff.
 
 # 11. Current execution checkpoint
 
-The canonical execution checkpoint is **Stage 20 — Production Readiness**.
+The canonical execution checkpoint is **Stage 22 — Retrieval-Aware Engine-Neutral Planner**.
 
 Current state:
-- Stages 00–17: **VALIDATED**.
+- Stages 00–21: **VALIDATED**.
 - Stages 18 — Vibe Cloud Control Plane and 19 — Billing + Metering: **DEFERRED**.
-- Stage 20: **VALIDATED**.
-- The validated implementation was completed on `stage20-production-readiness` at commit `139966a5a4a6a432d00a1924c967dabb969b3908` and is ready to merge to `main`.
-- The canonical handoff is maintained in `BUILD_STATE.md`; this section intentionally mirrors the current stage rather than pointing back to an obsolete Stage 15 checkpoint.
+- Stage 22: **IN_PROGRESS** on `stage22-retrieval-planner`.
+- Stage 22 corrected head `bfc6c8ecb0a689fd976f3af2441ed47d6cbc08ac` has a green dedicated Stage 22 workflow; the repository-wide matrix is still completing.
+- A real shared retrieval execution defect was fixed: `plan` was referenced before initialization, breaking both Stage 22 tests and the existing Stage 15 hybrid integration. The fix initializes the plan immediately after Retrieval IR validation and before execution branches.
+- The canonical handoff is maintained in `BUILD_STATE.md`.
 
 Stage 20 exit evidence must include:
 1. executable version/dependency and migration policy;
