@@ -8,13 +8,13 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 - Current stage: 25 — MCP Agent Tool Contract & Input-Safety Boundary
 - Current status: VALIDATED — Stage 25 implementation and repository regression matrix passed
-- Last completed stage: 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary
+- Last completed stage: 25 — MCP Agent Tool Contract & Input-Safety Boundary
 - Stage 24 validation head: `8433af4b4ec22e2611a88613bcb1ddfb14fbcdc9` (final focused suite + full repository product/regression matrix passed before merge)
 - Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
 - Last validated commit: `48876c8ae74f1f0bf39142b4ee074db462ad1883` (Stage 24 merge to `main`; final validation head passed the focused suite and full repository product/regression matrix)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `stage25-post-stage24-handoff`
+- Current branch: `stage25-postmerge-handoff`
 - Current work: Stage 25 MCP agent tool contract and bounded input-safety boundary — validated
 - Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
@@ -24,7 +24,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Stage 22 had a real shared execution defect (`plan` referenced before initialization) that caused both the new Stage 22 tests and the existing Stage 15 hybrid integration to fail; this was fixed in the current branch head.
 - Stage 25 validation head: `8e72dee470e60f2c1a088397baa77d5d01120fc6` (focused MCP suite, full repository product/regression matrix, Architecture Regression Audit and Stage State Gate passed).
 - Stage 25 focused workflow `37340599434` passed; the complete current-head regression matrix passed.
-- Exact next action: merge PR #50, then verify the resulting `main` head and record the durable Stage 25 merge checkpoint.
+- Stage 25 merge commit: `1cd6a9ab42e7c681fe7c134890b8e360efa819a3` (PR #50 merged after the exact-head regression matrix passed).\n- `main` has been verified at the Stage 25 merge checkpoint.\n- Exact next action: define and begin Stage 26 from this validated checkpoint; do not reopen Stage 25 unless new executable evidence contradicts it.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
@@ -727,4 +727,4 @@ Validated contract:
 - tenant identity, capabilities, mutation approval and secure execution remain server-authoritative;
 - no second authorization/execution path or physical-engine API was introduced.
 
-PR #50 is the pending merge checkpoint. Do not treat the merge commit as validated until the post-merge main head is verified against this evidence.
+PR #50 merged as `1cd6a9ab42e7c681fe7c134890b8e360efa819a3`. The Stage 25 merge is the durable main checkpoint.
