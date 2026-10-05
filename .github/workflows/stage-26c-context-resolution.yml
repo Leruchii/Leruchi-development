@@ -1,0 +1,38 @@
+name: Stage 26C - Context Resolution
+
+on:
+  pull_request:
+    paths:
+      - "packages/context-ir/**"
+      - "packages/context-resolution/**"
+      - "packages/graph-api/**"
+      - "packages/vibe-sdk/**"
+      - "packages/mcp-server/**"
+      - "tests/context-ir/**"
+      - "tests/context-resolution/**"
+      - "tests/vibe-sdk/context.test.mjs"
+      - "tests/mcp/mcp-server.test.mjs"
+      - "tests/graph-api/api.test.mjs"
+  push:
+    branches:
+      - "stage26c-*"
+
+jobs:
+  context-resolution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Context IR and resolution tests
+        run: node --test tests/context-ir/*.test.mjs tests/context-resolution/*.test.mjs
+      - name: SDK Context tests
+        run: node --test tests/vibe-sdk/context.test.mjs
+      - name: MCP contract tests
+        run: node --test tests/mcp/mcp-server.test.mjs
+      - name: Graph API Context convergence tests
+        run: node --test tests/graph-api/api.test.mjs
