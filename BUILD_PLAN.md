@@ -1146,7 +1146,7 @@ Do not add context execution, autonomous authorization, an LLM planner, provider
 
 # Stage 26C — Context Resolution & Secure Execution Contract
 
-**Status:** IMPLEMENTED — NOT YET VALIDATED.
+**Status:** VALIDATED — PR #55 merged as `107ed19e72ac22fcd0b8dfdbeae5f20c0e8bb41e`; exact PR head passed 26/26 workflows and post-merge main passed 22/22.
 
 Purpose: resolve validated Context IR into bounded agent/application context by composing the existing Schema Catalog, Query IR and Retrieval IR execution paths.
 
@@ -1180,3 +1180,45 @@ Exit gate:
 6. post-merge main matrix establishes a clean baseline before Stage 27.
 
 Do not introduce autonomous authorization, an LLM planner, write-capable Context Resolution, or a second query/retrieval executor in this stage.
+
+
+# Stage 27 — Agent Intent → VibeDB IR Boundary
+
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
+
+Purpose: give agents and future model adapters one closed, provider-neutral envelope for declaring an intended canonical VibeDB operation without making natural language, an LLM, or MCP an authorization/execution authority.
+
+Required invariants:
+- Agent Intent targets exactly one canonical Query, Retrieval, Context or Mutation IR;
+- action and target IR kind must match deterministically;
+- trusted ExecutionContext remains authoritative;
+- required capabilities are derived from the target IR;
+- intent explanation is non-executing;
+- mutation intent can report destructive/approval-required semantics but cannot execute a mutation in this stage;
+- tenant IDs, credentials and capability grants cannot be supplied by intent;
+- bindings are bounded and remain separate from authorization;
+- diagnostics never record target IR, bindings or tenant identity;
+- SDK, CLI and MCP converge on the same authenticated explanation endpoint;
+- no provider-specific model contract, natural-language parser, autonomous authorization, or second executor is introduced.
+
+Implemented:
+- `packages/agent-intent/v1.schema.json`
+- `packages/agent-intent/index.mjs`
+- authenticated `POST /v1/agent/intent/explain`
+- SDK `client.agent().intent(action, ir).explain()`
+- MCP `agent.intent.explain`
+- CLI `vibe agent intent explain --intent <file>`
+- deterministic capability/safety policy derivation
+- canonical intent hashing
+- bounded/sanitized observability
+- focused Stage 27 CI and adversarial/convergence tests
+
+Exit gate:
+1. final exact-head Stage 27 focused workflow passes;
+2. Architecture Regression Audit and Stage State Gate pass;
+3. all required historical regression workflows pass on the PR head;
+4. no intent or observability surface leaks tenant IDs, bindings or raw target IR;
+5. merge only after exact-head validation is green;
+6. post-merge main must establish a clean baseline before Stage 28.
+
+Do not add model-provider integration, free-form natural-language execution, autonomous capability grants, or Agent Intent execution in Stage 27.
