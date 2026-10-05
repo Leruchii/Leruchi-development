@@ -38,7 +38,7 @@ FROM ag_catalog.cypher(
 ) AS (p ag_catalog.agtype);
 SQL
 )"
-source_migrations="$(psql "$SOURCE_DATABASE_URL" -Atqc "SELECT md5(string_agg(version || ':' || checksum, ',' ORDER BY version)) FROM vibe_meta.schema_migrations")"
+source_migrations="$(psql "$SOURCE_DATABASE_URL" -Atqc "SELECT md5(string_agg(migration_id || ':' || COALESCE(checksum,''), ',' ORDER BY migration_id)) FROM vibe_meta.schema_migrations")"
 
 backup_started="$(date +%s%N)"
 DATABASE_URL="$SOURCE_DATABASE_URL" bash "$ROOT/scripts/vibedb-backup.sh" "$WORK"
@@ -73,7 +73,7 @@ FROM ag_catalog.cypher(
 ) AS (p ag_catalog.agtype);
 SQL
 )"
-target_migrations="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT md5(string_agg(version || ':' || checksum, ',' ORDER BY version)) FROM vibe_meta.schema_migrations")"
+target_migrations="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT md5(string_agg(migration_id || ':' || COALESCE(checksum,''), ',' ORDER BY migration_id)) FROM vibe_meta.schema_migrations")"
 target_pre_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM vibe_meta.backup_drill_fixture WHERE payload = 'recovery-proof'")"
 target_post_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM vibe_meta.backup_drill_fixture WHERE payload = 'post-backup-not-restored'")"
 
