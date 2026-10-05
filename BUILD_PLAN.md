@@ -1080,3 +1080,28 @@ Required direction:
 - add adversarial tests proving oversized/deep agent input is rejected before transport and tool metadata cannot imply authorization.
 
 Do not add autonomous authorization, a second executor, client-controlled tenant identity, or a physical-engine API.
+
+
+# Stage 26A — OSS Product Boundary & Repository Separation
+
+**Status:** IN PROGRESS — repository separation established; export contract being hardened.
+
+Objectives:
+1. Keep internal engineering control material private.
+2. Keep private implementation history in `vibeDB-development`.
+3. Make `vibeDB` a clean public OSS release target.
+4. Export only explicit public-safe paths.
+5. Prevent Core from depending on private Cloud/Enterprise implementation.
+6. Document the three-repository authority model for future coding agents.
+
+Repository model:
+- `Fikunmii/vibeDB-internal` — private engineering control plane.
+- `Fikunmii/vibeDB-development` — private implementation/source-of-truth for active engineering.
+- `Fikunmii/vibeDB` — public OSS Core release target.
+
+Required gate:
+- `OSS_EXPORT_MANIFEST.json` is the primary publication allowlist.
+- `scripts/public-oss-export-audit.mjs` must pass before any public export.
+- Internal instructions, build state/plan, product strategy, private decisions and development-only automation must never be exported.
+
+The next implementation stage after this boundary is Stage 26B — Agent-Native Context IR.
