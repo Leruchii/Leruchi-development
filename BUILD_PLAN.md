@@ -1067,7 +1067,7 @@ Do not introduce an LLM planner, autonomous authorization, a second retrieval ex
 
 ## Stage 25 — MCP Agent Tool Contract & Input-Safety Boundary
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED.
 
 Stage 25 hardens the existing MCP gateway as a deterministic agent-facing contract without creating a new authorization or execution path.
 
