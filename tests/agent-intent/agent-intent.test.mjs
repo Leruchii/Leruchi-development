@@ -19,3 +19,34 @@ test("records context intent fails closed",()=>{const contextIr={version:"v1",ki
 test("oversized bindings are rejected before planning",()=>assert.throws(()=>validateAgentIntent({version:"v1",kind:"agent_intent",action:"query",ir:query,bindings:{x:"x".repeat(70*1024)}}),e=>e.code==="AGENT_INTENT_BINDING_LIMIT_EXCEEDED"));
 
 test("omitted and default empty bindings hash identically",()=>{const a={version:"v1",kind:"agent_intent",action:"query",ir:query};const b={...a,bindings:{}};assert.equal(hashAgentIntent(a),hashAgentIntent(b));});
+
+test("Agent Intent diagnostics are bounded and do not leak tenant, bindings, or target IR",()=>{
+  const logs=[];
+  const intent={version:"v1",kind:"agent_intent",action:"query",ir:query,bindings:{secret_marker:"do-not-log"}};
+  const result=explainAgentIntent({
+    intent,
+    context:graphRead,
+    catalog,
+    requestId:"req-safe",
+    observability:{emitLog:event=>logs.push(event)}
+  });
+  assert.equal(result.status,"ready");
+  assert.equal(logs.length,1);
+  assert.deepEqual(logs[0],{
+    event:"agent.intent.explain",
+    request_id:"req-safe",
+    action:"query",
+    outcome:"ready",
+    reason_code:"AGENT_INTENT_READY",
+    destructive:false
+  });
+  const serialized=JSON.stringify(logs);
+  assert.equal(serialized.includes("tenant-a"),false);
+  assert.equal(serialized.includes("do-not-log"),false);
+  assert.equal(serialized.includes('"graph":"g"'),false);
+});
+
+test("records Context intent fails during preflight before target validation",()=>{
+  const contextIr={version:"v1",kind:"context_request",purpose:"records",sources:[{type:"records",catalog_ref:"public.people"}],budget:{max_items:5,max_bytes:4096},freshness:{mode:"current"}};
+  assert.throws(()=>preflightAgentIntent({intent:{version:"v1",kind:"agent_intent",action:"context",ir:contextIr},context:graphRead}),e=>e.code==="CONTEXT_SOURCE_UNSUPPORTED");
+});
