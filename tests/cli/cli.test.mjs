@@ -44,3 +44,31 @@ test("discovers numbered migrations deterministically",()=>{
   for(const name of ["0001-z.sql","0000-migration-ledger.sql","README.md","9999_BAD.sql","0002-next.sql"]) fs.writeFileSync(path.join(dir,name),"");
   assert.deepEqual(listMigrationFiles(dir).map(x=>x.id),["0000-migration-ledger","0001-z","0002-next"]);
 });
+
+
+test("retrieval command uses the SDK unified retrieval endpoint",async()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-retrieval-"));
+  fs.mkdirSync(path.join(cwd,".vibe"));
+  fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));
+  const graphIr={version:"v1",kind:"graph_query",graph:"g",root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.id",alias:"id"}],orderBy:[],limit:10,offset:0,depth:0,parameters:[]};
+  const graphFile=path.join(cwd,"graph.json");
+  fs.writeFileSync(graphFile,JSON.stringify(graphIr));
+  const calls=[];
+  const code=await run(["retrieval","query","--graph-ir","graph.json","--vector-catalog-ref","docs.embedding","--embedding","[1,0,0]","--top-k","5","--max-results","5"],{
+    cwd,fetchImpl:async(url,init)=>{calls.push({url,init});return{ok:true,status:200,async json(){return{rows:[]}}};},stdout:()=>{},stderr:()=>{}
+  });
+  assert.equal(code,0);
+  assert.equal(calls[0].url,"https://api.example/v1/retrieval/query");
+  const body=JSON.parse(calls[0].init.body);
+  assert.equal(body.ir.kind,"retrieval_query");
+  assert.equal(body.ir.sources.graph.query.kind,"graph_query");
+  assert.equal(body.ir.sources.vector.catalog_ref,"docs.embedding");
+  assert.deepEqual(body.parameters.embedding,[1,0,0]);
+});
+
+test("retrieval CLI fails before transport when vector embedding is missing",async()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-retrieval-"));
+  fs.mkdirSync(path.join(cwd,".vibe"));
+  fs.writeFileSync(path.join(cwd,".vibe/config.json"),JSON.stringify({baseUrl:"https://api.example"}));
+  await assert.rejects(()=>run(["retrieval","query","--vector-catalog-ref","docs.embedding"],{cwd,fetchImpl:async()=>{throw new Error("transport should not run")},stdout:()=>{},stderr:()=>{}}),/Missing --embedding/);
+});

@@ -27,6 +27,7 @@ export function parseArgs(argv) {
 function valuesOf(value){if(value===undefined||value===null)return [];return Array.isArray(value)?value:[value];}
 function required(args,key){if(typeof args[key]!=="string"||args[key]==="")throw new Error(`Missing --${key}`);return args[key];}
 function splitAssignment(value,name){const i=value.indexOf("=");if(i<=0)throw new Error(`${name} must use key=value`);return [value.slice(0,i),value.slice(i+1)];}
+function parseJson(value,name){try{return JSON.parse(value);}catch{throw new Error(`${name} must be valid JSON`);}}
 function parseProperties(values){
   const out={};
   for(const value of valuesOf(values)){const [key,val]=splitAssignment(value,"--property");if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key))throw new Error("Invalid property name");out[key]=val;}
@@ -114,6 +115,33 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     const payload=await response.text();
     if(!response.ok)throw new Error(`Diagnostics failed with HTTP ${response.status}`);
     stdout(payload);return 0;
+  }
+  if(command==="retrieval"&&subcommand==="query"){
+    const client=createClient(clientOptions(cwd,args,fetchImpl));
+    const builder=client.retrieval();
+    if(args["graph-ir"]){
+      const graphIr=parseJson(fs.readFileSync(path.resolve(cwd,required(args,"graph-ir")),"utf8"),"--graph-ir");
+      builder.graph(graphIr,{identityField:args["graph-identity"]||"id",candidateLimit:args["candidate-limit"]?Number(args["candidate-limit"]):undefined});
+    }
+    if(args["vector-catalog-ref"]){
+      builder.vector({
+        catalogRef:required(args,"vector-catalog-ref"),
+        queryParameter:args["vector-param"]||"embedding",
+        topK:args["top-k"]?Number(args["top-k"]):10,
+        identityField:args["vector-identity"]||"id"
+      });
+      const parameter=args["vector-param"]||"embedding";
+      if(args.embedding===undefined)throw new Error("Missing --embedding for vector retrieval");
+      builder.bind(parameter,"vector",parseJson(args.embedding,"--embedding"));
+    }
+    if(args["vector-weight"]!==undefined||args["graph-weight"]!==undefined){
+      builder.fusion({vectorWeight:args["vector-weight"]===undefined?1:Number(args["vector-weight"]),graphWeight:args["graph-weight"]===undefined?1:Number(args["graph-weight"])});
+    }
+    if(args["max-results"]!==undefined||args["max-cost"]!==undefined){
+      builder.limits({maxResults:args["max-results"]===undefined?20:Number(args["max-results"]),maxCost:args["max-cost"]===undefined?40:Number(args["max-cost"])});
+    }
+    const result=await builder.execute();
+    stdout(print(result,Boolean(args.pretty)));return 0;
   }
   if(command==="graph"){
     const client=createClient(clientOptions(cwd,args,fetchImpl));

@@ -96,3 +96,20 @@ test("Graph API planner selects PostgreSQL fallback only when explicitly registe
   assert.deepEqual(observed,[{name:"vibe_query_planner_total",value:1,labels:{engine:"postgresql-recursive",reason:"fallback"}}]);
   assert.equal(JSON.stringify(observed).includes("tenant"),false);
 });
+
+
+test("Graph API blocks retrieval capability misuse before execution",async()=>{
+  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",catalogProvider:async()=>({graphs:{}}),port:0});
+  const address=await api.listen();
+  try{
+    const ir={version:"v1",kind:"retrieval_query",sources:{vector:{catalog_ref:"docs.embedding",query_parameter:"embedding",top_k:1,identity_field:"id"}},fusion:{strategy:"weighted_rrf"},limits:{max_results:1,max_cost:10}};
+    const res=await fetch(`http://127.0.0.1:${address.port}/v1/retrieval/query`,{
+      method:"POST",
+      headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir,parameters:{embedding:[1,0,0]}})
+    });
+    assert.equal(res.status,403);
+    const body=await res.json();
+    assert.equal(body.code,"CAPABILITY_DENIED");
+  }finally{await api.close();}
+});

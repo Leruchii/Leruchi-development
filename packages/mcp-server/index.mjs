@@ -1,3 +1,4 @@
+import {validateRetrievalIR} from "../retrieval-ir/index.mjs";
 import readline from "node:readline";
 
 const IR={type:"object"};
@@ -46,7 +47,7 @@ export async function handleMcpMessage(message){
     if(name==="schema.discover")data=await api("/v1/schema/catalog",{},name);
     else if(name==="graph.query"||name==="graph.traverse")data=await api("/v1/graph/query",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{}})},name);
     else if(name==="graph.mutate")data=await api("/v1/graph/mutations",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{},execution:args.execution??{}})},name);
-    else if(name==="retrieval.query")data=await api("/v1/retrieval/query",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{}})},name);
+    else if(name==="retrieval.query"){ validateRetrievalIR(args.ir); data=await api("/v1/retrieval/query",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{}})},name); }
     else return {jsonrpc:"2.0",id,result:error("Unknown tool: "+name)};
     return {jsonrpc:"2.0",id,result:result(data)};
   }catch(e){return {jsonrpc:"2.0",id,result:error(e instanceof Error?e.message:"MCP tool failed")};}

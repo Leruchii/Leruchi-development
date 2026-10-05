@@ -1,3 +1,4 @@
+import {RetrievalBuilder} from "./retrieval.mjs";
 const IDENT = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const FIELD = /^[A-Za-z_][A-Za-z0-9_.]*$/;
 const DIRECTIONS = new Set(["out", "in", "both"]);
@@ -177,7 +178,7 @@ export function createFetchTransport({ baseUrl, token, fetchImpl = globalThis.fe
   const root = baseUrl.replace(/\/$/, "");
   return {
     async request(kind, body) {
-      const path = kind === "query" ? "/v1/graph/query" : "/v1/graph/mutations";
+      const path = kind === "query" ? "/v1/graph/query" : kind === "mutation" ? "/v1/graph/mutations" : kind === "retrieval" ? "/v1/retrieval/query" : (() => { throw new VibeClientError("INVALID_REQUEST_KIND", "Unsupported Vibe request kind"); })();
       const response = await fetchImpl(root + path, {
         method: "POST",
         headers: { "content-type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}), ...headers },
@@ -234,8 +235,11 @@ export function createClient(options = {}) {
         }
       };
     },
+    retrieval() { return new RetrievalBuilder(client); },
     request(kind, body) { return transport.request(kind, body); },
     param
   };
   return client;
 }
+
+export {RetrievalBuilder,RetrievalBuilderError,createRetrievalBuilder} from "./retrieval.mjs";

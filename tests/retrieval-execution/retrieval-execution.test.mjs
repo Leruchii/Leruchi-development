@@ -53,7 +53,8 @@ test("selects the capability-registered recursive compiler when explicitly prefe
     },
     preferredGraphEngines:["postgresql-recursive"]
   });
-  assert.equal(result.plan.graph,"postgresql-recursive");
+  assert.equal(result.plan.mode,"graph");
+  assert.equal(JSON.stringify(result).includes("postgresql-recursive"),false);
   assert.equal(selected,"recursive");
   assert.deepEqual(calls.map(x=>x[0]),["graph"]);
 });
@@ -73,4 +74,19 @@ test("requires the vector query parameter before execution",async()=>{
 
 test("fails closed for untrusted execution context",async()=>{
   await assert.rejects(()=>executeRetrieval({ir,context:{...context,trusted:false},catalog:{},requestParameters:{embedding:[1,0,0]},db:{},...deps([])}),/Trusted execution context/);
+});
+
+
+test("retrieval telemetry records the planned mode without leaking retrieval internals",async()=>{
+  const observations=[];
+  await executeRetrieval({
+    ir:{...ir,sources:{vector:ir.sources.vector}},
+    context,catalog:{},requestParameters:{embedding:[1,0,0]},db:{},...deps([]),
+    observability:{observe:(name,value,labels)=>observations.push({name,value,labels})}
+  });
+  assert.equal(observations[0].name,"vibe_retrieval_duration_ms");
+  assert.equal(observations[0].labels.source,"vector");
+  assert.equal(JSON.stringify(observations).includes("tenant_a"),false);
+  assert.equal(JSON.stringify(observations).includes("documents.embedding"),false);
+  assert.equal(JSON.stringify(observations).includes("[1,0,0]"),false);
 });

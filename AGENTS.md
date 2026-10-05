@@ -181,6 +181,9 @@ Build stages are sequential unless an explicit architecture decision changes the
 18. Vibe Cloud Control Plane
 19. Billing and Metering
 20. Production Readiness
+21. Engine-Neutral Planner + PostgreSQL Fallback Foundation
+22. Retrieval-Aware Engine-Neutral Planner
+23. Unified Retrieval Developer/Agent Surface
 
 Do not implement later stages simply because they are interesting.
 
