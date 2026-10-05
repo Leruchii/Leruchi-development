@@ -6,22 +6,22 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 22 — Retrieval-Aware Engine-Neutral Planner
-- Current status: VALIDATED
+- Current stage: 23 — Unified Retrieval Developer/Agent Surface
+- Current status: IN_PROGRESS
 - Last completed stage: 22 — Retrieval-Aware Engine-Neutral Planner
 - Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
 - Last validated commit: `c6f0c41025f52ad14bc30be97adeeff4edaf2593` (Stage 22 merge to main; final exact-head regression and architecture/state gates passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `main`
-- Current work: Stage 22 retrieval-aware engine-neutral planning for graph/vector/hybrid retrieval, preserving the durable bidirectional MCP/developer-first contract, Schema Catalog, ExecutionContext, RLS, guardrails and Secure Execution Engine
+- Current branch: `stage23-unified-retrieval-surface`
+- Current work: Stage 23 unified developer/agent retrieval surface over the validated Stage 22 planner, preserving Retrieval IR, ExecutionContext, Schema Catalog, RLS, guardrails and Secure Execution Engine
 - Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
 - Architecture Regression Audit and Stage State Gate passed on the final head.
 - Stage 22 PR #47 merged to `main` as `c6f0c41025f52ad14bc30be97adeeff4edaf2593`.
 - Final exact Stage 22 candidate `e80f9bc91d6669c88f7f4a1cbad391192a2465` passed the complete 21-workflow matrix; the merge commit is the durable main checkpoint.
 - Stage 22 had a real shared execution defect (`plan` referenced before initialization) that caused both the new Stage 22 tests and the existing Stage 15 hybrid integration to fail; this was fixed in the current branch head.
-- Next exact action: begin Stage 23 — Unified Retrieval Developer/Agent Surface, after reviewing the Stage 23 roadmap entry and preserving the Stage 22 planner/security contracts.
+- Next exact action: run the Stage 23 focused suite, inspect CI for real failures, fix them at the shared boundary, then trigger the complete repository regression matrix before merge.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
@@ -626,3 +626,36 @@ Exit gate evidence:
 5. Stage State Gate `37314794572` passed;
 6. the corrected shared retrieval execution path was exercised by both Stage 22 and Stage 15 tests;
 7. documentation checkpoints were reconciled.
+
+
+## Stage 23 — Unified Retrieval Developer/Agent Surface
+
+**Status:** IN_PROGRESS.
+
+Implemented on `stage23-unified-retrieval-surface`:
+- SDK `client.retrieval()` builder for canonical Retrieval IR v1;
+- SDK HTTP transport routing to `/v1/retrieval/query`;
+- CLI `vibe retrieval query` delegation through the SDK;
+- MCP Retrieval IR validation before transport;
+- API retrieval capability-denial regression coverage;
+- bounded retrieval telemetry corrected to report the planned mode;
+- Stage 23 focused CI workflow;
+- Stage 23 durable decision record.
+
+Security/convergence invariants:
+- developer SDK, CLI and MCP submit the same Retrieval IR shape;
+- tenant identity remains trusted ExecutionContext/JWT state and cannot be supplied by retrieval input;
+- graph/vector capabilities remain enforced at the API boundary;
+- plan metadata remains bounded and does not expose tenant identifiers, catalog references, embeddings, raw parameters, SQL or Cypher.
+
+Validation status:
+- Focused tests have been added but have not yet been executed on this branch by repository CI.
+- Full repository regression has not yet been triggered for the Stage 23 candidate.
+- Stage 23 must remain IN_PROGRESS until focused CI, architecture/state gates and the final repository matrix are green.
+
+Exact next action:
+1. inspect the Stage 23 branch head and run the focused workflow;
+2. fix any failure at the shared contract rather than weakening tests;
+3. run the complete relevant regression matrix;
+4. merge only after all required evidence passes;
+5. update this checkpoint to VALIDATED with the exact final head and workflow evidence.
