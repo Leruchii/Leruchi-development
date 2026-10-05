@@ -6,14 +6,14 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 23 — Unified Retrieval Developer/Agent Surface
-- Current status: IN_PROGRESS
+- Current stage: 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary
+- Current status: VALIDATED
 - Last completed stage: 22 — Retrieval-Aware Engine-Neutral Planner
 - Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
 - Last validated commit: `c6f0c41025f52ad14bc30be97adeeff4edaf2593` (Stage 22 merge to main; final exact-head regression and architecture/state gates passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `stage23-unified-retrieval-surface`
+- Current branch: `main`
 - Current work: Stage 23 unified developer/agent retrieval surface over the validated Stage 22 planner, preserving Retrieval IR, ExecutionContext, Schema Catalog, RLS, guardrails and Secure Execution Engine
 - Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
@@ -659,3 +659,33 @@ Exact next action:
 3. run/inspect the complete relevant regression matrix;
 4. merge only after all required evidence passes;
 5. update this checkpoint to VALIDATED with the exact final head and workflow evidence.
+
+
+## Stage 23 — VALIDATED handoff
+
+Stage 23 was merged to main in PR #48.
+
+- Merge commit: `7ff5523dfa982632965cb7e46cede4f96cb4c834`
+- Stage 23 focused workflow passed.
+- Stage 22 Retrieval Planner passed.
+- Stage 14 MCP passed.
+- Stage 15 GraphRAG passed.
+- Stage 16 Observability passed.
+- Architecture Regression Audit passed.
+- Stage State Gate passed.
+- The repository regression matrix passed its required product/architecture workflows.
+
+The separate Code Scanning AI review workflow failed because GitHub's Copilot code-scanning agent exceeded its monthly model quota. This was infrastructure/quota failure, not a VibeDB test, build, security, or product-code failure, and it was not used as a product validation signal.
+
+## Stage 24 handoff
+
+**Status:** READY_TO_DEFINE.
+
+Next stage: Retrieval Explainability, Evaluation & Agent-Safety Boundary.
+
+Exact next action:
+1. define the bounded explain/evaluation contract over the existing Retrieval IR and planner;
+2. add deterministic reason codes and agent-safe diagnostics;
+3. add cross-surface golden fixtures and adversarial agent-safety tests;
+4. connect observability correlation without recording sensitive retrieval payloads;
+5. run the full regression matrix before validation.
