@@ -1,6 +1,6 @@
 # Testing
 
-Status: VALIDATED through Stage 17; Stage 20 production-readiness evidence is IN_PROGRESS.
+Status: VALIDATED through Stage 20.
 
 ## Validated coverage
 
@@ -19,22 +19,18 @@ Stages 01–17 have executable CI evidence covering:
 
 ## Stage 20 readiness coverage
 
-The production-readiness gate now covers:
+The production-readiness gate covers:
 - exact dependency/version policy;
 - contiguous, fail-fast, timeout-bound migrator-only migrations;
 - migration checksum recording and drift rejection;
 - prior-schema-to-current upgrade preservation;
 - idempotent migration reruns;
 - bounded database pool policy;
-- executable 32-request/4-connection concurrency evidence.
+- executable 32-request/4-connection concurrency evidence;
+- durable production-readiness operations/runbook documentation.
 
-## Merge blocker
+## Validation evidence
+
+Corrected commit `139966a5a4a6a432d00a1924c967dabb969b3908` passed Stage 20 workflow `37297799623`, Stage 11 `37297799604`, Stage 12 `37297799687`, Stage 15 `37297799696`, Architecture Regression Audit `37297799715`, and Stage State Gate `37297799678`.
 
 Security and correctness regressions remain merge blockers. A stage is not VALIDATED from static code presence alone; the relevant workflow must execute successfully and the evidence must be recorded in the canonical state/knowledge files.
-
-## Remaining Stage 20 evidence
-
-- final repository-wide regression matrix on the corrected head;
-- durable incident/upgrade/dependency-update runbooks;
-- capacity operating-envelope documentation based on measured CI evidence;
-- reconciliation of all remaining UNKNOWN items without converting cloud-specific concerns into OSS guarantees.
