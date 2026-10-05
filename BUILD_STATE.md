@@ -6,36 +6,39 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 26C — Context Resolution & Secure Execution Contract
+- Current stage: 27 — Agent Intent → VibeDB IR Boundary
 - Current status: IMPLEMENTED — NOT YET VALIDATED
-- Last validated stage: 26B — Agent-Native Context IR
-- Last validated main commit: 5afe3a9cd3154c7812161bf5c8167f5a702f53d4
-- Stage 26B validation: exact candidate head passed 25/25 workflows; post-merge main passed 22/22 workflows including Stage 13 live Studio.
-- Active branch: stage26c-context-resolution
+- Last validated stage: 26C — Context Resolution & Secure Execution Contract
+- Last validated main commit: 107ed19e72ac22fcd0b8dfdbeae5f20c0e8bb41e
+- Stage 26C validation: exact PR head passed 26/26 workflows; post-merge main passed 22/22 workflows.
+- Active branch: stage27-agent-intent-ir
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
 - Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
 
-Stage 26C implementation checkpoint:
-- preflighted Context Resolution contract in `packages/context-resolution`;
-- trusted ExecutionContext required before any resolution;
-- all sources preflight before Schema Catalog or database access;
-- Context source parameters remain outside Context IR in an execution envelope;
-- query sources reuse Query IR validation, planner/compiler and Secure Execution;
-- retrieval sources reuse Retrieval IR validation/planning/execution;
-- nested vector retrieval requires `vector:read`;
-- aggregate item, byte and parameter-envelope budgets are bounded;
-- `records` resolution fails closed in v1 and explanation reports it unsupported;
-- authenticated `POST /v1/context/resolve`;
-- SDK `ContextBuilder.resolve()`;
-- MCP `context.resolve` read-only tool;
-- focused Stage 26C workflow exists and must pass on the final exact head before merge.
+Stage 27 implementation checkpoint:
+- closed, provider-neutral Agent Intent v1 envelope around canonical Query/Retrieval/Context/Mutation IR;
+- deterministic action → target-IR-kind validation;
+- trusted ExecutionContext preflight;
+- required capability derivation from the canonical target IR;
+- deterministic read-only/destructive/idempotent/approval-required metadata;
+- tenant and credential override rejection;
+- 64 KiB binding envelope limit;
+- canonical intent hashing with stable default bindings;
+- non-executing authenticated `POST /v1/agent/intent/explain`;
+- SDK `client.agent().intent(...).explain()`;
+- MCP `agent.intent.explain`;
+- CLI `vibe agent intent explain --intent <file>`;
+- capability denial occurs before Schema Catalog/database access;
+- sanitized observability records request ID/action/outcome/reason/destructive only;
+- no natural-language parser, autonomous authorization, or second executor exists.
+
+Stage 27 remains NOT YET VALIDATED until the final exact-head focused workflow, Architecture Regression Audit, Stage State Gate and the complete required regression matrix pass.
 
 Repository authority:
 - `vibeDB-internal` is authoritative for internal agent instructions, build state/plan, product strategy, internal decisions and development controls.
 - `vibeDB-development` is authoritative for private implementation history and active engineering branches.
 - `vibeDB` is the public OSS release target and only receives explicitly exported public-safe content.
-- Core must never depend on private Cloud/Enterprise implementation.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
