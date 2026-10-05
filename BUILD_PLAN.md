@@ -1105,3 +1105,40 @@ Required gate:
 - Internal instructions, build state/plan, product strategy, private decisions and development-only automation must never be exported.
 
 The next implementation stage after this boundary is Stage 26B — Agent-Native Context IR.
+
+
+# Stage 26B — Agent-Native Context IR
+
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
+
+Context IR is the engine-neutral contract for requesting bounded, authorization-aware context without exposing provider-specific execution details to agents.
+
+Required contract:
+- purpose, sources, budget and freshness are explicit;
+- tenant identity and credentials are never caller-supplied;
+- source/result/byte limits are bounded;
+- explanation is non-executing;
+- SDK and MCP converge on the same Context IR;
+- API authorization remains authoritative;
+- physical engine names, raw SQL/Cypher and internal credentials are never part of Context IR.
+
+Implemented:
+- `packages/context-ir/v1.schema.json`
+- `packages/context-ir/index.mjs`
+- `packages/context-ir/explain.mjs`
+- `packages/vibe-sdk/context.mjs`
+- SDK `client.context().purpose(...).source(...).explain()`
+- authenticated `POST /v1/context/explain`
+- MCP `context.explain`
+- adversarial Context IR and SDK tests
+- focused Stage 26B workflow
+
+Exit gate:
+1. focused Context IR, SDK and MCP tests pass;
+2. exact-head Stage 26B focused workflow passes;
+3. architecture/security/state gates pass;
+4. full regression matrix passes;
+5. internal/public repository boundary remains intact;
+6. BUILD_STATE and architecture decision record are updated with exact validation evidence.
+
+Do not add context execution, autonomous authorization, an LLM planner, provider-specific context contracts or a second execution path until the Context IR contract is validated.
