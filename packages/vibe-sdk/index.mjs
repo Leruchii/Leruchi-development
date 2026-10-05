@@ -234,6 +234,7 @@ export function createClient(options = {}) {
         }
       };
     },
+    retrieval() { return new RetrievalBuilder(client); },
     request(kind, body) { return transport.request(kind, body); },
     param
   };
