@@ -1,4 +1,5 @@
 import {validateRetrievalIR} from "../retrieval-ir/index.mjs";
+import {validateContextIR} from "../context-ir/index.mjs";
 import readline from "node:readline";
 
 const IR={type:"object"};
@@ -19,7 +20,8 @@ export const MCP_TOOL_POLICIES=Object.freeze({
   "graph.traverse":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true}),
   "graph.mutate":Object.freeze({operation:"write",readOnly:false,destructive:true,idempotent:false,approval:"server-enforced"}),
   "retrieval.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
-  "retrieval.query":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true})
+  "retrieval.query":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true}),
+  "context.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true})
 });
 
 function maxDepth(value,depth=0){
@@ -44,7 +46,8 @@ export const MCP_TOOLS=[
   {name:"graph.traverse",description:"Execute a bounded structured graph traversal expressed as Query IR. No free-form Cypher.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
   {name:"graph.mutate",description:"Execute a validated VibeDB Mutation IR write. Destructive operations require an explicit approval artifact; use preview mode to inspect impact without executing.",annotations:{readOnlyHint:false,destructiveHint:true,idempotentHint:false,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS,execution:EXECUTION},additionalProperties:false}},
   {name:"retrieval.explain",description:"Explain a bounded retrieval request without executing it or granting authorization.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR},additionalProperties:false}},
-  {name:"retrieval.query",description:"Execute bounded GraphRAG Retrieval IR through the authenticated VibeDB retrieval boundary. Tenant identity is derived from the access token.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}}
+  {name:"retrieval.query",description:"Execute bounded GraphRAG Retrieval IR through the authenticated VibeDB retrieval boundary. Tenant identity is derived from the access token.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
+  {name:"context.explain",description:"Validate and explain an agent Context IR request without executing it. Tenant identity is derived from the authenticated access token.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR},additionalProperties:false}},
 ];
 
 function result(data){return {content:[{type:"text",text:JSON.stringify(data)}]};}
@@ -79,6 +82,7 @@ export async function handleMcpMessage(message){
     else if(name==="graph.mutate")data=await api("/v1/graph/mutations",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{},execution:args.execution??{}})},name);
     else if(name==="retrieval.explain"){ validateRetrievalIR(args.ir); data=await api("/v1/retrieval/explain",{method:"POST",body:JSON.stringify({ir:args.ir})},name); }
     else if(name==="retrieval.query"){ validateRetrievalIR(args.ir); data=await api("/v1/retrieval/query",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{}})},name); }
+    else if(name==="context.explain"){ validateContextIR(args.ir); data=await api("/v1/context/explain",{method:"POST",body:JSON.stringify({ir:args.ir})},name); }
     else return {jsonrpc:"2.0",id,result:error("Unknown tool: "+name)};
     return {jsonrpc:"2.0",id,result:result(data)};
   }catch(e){return {jsonrpc:"2.0",id,result:error(e instanceof Error?e.message:"MCP tool failed")};}
