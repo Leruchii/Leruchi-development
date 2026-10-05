@@ -28,7 +28,16 @@ source_extensions="$(psql "$SOURCE_DATABASE_URL" -Atqc "SELECT string_agg(extnam
 }
 
 source_vector="$(psql "$SOURCE_DATABASE_URL" -Atqc "SELECT count(*) || ':' || min(embedding::text) FROM vibe_meta.extension_probe")"
-source_graph="$(psql "$SOURCE_DATABASE_URL" -Atqc "LOAD 'age'; SET search_path = ag_catalog, \"\\$user\", public; SELECT count(*) FROM ag_catalog.cypher('vibe_stage01', \\$\\$ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p \\$\\$) AS (p ag_catalog.agtype)")"
+source_graph="$(psql "$SOURCE_DATABASE_URL" -Atq <<'SQL'
+LOAD 'age';
+SET search_path = ag_catalog, "$user", public;
+SELECT count(*)
+FROM ag_catalog.cypher(
+  'vibe_stage01',
+  $ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p $
+) AS (p ag_catalog.agtype);
+SQL
+)"
 source_migrations="$(psql "$SOURCE_DATABASE_URL" -Atqc "SELECT md5(string_agg(version || ':' || checksum, ',' ORDER BY version)) FROM vibe_meta.schema_migrations")"
 
 backup_started="$(date +%s%N)"
@@ -50,7 +59,16 @@ restore_finished="$(date +%s%N)"
 
 target_extensions="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT string_agg(extname, ',' ORDER BY extname) FROM pg_extension WHERE extname IN ('age','vector')")"
 target_vector="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) || ':' || min(embedding::text) FROM vibe_meta.extension_probe")"
-target_graph="$(psql "$TARGET_DATABASE_URL" -Atqc "LOAD 'age'; SET search_path = ag_catalog, \"\\$user\", public; SELECT count(*) FROM ag_catalog.cypher('vibe_stage01', \\$\\$ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p \\$\\$) AS (p ag_catalog.agtype)")"
+target_graph="$(psql "$TARGET_DATABASE_URL" -Atq <<'SQL'
+LOAD 'age';
+SET search_path = ag_catalog, "$user", public;
+SELECT count(*)
+FROM ag_catalog.cypher(
+  'vibe_stage01',
+  $ MATCH (p:Person {name: 'Stage17RecoveryProbe'}) RETURN p $
+) AS (p ag_catalog.agtype);
+SQL
+)"
 target_migrations="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT md5(string_agg(version || ':' || checksum, ',' ORDER BY version)) FROM vibe_meta.schema_migrations")"
 
 [[ "$target_extensions" == "age,vector" ]] || {
