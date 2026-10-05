@@ -980,7 +980,7 @@ PostgreSQL recursive fallback remains explicitly registered and capability-gated
 
 ## Stage 22 — Retrieval-Aware Engine-Neutral Planner
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED.
 
 Stage 22 extends the planner boundary from graph-only execution to vector and hybrid retrieval without creating a second execution/security path.
 
@@ -1012,3 +1012,10 @@ Before validation, prove:
 - planner selection does not bypass trusted ExecutionContext, Schema Catalog, RLS, cost or result limits;
 - hybrid fusion remains deterministic and source identity-safe;
 - Stage 22 CI and the repository regression matrix pass.
+
+Validation evidence:
+- Final candidate `6f094147821b1e2802884fe4bf879f24bb302741` passed all 21 triggered repository workflows.
+- Stage 22 workflow `37314794551` passed.
+- Stage 15 GraphRAG workflow `37314794593` passed, including the live PostgreSQL/AGE/pgvector hybrid database job.
+- Architecture Regression Audit `37314794555` and Stage State Gate `37314794572` passed.
+- The shared `plan` initialization defect was fixed before validation and its regression impact on Stage 15 was explicitly re-exercised.
