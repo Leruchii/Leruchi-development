@@ -26,9 +26,9 @@ sql+=" UNION ALL";
 const branches=[];
 for(let i=0;i<ir.steps.length;i++){if(i>=ir.depth)continue;const step=ir.steps[i], sourceLabel=i===0?ir.root.label:ir.steps[i-1].target.label, sourceMap=mappingFor(graph,sourceLabel), targetMap=mappingFor(graph,step.target.label), edge=edgeMapping(graph,step.edge), edgeTable=qualified(edge,"edge"), sourceId=ident(sourceMap.id_column,"source.id_column"), targetId=ident(targetMap.id_column,"target.id_column"), edgeFrom=ident(edge.from_column,"edge.from_column"), edgeTo=ident(edge.to_column,"edge.to_column"), targetTenant=ident(targetMap.tenant_column??"tenant_id","target.tenant_column");
 const targetTable=qualified(targetMap,"target");
-const make=(condition,targetExpr)=>" SELECT "+(i+1)+", t."+targetId+"::text, "+sqlString(step.target.label)+", w.depth + 1, w.path || ("+sqlString(step.target.label)+" || ':' || t."+targetId+"::text) FROM walk w JOIN "+edgeTable+" e ON "+condition+" JOIN "+targetTable+" t ON t."+targetId+" = "+targetExpr+" WHERE w.step_no = "+i+" AND w.depth < "+ir.depth+" AND t."+targetTenant+" = $vibe_tenant_id AND NOT (("+sqlString(step.target.label)+" || ':' || t."+targetId+"::text) = ANY(w.path))";
-if(step.direction==="out"||step.direction==="both")branches.push(make("e."+edgeFrom+"::text = w.node_id AND e."+edgeTo+" = t."+targetId,"t."+targetId));
-if(step.direction==="in"||step.direction==="both")branches.push(make("e."+edgeTo+"::text = w.node_id AND e."+edgeFrom+" = t."+targetId,"t."+targetId));
+const make=(edgeCondition,joinTarget)=>" SELECT "+(i+1)+", t."+targetId+"::text, "+sqlString(step.target.label)+", w.depth + 1, w.path || ("+sqlString(step.target.label)+" || ':' || t."+targetId+"::text) FROM walk w JOIN "+edgeTable+" e ON "+edgeCondition+" JOIN "+targetTable+" t ON "+joinTarget+" WHERE w.step_no = "+i+" AND w.depth < "+ir.depth+" AND t."+targetTenant+" = current_setting('request.jwt.claims',true)::jsonb ->> 'tenant_id' AND NOT (("+sqlString(step.target.label)+" || ':' || t."+targetId+"::text) = ANY(w.path))";
+if(step.direction==="out"||step.direction==="both")branches.push(make("e."+edgeFrom+"::text = w.node_id","t."+targetId+" = e."+edgeTo));
+if(step.direction==="in"||step.direction==="both")branches.push(make("e."+edgeTo+"::text = w.node_id","t."+targetId+" = e."+edgeFrom));
 }
 if(!branches.length)throw new Error("UNSUPPORTED_QUERY_SHAPE:empty_recursive_path");
 sql+=branches.join(" UNION ALL")+" )";
