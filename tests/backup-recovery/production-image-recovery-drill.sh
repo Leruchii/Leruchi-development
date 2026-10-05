@@ -49,7 +49,7 @@ dump="$(find "$WORK" -name '*.dump' -print -quit)"
 
 # RPO boundary evidence: this commit happens after the dump snapshot and must
 # therefore be absent from the restored recovery point.
-psql "$SOURCE_DATABASE_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO vibe_meta.backup_drill_fixture (tenant_id,payload) VALUES ('tenant-stage17','post-backup-not-restored')" >/dev/null
+psql "$SOURCE_DATABASE_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO vibe_meta.backup_drill_fixture (id,tenant_id,payload) VALUES (2,'tenant-stage17','post-backup-not-restored')" >/dev/null
 
 target_admin_url="${TARGET_DATABASE_URL%/*}/postgres"
 target_db="${TARGET_DATABASE_URL##*/}"
@@ -74,7 +74,7 @@ FROM ag_catalog.cypher(
 SQL
 )"
 target_migrations="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT md5(string_agg(version || ':' || checksum, ',' ORDER BY version)) FROM vibe_meta.schema_migrations")"
-target_pre_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM vibe_meta.backup_drill_fixture WHERE payload = 'stage17-recovery-probe'")"
+target_pre_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM vibe_meta.backup_drill_fixture WHERE payload = 'recovery-proof'")"
 target_post_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM vibe_meta.backup_drill_fixture WHERE payload = 'post-backup-not-restored'")"
 
 [[ "$target_extensions" == "age,vector" ]] || {
