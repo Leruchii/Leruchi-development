@@ -77,6 +77,7 @@ function requirements(intent){
 export function preflightAgentIntent({intent,context}={}){
   try{assertTrustedExecutionContext(context);}catch{fail("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   validateAgentIntent(intent);
+  if(intent.action==="context"&&(intent.ir.sources??[]).some(source=>source.type==="records"))fail("CONTEXT_SOURCE_UNSUPPORTED","records context intent is not supported in v1");
   const requiredCapabilities=requirements(intent);
   const granted=new Set(context.capabilities??[]);
   const denied=requiredCapabilities.filter(capability=>!granted.has(capability));
@@ -129,11 +130,15 @@ function validateTarget(intent,context,catalog){
   return validation.ok?{ok:true}:{ok:false,reason:"MUTATION_IR_INVALID"};
 }
 
-export function explainAgentIntent({intent,context,catalog}={}){
+export function explainAgentIntent({intent,context,catalog,observability,requestId=context?.requestId??null}={}){
+  const finalize=result=>{
+    try{observability?.emitLog?.({event:"agent.intent.explain",request_id:requestId,action:result.action??intent?.action??null,outcome:result.status,reason_code:result.reason_code,destructive:Boolean(result.destructive)});}catch{}
+    return Object.freeze(result);
+  };
   let policy;
   try{policy=preflightAgentIntent({intent,context});}
   catch(error){
-    return Object.freeze({
+    return finalize({
       version:"v1",
       status:"rejected",
       reason_code:error.code??"INVALID_AGENT_INTENT",
@@ -142,7 +147,7 @@ export function explainAgentIntent({intent,context,catalog}={}){
   }
   const target=validateTarget(intent,context,catalog);
   if(!target.ok){
-    return Object.freeze({
+    return finalize({
       version:"v1",
       status:"rejected",
       reason_code:target.reason,
@@ -155,7 +160,7 @@ export function explainAgentIntent({intent,context,catalog}={}){
       intent_hash:hashAgentIntent(intent)
     });
   }
-  return Object.freeze({
+  return finalize({
     version:"v1",
     status:"ready",
     reason_code:"AGENT_INTENT_READY",
