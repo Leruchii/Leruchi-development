@@ -12,6 +12,7 @@ import {executeGraphQuery,createPgExecutor,ExecutionError} from "../execution-en
 import {executeGraphMutation,createPgMutationExecutor,MutationExecutionError} from "../mutation-execution/index.mjs";
 import {executeRetrieval,RetrievalExecutionError} from "../retrieval-execution/index.mjs";
 import {explainRetrieval} from "../retrieval-explainability/index.mjs";
+import {explainContext} from "../context-ir/explain.mjs";
 import {createAuditEvent,emitAudit} from "../audit/index.mjs";
 import {createObservability} from "../observability/index.mjs";
 
@@ -64,7 +65,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const isGraphRequest=req.method==="POST"&&["/v1/graph/query","/v1/graph/mutations"].includes(req.url);
       const isRetrievalRequest=req.method==="POST"&&req.url==="/v1/retrieval/query";
       const isRetrievalExplain=req.method==="POST"&&req.url==="/v1/retrieval/explain";
-      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
+      const isContextExplain=req.method==="POST"&&req.url==="/v1/context/explain";
+      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
@@ -79,6 +81,11 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
         return json(res,200,catalog);
       }
       const input=await body(req);
+      if(isContextExplain){
+        const explanation=explainContext({ir:input.ir,context});
+        await record(explanation.status==="ready"?"success":"denied",explanation.reason_code);
+        return json(res,200,{...explanation,request_id:requestId});
+      }
       if(isRetrievalExplain){
         const sources=input.ir?.sources??{};
         if(sources.graph&&!hasCapability(context,CAPABILITIES.GRAPH_READ)){
