@@ -85,3 +85,34 @@ test("HTTP transport sends bearer token and Vibe endpoint", async () => {
   assert.equal(calls[0].url, "https://api.example/v1/graph/query");
   assert.equal(calls[0].init.headers.authorization, "Bearer test-token");
 });
+
+
+test("builds canonical engine-neutral retrieval IR through the SDK",async()=>{
+  const transport=transportRecorder();
+  const vibe=createClient({transport});
+  const graph=vibe.graph("vibe_security").query("Account").select(["name"]).limit(5).build().ir;
+  const result=await vibe.retrieval()
+    .graph(graph,{identityField:"id",candidateLimit:5})
+    .vector({catalogRef:"documents.embedding",queryParameter:"embedding",topK:5,identityField:"id"})
+    .fusion({vectorWeight:2,graphWeight:1})
+    .limits({maxResults:5,maxCost:40})
+    .bind("embedding","vector",[1,0,0])
+    .execute();
+  const body=transport.calls[0].body;
+  assert.equal(transport.calls[0].kind,"retrieval");
+  assert.equal(body.ir.version,"v1");
+  assert.equal(body.ir.kind,"retrieval_query");
+  assert.equal(body.ir.sources.graph.query.kind,"graph_query");
+  assert.equal(body.ir.sources.vector.catalog_ref,"documents.embedding");
+  assert.deepEqual(body.parameters,{embedding:[1,0,0]});
+  assert.equal(JSON.stringify(body.ir).includes("tenant_id"),false);
+  assert.equal(JSON.stringify(body.ir).includes("[1,0,0]"),false);
+  assert.equal(result.ok,true);
+});
+
+test("retrieval builder rejects tenant overrides and unsafe vector catalog references",()=>{
+  const vibe=createClient({transport:transportRecorder()});
+  const graph={version:"v1",kind:"graph_query",graph:"g",tenant_id:"attacker",root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.id"}],orderBy:[],limit:1,offset:0,depth:0,parameters:[]};
+  assert.throws(()=>vibe.retrieval().graph(graph),/Tenant identity/);
+  assert.throws(()=>vibe.retrieval().vector({catalogRef:"docs;DROP"}),/safe catalog reference/);
+});
