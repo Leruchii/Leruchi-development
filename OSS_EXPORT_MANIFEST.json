@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "purpose": "Explicit public OSS export allowlist for Fikunmii/vibeDB",
+  "include": [
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "docs/**",
+    "packages/**",
+    "apps/studio/**",
+    "infra/**",
+    "tests/**",
+    "package.json",
+    "package-lock.json",
+    "docker-compose.yml",
+    "scripts/public-*.mjs"
+  ],
+  "exclude": [
+    ".agents/**",
+    ".claude/**",
+    ".github/workflows/**",
+    "AGENTS.md",
+    "BUILD_PLAN.md",
+    "BUILD_STATE.md",
+    "NORTH_STAR.md",
+    "OSS_BOUNDARY.md",
+    "knowledge/**",
+    "prompts/**",
+    "scripts/audit-oss-boundary.mjs"
+  ],
+  "rule": "Only paths matched by include may be exported. Exclusions are defense-in-depth, not the primary boundary."
+}
