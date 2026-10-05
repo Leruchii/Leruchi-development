@@ -4,7 +4,7 @@ function ident(v,l){if(typeof v!=="string"||!IDENT.test(v))throw new Error("INVA
 function field(v){if(typeof v!=="string"||!FIELD.test(v))throw new Error("INVALID_FIELD");return v;}
 function qualified(s,l){if(!s||typeof s!=="object")throw new Error("MISSING_RELATIONAL_MAPPING:"+l);return ident(s.schema,l+".schema")+"."+ident(s.table,l+".table");}
 function sqlString(v){return "'"+v.replaceAll("'","''")+"'";}
-function parameter(v,b,s){if(v&&typeof v==="object"&&!Array.isArray(v)&&Object.hasOwn(v,"param")){ident(v.param,"parameter");return "$"+v.param;}const n="__vibe_literal_"+s.i++;b[n]=v;return "$"+n;}
+function parameter(v,b,s){if(v&&typeof v==="object"&&!Array.isArray(v)&&Object.hasOwn(v,"param")){ident(v.param,"parameter");return "($1::jsonb ->> "+sqlString(v.param)+")";}const n="__vibe_literal_"+s.i++;b[n]=v;return "($1::jsonb ->> "+sqlString(n)+")";}
 function mappingFor(g,label){const m=g?.relational?.labels?.[label];if(!m)throw new Error("MISSING_RELATIONAL_MAPPING:"+label);return m;}
 function edgeMapping(g,edge){const m=g?.relational?.edges?.[edge];if(!m)throw new Error("MISSING_RELATIONAL_EDGE_MAPPING:"+edge);return m;}
 function filterSql(f,allowed,targetAlias,b,s){const raw=field(f.field), parts=raw.split(".");const a=parts.length===2?parts[0]:targetAlias,c=parts.length===2?parts[1]:parts[0];if(!allowed.has(a))throw new Error("UNSUPPORTED_FILTER_FIELD:"+a);if(f.op==="is_null")return a+"."+ident(c,"filter.column")+" IS NULL";const ops={eq:"=",neq:"<>",gt:">",gte:">=",lt:"<",lte:"<=",in:"IN"};if(!ops[f.op])throw new Error("UNSUPPORTED_FILTER:"+f.op);return a+"."+ident(c,"filter.column")+" "+ops[f.op]+" "+parameter(f.value,b,s);}
@@ -14,10 +14,11 @@ if(!ir||ir.version!=="v1"||ir.kind!=="graph_query")throw new Error("INVALID_QUER
 if(!Array.isArray(ir.steps)||ir.steps.length===0)throw new Error("UNSUPPORTED_QUERY_SHAPE:steps_required");
 if(!Number.isInteger(ir.depth)||ir.depth<0||ir.depth>ir.steps.length)throw new Error("UNSUPPORTED_QUERY_SHAPE:depth_exceeds_steps");
 const graph=catalog?.graphs?.[ir.graph];if(!graph)throw new Error("UNKNOWN_GRAPH:"+ir.graph);
+if(ir.extensions&&Object.keys(ir.extensions).length)throw new Error("UNSUPPORTED_EXTENSION");
 const rootMap=mappingFor(graph,ir.root.label), bindings={}, state={i:0}, rootTable=qualified(rootMap,"root"), rootId=ident(rootMap.id_column,"root.id_column"), rootTenant=ident(rootMap.tenant_column??"tenant_id","root.tenant_column");
 const allowed=new Set([ir.root.alias,...ir.steps.map(x=>x.target.alias)]);
 const rootFilters=ir.filters.filter(f=>field(f.field).split(".")[0]===ir.root.alias);
-const seed=["v."+rootTenant+" = $vibe_tenant_id"];
+const seed=["v."+rootTenant+" = current_setting('request.jwt.claims',true)::jsonb ->> 'tenant_id'"];
 for(const f of rootFilters)seed.push(filterSql(f,allowed,ir.root.alias,bindings,state));
 let sql="WITH RECURSIVE walk(step_no, node_id, node_label, depth, path) AS (";
 sql+=" SELECT 0, v."+rootId+"::text, "+sqlString(ir.root.label)+", 0, ARRAY["+sqlString(ir.root.label)+" || ':' || v."+rootId+"::text] FROM "+rootTable+" v WHERE "+seed.join(" AND ");
