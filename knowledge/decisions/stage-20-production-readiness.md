@@ -1,56 +1,44 @@
 # Stage 20 — Production Readiness
 
-Status: IN_PROGRESS.
+Status: VALIDATED.
 
 ## Purpose
 
-Stage 20 is the final OSS production-readiness gate. It does not reimplement earlier stages; it converts their evidence into a release-grade contract and closes operational gaps that were intentionally deferred while product boundaries were still moving.
+Stage 20 is the final currently defined OSS production-readiness gate. It converts the accumulated Stage 00–17 evidence into a release-grade operational contract without creating parallel security or execution boundaries.
 
 Stages 18 (Vibe Cloud Control Plane) and 19 (Billing + Metering) remain deferred and private/product-specific. Their hosted concerns must not leak into the OSS runtime.
 
-## Existing validated evidence
+## Validated evidence
 
-Already covered by executable repository evidence:
-- security and cross-tenant isolation;
-- trusted authorization/capability boundaries;
-- secure query and mutation execution;
-- GraphRAG and MCP tenant isolation;
-- observability redaction, bounded metrics and traces;
-- backup integrity, fresh/replace restore modes and AGE/pgvector recovery;
-- migration ledger and forward migration runner;
-- Graph Studio live tenant/render evidence.
+- exact dependency/version policy is executable;
+- migration sequencing, fail-fast behavior, timeouts and migrator-only guards are enforced;
+- migration SHA-256 checksums are recorded and checksum drift fails closed;
+- a supported prior-schema → current upgrade drill preserves prior data;
+- migration reruns are idempotent;
+- bounded database pool policy is explicit;
+- 32 concurrent database tasks are exercised through a reference pool capped at 4 connections;
+- operations, testing and unknowns documentation were reconciled;
+- production-readiness runbook procedures are durable;
+- corrected full repository product/architecture/state matrix is green.
 
-Stage 20 must reuse these proofs rather than creating parallel boundaries.
+## Validation record
 
-## Gaps identified at Stage 20 entry
+Validated on commit `139966a5a4a6a432d00a1924c967dabb969b3908`.
 
-The initial audit found production-readiness work that is not yet fully evidenced:
-- dependency/version policy was implicit rather than executable;
-- upgrade strategy lacks a dedicated from-older-schema-to-current drill;
-- capacity/concurrency behavior has no explicit gate or supported operating envelope;
-- operations and testing knowledge are stale from the Stage 08 checkpoint;
-- the unknowns ledger contains items resolved by later stages and must be reconciled;
-- incident/operations readiness and release/upgrade documentation require a durable runbook.
+Passed evidence:
+- Stage 20 workflow `37297799623`;
+- Stage 11 CLI `37297799604`;
+- Stage 12 Graph Realtime `37297799687`;
+- Stage 15 GraphRAG `37297799696`;
+- Architecture Regression Audit `37297799715`;
+- Stage State Gate `37297799678`.
 
-## First executable gate
+During validation, a real checksum persistence defect was found in the migration runner: psql `-v` variables were not substituted inside the `-c` SQL statement as assumed. The fix uses strictly validated SQL literals for checksum and migration identifiers. The corrected matrix passed.
 
-`scripts/production-readiness-audit.mjs` and its tests enforce:
-- exact package dependency versions (local `file:` links are allowed);
-- no floating `latest`, wildcard, caret or tilde dependency ranges;
-- contiguous numbered migrations;
-- every migration fails fast and declares lock/statement timeouts;
-- every migration guards the `vibe_migrator` execution role;
-- every migration contains its ledger identifier;
-- the production database image uses versioned PostgreSQL/AGE and pgvector contracts.
+## Production boundary
 
-This policy is intentionally narrow and deterministic. It is a foundation, not the full Stage 20 exit gate.
+This stage does not claim universal capacity, hosted SLA, regional recovery, commercial RPO/RTO, billing, metering, or cloud-control-plane guarantees. Those remain environment-specific or deferred to Stages 18 and 19.
 
-## Remaining exit work
+## Next-stage rule
 
-Before Stage 20 can be VALIDATED:
-1. add an executable upgrade/migration compatibility drill from a prior supported schema state to current;
-2. add concurrency/capacity evidence for the database/API execution path and document the supported reference envelope;
-3. reconcile operations/testing/unknowns documentation with Stages 09–17;
-4. document incident, upgrade, rollback/recovery and dependency-update procedures;
-5. run the full repository regression matrix and fix any real failures;
-6. explicitly document any production claims that remain environment- or cloud-specific instead of inventing guarantees.
+No Stage 21 is currently defined in `BUILD_PLAN.md`. Future implementation must begin only after an explicit product/architecture decision adds the next canonical stage.
