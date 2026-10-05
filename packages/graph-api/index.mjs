@@ -101,7 +101,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const client=await pool.connect();
       try{
         if(req.url==="/v1/graph/query"){
-          const {compile}=resolveQueryCompiler(input.ir,catalog,{engines:queryEngines,preferred:preferredQueryEngines,observability});
+          const compile=queryIr=>resolveQueryCompiler(queryIr,catalog,{engines:queryEngines,preferred:preferredQueryEngines,observability}).compile(queryIr);
           const result=await executeGraphQuery({ir:input.ir,context,catalog,requestParameters:input.parameters??{},validate:validateQuery,compile,db:createPgExecutor(client,context),requestId,observability});
           await record("success");
           return json(res,200,result);
