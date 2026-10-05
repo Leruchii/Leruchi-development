@@ -649,13 +649,13 @@ Security/convergence invariants:
 - plan metadata remains bounded and does not expose tenant identifiers, catalog references, embeddings, raw parameters, SQL or Cypher.
 
 Validation status:
-- Focused tests have been added but have not yet been executed on this branch by repository CI.
-- Full repository regression has not yet been triggered for the Stage 23 candidate.
+- Stage 23 workflow run `37322100605` executed 35 focused tests: 34 passed; the only failure was CI setup because the workflow did not install the repository `pg` dependency before importing Graph API. The same run also exposed a malformed workflow-step encoding during the first CI correction pass; both CI defects were fixed without weakening product tests.
+- A subsequent workflow trigger is queued on the corrected branch; full repository regression is also queued and must remain the merge gate.
 - Stage 23 must remain IN_PROGRESS until focused CI, architecture/state gates and the final repository matrix are green.
 
 Exact next action:
-1. inspect the Stage 23 branch head and run the focused workflow;
-2. fix any failure at the shared contract rather than weakening tests;
-3. run the complete relevant regression matrix;
+1. wait for and inspect the corrected Stage 23 focused workflow;
+2. fix any product/test failure at the shared contract rather than weakening tests;
+3. run/inspect the complete relevant regression matrix;
 4. merge only after all required evidence passes;
 5. update this checkpoint to VALIDATED with the exact final head and workflow evidence.
