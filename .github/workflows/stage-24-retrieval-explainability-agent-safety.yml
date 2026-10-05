@@ -1,5 +1,7 @@
 name: Stage 24 Retrieval Explainability and Agent Safety
 
+# Stage 24 focused validation gate
+
 on:
   pull_request:
     paths:
