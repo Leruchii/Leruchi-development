@@ -1084,7 +1084,7 @@ Do not add autonomous authorization, a second executor, client-controlled tenant
 
 # Stage 26A — OSS Product Boundary & Repository Separation
 
-**Status:** IN PROGRESS — repository separation established; export contract being hardened.
+**Status:** VALIDATED — PR #53 merged as `337fe0dd8da74863378dd30c9e3784b2200eb144`; exact-head and post-merge repository matrices passed.
 
 Objectives:
 1. Keep internal engineering control material private.
@@ -1109,7 +1109,7 @@ The next implementation stage after this boundary is Stage 26B — Agent-Native 
 
 # Stage 26B — Agent-Native Context IR
 
-**Status:** IMPLEMENTED — NOT YET VALIDATED.
+**Status:** VALIDATED — PR #54 merged as `5afe3a9cd3154c7812161bf5c8167f5a702f53d4`; candidate head passed 25/25 workflows and post-merge main passed 22/22.
 
 Context IR is the engine-neutral contract for requesting bounded, authorization-aware context without exposing provider-specific execution details to agents.
 
@@ -1142,3 +1142,41 @@ Exit gate:
 6. BUILD_STATE and architecture decision record are updated with exact validation evidence.
 
 Do not add context execution, autonomous authorization, an LLM planner, provider-specific context contracts or a second execution path until the Context IR contract is validated.
+
+
+# Stage 26C — Context Resolution & Secure Execution Contract
+
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
+
+Purpose: resolve validated Context IR into bounded agent/application context by composing the existing Schema Catalog, Query IR and Retrieval IR execution paths.
+
+Required invariants:
+- trusted ExecutionContext is required;
+- all sources preflight before Schema Catalog/database access;
+- tenant identity and credentials remain server-authoritative;
+- Context IR remains declarative; per-source execution parameters live in the request envelope;
+- query sources reuse Query IR validation, planner/compiler and Secure Execution;
+- retrieval sources reuse Retrieval IR validation/planning/execution;
+- vector context requires `vector:read`, graph/schema/query context requires `graph:read`;
+- aggregate item, byte and parameter-envelope budgets fail closed;
+- no raw SQL/Cypher or physical engine selector is added;
+- `records` remains unsupported until a separate safe record-selection contract is decided.
+
+Implemented:
+- `packages/context-resolution/index.mjs`
+- `POST /v1/context/resolve`
+- SDK `ContextBuilder.resolve()`
+- MCP `context.resolve`
+- Context explanation/resolution capability alignment
+- resolver, SDK, MCP and Graph API convergence tests
+- focused Stage 26C workflow
+
+Exit gate:
+1. final exact-head Stage 26C focused workflow passes;
+2. SDK/MCP/Graph API convergence tests pass;
+3. Architecture Regression Audit and Stage State Gate pass;
+4. all required historical regressions pass on the PR head;
+5. merge only after the exact head is green;
+6. post-merge main matrix establishes a clean baseline before Stage 27.
+
+Do not introduce autonomous authorization, an LLM planner, write-capable Context Resolution, or a second query/retrieval executor in this stage.

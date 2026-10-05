@@ -135,3 +135,49 @@ test("Graph API retrieval explanation is bounded and non-executing",async()=>{
     assert.equal(JSON.stringify(body).includes("tenant_a"),false);
   }finally{await api.close();}
 });
+
+
+test("Graph API context resolution reuses authenticated graph execution path",async()=>{
+  const queries=[];
+  const pool={connect:async()=>({query:async(statement)=>{queries.push(statement);return {rows:[]};},release(){}})};
+  const catalog={graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[]}}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>catalog,port:0});
+  const address=await api.listen();
+  try{
+    const queryIr={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:5,offset:0,depth:0,parameters:[]};
+    const ir={version:"v1",kind:"context_request",purpose:"Resolve bounded graph context",sources:[{type:"query",ir:queryIr,limit:2}],budget:{max_items:2,max_bytes:65536},freshness:{mode:"current"}};
+    const res=await fetch(`http://127.0.0.1:${address.port}/v1/context/resolve`,{
+      method:"POST",
+      headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir,parameters:[{}]})
+    });
+    assert.equal(res.status,200);
+    const body=await res.json();
+    assert.equal(body.execution,"resolved");
+    assert.equal(body.sources[0].type,"query");
+    assert.equal(body.sources[0].data.version,"v1");
+    assert.ok(queries.length>=4);
+  }finally{await api.close();}
+});
+
+test("Graph API context resolution denies before catalog/data-plane access",async()=>{
+  let catalogCalls=0;
+  let dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return {query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return {graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const retrieval={version:"v1",kind:"retrieval_query",sources:{vector:{catalog_ref:"docs.embedding",query_parameter:"embedding",top_k:1,identity_field:"id"}},fusion:{strategy:"weighted_rrf"},limits:{max_results:1,max_cost:10}};
+    const ir={version:"v1",kind:"context_request",purpose:"Resolve vector context",sources:[{type:"retrieval",ir:retrieval}],budget:{max_items:1,max_bytes:4096},freshness:{mode:"current"}};
+    const res=await fetch(`http://127.0.0.1:${address.port}/v1/context/resolve`,{
+      method:"POST",
+      headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir,parameters:[{embedding:[1,0,0]}]})
+    });
+    assert.equal(res.status,403);
+    const body=await res.json();
+    assert.equal(body.code,"CONTEXT_CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});
