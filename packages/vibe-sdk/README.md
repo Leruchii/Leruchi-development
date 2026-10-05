@@ -47,3 +47,25 @@ await query.execute();
 ```
 
 The default HTTP transport uses `POST /v1/graph/query` and `POST /v1/graph/mutations`. These routes are an SDK transport contract; a production server implementation is validated by the API/Graph API stage, not by this SDK stage.
+
+
+## Retrieval
+
+The SDK exposes the same engine-neutral Retrieval IR used by the Graph API and MCP:
+
+```js
+const result = await vibe.retrieval()
+  .graph(query.build().ir, { identityField: "id", candidateLimit: 50 })
+  .vector({
+    catalogRef: "documents.embedding",
+    queryParameter: "embedding",
+    topK: 20,
+    identityField: "id"
+  })
+  .fusion({ vectorWeight: 1, graphWeight: 1 })
+  .limits({ maxResults: 20, maxCost: 40 })
+  .bind("embedding", "vector", [0.1, 0.2, 0.3])
+  .execute();
+```
+
+The SDK validates the Retrieval IR shape before transport, but the server remains authoritative for capabilities, tenant identity, Schema Catalog access, RLS, cost controls, planning and execution. Retrieval results expose only bounded plan metadata; physical SQL/Cypher, tenant identifiers, embeddings and credentials are not part of the public contract.
