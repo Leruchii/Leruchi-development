@@ -1040,7 +1040,7 @@ Do not introduce a new database, a second retrieval execution path, or a public 
 
 ## Stage 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary
 
-**Status:** READY_TO_DEFINE.
+**Status:** IN_PROGRESS.
 
 Stage 23 makes retrieval consumable through the same developer and agent contract. The next architectural step should not add another retrieval engine or execution path. It should make retrieval behavior inspectable, testable and safe for production AI-agent use.
 
@@ -1052,5 +1052,14 @@ Target direction:
 - adversarial agent tests for prompt-driven capability escalation, cross-tenant inference, metadata leakage and unbounded retrieval requests;
 - observability correlation between request ID, retrieval mode, planner decision and execution outcome without sensitive payload capture;
 - preserve one validation → planner → secure execution path.
+
+Implemented direction:
+- non-executing `/v1/retrieval/explain` diagnostic boundary over the same Retrieval IR and planner;
+- SDK, CLI and MCP explanation surfaces converge on that boundary;
+- bounded reason codes, mode, limits and canonical IR hash only;
+- retrieval execution emits sanitized request correlation with mode/planner outcome;
+- adversarial tests prevent capability escalation and diagnostic metadata leakage.
+
+Validation remains required before this stage can be marked VALIDATED.
 
 Do not introduce an LLM planner, autonomous authorization, a second retrieval executor, or a public physical-engine contract.
