@@ -36,6 +36,26 @@ test("executes graph and vector branches under one trusted retrieval contract",a
   assert.deepEqual(calls.map(x=>x[0]),["graph","vector"]);
 });
 
+test("selects the capability-registered recursive compiler when explicitly preferred",async()=>{
+  const calls=[];
+  let selected;
+  const result=await executeRetrieval({
+    ir:{...ir,sources:{...ir.sources,vector:undefined}},
+    context,catalog:{},requestParameters:{},db:{},
+    ...deps(calls),
+    compile:()=>{selected="age";return {};},
+    retrievalCapabilities:{
+      "apache-age":{available:true,features:["graph_query"]},
+      "postgresql-recursive":{available:true,features:["graph_query"]},
+      "postgresql-vector":{available:false,features:[]}
+    },
+    preferredGraphEngines:["postgresql-recursive"]
+  });
+  assert.equal(result.plan.graph,"postgresql-recursive");
+  assert.equal(selected,undefined);
+  assert.deepEqual(calls.map(x=>x[0]),["graph"]);
+});
+
 test("rejects combined cost before any branch executes",async()=>{
   const calls=[];
   const expensive={...ir,limits:{max_results:2,max_cost:6}};
