@@ -779,7 +779,11 @@ Final gates:
 - capacity/concurrency testing
 - dependency/version policy
 
-**Status:** NOT STARTED.
+**Status:** IN_PROGRESS.
+
+Stage 20 starts from the validated Stage 00–17 evidence and must not duplicate security or execution boundaries. The initial production-readiness audit adds executable dependency/version and migration-policy enforcement. Remaining open gates are a supported-schema upgrade drill, capacity/concurrency evidence, current operations/testing/unknowns documentation, durable incident/upgrade procedures, and a final repository-wide regression pass.
+
+Stages 18 and 19 remain DEFERRED and do not block the OSS production-readiness work; hosted/cloud SLA and billing semantics remain separated from the runtime contract.
 
 ---
 
