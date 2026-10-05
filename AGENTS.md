@@ -84,6 +84,14 @@ VibeDB is explicitly a two-way platform for AI agents and a first-class develope
 - Engine selection is an implementation concern. A developer or agent expresses intent once; VibeDB chooses a safe execution target behind the contract.
 - Every new agent capability must be evaluated for both developer ergonomics and safe autonomous operation before it becomes a product contract.
 
+## 3C. MCP tool contract safety
+
+Stage 25 establishes a deterministic MCP admission boundary:
+- MCP tool annotations describe read-only/destructive/idempotent behavior for agent planning; annotations never grant authorization.
+- Agent tool arguments are bounded before transport; oversized or excessively nested payloads must be rejected before reaching the data plane.
+- Tenant identity, capabilities, mutation approval and execution remain server-authoritative.
+- Do not turn MCP annotations into an autonomous authorization engine or create an MCP-specific executor.
+
 ## 4. Schema Catalog
 
 The Schema Catalog is the authoritative source for relational, graph and vector metadata consumed by:
