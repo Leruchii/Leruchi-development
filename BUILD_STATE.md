@@ -7,8 +7,8 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 22 — Retrieval-Aware Engine-Neutral Planner
-- Current status: IN_PROGRESS
-- Last completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
+- Current status: VALIDATED
+- Last completed stage: 22 — Retrieval-Aware Engine-Neutral Planner
 - Previous completed stage: 20 — Production Readiness
 - Last validated commit: `c7422314cf36ea1d58cbcac1d5686b6802f67824` (Stage 21 final merge to main; final-head regression and architecture/state gates passed)
 - Default branch: `main`
@@ -19,9 +19,9 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
 - Architecture Regression Audit and Stage State Gate passed on the final head.
 - Stage 22 branch head: `e92da9f381ed275ff2e6051d27fc32c003bb9209`.
-- Stage 22 PR #47 remains open pending final CI validation.
+- Stage 22 PR #47 is ready to merge after the final green validation matrix.
 - Stage 22 had a real shared execution defect (`plan` referenced before initialization) that caused both the new Stage 22 tests and the existing Stage 15 hybrid integration to fail; this was fixed in the current branch head.
-- Next exact action: validate the corrected head with Stage 22 plus the repository regression matrix; do not merge until the corrected head is green.
+- Next exact action: merge PR #47, then advance the main-branch checkpoint to the next unfinished roadmap stage.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
@@ -618,9 +618,11 @@ Validation finding fixed:
 - this was not isolated to the new tests: the same defect broke the existing Stage 15 live hybrid retrieval workflow;
 - the corrected implementation initializes and validates the retrieval plan immediately after Retrieval IR validation, before any execution branch.
 
-Exit gate remaining:
-1. corrected Stage 22 workflow passes;
-2. existing Stage 15 hybrid and all relevant regression workflows pass on the corrected head;
-3. Architecture Regression Audit and Stage State Gate pass;
-4. docs are reconciled to the validated evidence;
-5. PR #47 merges only after the corrected exact head is green.
+Exit gate evidence:
+1. Stage 22 Retrieval Planner workflow `37314794551` passed;
+2. Stage 15 GraphRAG workflow `37314794593` passed, including the live vector-database hybrid job;
+3. all 21 repository workflows on final candidate `6f094147821b1e2802884fe4bf879f24bb302741` passed;
+4. Architecture Regression Audit `37314794555` passed;
+5. Stage State Gate `37314794572` passed;
+6. the corrected shared retrieval execution path was exercised by both Stage 22 and Stage 15 tests;
+7. documentation checkpoints were reconciled.
