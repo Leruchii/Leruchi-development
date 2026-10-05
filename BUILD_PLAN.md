@@ -1023,7 +1023,7 @@ Validation evidence:
 
 ## Stage 23 — Unified Retrieval Developer/Agent Surface
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED.
 
 Stage 23 is the next OSS stage. Its purpose is to make the validated Stage 22 retrieval planner a first-class developer and agent capability without exposing physical engine details or creating another execution/security boundary.
 
@@ -1036,3 +1036,21 @@ Required direction:
 - add adversarial tests for tenant override, capability misuse, unsafe identifiers and plan-metadata leakage.
 
 Do not introduce a new database, a second retrieval execution path, or a public physical-engine contract.
+
+
+## Stage 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary
+
+**Status:** READY_TO_DEFINE.
+
+Stage 23 makes retrieval consumable through the same developer and agent contract. The next architectural step should not add another retrieval engine or execution path. It should make retrieval behavior inspectable, testable and safe for production AI-agent use.
+
+Target direction:
+- bounded retrieval explain/evaluation semantics over the existing Retrieval IR and Stage 22 planner;
+- deterministic reason codes for validation, capability denial, planner selection and guardrail rejection;
+- agent-safe diagnostics that never expose SQL/Cypher, tenant identifiers, embeddings, raw parameters, credentials or unrestricted catalog internals;
+- golden evaluation fixtures proving SDK, CLI and MCP produce equivalent retrieval intent and bounded outcomes;
+- adversarial agent tests for prompt-driven capability escalation, cross-tenant inference, metadata leakage and unbounded retrieval requests;
+- observability correlation between request ID, retrieval mode, planner decision and execution outcome without sensitive payload capture;
+- preserve one validation → planner → secure execution path.
+
+Do not introduce an LLM planner, autonomous authorization, a second retrieval executor, or a public physical-engine contract.
