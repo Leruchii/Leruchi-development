@@ -4,7 +4,7 @@ import {handleMcpMessage,MCP_TOOLS} from "../../packages/mcp-server/index.mjs";
 
 test("MCP advertises the canonical agent-native graph tools",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/list"});
-  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query"]);
+  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query","context.explain"]);
 });
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
@@ -98,4 +98,24 @@ test("MCP rejects excessively nested agent arguments before the data plane",asyn
   const response=await handleMcpMessage({jsonrpc:"2.0",id:8,method:"tools/call",params:{name:"graph.query",arguments:{ir:nested}}});
   assert.equal(response.result.isError,true);
   assert.match(response.result.content[0].text,/bounded nesting depth/);
+});
+
+test("MCP context.explain is diagnostic and validates Context IR before transport", async () => {
+  const contextTool = MCP_TOOLS.find((tool) => tool.name === "context.explain");
+  assert.equal(contextTool?.annotations.readOnlyHint, true);
+  assert.equal(contextTool?.annotations.destructiveHint, false);
+  assert.deepEqual(Object.keys(contextTool.inputSchema.properties), ["ir"]);
+  let calls = 0;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => { calls += 1; return new Response(JSON.stringify({ ok: true }), { status: 200 }); };
+  try {
+    const response = await handleMcpMessage({
+      jsonrpc: "2.0", id: "context-invalid", method: "tools/call",
+      params: { name: "context.explain", arguments: { ir: { version: "v1", kind: "context_request", tenant_id: "other" } } }
+    });
+    assert.equal(response.result.isError, true);
+    assert.equal(calls, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
