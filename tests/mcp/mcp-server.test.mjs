@@ -4,7 +4,7 @@ import {handleMcpMessage,MCP_TOOLS} from "../../packages/mcp-server/index.mjs";
 
 test("MCP advertises the canonical agent-native graph tools",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/list"});
-  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.query"]);
+  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query"]);
 });
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
@@ -61,4 +61,13 @@ test("MCP retrieval rejects tenant overrides inside graph Query IR",async()=>{
   }});
   assert.equal(response.result.isError,true);
   assert.match(response.result.content[0].text,/tenant override|tenant identity/i);
+});
+
+
+test("MCP retrieval explanation is non-executing and closed",()=>{
+  const tool=MCP_TOOLS.find(tool=>tool.name==="retrieval.explain");
+  assert.ok(tool);
+  assert.equal(tool.inputSchema.additionalProperties,false);
+  assert.deepEqual(tool.inputSchema.required,["ir"]);
+  assert.equal(Object.hasOwn(tool.inputSchema.properties,"parameters"),false);
 });
