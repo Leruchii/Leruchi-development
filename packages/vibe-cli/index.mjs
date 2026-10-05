@@ -131,7 +131,8 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
         identityField:args["vector-identity"]||"id"
       });
       const parameter=args["vector-param"]||"embedding";
-      if(args.embedding!==undefined)builder.bind(parameter,"vector",parseJson(args.embedding,"--embedding"));
+      if(args.embedding===undefined)throw new Error("Missing --embedding for vector retrieval");
+      builder.bind(parameter,"vector",parseJson(args.embedding,"--embedding"));
     }
     if(args["vector-weight"]!==undefined||args["graph-weight"]!==undefined){
       builder.fusion({vectorWeight:args["vector-weight"]===undefined?1:Number(args["vector-weight"]),graphWeight:args["graph-weight"]===undefined?1:Number(args["graph-weight"])});
