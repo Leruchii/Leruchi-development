@@ -14,7 +14,7 @@ manifest="$(find "$WORK" -name '*.manifest.json' -print -quit)"
 dump="$(find "$WORK" -name '*.dump' -print -quit)"
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "TRUNCATE vibe_meta.backup_drill_fixture" >/dev/null
 restore_started="$(date +%s%N)"
-bash "$ROOT/scripts/vibedb-restore.sh" "$dump" "$manifest" >/dev/null
+VIBEDB_RESTORE_MODE=replace bash "$ROOT/scripts/vibedb-restore.sh" "$dump" "$manifest" >/dev/null
 restore_finished="$(date +%s%N)"
 after="$(psql "$DATABASE_URL" -Atqc "SELECT id || ':' || tenant_id || ':' || payload FROM vibe_meta.backup_drill_fixture ORDER BY id")"
 after_migrations="$(psql "$DATABASE_URL" -Atqc "SELECT md5(string_agg(version || ':' || checksum, ',' ORDER BY version)) FROM vibe_meta.schema_migrations")"
