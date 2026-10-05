@@ -68,3 +68,25 @@ test("catalog filters private graph and vector metadata to the verified tenant",
   assert.deepEqual(Object.keys(catalog.vectors).sort(),["shared.embedding","tenant-a.embedding"]);
   assert.equal(catalog.vectors["tenant-b.embedding"],undefined);
 });
+
+test("buildCatalog preserves explicit relational graph mappings for compiler use",()=>{
+  const catalog=buildCatalog([{
+    tenant_id:"",
+    graph_name:"mapped_graph",
+    graph_object_kind:"label",
+    object_name:"Person",
+    from_label:null,
+    to_label:null,
+    properties:{relational:{schema:"vibe_app",table:"people",id_column:"id",tenant_column:"tenant_id"}}
+  },{
+    tenant_id:"",
+    graph_name:"mapped_graph",
+    graph_object_kind:"edge",
+    object_name:"KNOWS",
+    from_label:"Person",
+    to_label:"Person",
+    properties:{relational:{schema:"vibe_app",table:"person_knows",from_column:"from_id",to_column:"to_id"}}
+  }]);
+  assert.deepEqual(catalog.graphs.mapped_graph.relational.labels.Person,{schema:"vibe_app",table:"people",id_column:"id",tenant_column:"tenant_id"});
+  assert.deepEqual(catalog.graphs.mapped_graph.relational.edges.KNOWS,{schema:"vibe_app",table:"person_knows",from_column:"from_id",to_column:"to_id"});
+});
