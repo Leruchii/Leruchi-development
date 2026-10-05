@@ -1,27 +1,3 @@
-import test from "node:test";
-import assert from "node:assert/strict";
-import {executeRetrieval} from "../../packages/retrieval-execution/index.mjs";
-
-const context={trusted:true,tenantId:"tenant_a",role:"authenticated",capabilities:["graph:read","vector:read"],requestId:"r1"};
-const ir={
-  version:"v1",kind:"retrieval_query",
-  sources:{
-    vector:{catalog_ref:"documents.embedding",query_parameter:"embedding",top_k:2,identity_field:"id"},
-    graph:{
-      query:{version:"v1",kind:"graph_query",graph:"security",root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.id",alias:"id"},{field:"n.name",alias:"name"}],limit:2,offset:0,depth:0,parameters:[]},
-      candidate_limit:2,identity_field:"id"
-    }
-  },
-  fusion:{strategy:"weighted_rrf",vector_weight:1,graph_weight:1},
-  limits:{max_results:2,max_cost:40}
-};
-
-function deps(calls){
-  return {
-    validate:()=>({ok:true,errors:[],cost:5}),
-    compile:()=>({}),
-    executeGraph:async args=>{calls.push(["graph",args.requestParameters]);return {columns:["id","name"],rows:[{id:"g1",name:"Graph"}],count:1};},
-    executeVector:async args=>{calls.push(["vector",args.embedding,args.maxCost]);return {columns:["id","content","distance"],rows:[["g1","Vector",0.1]],count:1};}
   };
 }
 
@@ -44,6 +20,7 @@ test("selects the capability-registered recursive compiler when explicitly prefe
     context,catalog:{},requestParameters:{},db:{},
     ...deps(calls),
     compile:()=>{selected="age";return {};},
+    executeGraph:async args=>{args.compile({});calls.push(["graph"]);return {columns:["id"],rows:[{id:"g1"}],count:1};},
     retrievalCapabilities:{
       "apache-age":{available:true,features:["graph_query"]},
       "postgresql-recursive":{available:true,features:["graph_query"]},
