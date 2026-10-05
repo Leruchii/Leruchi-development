@@ -68,4 +68,4 @@ const result = await vibe.retrieval()
   .execute();
 ```
 
-The SDK validates the Retrieval IR shape before transport, but the server remains authoritative for capabilities, tenant identity, Schema Catalog access, RLS, cost controls, planning and execution. Retrieval results expose only bounded plan metadata; physical SQL/Cypher, tenant identifiers, embeddings and credentials are not part of the public contract.
+The SDK validates the Retrieval IR shape before transport, but the server remains authoritative for capabilities, tenant identity, Schema Catalog access, RLS, cost controls, planning and execution. Retrieval results expose only the engine-neutral retrieval mode plus bounded fusion/limit metadata; physical engine names, SQL/Cypher, tenant identifiers, embeddings and credentials are not part of the public contract.
