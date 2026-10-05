@@ -86,7 +86,7 @@ test("CLI retrieval explain sends canonical IR without raw parameters",async()=>
     fusion:{strategy:"weighted_rrf"},limits:{max_results:2,max_cost:20}
   }));
   const seen=[];
-  await run(["retrieval","explain","--ir","retrieval.json"],{
+  await run(["retrieval","explain","--base-url","http://127.0.0.1","--ir","retrieval.json"],{
     cwd,fetchImpl:async(url,options)=>{seen.push({url,body:JSON.parse(options.body)});return new Response(JSON.stringify({status:"ready",mode:"vector"}),{status:200,headers:{"content-type":"application/json"}})},
     stdout:()=>{},stderr:()=>{}
   });
