@@ -1,0 +1,35 @@
+name: Stage 20 Production Readiness
+on:
+  pull_request:
+    paths:
+      - "package.json"
+      - "packages/**/package.json"
+      - "apps/**/package.json"
+      - "infra/migrations/**"
+      - "infra/docker/postgres/Dockerfile"
+      - "scripts/production-readiness-audit.mjs"
+      - "tests/production-readiness/**"
+      - "knowledge/decisions/stage-20-production-readiness.md"
+      - "knowledge/operations.md"
+      - "knowledge/testing.md"
+      - "knowledge/decisions/unknowns-and-contradictions.md"
+      - ".github/workflows/stage-20-production-readiness.yml"
+      - "BUILD_PLAN.md"
+      - "BUILD_STATE.md"
+  push:
+    branches: [main, stage20-production-readiness]
+
+jobs:
+  readiness-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Version, dependency and migration policy audit
+        run: node scripts/production-readiness-audit.mjs
+      - name: Production readiness policy tests
+        run: node --test tests/production-readiness/readiness-audit.test.mjs
+      - name: Architecture regression audit
+        run: node tests/architecture/contract-audit.mjs
