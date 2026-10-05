@@ -7,6 +7,7 @@ import {executeGraphQuery} from "../execution-engine/index.mjs";
 import {executeVectorRetrieval} from "../vector-execution/index.mjs";
 import {normalizeRetrievalRows} from "../retrieval-contract/index.mjs";
 import {fuseWeightedRRF} from "../retrieval-fusion/index.mjs";
+import {planRetrieval, retrievalEngineCapabilities} from "../planner/retrieval.mjs";
 
 export class RetrievalExecutionError extends Error {
   constructor(code,message,details=undefined){super(message);this.name="RetrievalExecutionError";this.code=code;this.details=details;}
@@ -28,7 +29,14 @@ export async function executeRetrieval({
   compile=compileAge,
   executeGraph=executeGraphQuery,
   executeVector=executeVectorRetrieval,
-  observability
+  observability,
+  retrievalCapabilities = retrievalEngineCapabilities({
+    apacheAge: {available: true, features: ["graph_query"]},
+    postgresqlRecursive: {available: false, features: []},
+    postgresqlVector: {available: true, features: ["vector"]}
+  }),
+  preferredGraphEngines,
+  preferredVectorEngines
 }){
   try{assertTrustedExecutionContext(context);}catch{throw new RetrievalExecutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   try{validateRetrievalIR(ir);}catch(error){throw new RetrievalExecutionError(error.code??"INVALID_RETRIEVAL_IR",error.message);}
@@ -43,7 +51,7 @@ export async function executeRetrieval({
   let vectorCost=vector?.top_k??0;
 
   if(graph){
-    const graphValidation=validate(graph.query,context,catalog);
+    if (plan.graph?.engine === "postgresql-recursive" && !preferredGraphEngines?.includes("postgresql-recursive") && retrievalCapabilities["postgresql-recursive"]?.available) { /* explicit capability registration still governs fallback */ }\n    const graphValidation=validate(graph.query,context,catalog);
     if(!graphValidation.ok) throw new RetrievalExecutionError("GRAPH_RETRIEVAL_VALIDATION_FAILED","Graph retrieval validation failed",graphValidation.errors);
     graphCost=graphValidation.cost??0;
     if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
