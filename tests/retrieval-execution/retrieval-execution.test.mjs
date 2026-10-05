@@ -96,7 +96,7 @@ test("retrieval execution correlates request ID and bounded planner outcome with
   const logs=[];
   await executeRetrieval({
     ir:{...ir,sources:{vector:ir.sources.vector}},
-    context,catalog:{},requestParameters:{embedding:[1,0,0]},db:{},...deps([]),
+    context,catalog:{},requestParameters:{embedding:[1,0,0]},db:{},requestId:"r1",...deps([]),
     observability:{observe:()=>{},emitLog:event=>logs.push(event)}
   });
   assert.deepEqual(logs,[{
