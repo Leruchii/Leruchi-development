@@ -71,3 +71,31 @@ test("MCP retrieval explanation is non-executing and closed",()=>{
   assert.deepEqual(tool.inputSchema.required,["ir"]);
   assert.equal(Object.hasOwn(tool.inputSchema.properties,"parameters"),false);
 });
+
+
+test("MCP publishes deterministic safety annotations for every agent tool",()=>{
+  for(const tool of MCP_TOOLS){
+    assert.equal(typeof tool.annotations,"object",tool.name);
+    assert.equal(typeof tool.annotations.readOnlyHint,"boolean",tool.name);
+    assert.equal(typeof tool.annotations.destructiveHint,"boolean",tool.name);
+    assert.equal(typeof tool.annotations.idempotentHint,"boolean",tool.name);
+    assert.equal(tool.annotations.openWorldHint,false,tool.name);
+  }
+  const mutate=MCP_TOOLS.find(tool=>tool.name==="graph.mutate");
+  assert.equal(mutate.annotations.destructiveHint,true);
+  assert.equal(mutate.annotations.readOnlyHint,false);
+});
+
+test("MCP rejects oversized agent arguments before the data plane",async()=>{
+  const response=await handleMcpMessage({jsonrpc:"2.0",id:7,method:"tools/call",params:{name:"graph.query",arguments:{ir:{version:"v1"},padding:"x".repeat(70*1024)}}});
+  assert.equal(response.result.isError,true);
+  assert.match(response.result.content[0].text,/bounded input size/);
+});
+
+test("MCP rejects excessively nested agent arguments before the data plane",async()=>{
+  let nested={value:"ok"};
+  for(let i=0;i<25;i++)nested={value:nested};
+  const response=await handleMcpMessage({jsonrpc:"2.0",id:8,method:"tools/call",params:{name:"graph.query",arguments:{ir:nested}}});
+  assert.equal(response.result.isError,true);
+  assert.match(response.result.content[0].text,/bounded nesting depth/);
+});

@@ -1063,3 +1063,20 @@ Implemented direction:
 Validation remains required before this stage can be marked VALIDATED.
 
 Do not introduce an LLM planner, autonomous authorization, a second retrieval executor, or a public physical-engine contract.
+
+
+## Stage 25 — MCP Agent Tool Contract & Input-Safety Boundary
+
+**Status:** IN_PROGRESS.
+
+Stage 25 hardens the existing MCP gateway as a deterministic agent-facing contract without creating a new authorization or execution path.
+
+Required direction:
+- publish machine-readable read-only/destructive/idempotent safety annotations for every MCP tool;
+- classify tool intent deterministically so agents can reason about safe invocation without receiving physical-engine details;
+- bound serialized tool arguments and nesting depth before any data-plane request;
+- keep authorization, tenant identity, capability enforcement and mutation approval authoritative in the existing Graph API/security path;
+- preserve one validation → planner → secure execution path for retrieval and graph operations;
+- add adversarial tests proving oversized/deep agent input is rejected before transport and tool metadata cannot imply authorization.
+
+Do not add autonomous authorization, a second executor, client-controlled tenant identity, or a physical-engine API.

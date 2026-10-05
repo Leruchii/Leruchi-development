@@ -2,7 +2,7 @@
 
 > **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
 
-Status: DECIDED design / Stage 24 VALIDATED
+Status: DECIDED design / Stage 25 IN_PROGRESS
 
 ## Validated execution path
 
@@ -161,3 +161,14 @@ Developer SDK/CLI and MCP explanation requests converge on the Graph API `/v1/re
 Retrieval execution now emits a sanitized correlation event containing request ID, retrieval mode, planner decision and outcome. Observability excludes tenant identifiers, embeddings, raw parameters, catalog references and physical engine names.
 
 Stage 24 remains unvalidated until focused and repository-wide CI evidence is green.
+
+
+## Stage 25 architecture — MCP Agent Tool Contract & Input Safety
+
+The MCP gateway remains an agent-facing contract over the existing VibeDB API. Stage 25 adds deterministic safety metadata and bounded input admission before transport.
+
+- Every tool publishes read-only, destructive, idempotent and open-world hints for agent planning.
+- Tool annotations describe behavior; they do not grant authorization.
+- Serialized agent arguments are bounded to 64 KiB and 20 levels of nesting before the data plane is contacted.
+- Tenant identity, capabilities, mutation approval and secure execution remain server-authoritative.
+- No new executor, authorization path, physical-engine contract or autonomous policy engine is introduced.

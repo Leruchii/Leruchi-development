@@ -6,23 +6,25 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary
-- Current status: VALIDATED — Stage 24 implementation and full repository regression matrix passed
+- Current stage: 25 — MCP Agent Tool Contract & Input-Safety Boundary
+- Current status: VALIDATED — Stage 25 implementation and repository regression matrix passed
 - Last completed stage: 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary
-- Stage 24 validation head: `3f4b683d63485fbcea3f261dfb4baabdca346b2f` (focused suite + full repository product/regression matrix passed)
+- Stage 24 validation head: `8433af4b4ec22e2611a88613bcb1ddfb14fbcdc9` (final focused suite + full repository product/regression matrix passed before merge)
 - Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
-- Last validated commit: `3f4b683d63485fbcea3f261dfb4baabdca346b2f` (Stage 24 branch head; focused explainability/agent-safety suite and full repository product/regression matrix passed)
+- Last validated commit: `48876c8ae74f1f0bf39142b4ee074db462ad1883` (Stage 24 merge to `main`; final validation head passed the focused suite and full repository product/regression matrix)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `stage24-retrieval-explainability-agent-safety`
-- Current work: Stage 24 complete; retrieval explainability/evaluation and agent-safety boundary is validated over the Retrieval IR + planner + secure execution path
+- Current branch: `stage25-post-stage24-handoff`
+- Current work: Stage 25 MCP agent tool contract and bounded input-safety boundary — validated
 - Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
 - Architecture Regression Audit and Stage State Gate passed on the final head.
 - Stage 22 PR #47 merged to `main` as `c6f0c41025f52ad14bc30be97adeeff4edaf2593`.
 - Final exact Stage 22 candidate `e80f9bc91d6669c88f7f4a1cbad391192a2465` passed the complete 21-workflow matrix; the merge commit is the durable main checkpoint.
 - Stage 22 had a real shared execution defect (`plan` referenced before initialization) that caused both the new Stage 22 tests and the existing Stage 15 hybrid integration to fail; this was fixed in the current branch head.
-- Next exact action: merge PR #49 after final PR-gate confirmation, then verify the resulting `main` head and record the durable Stage 24 merge checkpoint.
+- Stage 25 validation head: `8e72dee470e60f2c1a088397baa77d5d01120fc6` (focused MCP suite, full repository product/regression matrix, Architecture Regression Audit and Stage State Gate passed).
+- Stage 25 focused workflow `37340599434` passed; the complete current-head regression matrix passed.
+- Exact next action: merge PR #50, then verify the resulting `main` head and record the durable Stage 25 merge checkpoint.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
@@ -706,3 +708,23 @@ Implemented on branch `stage24-retrieval-explainability-agent-safety`:
 - Stage 24 focused workflow and durable decision record.
 
 Validation is not yet complete. Do not mark Stage 24 VALIDATED until focused CI, relevant regressions, architecture/state gates and the final repository matrix pass.
+
+
+## Stage 25 — VALIDATED
+
+Stage 25 is validated on the exact implementation head before merge.
+
+Validation evidence:
+- Focused Stage 25 MCP Agent Tool Contract and Input Safety workflow `37340599434` passed.
+- Full repository product/regression workflows for the exact Stage 25 head `8e72dee470e60f2c1a088397baa77d5d01120fc6` passed, including Stage 01–24 coverage where applicable.
+- Architecture Regression Audit `37340599366` passed.
+- Stage State Gate `37340599628` passed.
+
+Validated contract:
+- all MCP tools publish deterministic safety annotations;
+- serialized agent arguments are bounded to 64 KiB and nesting depth to 20 before transport;
+- annotations never grant authorization;
+- tenant identity, capabilities, mutation approval and secure execution remain server-authoritative;
+- no second authorization/execution path or physical-engine API was introduced.
+
+PR #50 is the pending merge checkpoint. Do not treat the merge commit as validated until the post-merge main head is verified against this evidence.

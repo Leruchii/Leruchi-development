@@ -10,13 +10,41 @@ const EXECUTION={type:"object",properties:{
   },required:["id","tenant_id","digest","expires_at"],additionalProperties:false}
 },additionalProperties:false};
 
+const MAX_AGENT_ARGUMENT_BYTES=64*1024;
+const MAX_AGENT_ARGUMENT_DEPTH=20;
+
+export const MCP_TOOL_POLICIES=Object.freeze({
+  "schema.discover":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true}),
+  "graph.query":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true}),
+  "graph.traverse":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true}),
+  "graph.mutate":Object.freeze({operation:"write",readOnly:false,destructive:true,idempotent:false,approval:"server-enforced"}),
+  "retrieval.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
+  "retrieval.query":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true})
+});
+
+function maxDepth(value,depth=0){
+  if(depth>MAX_AGENT_ARGUMENT_DEPTH)return depth;
+  if(value===null||typeof value!=="object")return depth;
+  const values=Array.isArray(value)?value:Object.values(value);
+  let max=depth;
+  for(const child of values)max=Math.max(max,maxDepth(child,depth+1));
+  return max;
+}
+
+function validateAgentArguments(name,args){
+  if(!Object.hasOwn(MCP_TOOL_POLICIES,name))throw new Error("Unknown tool: "+name);
+  const serialized=JSON.stringify(args??{});
+  if(Buffer.byteLength(serialized,"utf8")>MAX_AGENT_ARGUMENT_BYTES)throw new Error("Agent tool arguments exceed the bounded input size");
+  if(maxDepth(args??{})>MAX_AGENT_ARGUMENT_DEPTH)throw new Error("Agent tool arguments exceed the bounded nesting depth");
+}
+
 export const MCP_TOOLS=[
-  {name:"schema.discover",description:"Discover the authenticated tenant-scoped VibeDB Schema Catalog.",inputSchema:{type:"object",properties:{},additionalProperties:false}},
-  {name:"graph.query",description:"Execute a validated VibeDB Query IR read through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
-  {name:"graph.traverse",description:"Execute a bounded structured graph traversal expressed as Query IR. No free-form Cypher.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
-  {name:"graph.mutate",description:"Execute a validated VibeDB Mutation IR write. Destructive operations require an explicit approval artifact; use preview mode to inspect impact without executing.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS,execution:EXECUTION},additionalProperties:false}},
-  {name:"retrieval.explain",description:"Explain a bounded retrieval request without executing it or granting authorization.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR},additionalProperties:false}},
-  {name:"retrieval.query",description:"Execute bounded GraphRAG Retrieval IR through the authenticated VibeDB retrieval boundary. Tenant identity is derived from the access token.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}}
+  {name:"schema.discover",description:"Discover the authenticated tenant-scoped VibeDB Schema Catalog.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",properties:{},additionalProperties:false}},
+  {name:"graph.query",description:"Execute a validated VibeDB Query IR read through the authenticated Graph API.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
+  {name:"graph.traverse",description:"Execute a bounded structured graph traversal expressed as Query IR. No free-form Cypher.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
+  {name:"graph.mutate",description:"Execute a validated VibeDB Mutation IR write. Destructive operations require an explicit approval artifact; use preview mode to inspect impact without executing.",annotations:{readOnlyHint:false,destructiveHint:true,idempotentHint:false,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS,execution:EXECUTION},additionalProperties:false}},
+  {name:"retrieval.explain",description:"Explain a bounded retrieval request without executing it or granting authorization.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR},additionalProperties:false}},
+  {name:"retrieval.query",description:"Execute bounded GraphRAG Retrieval IR through the authenticated VibeDB retrieval boundary. Tenant identity is derived from the access token.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}}
 ];
 
 function result(data){return {content:[{type:"text",text:JSON.stringify(data)}]};}
@@ -43,6 +71,7 @@ export async function handleMcpMessage(message){
     if(message.method!=="tools/call")return {jsonrpc:"2.0",id,error:{code:-32601,message:"Method not found"}};
     const name=message.params?.name;
     const args=message.params?.arguments??{};
+    validateAgentArguments(name,args);
     if(Object.hasOwn(args,"tenant_id")||Object.hasOwn(args,"tenantId"))throw new Error("Tenant identity is derived from the authenticated access token and cannot be supplied as tool input");
     let data;
     if(name==="schema.discover")data=await api("/v1/schema/catalog",{},name);

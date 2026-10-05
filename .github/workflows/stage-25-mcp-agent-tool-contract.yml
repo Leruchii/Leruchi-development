@@ -1,0 +1,24 @@
+name: Stage 25 MCP Agent Tool Contract and Input Safety
+
+on:
+  pull_request:
+    paths:
+      - "packages/mcp-server/**"
+      - "tests/mcp/**"
+      - "BUILD_STATE.md"
+      - "BUILD_PLAN.md"
+      - "knowledge/architecture.md"
+      - ".github/workflows/stage-25-mcp-agent-tool-contract.yml"
+
+jobs:
+  stage-25:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Stage 25 MCP focused suite
+        run: node --test tests/mcp/mcp-server.test.mjs
