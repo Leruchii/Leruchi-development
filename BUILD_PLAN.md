@@ -930,8 +930,10 @@ A coding agent should read the smallest relevant subset after reading the first 
 
 Stage 20 production readiness is validated on the corrected head `139966a5a4a6a432d00a1924c967dabb969b3908`. A migration-runner checksum persistence defect was found during the full matrix and fixed by replacing ineffective psql variable substitution with strictly validated SQL literals. The corrected head passed the full relevant repository matrix and architecture/state gates.
 
-Stages 18 and 19 remain intentionally deferred. No Stage 21 is currently defined in this build plan; the next implementation stage must be established through an explicit product/architecture decision.
+Stages 18 and 19 remain intentionally deferred. Stage 21 is the current validated OSS engine-neutral planner and PostgreSQL fallback foundation.
 ## Stage 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
+
+**Status:** VALIDATED.
 
 Stage 21 makes engine selection explicit while preserving Query IR as the public read contract.
 
@@ -942,18 +944,14 @@ Stage 21 makes engine selection explicit while preserving Query IR as the public
 - Developers remain first-class users through SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio.
 - No client needs to understand AGE, Cypher, recursive CTEs or planner internals.
 
-### 21.2 Planner foundation
+### 21.2 Planner and recursive fallback
 
-Implemented and merged:
+Validated implementation:
 - capability-driven deterministic planner;
 - explicit Apache AGE preferred path;
 - explicit PostgreSQL recursive fallback target;
 - no silent fallback;
-- planner does not authorize, compile or execute.
-
-### 21.3 PostgreSQL recursive compiler — current work
-
-Implemented on branch stage21-agent-developer-contract:
+- planner does not authorize, compile or execute;
 - constrained Query IR to PostgreSQL recursive CTE compiler;
 - explicit Schema Catalog relational mappings;
 - trusted transaction JWT tenant context;
@@ -963,18 +961,18 @@ Implemented on branch stage21-agent-developer-contract:
 - parameterized filters/projections/order expressions;
 - no raw SQL/Cypher input.
 
-Current executable evidence:
+### 21.3 Exit evidence
+
+Final-head evidence:
 - compiler contract tests;
-- live PostgreSQL/RLS traversal, depth, result-limit and parameter-injection test gate.
+- live PostgreSQL/RLS traversal, tenant isolation, depth, result-limit and parameter-injection tests;
+- AGE vs PostgreSQL recursive normalized-result equivalence fixture;
+- Graph API planner integration with validation before planner/compiler selection;
+- bounded planner telemetry containing only engine/reason;
+- full repository regression matrix;
+- Architecture Regression Audit and Stage State Gate green.
 
-Still required before Stage 21 VALIDATED:
-- authoritative Schema Catalog relational graph-to-table mapping contract;
-- AGE vs recursive-CTE normalized-result equivalence fixtures;
-- planner capability registration wired into actual execution;
-- complete cost/depth/result guardrail parity;
-- planner observability with selected engine/fallback reason and no tenant data;
-- full repository regression matrix.
+Final validation head: `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
+Merged to main: `c7422314cf36ea1d58cbcac1d5686b6802f67824`.
 
-Do not expose PostgreSQL recursive fallback as generally available until these gates are green.
-
-
+PostgreSQL recursive fallback remains explicitly registered and capability-gated; Apache AGE remains the default execution path. Stages 18 and 19 remain deferred.
