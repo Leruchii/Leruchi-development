@@ -23,5 +23,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs tests/mcp/mcp-server.test.mjs tests/retrieval-execution/retrieval-execution.test.mjs tests/graph-api/api.test.mjs
+          node-version: 22
+      - name: Install dependencies\n        run: npm install --ignore-scripts\n      - run: node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs tests/mcp/mcp-server.test.mjs tests/retrieval-execution/retrieval-execution.test.mjs tests/graph-api/api.test.mjs
