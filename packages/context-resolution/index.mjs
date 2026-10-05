@@ -20,7 +20,7 @@ function capabilitiesForSource(source){
   return [];
 }
 
-function preflight(ir,context,parameterSets){
+export function preflightContext(ir,context,parameterSets=[]){
   try{assertTrustedExecutionContext(context);}catch{throw new ContextResolutionError("UNTRUSTED_CONTEXT","Trusted execution context is required");}
   try{validateContextIR(ir);}catch(error){throw new ContextResolutionError(error.code??"INVALID_CONTEXT_IR",error.message);}
   if(!Array.isArray(parameterSets))throw new ContextResolutionError("INVALID_CONTEXT_PARAMETERS","parameters must be an array indexed by context source");
@@ -58,7 +58,7 @@ export async function resolveContext({
   executeRetrieval,
   observability
 }={}){
-  preflight(ir,context,parameterSets);
+  preflightContext(ir,context,parameterSets);
   if(typeof resolveSchema!=="function"||typeof executeQuery!=="function"||typeof executeRetrieval!=="function")throw new ContextResolutionError("CONTEXT_RESOLVER_MISCONFIGURED","Context resolver adapters are required");
 
   const started=Date.now();
