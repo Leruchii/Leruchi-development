@@ -13,7 +13,7 @@ import {executeGraphMutation,createPgMutationExecutor,MutationExecutionError} fr
 import {executeRetrieval,RetrievalExecutionError} from "../retrieval-execution/index.mjs";
 import {explainRetrieval} from "../retrieval-explainability/index.mjs";
 import {explainContext} from "../context-ir/explain.mjs";
-import {resolveContext,ContextResolutionError} from "../context-resolution/index.mjs";
+import {resolveContext,preflightContext,ContextResolutionError} from "../context-resolution/index.mjs";
 import {createAuditEvent,emitAudit} from "../audit/index.mjs";
 import {createObservability} from "../observability/index.mjs";
 
@@ -104,6 +104,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       }
       auditInput=input;
       if(isContextResolve){
+        preflightContext(input.ir,context,input.parameters??[]);
         const catalog=await catalogProvider(context);
         const client=await pool.connect();
         try{
