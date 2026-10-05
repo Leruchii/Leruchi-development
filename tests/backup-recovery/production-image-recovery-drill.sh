@@ -47,6 +47,10 @@ backup_finished="$(date +%s%N)"
 manifest="$(find "$WORK" -name '*.manifest.json' -print -quit)"
 dump="$(find "$WORK" -name '*.dump' -print -quit)"
 
+# RPO boundary evidence: this commit happens after the dump snapshot and must
+# therefore be absent from the restored recovery point.
+psql "$SOURCE_DATABASE_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO vibe_meta.backup_drill_fixture (tenant_id,payload) VALUES ('tenant-stage17','post-backup-not-restored')" >/dev/null
+
 target_admin_url="${TARGET_DATABASE_URL%/*}/postgres"
 target_db="${TARGET_DATABASE_URL##*/}"
 
@@ -70,6 +74,8 @@ FROM ag_catalog.cypher(
 SQL
 )"
 target_migrations="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT md5(string_agg(version || ':' || checksum, ',' ORDER BY version)) FROM vibe_meta.schema_migrations")"
+target_pre_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM vibe_meta.backup_drill_fixture WHERE payload = 'stage17-recovery-probe'")"
+target_post_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM vibe_meta.backup_drill_fixture WHERE payload = 'post-backup-not-restored'")"
 
 [[ "$target_extensions" == "age,vector" ]] || {
   echo "PRODUCTION_RECOVERY_DRILL_ERROR: restored extensions missing: $target_extensions" >&2
@@ -86,6 +92,10 @@ target_migrations="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT md5(string_agg(ve
 [[ "$source_migrations" == "$target_migrations" ]] || {
   echo "PRODUCTION_RECOVERY_DRILL_ERROR: migration ledger mismatch" >&2
   exit 24
+}
+[[ "$target_pre_snapshot" == "1" && "$target_post_snapshot" == "0" ]] || {
+  echo "PRODUCTION_RECOVERY_DRILL_ERROR: recovery-point boundary mismatch pre=$target_pre_snapshot post=$target_post_snapshot" >&2
+  exit 25
 }
 
 backup_ms="$(( (backup_finished-backup_started)/1000000 ))"
