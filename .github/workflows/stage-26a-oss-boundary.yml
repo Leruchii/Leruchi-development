@@ -1,0 +1,31 @@
+name: Stage 26A - OSS Product Boundary
+
+on:
+  pull_request:
+    paths:
+      - "NORTH_STAR.md"
+      - "OSS_BOUNDARY.md"
+      - "AGENTS.md"
+      - "BUILD_STATE.md"
+      - "BUILD_PLAN.md"
+      - "knowledge/**"
+      - "packages/**"
+      - "apps/**"
+      - "services/**"
+      - "scripts/**"
+      - ".github/workflows/stage-26a-oss-boundary.yml"
+  push:
+    branches:
+      - main
+      - "stage26-*"
+
+jobs:
+  oss-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Audit public Core boundary
+        run: node scripts/audit-oss-boundary.mjs
