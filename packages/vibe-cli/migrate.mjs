@@ -25,7 +25,9 @@ export function listMigrationFiles(root) {
 }
 
 export function migrationChecksum(file) {
-  return createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+  const filename = typeof file === "string" ? file : file?.file;
+  if (!filename) throw new TypeError("migration file path is required");
+  return createHash("sha256").update(fs.readFileSync(filename)).digest("hex");
 }
 
 function requireMigratorUrl() {
@@ -98,7 +100,7 @@ export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(
   const pending = files.filter(file => !applied.has(file.id));
   for (const migration of pending) {
     await psql(url, ["--single-transaction", "-f", migration.file]);
-    await recordChecksum(url, migration.id, migrationChecksum(migration.file));
+    await recordChecksum(url, migration.id, migrationChecksum(migration));
   }
 
   return {applied: [...applied], migrated: pending.map(file => file.id)};
