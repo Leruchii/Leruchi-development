@@ -10,18 +10,18 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Current status: VALIDATED
 - Last completed stage: 22 — Retrieval-Aware Engine-Neutral Planner
 - Previous completed stage: 20 — Production Readiness
-- Last validated commit: `c7422314cf36ea1d58cbcac1d5686b6802f67824` (Stage 21 final merge to main; final-head regression and architecture/state gates passed)
+- Last validated commit: `c6f0c41025f52ad14bc30be97adeeff4edaf2593` (Stage 22 merge to main; final exact-head regression and architecture/state gates passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `stage22-retrieval-planner`
+- Current branch: `main`
 - Current work: Stage 22 retrieval-aware engine-neutral planning for graph/vector/hybrid retrieval, preserving the durable bidirectional MCP/developer-first contract, Schema Catalog, ExecutionContext, RLS, guardrails and Secure Execution Engine
 - Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
 - Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
 - Architecture Regression Audit and Stage State Gate passed on the final head.
-- Stage 22 branch head: `e92da9f381ed275ff2e6051d27fc32c003bb9209`.
-- Stage 22 PR #47 is ready to merge after the final green validation matrix.
+- Stage 22 PR #47 merged to `main` as `c6f0c41025f52ad14bc30be97adeeff4edaf2593`.
+- Final exact Stage 22 candidate `e80f9bc91d6669c88f7f4a1cbad391192a2465` passed the complete 21-workflow matrix; the merge commit is the durable main checkpoint.
 - Stage 22 had a real shared execution defect (`plan` referenced before initialization) that caused both the new Stage 22 tests and the existing Stage 15 hybrid integration to fail; this was fixed in the current branch head.
-- Next exact action: merge PR #47, then advance the main-branch checkpoint to the next unfinished roadmap stage.
+- Next exact action: begin Stage 23 — Unified Retrieval Developer/Agent Surface, after reviewing the Stage 23 roadmap entry and preserving the Stage 22 planner/security contracts.
 
 The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
