@@ -2,7 +2,7 @@
 
 > **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
 
-Status: DECIDED design / VALIDATED through Stage 22; Stage 23 IN_PROGRESS
+Status: DECIDED design / VALIDATED through Stage 23; Stage 24 READY_TO_DEFINE
 
 ## Validated execution path
 
@@ -59,7 +59,7 @@ The engine is read-only in v1. Mutations are Stage 09.
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Current implementation target: complete Stage 23 — Unified Retrieval Developer/Agent Surface.
+Current implementation target: Stage 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary.
 
 
 ## Durable agent + developer architecture priority
