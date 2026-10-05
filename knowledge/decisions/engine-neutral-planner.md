@@ -2,7 +2,7 @@
 
 ## Status
 
-VALIDATED as the Stage 21 foundation.
+VALIDATED as the Stage 21 foundation and recursive fallback exit gate.
 
 ## Decision
 
@@ -26,7 +26,7 @@ The planner is capability-driven. It does not infer support from package presenc
 
 ## Current scope
 
-The first implementation supports explicit capability registration and deterministic preferred-engine selection. Apache AGE remains the default preferred path. PostgreSQL recursive execution is a declared fallback target, but it is **not** claimed as production-ready until a concrete compiler/data-model mapping and database-backed evidence exist.
+The implementation supports explicit capability registration and deterministic preferred-engine selection. Apache AGE remains the default preferred path. PostgreSQL recursive execution is a capability-gated fallback validated for the constrained supported Query IR subset.
 
 ## Why
 
@@ -44,7 +44,7 @@ This makes the bridge between SQL and graph a real architectural boundary instea
 
 ## Stage 21 recursive compiler progress
 
-Status: IMPLEMENTED — NOT YET VALIDATED.
+Status: VALIDATED.
 
 The first constrained PostgreSQL recursive compiler now exists in packages/compiler-postgresql-recursive. It consumes explicit relational mappings supplied by the Schema Catalog and emits parameterized recursive CTE SQL.
 
@@ -52,7 +52,7 @@ The compiler does not invent physical graph metadata, authorize requests, or exe
 
 Current evidence includes focused compiler tests and a database-backed Stage 21 workflow covering traversal, RLS isolation, depth, result limits and injection-safe parameter handling.
 
-Remaining exit evidence includes AGE-equivalent normalized results, authoritative Schema Catalog mapping, execution/planner integration, full guardrail parity and planner observability.
+Exit evidence is complete: AGE-equivalent normalized results, authoritative Schema Catalog mapping, execution/planner integration, guardrail coverage and bounded planner observability all have executable evidence.
 
 
 ## Planner execution integration
