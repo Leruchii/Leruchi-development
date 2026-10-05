@@ -41,12 +41,11 @@ export function buildCatalog(rows, tenantId = null) {
         visibility: row.tenant_id === "" ? "shared" : "tenant",
         tenantId: row.tenant_id === "" ? null : row.tenant_id,
         labels: [],
-        edges: [],
-        relational: { labels: {}, edges: {} }
+        edges: []
       };
       if (row.graph_object_kind === "label") {
         graph.labels.push(row.object_name);
-        if (row.properties?.relational) graph.relational.labels[row.object_name] = row.properties.relational;
+        if (row.properties?.relational) { graph.relational ??= {labels:{},edges:{}}; graph.relational.labels[row.object_name] = row.properties.relational; }
       } else if (row.graph_object_kind === "edge") {
         graph.edges.push({
           name: row.object_name,
@@ -54,7 +53,7 @@ export function buildCatalog(rows, tenantId = null) {
           to: row.to_label ?? null,
           properties: row.properties ?? {}
         });
-        if (row.properties?.relational) graph.relational.edges[row.object_name] = row.properties.relational;
+        if (row.properties?.relational) { graph.relational ??= {labels:{},edges:{}}; graph.relational.edges[row.object_name] = row.properties.relational; }
       }
     }
     if (row.catalog_ref !== undefined) {
