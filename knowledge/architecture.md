@@ -2,7 +2,7 @@
 
 > **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
 
-Status: DECIDED design / VALIDATED through Stage 23; Stage 24 READY_TO_DEFINE
+Status: DECIDED design / Stage 24 IN_PROGRESS
 
 ## Validated execution path
 
@@ -150,3 +150,14 @@ The SDK builder and CLI do not compile or authorize retrieval. MCP is not privil
 Public retrieval results may expose bounded plan mode/engine metadata and bounded fusion/limit metadata. They must not expose tenant IDs, catalog references, embeddings, raw parameters, SQL, Cypher or credentials.
 
 Stage 23 also corrects retrieval telemetry so the duration metric labels the actual planned mode rather than assuming every request is hybrid.
+
+
+## Stage 24 explainability and agent-safety boundary
+
+Stage 24 adds a non-executing diagnostic layer over the canonical Retrieval IR and Stage 22 deterministic planner. The diagnostic path validates intent, checks the authenticated capability boundary, invokes the same planner, and returns only engine-neutral mode/reason metadata plus a canonical IR hash. It never compiles or executes retrieval.
+
+Developer SDK/CLI and MCP explanation requests converge on the Graph API `/v1/retrieval/explain` route. The existing `/v1/retrieval/query` route remains the only retrieval execution path.
+
+Retrieval execution now emits a sanitized correlation event containing request ID, retrieval mode, planner decision and outcome. Observability excludes tenant identifiers, embeddings, raw parameters, catalog references and physical engine names.
+
+Stage 24 remains unvalidated until focused and repository-wide CI evidence is green.
