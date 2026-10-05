@@ -6,25 +6,30 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 26B — Agent-Native Context IR
+- Current stage: 26C — Context Resolution & Secure Execution Contract
 - Current status: IMPLEMENTED — NOT YET VALIDATED
-- Last validated stage: 26A — OSS Product Boundary & Repository Separation
-- Last validated main commit: 337fe0dd8da74863378dd30c9e3784b2200eb144
-- Active branch: stage26b-agent-context-ir
+- Last validated stage: 26B — Agent-Native Context IR
+- Last validated main commit: 5afe3a9cd3154c7812161bf5c8167f5a702f53d4
+- Stage 26B validation: exact candidate head passed 25/25 workflows; post-merge main passed 22/22 workflows including Stage 13 live Studio.
+- Active branch: stage26c-context-resolution
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
 - Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
 
-Stage 26B implementation checkpoint:
-- Context IR v1 schema and deterministic canonical hash.
-- Server-side Context IR validation rejecting tenant identity and credentials.
-- Bounded source count, result count, byte budget and freshness constraints.
-- Non-executing Context explanation boundary.
-- SDK Context Builder with non-executing explain path.
-- MCP `context.explain` read-only diagnostic tool with bounded agent input.
-- Authenticated Graph API `POST /v1/context/explain`.
-- Focused Stage 26B workflow added.
-- Validation evidence is not complete until focused tests and the required full regression matrix pass.
+Stage 26C implementation checkpoint:
+- preflighted Context Resolution contract in `packages/context-resolution`;
+- trusted ExecutionContext required before any resolution;
+- all sources preflight before Schema Catalog or database access;
+- Context source parameters remain outside Context IR in an execution envelope;
+- query sources reuse Query IR validation, planner/compiler and Secure Execution;
+- retrieval sources reuse Retrieval IR validation/planning/execution;
+- nested vector retrieval requires `vector:read`;
+- aggregate item, byte and parameter-envelope budgets are bounded;
+- `records` resolution fails closed in v1 and explanation reports it unsupported;
+- authenticated `POST /v1/context/resolve`;
+- SDK `ContextBuilder.resolve()`;
+- MCP `context.resolve` read-only tool;
+- focused Stage 26C workflow exists and must pass on the final exact head before merge.
 
 Repository authority:
 - `vibeDB-internal` is authoritative for internal agent instructions, build state/plan, product strategy, internal decisions and development controls.
