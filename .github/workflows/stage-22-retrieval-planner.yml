@@ -19,6 +19,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - run: node --test tests/planner/retrieval-planner.test.mjs tests/retrieval-execution/retrieval-execution.test.mjs
       - run: node --test tests/planner/planner.test.mjs
