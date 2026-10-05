@@ -1065,6 +1065,33 @@ Validation remains required before this stage can be marked VALIDATED.
 Do not introduce an LLM planner, autonomous authorization, a second retrieval executor, or a public physical-engine contract.
 
 
+## Stage 26A — OSS Product & Cloud Boundary Foundation
+
+Status: IN_PROGRESS
+
+Objective:
+- Lock VibeDB's OSS-first strategy before the next major feature.
+- Make the public repository boundary explicit for all future coding agents.
+- Keep developer/agent capabilities portable and prevent Cloud dependencies from leaking into Core.
+- Define the future Cloud/Enterprise repository split without creating those repositories prematurely.
+
+Required work:
+1. Maintain NORTH_STAR.md as the durable product-vision guardrail.
+2. Maintain OSS_BOUNDARY.md as the public/private repository boundary contract.
+3. Maintain knowledge/product-strategy.md and a decision record for the OSS-first strategy.
+4. Update AGENTS.md, BUILD_STATE.md and architecture documentation so future agents classify new components before implementation.
+5. Add executable architecture/repository guardrails that reject obvious Core → Cloud/Enterprise dependency leakage and sensitive commercial/private artifacts.
+6. Verify existing public Core functionality remains independent of Cloud.
+7. Record the OSS readiness gate as a later canonical stage rather than starting Cloud implementation now.
+
+Exit gate:
+- Documentation is consistent and self-contained.
+- Existing Stage 25 evidence remains intact.
+- Boundary guardrail CI passes.
+- No Cloud/Enterprise repository is required for the Core build.
+- BUILD_STATE identifies the exact next action.
+- The next implementation stage is Agent-Native Context IR.
+
 ## Stage 25 — MCP Agent Tool Contract & Input-Safety Boundary
 
 **Status:** VALIDATED.
