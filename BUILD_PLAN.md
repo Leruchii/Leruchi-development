@@ -847,17 +847,25 @@ Conversation history is not required for a correct handoff.
 
 # 11. Current execution checkpoint
 
-See **`BUILD_STATE.md`** for the exact current checkpoint.
+The canonical execution checkpoint is **Stage 20 — Production Readiness**.
 
-Current canonical checkpoint:
+Current state:
+- Stages 00–17: **VALIDATED**.
+- Stages 18 — Vibe Cloud Control Plane and 19 — Billing + Metering: **DEFERRED**.
+- Stage 20: **IN_PROGRESS**.
+- The active branch is `stage20-production-readiness`.
+- The canonical handoff is maintained in `BUILD_STATE.md`; this section intentionally mirrors the current stage rather than pointing back to an obsolete Stage 15 checkpoint.
 
-- Stages 00–14: **VALIDATED**
-- Stage 15: **IN_PROGRESS**
-- Stage 16+: **NOT STARTED / DEFERRED as individually marked**
+Stage 20 exit evidence must include:
+1. executable version/dependency and migration policy;
+2. supported prior-schema → current upgrade evidence;
+3. bounded capacity/concurrency evidence with a clearly non-SLA reference envelope;
+4. current operations/testing/unknowns documentation;
+5. durable incident, upgrade, rollback/recovery and dependency-update runbooks;
+6. final repository-wide regression evidence;
+7. explicit separation of OSS guarantees from cloud-only operational commitments.
 
-The current implementation task is **Stage 15 — GraphRAG**. The first task is to define and test the engine-neutral hybrid retrieval contract before introducing indexes or a new public API.
-
-The first Stage 09 action is not to code blindly. Inspect the existing Query IR, Schema Catalog, AGE compiler, Secure Execution Engine, Stage 02 security model, database fixtures and tests, then design the smallest safe mutation boundary consistent with this architecture.
+Do not mark Stage 20 VALIDATED until every exit gate has executable evidence.
 
 ---
 
