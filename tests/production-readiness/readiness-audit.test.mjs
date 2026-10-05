@@ -5,7 +5,6 @@ import {
   auditPackageManifest,
   auditMigrations,
   auditDatabaseImage,
-  migrationChecksum,
   runReadinessAudit
 } from "../../scripts/production-readiness-audit.mjs";
 import {migrationChecksum as computeMigrationChecksum} from "../../packages/vibe-cli/migrate.mjs";
@@ -58,7 +57,7 @@ test("migration checksum accepts descriptor objects as used by the runner",()=>{
   const file=join(root,"0001-fixture.sql");
   writeFileSync(file,"fixture");
   const descriptor={name:"0001-fixture.sql",id:"0001-fixture",file};
-  assert.equal(computeMigrationChecksum(descriptor),migrationChecksum(file));
+  assert.equal(computeMigrationChecksum(descriptor),computeMigrationChecksum(file));
 });
 
 test("repository satisfies the Stage 20 version and migration policy",()=>{
