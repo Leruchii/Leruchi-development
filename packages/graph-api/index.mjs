@@ -102,4 +102,32 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
   });
   return {server,listen:()=>new Promise(resolve=>server.listen(port,host,()=>resolve(server.address()))),close:()=>new Promise(resolve=>server.close(resolve))};
 }
-export function createPool(connectionString){return new Pool({connectionString});}
+export const DEFAULT_POOL_POLICY=Object.freeze({
+  max:10,
+  connectionTimeoutMillis:5000,
+  idleTimeoutMillis:30000,
+  statement_timeout:30000,
+  query_timeout:35000,
+  allowExitOnIdle:false
+});
+
+export function normalizePoolPolicy(options={}){
+  const policy={...DEFAULT_POOL_POLICY,...options};
+  const integer=(name,min,max)=>{
+    const value=policy[name];
+    if(!Number.isInteger(value)||value<min||value>max)throw new Error(`Invalid pool policy ${name}`);
+  };
+  integer("max",1,100);
+  integer("connectionTimeoutMillis",100,60000);
+  integer("idleTimeoutMillis",1000,600000);
+  integer("statement_timeout",100,600000);
+  integer("query_timeout",100,600000);
+  if(policy.query_timeout<policy.statement_timeout)throw new Error("query_timeout must be >= statement_timeout");
+  if(typeof policy.allowExitOnIdle!=="boolean")throw new Error("Invalid pool policy allowExitOnIdle");
+  return policy;
+}
+
+export function createPool(connectionString,options={}){
+  if(typeof connectionString!=="string"||!connectionString)throw new Error("connectionString is required");
+  return new Pool({connectionString,...normalizePoolPolicy(options)});
+}

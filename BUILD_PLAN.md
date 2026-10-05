@@ -779,7 +779,15 @@ Final gates:
 - capacity/concurrency testing
 - dependency/version policy
 
-**Status:** NOT STARTED.
+**Status:** VALIDATED.
+
+Validation evidence: commit `139966a5a4a6a432d00a1924c967dabb969b3908`; Stage 20 workflow `37297799623`, Stage 11 `37297799604`, Stage 12 `37297799687`, Stage 15 `37297799696`, Architecture Regression Audit `37297799715`, and Stage State Gate `37297799678` all passed. The upgrade drill proved prior-schema compatibility, checksum persistence/drift rejection, data preservation and idempotent rerun; the concurrency smoke proved bounded reference-pool behavior under 32 concurrent tasks.
+
+Stage 20 is the final currently defined OSS readiness stage. No Stage 21 is defined; future work requires an explicit architecture/product decision rather than an invented continuation.
+
+Stage 20 starts from the validated Stage 00–17 evidence and must not duplicate security or execution boundaries. The initial production-readiness audit adds executable dependency/version and migration-policy enforcement. Remaining open gates are a supported-schema upgrade drill, capacity/concurrency evidence, current operations/testing/unknowns documentation, durable incident/upgrade procedures, and a final repository-wide regression pass.
+
+Stages 18 and 19 remain DEFERRED and do not block the OSS production-readiness work; hosted/cloud SLA and billing semantics remain separated from the runtime contract.
 
 ---
 
@@ -843,17 +851,25 @@ Conversation history is not required for a correct handoff.
 
 # 11. Current execution checkpoint
 
-See **`BUILD_STATE.md`** for the exact current checkpoint.
+The canonical execution checkpoint is **Stage 20 — Production Readiness**.
 
-Current canonical checkpoint:
+Current state:
+- Stages 00–17: **VALIDATED**.
+- Stages 18 — Vibe Cloud Control Plane and 19 — Billing + Metering: **DEFERRED**.
+- Stage 20: **VALIDATED**.
+- The validated implementation was completed on `stage20-production-readiness` at commit `139966a5a4a6a432d00a1924c967dabb969b3908` and is ready to merge to `main`.
+- The canonical handoff is maintained in `BUILD_STATE.md`; this section intentionally mirrors the current stage rather than pointing back to an obsolete Stage 15 checkpoint.
 
-- Stages 00–14: **VALIDATED**
-- Stage 15: **IN_PROGRESS**
-- Stage 16+: **NOT STARTED / DEFERRED as individually marked**
+Stage 20 exit evidence must include:
+1. executable version/dependency and migration policy;
+2. supported prior-schema → current upgrade evidence;
+3. bounded capacity/concurrency evidence with a clearly non-SLA reference envelope;
+4. current operations/testing/unknowns documentation;
+5. durable incident, upgrade, rollback/recovery and dependency-update runbooks;
+6. final repository-wide regression evidence;
+7. explicit separation of OSS guarantees from cloud-only operational commitments.
 
-The current implementation task is **Stage 15 — GraphRAG**. The first task is to define and test the engine-neutral hybrid retrieval contract before introducing indexes or a new public API.
-
-The first Stage 09 action is not to code blindly. Inspect the existing Query IR, Schema Catalog, AGE compiler, Secure Execution Engine, Stage 02 security model, database fixtures and tests, then design the smallest safe mutation boundary consistent with this architecture.
+All Stage 20 exit gates have executable evidence. Do not claim universal capacity, hosted SLA, regional recovery, commercial RPO/RTO, billing, or cloud-control-plane guarantees from OSS validation.
 
 ---
 
@@ -875,3 +891,10 @@ Use these files together:
 | `prompts/` | Stage-specific build prompts |
 
 A coding agent should read the smallest relevant subset after reading the first three canonical files, but it must know that these sources exist.
+
+
+## Stage 20 — Final validation record
+
+Stage 20 production readiness is validated on the corrected head `139966a5a4a6a432d00a1924c967dabb969b3908`. A migration-runner checksum persistence defect was found during the full matrix and fixed by replacing ineffective psql variable substitution with strictly validated SQL literals. The corrected head passed the full relevant repository matrix and architecture/state gates.
+
+Stages 18 and 19 remain intentionally deferred. No Stage 21 is currently defined in this build plan; the next implementation stage must be established through an explicit product/architecture decision.

@@ -26,7 +26,7 @@ sha256="$(sha256sum "$dump" | awk '{print $1}')"
 size_bytes="$(wc -c < "$dump" | tr -d ' ')"
 server_version="$(psql "$DATABASE_URL" -Atqc 'SHOW server_version')"
 pg_dump_version="$(pg_dump --version | awk '{print $NF}')"
-migration_digest="$(psql "$DATABASE_URL" -Atqc "SELECT COALESCE(md5(string_agg(version || ':' || checksum, ',' ORDER BY version)), 'none') FROM vibe_meta.schema_migrations" 2>/dev/null || printf 'unavailable')"
+migration_digest="$(psql "$DATABASE_URL" -Atqc "SELECT COALESCE(md5(string_agg(migration_id || ':' || COALESCE(checksum,''), ',' ORDER BY migration_id)), 'none') FROM vibe_meta.schema_migrations" 2>/dev/null || printf 'unavailable')"
 
 cat > "$tmp" <<JSON
 {

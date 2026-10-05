@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import {createHash} from "node:crypto";
 import {execFile} from "node:child_process";
 import {promisify} from "node:util";
 
@@ -23,6 +24,12 @@ export function listMigrationFiles(root) {
     .map(name => ({name, id: name.slice(0, -4), file: path.join(root, name)}));
 }
 
+export function migrationChecksum(file) {
+  const filename = typeof file === "string" ? file : file?.file;
+  if (!filename) throw new TypeError("migration file path is required");
+  return createHash("sha256").update(fs.readFileSync(filename)).digest("hex");
+}
+
 function requireMigratorUrl() {
   const value = process.env.VIBE_MIGRATOR_DATABASE_URL;
   if (!value) throw new Error("VIBE_MIGRATOR_DATABASE_URL is required for migrations");
@@ -40,6 +47,19 @@ async function psql(url, args) {
   });
 }
 
+function sqlLiteral(value) {
+  return "'" + value.replaceAll("'", "''") + "'";
+}
+
+async function recordChecksum(url, migrationId, checksum) {
+  if (!/^[0-9a-f]{64}$/.test(checksum)) throw new TypeError("migration checksum must be SHA-256 hex");
+  if (!/^[0-9]{4}-[a-z0-9-]+$/.test(migrationId)) throw new TypeError("migration id has an invalid format");
+  await psql(url, [
+    "-c",
+    `UPDATE vibe_meta.schema_migrations SET checksum = ${sqlLiteral(checksum)} WHERE migration_id = ${sqlLiteral(migrationId)}`
+  ]);
+}
+
 export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(cwd,"infra","migrations")}={}) {
   const url = requireMigratorUrl();
   if (!fs.existsSync(migrationsDir)) throw new Error("Migration directory not found");
@@ -52,12 +72,38 @@ export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(
   }
 
   await psql(url, ["--single-transaction", "-f", bootstrap.file]);
-  const {stdout} = await psql(url, ["-At", "-c", "SELECT migration_id FROM vibe_meta.schema_migrations ORDER BY migration_id"]);
-  const applied = new Set(stdout.split("\n").map(v => v.trim()).filter(Boolean));
 
+  const {stdout} = await psql(url, [
+    "-At",
+    "-F", "\t",
+    "-c", "SELECT migration_id, COALESCE(checksum, '') FROM vibe_meta.schema_migrations ORDER BY migration_id"
+  ]);
+  const ledger = new Map(
+    stdout.split("\n").map(line => line.trimEnd()).filter(Boolean).map(line => {
+      const [id, checksum=""] = line.split("\t");
+      return [id, checksum];
+    })
+  );
+  const byId = new Map(files.map(file => [file.id, file]));
+
+  for (const [id, storedChecksum] of ledger) {
+    const file = byId.get(id);
+    if (!file) throw new Error(`Applied migration is missing from repository: ${id}`);
+    const expected = migrationChecksum(file);
+    if (storedChecksum && storedChecksum !== expected) {
+      throw new Error(`Migration checksum mismatch: ${id}`);
+    }
+    if (!storedChecksum) {
+      await recordChecksum(url, id, expected);
+      ledger.set(id, expected);
+    }
+  }
+
+  const applied = new Set(ledger.keys());
   const pending = files.filter(file => !applied.has(file.id));
   for (const migration of pending) {
     await psql(url, ["--single-transaction", "-f", migration.file]);
+    await recordChecksum(url, migration.id, migrationChecksum(migration));
   }
 
   return {applied: [...applied], migrated: pending.map(file => file.id)};

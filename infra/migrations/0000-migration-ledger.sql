@@ -18,8 +18,12 @@ END $vibe$;
 
 CREATE TABLE IF NOT EXISTS vibe_meta.schema_migrations (
   migration_id text PRIMARY KEY,
-  applied_at timestamptz NOT NULL DEFAULT now()
+  applied_at timestamptz NOT NULL DEFAULT now(),
+  checksum text
 );
+
+ALTER TABLE vibe_meta.schema_migrations
+  ADD COLUMN IF NOT EXISTS checksum text;
 
 ALTER TABLE vibe_meta.schema_migrations OWNER TO vibe_migrator;
 REVOKE ALL ON vibe_meta.schema_migrations FROM PUBLIC;
