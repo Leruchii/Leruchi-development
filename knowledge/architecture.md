@@ -2,7 +2,7 @@
 
 > **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
 
-Status: DECIDED design / VALIDATED through Stage 21
+Status: DECIDED design / VALIDATED through Stage 22; Stage 23 IN_PROGRESS
 
 ## Validated execution path
 
@@ -59,7 +59,7 @@ The engine is read-only in v1. Mutations are Stage 09.
 - GraphRAG: NOT IMPLEMENTED/VALIDATED
 - Cloud: DEFERRED
 
-Current implementation target: complete Stage 22 — Retrieval-Aware Engine-Neutral Planner.
+Current implementation target: complete Stage 23 — Unified Retrieval Developer/Agent Surface.
 
 
 ## Durable agent + developer architecture priority
@@ -111,3 +111,42 @@ MCP must support both read and authorized write/action workflows, but must never
 Stage 21 validated capability-driven graph engine selection and a constrained PostgreSQL recursive fallback. Stage 22 validated the extension of that boundary to Retrieval IR without creating a parallel execution model.
 
 Retrieval planning is source-aware: graph retrieval selects Apache AGE by default or an explicitly registered PostgreSQL recursive capability; vector retrieval selects the PostgreSQL/pgvector capability; hybrid retrieval creates two source execution targets and leaves deterministic weighted-RRF fusion above those sources. Retrieval validation, trusted ExecutionContext, Schema Catalog, cost/result guardrails, RLS and the Secure Execution Engine remain authoritative. Final validation proved this architecture against the repository regression matrix and live Stage 15 hybrid retrieval.
+
+
+## Stage 23 unified retrieval surface
+
+The validated Stage 22 planner is now consumed by one public retrieval contract across developer and agent surfaces.
+
+Developer path:
+
+    SDK / CLI
+        ↓
+    Retrieval IR v1
+        ↓
+    Graph API retrieval boundary
+        ↓
+    Retrieval validation + capability checks
+        ↓
+    Retrieval planner
+        ↓
+    Secure retrieval execution
+        ↓
+    PostgreSQL/AGE/pgvector
+
+Agent path:
+
+    AI Agent
+        ↓
+    MCP retrieval.query
+        ↓
+    Retrieval IR v1 validation
+        ↓
+    same Graph API retrieval boundary
+        ↓
+    same validation/capability/planner/execution path
+
+The SDK builder and CLI do not compile or authorize retrieval. MCP is not privileged. The Graph API remains the authoritative capability and tenant boundary.
+
+Public retrieval results may expose bounded plan mode/engine metadata and bounded fusion/limit metadata. They must not expose tenant IDs, catalog references, embeddings, raw parameters, SQL, Cypher or credentials.
+
+Stage 23 also corrects retrieval telemetry so the duration metric labels the actual planned mode rather than assuming every request is hybrid.
