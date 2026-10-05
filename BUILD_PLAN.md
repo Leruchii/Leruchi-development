@@ -168,6 +168,39 @@ Normalized mutation result
 
 ---
 
+## 3A. Agent action and developer experience priority
+
+VibeDB must support two complementary usage modes without creating separate database semantics:
+
+1. **Developer-first:** SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio provide ergonomic direct access.
+2. **Agent-first:** MCP and AI agents can read data and, when explicitly authorized, create/update/delete data and relationships on behalf of a human.
+
+Both modes converge on the same trusted contracts:
+
+```
+Developer / Agent / MCP
+          ↓
+Query IR or Mutation IR
+          ↓
+identity + capability + Schema Catalog validation
+          ↓
+cost / depth / mutation safety / approval policy
+          ↓
+Planner / compiler
+          ↓
+Secure Execution Engine
+          ↓
+PostgreSQL / AGE / pgvector / RLS
+          ↓
+normalized result + audit/outbox metadata
+```
+
+MCP is never a privileged bypass. Tenant identity comes from trusted authentication context; capabilities are scoped; destructive actions require explicit approval semantics; auditability is mandatory. The developer experience must remain usable without exposing internal compiler or engine details.
+
+This is a durable architecture priority for all future stages.
+
+---
+
 ## 4. Authoritative metadata and security model
 
 ### Schema Catalog
