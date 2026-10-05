@@ -116,3 +116,13 @@ test("retrieval builder rejects tenant overrides and unsafe vector catalog refer
   assert.throws(()=>vibe.retrieval().graph(graph),/Tenant identity/);
   assert.throws(()=>vibe.retrieval().vector({catalogRef:"docs;DROP"}),/safe catalog reference/);
 });
+
+
+test("HTTP transport sends retrieval requests to the canonical retrieval endpoint",async()=>{
+  const calls=[];
+  const fetchImpl=async(url,init)=>{calls.push({url,init});return{ok:true,status:200,async json(){return{rows:[]}}};};
+  const transport=createFetchTransport({baseUrl:"https://api.example/",token:"test-token",fetchImpl});
+  await transport.request("retrieval",{ir:{version:"v1",kind:"retrieval_query"},parameters:{}});
+  assert.equal(calls[0].url,"https://api.example/v1/retrieval/query");
+  assert.equal(calls[0].init.headers.authorization,"Bearer test-token");
+});
