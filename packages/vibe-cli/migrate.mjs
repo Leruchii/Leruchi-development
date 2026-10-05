@@ -47,11 +47,16 @@ async function psql(url, args) {
   });
 }
 
+function sqlLiteral(value) {
+  return "'" + value.replaceAll("'", "''") + "'";
+}
+
 async function recordChecksum(url, migrationId, checksum) {
+  if (!/^[0-9a-f]{64}$/.test(checksum)) throw new TypeError("migration checksum must be SHA-256 hex");
+  if (!/^[0-9]{4}-[a-z0-9-]+$/.test(migrationId)) throw new TypeError("migration id has an invalid format");
   await psql(url, [
-    "-v", `migration_id=${migrationId}`,
-    "-v", `checksum=${checksum}`,
-    "-c", "UPDATE vibe_meta.schema_migrations SET checksum = :'checksum' WHERE migration_id = :'migration_id'"
+    "-c",
+    `UPDATE vibe_meta.schema_migrations SET checksum = ${sqlLiteral(checksum)} WHERE migration_id = ${sqlLiteral(migrationId)}`
   ]);
 }
 
@@ -66,8 +71,6 @@ export async function runMigrations({cwd=process.cwd(), migrationsDir=path.join(
     throw new Error("Migration history must begin with 0000-migration-ledger.sql");
   }
 
-  // The bootstrap is intentionally idempotent and always executes so older
-  // ledgers can adopt new metadata columns before checksum verification.
   await psql(url, ["--single-transaction", "-f", bootstrap.file]);
 
   const {stdout} = await psql(url, [
