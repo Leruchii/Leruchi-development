@@ -54,7 +54,7 @@ psql "$target_admin_url" -v ON_ERROR_STOP=1 -c "DROP DATABASE IF EXISTS \"$targe
 psql "$target_admin_url" -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"$target_db\"" >/dev/null
 
 restore_started="$(date +%s%N)"
-DATABASE_URL="$TARGET_DATABASE_URL" bash "$ROOT/scripts/vibedb-restore.sh" "$dump" "$manifest" >/dev/null
+DATABASE_URL="$TARGET_DATABASE_URL" VIBEDB_RESTORE_MODE=fresh bash "$ROOT/scripts/vibedb-restore.sh" "$dump" "$manifest" >/dev/null
 restore_finished="$(date +%s%N)"
 
 target_extensions="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT string_agg(extname, ',' ORDER BY extname) FROM pg_extension WHERE extname IN ('age','vector')")"
