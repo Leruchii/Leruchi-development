@@ -156,13 +156,20 @@ Reuse Supabase services where they help the product instead of reimplementing th
 
 Vibe's differentiated layer is the graph/vector/compiler/security developer experience, not a wholesale rewrite of Supabase.
 
-## 8. OSS and Cloud separation
+## 8. OSS-first product and Cloud separation
 
-The open-source repository contains the self-hostable product/runtime and developer tooling.
+VibeDB is explicitly OSS-first.
 
-The private Vibe Cloud control plane may contain hosted provisioning, billing, metering, regional orchestration and commercial operations.
-
-Do not leak private-cloud-only dependencies into the OSS runtime contract.
+- The public repository contains VibeDB Core: the self-hostable database/runtime, developer tooling, portable agent capabilities, and their tests/documentation.
+- CLI, SDK, REST/API, Studio and MCP are first-class developer/agent surfaces and must remain useful without Cloud.
+- Future VibeDB Cloud and Enterprise implementation belongs outside the public Core repository.
+- Allowed dependency direction: Cloud/Enterprise → Core.
+- Forbidden dependency direction: Core → Cloud or Core → Enterprise-only services.
+- Every new component must be classified as OSS_CORE, OSS_ADAPTER, CLOUD_PRIVATE, ENTERPRISE_PRIVATE, or UNKNOWN before implementation.
+- UNKNOWN is a stop-and-decide state; it must not silently become public or private code.
+- Do not create private Cloud/Enterprise repositories until the OSS readiness gate and a concrete implementation need require them.
+- Commercial value should primarily come from managed operations, scale, collaboration, governance, hosted agent operations, enterprise services, and support rather than crippling fundamental Core capabilities.
+- See NORTH_STAR.md, OSS_BOUNDARY.md, and knowledge/product-strategy.md for the durable product strategy.
 
 ## 9. Canonical build order
 
