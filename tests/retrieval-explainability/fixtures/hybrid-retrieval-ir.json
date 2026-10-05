@@ -1,0 +1,31 @@
+{
+  "version":"v1",
+  "kind":"retrieval_query",
+  "sources":{
+    "graph":{
+      "query":{
+        "version":"v1",
+        "kind":"graph_query",
+        "graph":"security",
+        "root":{"label":"Account","alias":"n"},
+        "steps":[],
+        "filters":[],
+        "projection":[{"field":"n.id","alias":"id"}],
+        "limit":2,
+        "offset":0,
+        "depth":0,
+        "parameters":[]
+      },
+      "candidate_limit":2,
+      "identity_field":"id"
+    },
+    "vector":{
+      "catalog_ref":"documents.embedding",
+      "query_parameter":"embedding",
+      "top_k":2,
+      "identity_field":"id"
+    }
+  },
+  "fusion":{"strategy":"weighted_rrf","vector_weight":1,"graph_weight":1},
+  "limits":{"max_results":2,"max_cost":40}
+}

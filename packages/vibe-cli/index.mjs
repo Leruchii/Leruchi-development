@@ -116,6 +116,13 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     if(!response.ok)throw new Error(`Diagnostics failed with HTTP ${response.status}`);
     stdout(payload);return 0;
   }
+  if(command==="retrieval"&&subcommand==="explain"){
+    const client=createClient(clientOptions(cwd,args,fetchImpl));
+    const file=required(args,"ir");
+    const ir=parseJson(fs.readFileSync(path.resolve(cwd,file),"utf8"),"--ir");
+    const result=await client.request("retrieval-explain",{ir});
+    stdout(print(result,Boolean(args.pretty)));return 0;
+  }
   if(command==="retrieval"&&subcommand==="query"){
     const client=createClient(clientOptions(cwd,args,fetchImpl));
     const builder=client.retrieval();

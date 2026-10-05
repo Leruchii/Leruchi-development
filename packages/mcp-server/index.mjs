@@ -15,6 +15,7 @@ export const MCP_TOOLS=[
   {name:"graph.query",description:"Execute a validated VibeDB Query IR read through the authenticated Graph API.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
   {name:"graph.traverse",description:"Execute a bounded structured graph traversal expressed as Query IR. No free-form Cypher.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}},
   {name:"graph.mutate",description:"Execute a validated VibeDB Mutation IR write. Destructive operations require an explicit approval artifact; use preview mode to inspect impact without executing.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS,execution:EXECUTION},additionalProperties:false}},
+  {name:"retrieval.explain",description:"Explain a bounded retrieval request without executing it or granting authorization.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR},additionalProperties:false}},
   {name:"retrieval.query",description:"Execute bounded GraphRAG Retrieval IR through the authenticated VibeDB retrieval boundary. Tenant identity is derived from the access token.",inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMS},additionalProperties:false}}
 ];
 
@@ -47,6 +48,7 @@ export async function handleMcpMessage(message){
     if(name==="schema.discover")data=await api("/v1/schema/catalog",{},name);
     else if(name==="graph.query"||name==="graph.traverse")data=await api("/v1/graph/query",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{}})},name);
     else if(name==="graph.mutate")data=await api("/v1/graph/mutations",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{},execution:args.execution??{}})},name);
+    else if(name==="retrieval.explain"){ validateRetrievalIR(args.ir); data=await api("/v1/retrieval/explain",{method:"POST",body:JSON.stringify({ir:args.ir})},name); }
     else if(name==="retrieval.query"){ validateRetrievalIR(args.ir); data=await api("/v1/retrieval/query",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??{}})},name); }
     else return {jsonrpc:"2.0",id,result:error("Unknown tool: "+name)};
     return {jsonrpc:"2.0",id,result:result(data)};

@@ -63,6 +63,10 @@ export class RetrievalBuilder{
     try{validateRetrievalIR(this.ir);}catch(error){throw new RetrievalBuilderError(error.code??"INVALID_RETRIEVAL_IR",error.message);}
     return {ir:clone(this.ir),parameters:clone(this.bound)};
   }
+  async explain(){
+    const built=this.build();
+    return this.client.request("retrieval-explain",{ir:built.ir});
+  }
   async execute(parameters=undefined){
     const built=this.build();
     return this.client.request("retrieval",{ir:built.ir,parameters:{...built.parameters,...(parameters??{})}});

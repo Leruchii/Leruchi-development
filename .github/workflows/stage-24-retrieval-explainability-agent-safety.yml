@@ -1,0 +1,36 @@
+name: Stage 24 Retrieval Explainability and Agent Safety
+
+# Stage 24 focused validation gate
+
+on:
+  pull_request:
+    paths:
+      - "packages/retrieval-explainability/**"
+      - "packages/retrieval-execution/**"
+      - "packages/retrieval-ir/**"
+      - "packages/planner/**"
+      - "packages/graph-api/**"
+      - "packages/vibe-sdk/**"
+      - "packages/vibe-cli/**"
+      - "packages/mcp-server/**"
+      - "packages/observability/**"
+      - "tests/retrieval-explainability/**"
+      - "tests/retrieval-execution/**"
+      - "tests/graph-api/**"
+      - "tests/sdk/**"
+      - "tests/cli/**"
+      - "tests/mcp/**"
+      - "tests/observability/**"
+      - ".github/workflows/stage-24-retrieval-explainability-agent-safety.yml"
+jobs:
+  stage-24:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Stage 24 focused suite
+        run: node --test tests/retrieval-explainability/retrieval-explainability.test.mjs tests/retrieval-execution/retrieval-execution.test.mjs tests/observability/observability.test.mjs tests/graph-api/api.test.mjs tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs tests/mcp/mcp-server.test.mjs

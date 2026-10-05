@@ -113,3 +113,25 @@ test("Graph API blocks retrieval capability misuse before execution",async()=>{
     assert.equal(body.code,"CAPABILITY_DENIED");
   }finally{await api.close();}
 });
+
+
+test("Graph API retrieval explanation is bounded and non-executing",async()=>{
+  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",catalogProvider:async()=>({graphs:{}}),port:0});
+  const address=await api.listen();
+  try{
+    const ir={version:"v1",kind:"retrieval_query",sources:{vector:{catalog_ref:"documents.embedding",query_parameter:"embedding",top_k:2,identity_field:"id"}},fusion:{strategy:"weighted_rrf"},limits:{max_results:2,max_cost:20}};
+    const res=await fetch(`http://127.0.0.1:${address.port}/v1/retrieval/explain`,{
+      method:"POST",
+      headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["vector:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir})
+    });
+    assert.equal(res.status,200);
+    const body=await res.json();
+    assert.equal(body.status,"ready");
+    assert.equal(body.mode,"vector");
+    assert.equal(body.execution,"not_executed");
+    assert.equal(body.request_id,body.request_id);
+    assert.equal(JSON.stringify(body).includes("documents.embedding"),false);
+    assert.equal(JSON.stringify(body).includes("tenant_a"),false);
+  }finally{await api.close();}
+});
