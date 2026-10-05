@@ -101,4 +101,4 @@ target_post_snapshot="$(psql "$TARGET_DATABASE_URL" -Atqc "SELECT count(*) FROM 
 backup_ms="$(( (backup_finished-backup_started)/1000000 ))"
 restore_ms="$(( (restore_finished-restore_started)/1000000 ))"
 
-echo "{\"version\":\"v1\",\"status\":\"passed\",\"backup_duration_ms\":$backup_ms,\"restore_duration_ms\":$restore_ms,\"extensions\":\"$target_extensions\",\"restore_evidence\":\"fresh-db-age-pgvector-migrations-equal\"}"
+echo "{\"version\":\"v1\",\"status\":\"passed\",\"backup_duration_ms\":$backup_ms,\"restore_duration_ms\":$restore_ms,\"extensions\":\"$target_extensions\",\"restore_evidence\":\"fresh-db-age-pgvector-migrations-equal\",\"recovery_point_evidence\":\"pre-snapshot-present-post-snapshot-absent\"}"
