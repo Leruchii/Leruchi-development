@@ -976,3 +976,38 @@ Final validation head: `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
 Merged to main: `c7422314cf36ea1d58cbcac1d5686b6802f67824`.
 
 PostgreSQL recursive fallback remains explicitly registered and capability-gated; Apache AGE remains the default execution path. Stages 18 and 19 remain deferred.
+
+## Stage 22 — Retrieval-Aware Engine-Neutral Planner
+
+**Status:** IN_PROGRESS.
+
+Stage 22 extends the planner boundary from graph-only execution to vector and hybrid retrieval without creating a second execution/security path.
+
+### 22.1 Decision
+
+- Retrieval IR v1 remains the engine-neutral retrieval contract.
+- The planner validates retrieval shape at the existing retrieval boundary, then selects execution targets from explicitly registered capabilities.
+- Vector execution targets PostgreSQL/pgvector through the existing secure retrieval execution path.
+- Graph execution may select Apache AGE or the capability-gated PostgreSQL recursive compiler.
+- Hybrid retrieval produces a two-target plan (graph + vector); deterministic weighted-RRF fusion remains above the physical source engines.
+- No silent engine fallback is allowed.
+
+### 22.2 Implementation
+
+Implemented on `stage22-retrieval-planner`:
+- `packages/planner/retrieval.mjs` deterministic retrieval planner;
+- explicit retrieval engine capability registry;
+- retrieval-execution integration with planned graph compiler selection;
+- planner output included in normalized retrieval metadata;
+- focused planner and retrieval execution tests;
+- Stage 22 CI gate.
+
+### 22.3 Exit gate
+
+Before validation, prove:
+- vector-only, graph-only and hybrid plans are deterministic;
+- unavailable/missing capabilities fail closed;
+- recursive graph fallback is selected only when explicitly registered/preferred;
+- planner selection does not bypass trusted ExecutionContext, Schema Catalog, RLS, cost or result limits;
+- hybrid fusion remains deterministic and source identity-safe;
+- Stage 22 CI and the repository regression matrix pass.
