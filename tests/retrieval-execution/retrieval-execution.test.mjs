@@ -90,3 +90,23 @@ test("retrieval telemetry records the planned mode without leaking retrieval int
   assert.equal(JSON.stringify(observations).includes("documents.embedding"),false);
   assert.equal(JSON.stringify(observations).includes("[1,0,0]"),false);
 });
+
+
+test("retrieval execution correlates request ID and bounded planner outcome without payload data",async()=>{
+  const logs=[];
+  await executeRetrieval({
+    ir:{...ir,sources:{vector:ir.sources.vector}},
+    context,catalog:{},requestParameters:{embedding:[1,0,0]},db:{},...deps([]),
+    observability:{observe:()=>{},emitLog:event=>logs.push(event)}
+  });
+  assert.deepEqual(logs,[{
+    event:"retrieval.execution",
+    request_id:"r1",
+    retrieval_mode:"vector",
+    planner_decision:"vector",
+    outcome:"success",
+    reason_code:"PLANNER_SELECTED_VECTOR"
+  }]);
+  assert.equal(JSON.stringify(logs).includes("tenant_a"),false);
+  assert.equal(JSON.stringify(logs).includes("embedding"),false);
+});
