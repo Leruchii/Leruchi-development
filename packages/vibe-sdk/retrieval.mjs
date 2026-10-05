@@ -57,10 +57,6 @@ export class RetrievalBuilder{
     if(this.ir.sources.vector?.query_parameter===name&&type!=="vector")throw new RetrievalBuilderError("INVALID_PARAMETER_TYPE","Vector retrieval parameters must use type vector");
     if(Object.hasOwn(this.bound,name))throw new RetrievalBuilderError("DUPLICATE_PARAMETER","Parameter names must be unique");
     this.bound[name]=clone(value);
-    if(this.ir.sources.graph){
-      const parameters=this.ir.sources.graph.query.parameters??[];
-      if(!parameters.some(p=>p.name===name))this.ir.sources.graph.query.parameters=[...parameters,{name,type,required}];
-    }
     return this;
   }
   build(){
