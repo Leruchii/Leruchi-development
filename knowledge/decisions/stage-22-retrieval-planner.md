@@ -2,7 +2,7 @@
 
 ## Status
 
-IN_PROGRESS.
+VALIDATED.
 
 ## Decision
 
@@ -35,3 +35,13 @@ Stage 15 already validated graph/vector hybrid retrieval, but Stage 21 initially
 5. Recursive graph fallback is capability-gated.
 6. Existing cost, depth, result, Schema Catalog, ExecutionContext and RLS controls remain authoritative.
 7. Full repository regression matrix passes.
+
+
+## Validation record
+
+Stage 22 is validated on final candidate `6f094147821b1e2802884fe4bf879f24bb302741`.
+
+- Stage 22 planner and retrieval-execution tests passed.
+- Stage 15 live hybrid retrieval passed after the shared retrieval-plan initialization defect was fixed.
+- The full repository matrix, Architecture Regression Audit and Stage State Gate passed.
+- No second authorization or execution boundary was introduced.
