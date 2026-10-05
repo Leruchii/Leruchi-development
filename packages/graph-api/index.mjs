@@ -13,6 +13,7 @@ import {executeGraphMutation,createPgMutationExecutor,MutationExecutionError} fr
 import {executeRetrieval,RetrievalExecutionError} from "../retrieval-execution/index.mjs";
 import {explainRetrieval} from "../retrieval-explainability/index.mjs";
 import {explainContext} from "../context-ir/explain.mjs";
+import {resolveContext,ContextResolutionError} from "../context-resolution/index.mjs";
 import {createAuditEvent,emitAudit} from "../audit/index.mjs";
 import {createObservability} from "../observability/index.mjs";
 
@@ -66,7 +67,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const isRetrievalRequest=req.method==="POST"&&req.url==="/v1/retrieval/query";
       const isRetrievalExplain=req.method==="POST"&&req.url==="/v1/retrieval/explain";
       const isContextExplain=req.method==="POST"&&req.url==="/v1/context/explain";
-      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
+      const isContextResolve=req.method==="POST"&&req.url==="/v1/context/resolve";
+      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
@@ -101,6 +103,38 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
         return json(res,200,{...explanation,request_id:requestId});
       }
       auditInput=input;
+      if(isContextResolve){
+        const catalog=await catalogProvider(context);
+        const client=await pool.connect();
+        try{
+          const db=createPgExecutor(client,context);
+          const result=await resolveContext({
+            ir:input.ir,
+            context,
+            parameterSets:input.parameters??[],
+            requestId,
+            observability,
+            resolveSchema:async()=>catalog,
+            executeQuery:async({source,parameters,limit})=>{
+              const boundedIr={...source.ir,limit:Math.min(source.ir.limit??limit,limit)};
+              const compile=queryIr=>resolveQueryCompiler(queryIr,catalog,{engines:queryEngines,preferred:preferredQueryEngines,observability}).compile(queryIr);
+              return executeGraphQuery({ir:boundedIr,context,catalog,requestParameters:parameters,validate:validateQuery,compile,db,requestId,observability});
+            },
+            executeRetrieval:async({source,parameters,limit})=>{
+              const sources={...source.ir.sources};
+              if(sources.graph){
+                const graphQuery={...sources.graph.query,limit:Math.min(sources.graph.query.limit??limit,limit)};
+                sources.graph={...sources.graph,query:graphQuery,candidate_limit:Math.min(sources.graph.candidate_limit??graphQuery.limit,limit)};
+              }
+              if(sources.vector)sources.vector={...sources.vector,top_k:Math.min(sources.vector.top_k,limit)};
+              const boundedIr={...source.ir,sources,limits:{...source.ir.limits,max_results:Math.min(source.ir.limits.max_results,limit)}};
+              return executeRetrieval({ir:boundedIr,context,catalog,requestParameters:parameters,db,requestId,observability});
+            }
+          });
+          await record("success");
+          return json(res,200,result);
+        }finally{client.release();}
+      }
       if(isRetrievalRequest){
         const sources=input.ir?.sources??{};
         if(sources.graph&&!hasCapability(context,CAPABILITIES.GRAPH_READ)){
@@ -142,6 +176,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       if(error?.code==="UNAUTHORIZED"||error instanceof ExecutionContextError||error?.message?.includes("Bearer token"))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId});
       if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
       if(error instanceof RetrievalExecutionError)return json(res,400,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});
+      if(error instanceof ContextResolutionError)return json(res,400,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});
       return json(res,500,{version:"v1",code:"INTERNAL_ERROR",message:"Graph API request failed",request_id:requestId});
     }finally{
       const statusClass=Math.floor((res.statusCode||500)/100)+"xx";
