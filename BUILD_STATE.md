@@ -13,10 +13,13 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
 - Current branch: `stage21-agent-developer-contract`
-- Current work: durable bidirectional MCP + developer-first architecture contract, then Stage 21 PostgreSQL recursive compiler implementation
-- Next exact action: finish the architecture/docs checkpoint, inspect the existing Schema Catalog graph registry and Query IR fixtures, then implement the smallest database-backed PostgreSQL recursive compiler path without creating a second public API.
+- Current work: durable bidirectional MCP + developer-first contract; Schema Catalog relational mapping extension; constrained PostgreSQL recursive compiler; live RLS/depth/limit/parameter-safety evidence
+- Current PR: #46
+- Latest known compiler CI: previous failures were real test/SQL-generation defects and have been corrected; the latest Stage 21 run for the current head is queued.
+- Architecture Regression Audit: green on the preceding corrected head; latest audit is running/queued with the current head.
+- Next exact action: inspect the current Stage 21 workflow result; fix any real database/compiler failure; then wire planner capability registration and complete AGE-equivalence + observability evidence.
 
-The Stage 21 planner foundation is merged. PostgreSQL recursive execution is still a fallback target only when a compatible compiler is explicitly registered. Do not mark Stage 21 VALIDATED until recursive compilation, Schema Catalog mapping, tenant/RLS isolation, guardrails, parameter safety, AGE-equivalent fixtures and planner observability have executable evidence.
+The Stage 21 planner foundation is merged. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered. Do not mark Stage 21 VALIDATED until recursive compilation, authoritative Schema Catalog mapping, tenant/RLS isolation, cost/depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration and planner observability all have executable evidence.
 
 ## Verified state
 
