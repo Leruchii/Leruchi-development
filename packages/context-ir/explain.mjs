@@ -6,8 +6,10 @@ export function explainContext({ir,context}={}){
   }
   const capabilities=new Set(context?.capabilities??[]);
   const sources=ir.sources.map(source=>{
-    const required=source.type==="schema"?"graph:read":source.type==="retrieval"?"graph:read":source.type==="query"?"graph:read":"graph:read";
-    return {type:source.type,authorized:capabilities.has(required),required_capability:required};
+    const required=source.type==="retrieval"
+      ?[...(source.ir?.sources?.graph?["graph:read"]:[]),...(source.ir?.sources?.vector?["vector:read"]:[])]
+      :["graph:read"];
+    return {type:source.type,authorized:required.every(capability=>capabilities.has(capability)),required_capabilities:required};
   });
   const unauthorized=sources.filter(s=>!s.authorized);
   return Object.freeze({
