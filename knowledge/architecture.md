@@ -108,6 +108,6 @@ MCP must support both read and authorized write/action workflows, but must never
 
 ## Stage 21–22 planner architecture
 
-Stage 21 validated capability-driven graph engine selection and a constrained PostgreSQL recursive fallback. Stage 22 extends that boundary to Retrieval IR without creating a parallel execution model.
+Stage 21 validated capability-driven graph engine selection and a constrained PostgreSQL recursive fallback. Stage 22 validated the extension of that boundary to Retrieval IR without creating a parallel execution model.
 
-Retrieval planning is source-aware: graph retrieval selects Apache AGE by default or an explicitly registered PostgreSQL recursive capability; vector retrieval selects the PostgreSQL/pgvector capability; hybrid retrieval creates two source execution targets and leaves deterministic weighted-RRF fusion above those sources. Retrieval validation, trusted ExecutionContext, Schema Catalog, cost/result guardrails, RLS and the Secure Execution Engine remain authoritative.
+Retrieval planning is source-aware: graph retrieval selects Apache AGE by default or an explicitly registered PostgreSQL recursive capability; vector retrieval selects the PostgreSQL/pgvector capability; hybrid retrieval creates two source execution targets and leaves deterministic weighted-RRF fusion above those sources. Retrieval validation, trusted ExecutionContext, Schema Catalog, cost/result guardrails, RLS and the Secure Execution Engine remain authoritative. Final validation proved this architecture against the repository regression matrix and live Stage 15 hybrid retrieval.
