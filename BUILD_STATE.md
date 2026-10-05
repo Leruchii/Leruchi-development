@@ -7,19 +7,20 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
-- Current status: IN_PROGRESS
-- Last completed stage: 20 — Production Readiness
+- Current status: VALIDATED
+- Last completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
+- Previous completed stage: 20 — Production Readiness
 - Last validated commit: `41adf8e04598e7f00c38945b88c6db4d6bbd7e71` (Stage 21 planner foundation merged to main; broad regression and architecture/state gates passed)
 - Default branch: `main`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `stage21-agent-developer-contract`
+- Current branch: `main`
 - Current work: durable bidirectional MCP + developer-first contract; backward-compatible Schema Catalog relational mappings; constrained PostgreSQL recursive compiler; Graph API planner integration; live RLS/depth/limit/parameter-safety and AGE-equivalence evidence
-- Current PR: #46
-- Latest known compiler CI: Stage 21, Stage 11, Stage 15 and Architecture Regression Audit were green on the preceding corrected head. The newest head adds AGE-equivalence evidence and is currently running.
-- Architecture Regression Audit: green on the preceding corrected head; latest audit is running/queued with the current head.
-- Next exact action: inspect the current Stage 21 workflow result; fix any real equivalence/database failure; then run the full final-head regression matrix and only after all relevant checks are green update Stage 21 validation evidence and merge PR #46.
+- Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
+- Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
+- Architecture Regression Audit and Stage State Gate passed on the final head.
+- Next exact action: continue with the next unfinished canonical roadmap stage after re-reading `BUILD_PLAN.md`; do not reopen validated Stage 21 work without contradictory executable evidence.
 
-The Stage 21 planner foundation is merged. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered. Do not mark Stage 21 VALIDATED until recursive compilation, authoritative Schema Catalog mapping, tenant/RLS isolation, cost/depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration and planner observability all have executable evidence.
+The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
 ## Verified state
 
