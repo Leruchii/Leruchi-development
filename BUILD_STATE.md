@@ -6,27 +6,23 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 25 — MCP Agent Tool Contract & Input-Safety Boundary
-- Current status: VALIDATED — Stage 25 implementation and repository regression matrix passed
+- Current stage: 26A — OSS Product & Cloud Boundary Foundation
+- Current status: IN_PROGRESS — product/architecture boundary foundation implemented; validation and guardrails remain
 - Last completed stage: 25 — MCP Agent Tool Contract & Input-Safety Boundary
-- Stage 24 validation head: `8433af4b4ec22e2611a88613bcb1ddfb14fbcdc9` (final focused suite + full repository product/regression matrix passed before merge)
-- Previous completed stage: 21 — Engine-Neutral Planner + PostgreSQL Fallback Foundation
-- Last validated commit: `48876c8ae74f1f0bf39142b4ee074db462ad1883` (Stage 24 merge to `main`; final validation head passed the focused suite and full repository product/regression matrix)
+- Last validated merge checkpoint: `1cd6a9ab42e7c681fe7c134890b8e360efa819a3`
 - Default branch: `main`
-- Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `stage25-postmerge-handoff`
-- Current work: Stage 25 MCP agent tool contract and bounded input-safety boundary — validated
-- Stage 21 PR #46 merged to `main` as `c7422314cf36ea1d58cbcac1d5686b6802f67824`
-- Stage 21 final-head workflow `37309656235` passed; the complete final-head regression matrix passed on commit `97d7bdaae2fe24f16c6486cee0ef9f167e72f682`.
-- Architecture Regression Audit and Stage State Gate passed on the final head.
-- Stage 22 PR #47 merged to `main` as `c6f0c41025f52ad14bc30be97adeeff4edaf2593`.
-- Final exact Stage 22 candidate `e80f9bc91d6669c88f7f4a1cbad391192a2465` passed the complete 21-workflow matrix; the merge commit is the durable main checkpoint.
-- Stage 22 had a real shared execution defect (`plan` referenced before initialization) that caused both the new Stage 22 tests and the existing Stage 15 hybrid integration to fail; this was fixed in the current branch head.
-- Stage 25 validation head: `8e72dee470e60f2c1a088397baa77d5d01120fc6` (focused MCP suite, full repository product/regression matrix, Architecture Regression Audit and Stage State Gate passed).
-- Stage 25 focused workflow `37340599434` passed; the complete current-head regression matrix passed.
-- Stage 25 merge commit: `1cd6a9ab42e7c681fe7c134890b8e360efa819a3` (PR #50 merged after the exact-head regression matrix passed).\n- `main` has been verified at the Stage 25 merge checkpoint.\n- Exact next action: define and begin Stage 26 from this validated checkpoint; do not reopen Stage 25 unless new executable evidence contradicts it.
+- Current branch: `stage26-oss-product-boundary`
+- Open-source priority: ACTIVE
+- Cloud implementation: DEFERRED until OSS readiness gate
+- Enterprise implementation: DEFERRED until OSS readiness gate and a concrete requirement
+- New product-strategy source of truth: `NORTH_STAR.md`
+- New repository boundary source of truth: `OSS_BOUNDARY.md`
+- Exact next action: complete OSS boundary CI/architecture guardrails, validate the documentation checkpoint, merge Stage 26A, then begin the Agent-Native Context IR implementation.
 
-The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
+Stage 25 is closed. Do not reopen it unless new executable evidence contradicts the validated checkpoint.
+
+Stage 26A establishes the durable product rule that VibeDB Core is the public, self-hostable product and future Cloud/Enterprise layers remain outside the public repository. The Core must never depend on private Cloud or Enterprise services.
+
 
 ## Verified state
 
