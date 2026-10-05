@@ -7,15 +7,15 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 20 — Production Readiness
-- Current status: READY_TO_BUILD
+- Current status: IN_PROGRESS
 - Last completed stage: 17 — Backup + Recovery
 - Last validated commit: `5b8902d57afda8eafa2868bd188a2d28e784e998` (Stage 17 merged through PR #43 after final-head product and architecture checks passed)
 - Default branch: `main`
 - Stage 16 merged: PR #42 as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`
 - Stage 17 merged: PR #43 as `5b8902d57afda8eafa2868bd188a2d28e784e998`
 - Deferred stages: 18 — Vibe Cloud Control Plane; 19 — Billing + Metering
-- Current branch: `main`
-- Next implementation target: begin Stage 20 Production Readiness by auditing the final gates and turning uncovered reliability, upgrade, capacity, dependency-policy, documentation and operations gaps into executable evidence
+- Current branch: `stage20-production-readiness`
+- Next implementation target: validate the Stage 20 dependency/version and migration-policy gate, then implement the prior-schema upgrade drill and capacity/concurrency evidence before any production-readiness claim
 
 Validation evidence: Stage 17 workflow run `37289821553` passed on the final PR head; all final-head product/architecture workflows were green before merge.
 
@@ -553,3 +553,22 @@ Exact next action:
 1. Run final-head repository checks after the documentation/state updates.
 2. Merge PR #43 only if meaningful product/architecture checks are green.
 3. On `main`, advance the canonical checkpoint to Stage 18 while keeping its private/deferred control-plane boundary explicit.
+
+
+## Stage 20 — Production Readiness handoff
+
+Implementation started on branch `stage20-production-readiness`.
+
+Initial executable gate:
+- `scripts/production-readiness-audit.mjs` enforces exact package dependency versions, versioned database extension/image contracts, contiguous migrations, fail-fast migration behavior, migration timeouts, migrator-role guards and migration-ledger identifiers;
+- `tests/production-readiness/readiness-audit.test.mjs` contains adversarial policy tests plus a repository self-audit;
+- `.github/workflows/stage-20-production-readiness.yml` runs the readiness audit, focused tests and architecture regression audit;
+- `knowledge/decisions/stage-20-production-readiness.md` records existing evidence versus open production-readiness gates.
+
+Audit findings at entry:
+- operations/testing/unknowns knowledge is stale from earlier stages;
+- no dedicated supported-schema upgrade drill exists yet;
+- no explicit capacity/concurrency gate or reference operating envelope exists yet;
+- incident/upgrade/dependency-update procedures still require durable documentation.
+
+Stage 20 remains IN_PROGRESS. Do not mark it VALIDATED until those gaps are closed and the full repository regression matrix is green.
