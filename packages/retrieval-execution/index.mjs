@@ -3,6 +3,7 @@ import {assertTrustedExecutionContext} from "../execution-context/index.mjs";
 import {validateRetrievalIR} from "../retrieval-ir/index.mjs";
 import {validateQuery} from "../query-validation/index.mjs";
 import {compileAge} from "../compiler-age/index.mjs";
+import {compilePostgresqlRecursive} from "../compiler-postgresql-recursive/index.mjs";
 import {executeGraphQuery} from "../execution-engine/index.mjs";
 import {executeVectorRetrieval} from "../vector-execution/index.mjs";
 import {normalizeRetrievalRows} from "../retrieval-contract/index.mjs";
@@ -51,7 +52,7 @@ export async function executeRetrieval({
   let vectorCost=vector?.top_k??0;
 
   if(graph){
-    if (plan.graph?.engine === "postgresql-recursive" && !preferredGraphEngines?.includes("postgresql-recursive") && retrievalCapabilities["postgresql-recursive"]?.available) { /* explicit capability registration still governs fallback */ }\n    const graphValidation=validate(graph.query,context,catalog);
+    const graphValidation=validate(graph.query,context,catalog);
     if(!graphValidation.ok) throw new RetrievalExecutionError("GRAPH_RETRIEVAL_VALIDATION_FAILED","Graph retrieval validation failed",graphValidation.errors);
     graphCost=graphValidation.cost??0;
     if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
@@ -59,7 +60,7 @@ export async function executeRetrieval({
     if(candidateLimit>ir.limits.max_results) throw new RetrievalExecutionError("RETRIEVAL_LIMIT_EXCEEDED","Graph candidate limit exceeds retrieval max_results");
     const boundedQuery={...graph.query,limit:candidateLimit};
     const graphParams=graphParameters(graph.query,requestParameters);
-    graphResult=await executeGraph({ir:boundedQuery,context,catalog,requestParameters:graphParams,validate,compile,db,requestId});
+    const plannedCompile = plan.graph.engine === "postgresql-recursive" ? compilePostgresqlRecursive : compile;\n    graphResult=await executeGraph({ir:boundedQuery,context,catalog,requestParameters:graphParams,validate,compile:plannedCompile,db,requestId});
   }
 
   if(graphCost+vectorCost>ir.limits.max_cost) throw new RetrievalExecutionError("RETRIEVAL_COST_EXCEEDED","Combined retrieval exceeds the request budget",{graph_cost:graphCost,vector_cost:vectorCost,max_cost:ir.limits.max_cost});
