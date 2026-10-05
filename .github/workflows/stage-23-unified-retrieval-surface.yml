@@ -26,3 +26,4 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --ignore-scripts
+      - run: node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs tests/mcp/mcp-server.test.mjs tests/retrieval-execution/retrieval-execution.test.mjs tests/graph-api/api.test.mjs
