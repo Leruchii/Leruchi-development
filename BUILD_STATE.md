@@ -7,15 +7,23 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 30 — Agent Trace & Replay
-- Current status: IN_PROGRESS
-- Last validated stage: 29 — Agent Evaluation & Observability
-- Last validated main commit: 91cb1cf0e0bf63ca1ba3748370003deb0bafadfb
-- Active branch: stage30-agent-trace-replay
-- Stage 30 candidate head: 15773ec190b2f68ee13558c0142ef0f4c9646bb5
-- Stage 30 PR: #59
+- Current status: VALIDATED
+- Last validated stage: 30 — Agent Trace & Replay
+- Last validated main commit: 2bf62dc138667d834728d0dbddbdd8c29dd1fda9
+- Stage 30 validated candidate head: d6105f32338d9d4461fc2099cc0485061c763aa2
+- Stage 30 PR: #59 (merged)
+- Active branch: main
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
 - Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
+
+Stage 30 validation evidence:
+- exact candidate head d6105f32338d9d4461fc2099cc0485061c763aa2 passed 30/30 repository workflows;
+- Stage 30 focused workflow passed;
+- Architecture Regression Audit passed;
+- Stage State Gate passed;
+- all historical/product workflows on the exact candidate head completed successfully;
+- PR #59 merged only after the exact candidate head was green.
 
 Stage 30 implementation checkpoint:
 - bounded Agent Trace v1;
