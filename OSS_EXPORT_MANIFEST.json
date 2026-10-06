@@ -21,7 +21,8 @@
     "scripts/production-readiness-audit.mjs",
     "scripts/start-stage13-graph-api.mjs",
     "scripts/vibedb-backup.sh",
-    "scripts/vibedb-restore.sh"
+    "scripts/vibedb-restore.sh",
+    "scripts/public-oss-export-audit.mjs"
   ],
   "exclude": [
     ".agents/**",
