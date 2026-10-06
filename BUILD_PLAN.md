@@ -1262,14 +1262,14 @@ Do not add plan execution, autonomous authorization, provider-specific model orc
 
 ## Stage 29 — Agent Evaluation & Observability
 
-Status: IN_PROGRESS.
+Status: VALIDATED — PR #58 merged as `93022678b151b1945640967ecc09642271c23e62e`.
 
 The stage establishes a bounded, non-executing evaluation boundary for Agent Intent and Cross-Modal Plan artifacts. Evaluation reuses existing validation and explanation paths, exposes only pass/fail metadata plus deterministic artifact hashes, and must not emit tenant identity, credentials, bindings, raw IR, query text, database fragments, embeddings or private catalog data. REST, SDK, CLI and MCP converge on the same evaluation contract. Merge requires focused CI, architecture/state gates and the complete exact-head regression matrix.
 
 
 ## Stage 30 — Agent Trace & Replay
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED — PR #59 merged as `2bf62dc138667d834728d0dbddbdd8c29dd1fda9` after exact candidate head `d6105f32338d9d4461fc2099cc0485061c763aa2` passed 30/30 workflows.
 
 Purpose: make agent decisions durable, replayable and comparable without adding execution authority.
 
