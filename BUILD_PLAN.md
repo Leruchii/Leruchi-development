@@ -1,4 +1,4 @@
-# VibePlatform / Leruchi — Canonical Architecture & Build Plan
+# Leruchi — Canonical Architecture & Build Plan
 
 > **Primary source of truth for architecture and implementation order.**
 >
@@ -10,7 +10,7 @@
 
 ## 1. Product definition
 
-VibePlatform / Leruchi is a secure developer/database platform that makes **relational, graph, vector, realtime, and AI-agent access feel like one database**.
+Leruchi is a secure developer/database platform that makes **relational, graph, vector, realtime, and AI-agent access feel like one database**.
 
 The product is not "Supabase plus a graph feature." Its differentiated layer is the Vibe abstraction and developer experience across PostgreSQL, Apache AGE, pgvector, security, query compilation, graph mutations, realtime, and agent access.
 
@@ -361,7 +361,7 @@ UI must consume the Schema Catalog and proven API contracts rather than inventin
 
 ---
 
-## 8. OSS / Vibe Cloud separation
+## 8. OSS / Leruchi Cloud separation
 
 The open-source repository owns:
 
