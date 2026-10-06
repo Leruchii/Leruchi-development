@@ -61,3 +61,11 @@ Stage 31 is VALIDATED only when:
 ## Explicit non-goal
 
 Do not publish the public VibeDB repository during Stage 31. Publication is a separate controlled stage after this readiness gate.
+## License decision
+
+**Selected license: Apache License 2.0 (Apache-2.0).**
+
+Apache-2.0 is the approved license for VibeDB Core's public OSS release. The repository root includes the standard Apache-2.0 LICENSE file, and the root package metadata declares the SPDX identifier `Apache-2.0`. This decision applies to the VibeDB Core OSS release boundary; private Cloud/Enterprise code remains outside that public release.
+
+The license decision resolves the Stage 31 OSS release license blocker. Stage 31 remains IN_PROGRESS until the exact candidate, readiness audit, and required regression matrix are green.
+
