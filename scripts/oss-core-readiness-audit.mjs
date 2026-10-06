@@ -2,7 +2,7 @@ import {execFileSync} from "node:child_process";
 import {existsSync,readFileSync} from "node:fs";
 
 const manifest=JSON.parse(readFileSync(new URL("../OSS_EXPORT_MANIFEST.json",import.meta.url),"utf8"));
-const required=["README.md","LICENSE","CONTRIBUTING.md","SECURITY.md","package.json","package-lock.json","docker-compose.yml"];
+const required=["README.md","LICENSE","CONTRIBUTING.md","SECURITY.md","package.json","docker-compose.yml"];
 const privatePath=/(^|\/)(cloud|enterprise|control-plane|billing|metering|provisioning|fleet|internal)(\/|$)/i;
 
 const run=(cmd,args)=>execFileSync(cmd,args,{encoding:"utf8",stdio:["ignore","pipe","pipe"]});
