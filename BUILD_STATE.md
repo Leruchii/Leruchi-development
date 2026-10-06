@@ -1,4 +1,4 @@
-# VibePlatform Build State
+# Leruchi Build State
 
 This file is the canonical handoff checkpoint for coding agents.
 
@@ -12,9 +12,9 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Last validated main commit: 2bf62dc138667d834728d0dbddbdd8c29dd1fda9
 - Stage 31 branch: stage31-oss-core-readiness
 - Stage 30 PR: #59 (merged)
-- Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
-- Development repository: Fikunmii/vibeDB-development (PRIVATE)
-- Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
+- Internal control repository: VibeDB/vibeDB-internal (PRIVATE)
+- Development repository: VibeDB/vibeDB-development (PRIVATE)
+- Public OSS release repository: VibeDB/vibeDB (PUBLIC)
 
 Stage 31 implementation checkpoint:
 - executable OSS Core readiness audit;
