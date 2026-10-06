@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import {createHmac} from "node:crypto";
 import {handleMcpMessage} from "../../packages/mcp-server/index.mjs";
 
-const secret=process.env.VIBE_JWT_SECRET??"stage-14-e2e-secret";
-const base=(process.env.VIBE_API_URL??"").replace(/\/$/,"");
+const secret=process.env.LERUCHI_JWT_SECRET??"stage-14-e2e-secret";
+const base=(process.env.LERUCHI_API_URL??"").replace(/\/$/,"");
 const token=()=>{
   const enc=value=>Buffer.from(JSON.stringify(value)).toString("base64url");
   const header=enc({alg:"HS256",typ:"JWT"});
@@ -21,9 +21,9 @@ const ir={
 };
 
 test("MCP schema discovery and graph query traverse the live Graph API security boundary",async()=>{
-  assert.ok(base,"VIBE_API_URL is required");
-  process.env.VIBE_API_URL=base;
-  process.env.VIBE_MCP_ACCESS_TOKEN=token();
+  assert.ok(base,"LERUCHI_API_URL is required");
+  process.env.LERUCHI_API_URL=base;
+  process.env.LERUCHI_MCP_ACCESS_TOKEN=token();
 
   const schema=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:"schema.discover",arguments:{}}});
   assert.equal(schema.result.isError,undefined);
@@ -44,7 +44,7 @@ test("MCP schema discovery and graph query traverse the live Graph API security 
 });
 
 test("MCP live query remains tenant-authoritative when the agent supplies a conflicting tenant field",async()=>{
-  process.env.VIBE_MCP_ACCESS_TOKEN=token();
+  process.env.LERUCHI_MCP_ACCESS_TOKEN=token();
   const response=await handleMcpMessage({
     jsonrpc:"2.0",id:4,method:"tools/call",
     params:{name:"graph.query",arguments:{tenant_id:"vibe_tenant_b",ir}}
