@@ -1,4 +1,4 @@
-# Leruchi / Leruchi — Canonical Architecture & Build Plan
+# Leruchi — Canonical Architecture & Build Plan
 
 > **Primary source of truth for architecture and implementation order.**
 >
