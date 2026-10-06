@@ -14,7 +14,14 @@
     "package.json",
     "package-lock.json",
     "docker-compose.yml",
-    "scripts/public-*.mjs"
+    ".nvmrc",
+    "scripts/assert-runtime-policy.mjs",
+    "scripts/audit-baseui.sh",
+    "scripts/benchmark-graph-renderer.mjs",
+    "scripts/production-readiness-audit.mjs",
+    "scripts/start-stage13-graph-api.mjs",
+    "scripts/vibedb-backup.sh",
+    "scripts/vibedb-restore.sh"
   ],
   "exclude": [
     ".agents/**",
@@ -27,7 +34,10 @@
     "OSS_BOUNDARY.md",
     "knowledge/**",
     "prompts/**",
-    "scripts/audit-oss-boundary.mjs"
+    "scripts/audit-oss-boundary.mjs",
+    "CLAUDE.md",
+    "OSS_EXPORT_MANIFEST.json",
+    "scripts/oss-core-readiness-audit.mjs"
   ],
   "rule": "Only paths matched by include may be exported. Exclusions are defense-in-depth, not the primary boundary."
 }
