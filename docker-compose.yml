@@ -8,9 +8,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: leruchi
-      VIBE_MIGRATOR_PASSWORD: migrator
-      VIBE_RUNTIME_PASSWORD: runtime
-      VIBE_REALTIME_PASSWORD: realtime
+      LERUCHI_MIGRATOR_PASSWORD: migrator
+      LERUCHI_RUNTIME_PASSWORD: runtime
+      LERUCHI_REALTIME_PASSWORD: realtime
     ports:
       - "5432:5432"
     healthcheck:
