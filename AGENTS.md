@@ -293,3 +293,10 @@ Agents must continue the first unfinished canonical stage rather than restarting
 Before ending a work session, update `BUILD_STATE.md` with the current stage and status, last validated commit, branch or pull request when applicable, completed work, remaining work, tests and CI status, blockers, decisions, changed packages/files, and the exact next action. Another agent must be able to continue without asking the user what happened.
 
 Use the checkpoint status vocabulary defined in `BUILD_STATE.md`. Code that exists without the required executable evidence is `IMPLEMENTED — NOT YET VALIDATED`, not `VALIDATED`.
+
+
+## Agent Governance v1 handoff
+
+Leruchi Core now contains a bounded Agent Governance foundation under `packages/agent-governance/`. It is a developer-facing identity/authority data contract, not an authentication provider and not an execution authority. Reuse it rather than creating parallel agent identity, mandate, delegation or revocation representations. Actual authorization/execution remains in the existing trusted ExecutionContext → IR validation → planner → Secure Execution Engine path.
+
+Governance records must never be treated as proof of authentication, and future extensions must preserve fail-closed revocation, bounded capabilities and resource scope.
