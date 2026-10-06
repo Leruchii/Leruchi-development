@@ -4,7 +4,7 @@ Status: IN_PROGRESS
 
 ## Purpose
 
-Stage 31 defines an executable release-readiness gate for the public VibeDB Core repository. It does not publish Core by itself.
+Stage 31 defines an executable release-readiness gate for the public Leruchi Core repository. It does not publish Core by itself.
 
 The gate exists so the public repository is produced from an explicit allowlist rather than by copying the private development repository wholesale.
 
@@ -33,7 +33,7 @@ The public release must not contain:
 2. Run the OSS readiness audit against that candidate.
 3. Run the full repository regression matrix on the exact candidate source.
 4. Review the generated candidate contents.
-5. Publish the sanitized candidate to the public VibeDB repository only after the gate is green.
+5. Publish the sanitized candidate to the public Leruchi repository only after the gate is green.
 6. Tag the public release from the exact published commit.
 
 The public repository remains separate. Internal files are never made public merely because they exist in the development repository.
@@ -60,16 +60,16 @@ Stage 31 is VALIDATED only when:
 
 ## Product naming gate
 
-Before Stage 32 public publication, the product naming clearance review in `knowledge/decisions/product-naming-review.md` must be completed. VibeDB remains the provisional engineering name; this does not block Stage 31 technical work, but public brand lock must wait for the documented clearance decision.
+Before Stage 32 public publication, the product naming clearance review in `knowledge/decisions/product-naming-review.md` must be completed. Leruchi remains the provisional engineering name; this does not block Stage 31 technical work, but public brand lock must wait for the documented clearance decision.
 
 ## Explicit non-goal
 
-Do not publish the public VibeDB repository during Stage 31. Publication is a separate controlled stage after this readiness gate.
+Do not publish the public Leruchi repository during Stage 31. Publication is a separate controlled stage after this readiness gate.
 ## License decision
 
 **Selected license: Apache License 2.0 (Apache-2.0).**
 
-Apache-2.0 is the approved license for VibeDB Core's public OSS release. The repository root includes the standard Apache-2.0 LICENSE file, and the root package metadata declares the SPDX identifier `Apache-2.0`. This decision applies to the VibeDB Core OSS release boundary; private Cloud/Enterprise code remains outside that public release.
+Apache-2.0 is the approved license for Leruchi Core's public OSS release. The repository root includes the standard Apache-2.0 LICENSE file, and the root package metadata declares the SPDX identifier `Apache-2.0`. This decision applies to the Leruchi Core OSS release boundary; private Cloud/Enterprise code remains outside that public release.
 
 The license decision resolves the Stage 31 OSS release license blocker. Stage 31 remains IN_PROGRESS until the exact candidate, readiness audit, and required regression matrix are green.
 
