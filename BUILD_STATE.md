@@ -2,37 +2,36 @@
 
 This file is the canonical handoff checkpoint for coding agents.
 
-Agents must verify this state against Git history, implementation, tests, CI, and `BUILD_PLAN.md` before continuing. If evidence conflicts with this file, executable repository evidence wins and this file must be corrected.
+Agents must verify this state against Git history, implementation, tests, CI, and BUILD_PLAN.md before continuing. If evidence conflicts with this file, executable repository evidence wins and this file must be corrected.
 
 ## Current checkpoint
 
-- Current stage: 30 — Agent Trace & Replay
-- Current status: VALIDATED
+- Current stage: 31 — OSS Core Readiness Gate
+- Current status: IN_PROGRESS
 - Last validated stage: 30 — Agent Trace & Replay
 - Last validated main commit: 2bf62dc138667d834728d0dbddbdd8c29dd1fda9
-- Stage 30 validated candidate head: d6105f32338d9d4461fc2099cc0485061c763aa2
+- Stage 31 branch: stage31-oss-core-readiness
 - Stage 30 PR: #59 (merged)
-- Active branch: main
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
 - Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
 
-Stage 30 validation evidence:
-- exact candidate head d6105f32338d9d4461fc2099cc0485061c763aa2 passed 30/30 repository workflows;
-- Stage 30 focused workflow passed;
-- Architecture Regression Audit passed;
-- Stage State Gate passed;
-- all historical/product workflows on the exact candidate head completed successfully;
-- PR #59 merged only after the exact candidate head was green.
+Stage 31 implementation checkpoint:
+- executable OSS Core readiness audit;
+- adversarial readiness tests for private paths, credentials and Node 20;
+- Stage 31 focused workflow using Node 24;
+- durable Stage 31 decision record;
+- build plan updated to make Stage 32 the controlled public-publication stage after Stage 31 exits green.
 
-Stage 30 implementation checkpoint:
-- bounded Agent Trace v1;
-- sanitized canonical Agent Intent/Cross-Modal Plan artifacts;
-- deterministic artifact hashing;
-- bounded expected/observed outcomes;
-- non-executing replay and regression diff;
-- REST, SDK, CLI and MCP convergence;
-- no new execution authority.
+Stage 31 is intentionally pre-publication. Do not publish the public repository until the exact candidate passes the readiness gate and required regression matrix.
+
+Exact next action:
+1. run the Stage 31 focused workflow and inspect failures;
+2. fix real audit/test defects without weakening the gate;
+3. add/verify the sanitized release candidate construction and public package metadata;
+4. run the exact-head repository regression matrix;
+5. merge only after the exact head is green;
+6. update main and internal control state to the validated Stage 31 checkpoint, then begin Stage 32 publication.
 
 ## Verified state
 
