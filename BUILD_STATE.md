@@ -6,41 +6,28 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 27 — Agent Intent → VibeDB IR Boundary
+- Current stage: 28 — Cross-Modal Planning
 - Current status: IMPLEMENTED — NOT YET VALIDATED
-- Last validated stage: 26C — Context Resolution & Secure Execution Contract
-- Last validated main commit: 107ed19e72ac22fcd0b8dfdbeae5f20c0e8bb41e
-- Stage 26C validation: exact PR head passed 26/26 workflows; post-merge main passed 22/22 workflows.
-- Active branch: stage27-agent-intent-ir
+- Last validated stage: 27 — Agent Intent → VibeDB IR Boundary
+- Last validated main commit: 0e089d3cd066f89a6ccbc7ffa86852caedbdc62b
+- Active branch: stage28-cross-modal-planning
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
 - Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
 
-Stage 27 implementation checkpoint:
-- closed, provider-neutral Agent Intent v1 envelope around canonical Query/Retrieval/Context/Mutation IR;
-- deterministic action → target-IR-kind validation;
-- trusted ExecutionContext preflight;
-- required capability derivation from the canonical target IR;
-- deterministic read-only/destructive/idempotent/approval-required metadata;
-- tenant and credential override rejection;
-- 64 KiB binding envelope limit;
-- canonical intent hashing with stable default bindings;
-- non-executing authenticated `POST /v1/agent/intent/explain`;
-- SDK `client.agent().intent(...).explain()`;
-- MCP `agent.intent.explain`;
-- CLI `vibe agent intent explain --intent <file>`;
-- capability denial occurs before Schema Catalog/database access;
-- sanitized observability records request ID/action/outcome/reason/destructive only;
-- no natural-language parser, autonomous authorization, or second executor exists.
+Stage 28 implementation checkpoint:
+- bounded Cross-Modal Plan v1;
+- Query/Retrieval/Context/Mutation canonical IR step composition;
+- dependency DAG validation and deterministic topological order;
+- capability union derived from target IR;
+- tenant/credential injection rejection;
+- destructive mutation metadata without execution;
+- authenticated non-executing plan explanation;
+- SDK, CLI and MCP convergence;
+- focused Stage 28 workflow.
 
-Stage 27 remains NOT YET VALIDATED until the final exact-head focused workflow, Architecture Regression Audit, Stage State Gate and the complete required regression matrix pass.
+Validation remains pending until focused tests and the exact-head full regression matrix pass.
 
-Repository authority:
-- `vibeDB-internal` is authoritative for internal agent instructions, build state/plan, product strategy, internal decisions and development controls.
-- `vibeDB-development` is authoritative for private implementation history and active engineering branches.
-- `vibeDB` is the public OSS release target and only receives explicitly exported public-safe content.
-
-The Stage 21 planner foundation and constrained PostgreSQL recursive fallback are validated. PostgreSQL recursive execution remains a fallback target only when a compatible compiler capability is explicitly registered; AGE remains the default path. Exit evidence covers recursive compilation, explicit Schema Catalog mappings, tenant/RLS isolation, depth/result guardrails, parameter safety, AGE-equivalent normalized results, planner integration, bounded planner observability, and the full regression matrix.
 
 ## Verified state
 

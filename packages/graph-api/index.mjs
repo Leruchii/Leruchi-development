@@ -14,6 +14,7 @@ import {executeRetrieval,RetrievalExecutionError} from "../retrieval-execution/i
 import {explainRetrieval} from "../retrieval-explainability/index.mjs";
 import {explainContext} from "../context-ir/explain.mjs";
 import {resolveContext,preflightContext,ContextResolutionError} from "../context-resolution/index.mjs";
+import {explainCrossModalPlan} from "../cross-modal-planner/index.mjs";
 import {validateAgentIntent,preflightAgentIntent,explainAgentIntent,AgentIntentError} from "../agent-intent/index.mjs";
 import {createAuditEvent,emitAudit} from "../audit/index.mjs";
 import {createObservability} from "../observability/index.mjs";
@@ -70,7 +71,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const isContextExplain=req.method==="POST"&&req.url==="/v1/context/explain";
       const isContextResolve=req.method==="POST"&&req.url==="/v1/context/resolve";
       const isAgentIntentExplain=req.method==="POST"&&req.url==="/v1/agent/intent/explain";
-      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
+      const isCrossModalPlanExplain=req.method==="POST"&&req.url==="/v1/agent/plan/explain";
+      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain&&!isCrossModalPlanExplain)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
@@ -85,6 +87,12 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
         return json(res,200,catalog);
       }
       const input=await body(req);
+      if(isCrossModalPlanExplain){
+        const catalog=await catalogProvider(context);
+        const explanation=explainCrossModalPlan({plan:input.plan,context,catalog,observability,requestId});
+        await record(explanation.status==="ready"?"success":"denied",explanation.reason_code);
+        return json(res,200,{...explanation,request_id:requestId});
+      }
       if(isAgentIntentExplain){
         try{
           validateAgentIntent(input.intent);

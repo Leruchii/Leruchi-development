@@ -1,0 +1,39 @@
+name: Stage 28 - Cross-Modal Planning
+
+on:
+  pull_request:
+    paths:
+      - "packages/cross-modal-planner/**"
+      - "packages/graph-api/**"
+      - "packages/vibe-sdk/**"
+      - "packages/vibe-cli/**"
+      - "packages/mcp-server/**"
+      - "tests/cross-modal-planner/**"
+      - "tests/vibe-sdk/cross-modal-plan.test.mjs"
+      - "tests/cli/cross-modal-plan.test.mjs"
+      - "tests/mcp/mcp-server.test.mjs"
+  push:
+    branches:
+      - "stage28-*"
+
+jobs:
+  cross-modal-planning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Enforce runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Cross-modal planner tests
+        run: node --test tests/cross-modal-planner/*.test.mjs
+      - name: SDK plan tests
+        run: node --test tests/vibe-sdk/cross-modal-plan.test.mjs
+      - name: CLI plan tests
+        run: node --test tests/cli/cross-modal-plan.test.mjs
+      - name: MCP contract tests
+        run: node --test tests/mcp/mcp-server.test.mjs

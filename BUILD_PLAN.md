@@ -1222,3 +1222,39 @@ Exit gate:
 6. post-merge main must establish a clean baseline before Stage 28.
 
 Do not add model-provider integration, free-form natural-language execution, autonomous capability grants, or Agent Intent execution in Stage 27.
+
+
+# Stage 28 — Cross-Modal Planning
+
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
+
+Purpose: compose canonical Query, Retrieval, Context and Mutation IR steps into a bounded, dependency-aware planning contract without creating a second executor or authorization authority.
+
+Required invariants:
+- every step targets exactly one canonical VibeDB IR kind;
+- dependencies form an acyclic bounded graph;
+- required capabilities are derived from canonical target IR;
+- tenant identity, credentials and capability grants cannot be supplied by plans;
+- mutation steps are descriptive only and remain approval-aware;
+- explanation is non-executing;
+- SDK, CLI and MCP converge on the authenticated explanation boundary;
+- observability contains only bounded plan metadata, never tenant identity, bindings or target IR;
+- actual execution must reuse existing Query/Retrieval/Context/Mutation execution boundaries.
+
+Implemented:
+- `packages/cross-modal-planner/index.mjs`
+- cross-modal plan validation, topological ordering and deterministic hashing;
+- authenticated `POST /v1/agent/plan/explain`;
+- SDK `client.agent().plan()`;
+- MCP `agent.plan.explain`;
+- CLI `vibe agent plan explain --plan <file>`;
+- focused adversarial tests and Stage 28 CI.
+
+Exit gate:
+1. focused Stage 28 workflow passes on the final exact head;
+2. Architecture Regression Audit and Stage State Gate pass;
+3. complete historical regression matrix passes;
+4. exact head is merged only while green;
+5. post-merge main establishes a clean baseline before Stage 29.
+
+Do not add plan execution, autonomous authorization, provider-specific model orchestration or a second executor in Stage 28.

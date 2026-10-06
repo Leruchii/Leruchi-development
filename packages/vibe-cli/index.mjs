@@ -117,6 +117,13 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     if(!response.ok)throw new Error(`Diagnostics failed with HTTP ${response.status}`);
     stdout(payload);return 0;
   }
+  if(command==="agent"&&subcommand==="plan"&&rest[0]==="explain"){
+    const client=createClient(clientOptions(cwd,args,fetchImpl));
+    const file=required(args,"plan");
+    const plan=parseJson(fs.readFileSync(path.resolve(cwd,file),"utf8"),"--plan");
+    const result=await client.request("cross-modal-plan-explain",{plan});
+    stdout(print(result,Boolean(args.pretty)));return 0;
+  }
   if(command==="agent"&&subcommand==="intent"&&rest[0]==="explain"){
     const client=createClient(clientOptions(cwd,args,fetchImpl));
     const file=required(args,"intent");
