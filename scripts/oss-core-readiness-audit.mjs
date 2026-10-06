@@ -42,8 +42,14 @@ for (const rel of files) {
     for (const pattern of forbiddenContent) {
       if (pattern.test(text)) failures.push(`forbidden secret pattern in: ${rel}`);
     }
-    if (text.includes("Node.js 20") || /\bnode(?:js)?\s*[:=]\s*20\b/i.test(text)) {
-      failures.push(`forbidden Node.js 20 reference in: ${rel}`);
+    for (const match of text.matchAll(/node-version:\s*["']?([^\s"'#}]+)/gi)) {
+      if (match[1] !== "24") failures.push(`non-24 workflow runtime in ${rel}: ${match[1]}`);
+    }
+    for (const match of text.matchAll(/FROM\s+node:([0-9]+)/gi)) {
+      if (match[1] !== "24") failures.push(`non-24 Docker Node runtime in ${rel}: ${match[1]}`);
+    }
+    for (const match of text.matchAll(/NODE_VERSION\s*=\s*["']?([0-9]+)/gi)) {
+      if (match[1] !== "24") failures.push(`non-24 NODE_VERSION in ${rel}: ${match[1]}`);
     }
   }
 }
@@ -55,6 +61,14 @@ const nvmrc = files.includes(".nvmrc")
   ? fs.readFileSync(path.join(root, ".nvmrc"), "utf8").trim()
   : "";
 if (nvmrc !== "24") failures.push(`public runtime baseline must be Node 24; found: ${nvmrc || "<missing>"}`);
+if (files.includes("package.json")) {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+    if (pkg?.engines?.node !== ">=24 <25") failures.push(`public package engine must be >=24 <25; found: ${pkg?.engines?.node ?? "<missing>"}`);
+  } catch {
+    failures.push("public package.json is invalid JSON");
+  }
+}
 
 if (failures.length) {
   console.error("OSS CORE READINESS: FAIL");
