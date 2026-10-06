@@ -18,6 +18,7 @@ import {explainCrossModalPlan} from "../cross-modal-planner/index.mjs";
 import {validateAgentIntent,preflightAgentIntent,explainAgentIntent,AgentIntentError} from "../agent-intent/index.mjs";
 import {createAuditEvent,emitAudit} from "../audit/index.mjs";
 import {createObservability} from "../observability/index.mjs";
+import {evaluateAgentCases} from "../agent-evaluation/index.mjs";
 
 function json(res,status,payload){res.writeHead(status,{"content-type":"application/json","cache-control":"no-store"});res.end(JSON.stringify(payload));}
 async function body(req){let data="";for await(const chunk of req)data+=chunk;if(data.length>1024*1024)throw new Error("BODY_TOO_LARGE");return data?JSON.parse(data):{};}
@@ -72,7 +73,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       const isContextResolve=req.method==="POST"&&req.url==="/v1/context/resolve";
       const isAgentIntentExplain=req.method==="POST"&&req.url==="/v1/agent/intent/explain";
       const isCrossModalPlanExplain=req.method==="POST"&&req.url==="/v1/agent/plan/explain";
-      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain&&!isCrossModalPlanExplain)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
+      const isAgentEvaluate=req.method==="POST"&&req.url==="/v1/agent/evaluate";
+      if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain&&!isCrossModalPlanExplain&&!isAgentEvaluate)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
       const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
@@ -87,6 +89,17 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
         return json(res,200,catalog);
       }
       const input=await body(req);
+      if(isAgentEvaluate){
+        const catalog=await catalogProvider(context);
+        try{
+          const result=evaluateAgentCases({request:input,context,catalog,observability,requestId});
+          await record(result.status==="pass"?"success":"denied",result.status==="pass"?null:"AGENT_EVALUATION_FAILED");
+          return json(res,200,{...result,request_id:requestId});
+        }catch(error){
+          await record("denied",error?.code??"INVALID_EVALUATION_REQUEST");
+          return json(res,400,{version:"v1",code:error?.code??"INVALID_EVALUATION_REQUEST",message:error?.message??"Invalid evaluation request",request_id:requestId});
+        }
+      }
       if(isCrossModalPlanExplain){
         const catalog=await catalogProvider(context);
         const explanation=explainCrossModalPlan({plan:input.plan,context,catalog,observability,requestId});
