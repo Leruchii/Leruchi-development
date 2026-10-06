@@ -5,8 +5,8 @@ import {createPgMutationExecutor} from "../../packages/mutation-execution/index.
 import {createExecutionContext} from "../../packages/execution-context/index.mjs";
 import {claimBatch,markPublished,markFailed,replayTenantGraph,toClientEvent} from "../../packages/realtime-outbox/index.mjs";
 
-const runtimeUrl=process.env.VIBE_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb";
-const relayUrl=process.env.VIBE_REALTIME_DATABASE_URL??"postgresql://vibe_realtime:realtime@127.0.0.1:5432/vibedb";
+const runtimeUrl=process.env.VIBE_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi";
+const relayUrl=process.env.VIBE_REALTIME_DATABASE_URL??"postgresql://vibe_realtime:realtime@127.0.0.1:5432/leruchi";
 
 async function insertEvent(tenantId,event){
   const client=new Client({connectionString:runtimeUrl});await client.connect();
