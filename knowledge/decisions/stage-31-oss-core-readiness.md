@@ -58,6 +58,10 @@ Stage 31 is VALIDATED only when:
 - the public repository publication procedure is documented and tested without publishing;
 - BUILD_STATE and BUILD_PLAN identify the next action as the OSS publication stage.
 
+## Product naming gate
+
+Before Stage 32 public publication, the product naming clearance review in `knowledge/decisions/product-naming-review.md` must be completed. VibeDB remains the provisional engineering name; this does not block Stage 31 technical work, but public brand lock must wait for the documented clearance decision.
+
 ## Explicit non-goal
 
 Do not publish the public VibeDB repository during Stage 31. Publication is a separate controlled stage after this readiness gate.
