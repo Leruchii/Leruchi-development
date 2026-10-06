@@ -11,7 +11,7 @@ on:
       - "tests/leruchi-sdk/agent-intent.test.mjs"
       - "tests/mcp/mcp-server.test.mjs"
       - "tests/graph-api/api.test.mjs"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-cli/**"
       - "tests/cli/cli.test.mjs"
   push:
     branches:
