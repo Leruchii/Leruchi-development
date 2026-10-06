@@ -1331,3 +1331,27 @@ Required gates:
 The public repository remains a separate repository. Internal AGENTS.md, BUILD_STATE.md, BUILD_PLAN.md, knowledge/, prompts/, .agents/ and private strategy/control material are never copied into the public release merely because they exist in development.
 
 Stage 31 exit requires a green readiness audit and exact candidate validation. The next controlled stage is Stage 32 — Leruchi Core Public Publication, which may publish only the sanitized candidate after the Stage 31 exit gate is green.
+
+
+## Stage 31A — Agent Governance Foundation
+
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
+
+Purpose: add a small Core contract for agent identity, ownership, bounded capabilities, delegation, mandates and revocation so developers can model agent authority without introducing a new execution engine or hosted identity dependency.
+
+Implemented:
+- `packages/agent-governance/index.mjs`
+- `packages/agent-governance/README.md`
+- focused `tests/agent-governance/agent-governance.test.mjs`
+- `knowledge/decisions/stage-31-agent-governance-foundation.md`
+
+Invariants:
+- governance records are not authentication credentials;
+- capability grants are bounded and explicit;
+- revocation and expiry fail closed;
+- mandate/delegation resource scope is enforced when supplied;
+- authorization decisions are non-executing;
+- existing ExecutionContext, IR validation, planner and Secure Execution Engine remain authoritative;
+- DIDs/VCs, blockchain, reputation networks, hardware identity and regulatory graph infrastructure remain deferred.
+
+Validation required before merge: focused tests, adversarial governance checks, architecture/state gates and OSS boundary checks. Do not claim validation without executable evidence.
