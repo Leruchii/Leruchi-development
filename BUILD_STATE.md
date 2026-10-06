@@ -743,3 +743,23 @@ Implementation is in progress. Added bounded non-executing agent evaluation for 
 ## Stage 29 validation
 
 Stage 29 merged as PR #58 at `93022678b151b1945640967ecc09642271c23e62`. Focused evaluation/observability CI, Stage State Gate, Architecture Regression Audit, and the historical regression workflows completed successfully on the candidate head. Evaluation remains non-executing and emits bounded metadata plus deterministic artifact hashes only.
+
+
+## Stage 31A — Agent Governance Foundation
+
+Status: IMPLEMENTED — NOT YET VALIDATED.
+
+Added packages/agent-governance/ with engine-neutral Agent Governance v1 primitives for agent identity, explicit ownership, bounded capabilities, delegation, mandates, revocation and deterministic non-executing authorization decisions. Added focused tests and a decision record.
+
+Security contract:
+- governance records are not authentication proof;
+- revocation and mandate expiry fail closed;
+- capabilities and resource scope are bounded;
+- authorization decisions never execute operations or grant capabilities;
+- existing ExecutionContext, canonical IR validation, planner and Secure Execution Engine remain authoritative.
+
+Deferred from this stage: DIDs/VCs, blockchain/immutable external ledgers, global reputation, hardware-rooted identity, regulatory/legal graph infrastructure and hosted Agent Passport products.
+
+Validation status: not yet executed. GitHub Actions quota remains exhausted, so no CI rerun is claimed. Local executable validation is also not claimed because no local repository execution environment is available through the current GitHub connection.
+
+Exact next action: validate the focused Agent Governance tests and architecture/security/OSS gates when executable CI capacity is available; then decide Stage 31 merge readiness.
