@@ -1,6 +1,6 @@
 # Stage 30 — Agent Trace & Replay
 
-Status: VALIDATED — PR #59 merged after exact candidate head d6105f32338d82e76a8af1b5217228b0198516d02f passed 30/30 workflows.
+Status: VALIDATED — PR #59 merged after exact candidate head d6105f32338d9d4461fc2099cc0485061c763aa2 passed 30/30 workflows.
 
 Stage 30 adds a bounded diagnostic record for agent decisions and a non-executing replay path. It reuses Agent Intent and Cross-Modal Plan explanation logic; it does not create a new planner or execution engine.
 
