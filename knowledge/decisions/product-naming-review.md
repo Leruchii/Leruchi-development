@@ -1,29 +1,29 @@
-# Product Naming Review — VibeDB
+# Product Naming Review — Leruchi
 
 Status: REVIEW REQUIRED BEFORE PUBLIC OSS BRAND LOCK
 
 ## Decision
 
-Do not rename the product during Stage 31 based on this review alone.
+The product name is now finalized as **Leruchi**. The prior working name VibeDB is retained only where historical migration context is necessary.
 
-However, **VibeDB is not sufficiently unique to be treated as a clean long-term brand by default**. The current name should remain provisional until a formal trademark/domain/package/namespace clearance review is completed before Stage 32 public publication.
+However, **Leruchi is not sufficiently unique to be treated as a clean long-term brand by default**. The current name should remain provisional until a formal trademark/domain/package/namespace clearance review is completed before Stage 32 public publication.
 
 ## Why the current name is risky
 
-Current web research found multiple independent uses of the VibeDB/vibeDB name in database-related products and projects, including:
+Current web research found multiple independent uses of the Leruchi/vibeDB name in database-related products and projects, including:
 
-- a managed multi-database service at vibedb.dev;
-- an AI database control-plane product at vibedb.me;
+- a managed multi-database service at leruchi.dev;
+- an AI database control-plane product at leruchi.me;
 - a public GitHub project describing vibeDB as a foundational memory database;
 - a separate SQLite/document-database project with the same name;
 - an existing npm CLI namespace associated with vibeDB;
-- additional public projects using VibeDB for schema generation, desktop database management, and SQLite-as-a-service.
+- additional public projects using Leruchi for schema generation, desktop database management, and SQLite-as-a-service.
 
 These are not legal determinations. They demonstrate naming collision and discoverability risk and justify formal clearance before public brand lock.
 
 ## Product-fit assessment
 
-VibeDB remains a strong descriptive/product-fit name for the current vision:
+Leruchi remains a strong descriptive/product-fit name for the current vision:
 
 - memorable;
 - clearly database-adjacent;
@@ -49,7 +49,7 @@ A rename after public OSS publication would affect substantially more external s
 - examples and integrations;
 - public links, forks, stars and downstream references.
 
-The underlying architecture does not depend on the VibeDB name. Canonical IR, Query/Mutation/Retrieval IR, planner, validation/auth/capability boundaries, MCP safety, evaluation, observability, trace/replay, and PostgreSQL/AGE/pgvector architecture can remain unchanged through a rename.
+The underlying architecture does not depend on the Leruchi name. Canonical IR, Query/Mutation/Retrieval IR, planner, validation/auth/capability boundaries, MCP safety, evaluation, observability, trace/replay, and PostgreSQL/AGE/pgvector architecture can remain unchanged through a rename.
 
 ## Required clearance gate before Stage 32
 
@@ -70,7 +70,7 @@ A legal trademark search or legal opinion must not be inferred from ordinary web
 
 ## Current release recommendation
 
-**Keep VibeDB provisionally for engineering continuity. Do not publish the public OSS brand until the naming clearance gate is complete.**
+**Keep Leruchi provisionally for engineering continuity. Do not publish the public OSS brand until the naming clearance gate is complete.**
 
 If clearance is unfavorable, rename before Stage 32 and perform a controlled repository-wide migration rather than a blind global text replacement.
 
