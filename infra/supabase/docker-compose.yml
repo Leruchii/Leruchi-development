@@ -6,7 +6,7 @@ services:
       GOTRUE_API_PORT: 9999
       API_EXTERNAL_URL: http://localhost:9999
       GOTRUE_DB_DRIVER: postgres
-      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:vibe_compat_auth@db:5432/vibedb?search_path=auth
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:vibe_compat_auth@db:5432/leruchi?search_path=auth
       GOTRUE_SITE_URL: http://localhost:3000
       GOTRUE_URI_ALLOW_LIST: http://localhost:3000
       GOTRUE_DISABLE_SIGNUP: "true"
@@ -33,7 +33,7 @@ services:
   rest:
     image: postgrest/postgrest:v14.17
     environment:
-      PGRST_DB_URI: postgres://authenticator:vibe_compat_authenticator@db:5432/vibedb
+      PGRST_DB_URI: postgres://authenticator:vibe_compat_authenticator@db:5432/leruchi
       PGRST_DB_SCHEMAS: vibe_app
       PGRST_DB_EXTRA_SEARCH_PATH: public,ag_catalog
       PGRST_DB_ANON_ROLE: anon
@@ -61,7 +61,7 @@ services:
       DB_PORT: 5432
       DB_USER: supabase_admin
       DB_PASSWORD: vibe_compat_admin
-      DB_NAME: vibedb
+      DB_NAME: leruchi
       DB_AFTER_CONNECT_QUERY: SET search_path TO _realtime
       DB_ENC_KEY: supabaserealtime
       API_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
@@ -85,18 +85,18 @@ services:
       SERVICE_KEY: stage-03-service
       POSTGREST_URL: http://rest:3000
       AUTH_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
-      DATABASE_URL: postgres://supabase_storage_admin:vibe_compat_storage@db:5432/vibedb?search_path=storage
+      DATABASE_URL: postgres://supabase_storage_admin:vibe_compat_storage@db:5432/leruchi?search_path=storage
       STORAGE_PUBLIC_URL: http://localhost:5000
       FILE_SIZE_LIMIT: 52428800
       STORAGE_BACKEND: file
-      GLOBAL_S3_BUCKET: vibedb
+      GLOBAL_S3_BUCKET: leruchi
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       TENANT_ID: vibe-stage-03
       REGION: local
       ENABLE_IMAGE_TRANSFORMATION: "false"
       IMGPROXY_URL: http://imgproxy:5001
     volumes:
-      - vibedb_storage:/var/lib/storage
+      - leruchi_storage:/var/lib/storage
     depends_on:
       db:
         condition: service_healthy
@@ -111,7 +111,7 @@ services:
       IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
       IMGPROXY_USE_ETAG: "true"
     volumes:
-      - vibedb_storage:/var/lib/storage
+      - leruchi_storage:/var/lib/storage
 
   supavisor:
     profiles: ["pooler"]
@@ -120,7 +120,7 @@ services:
       PORT: 4000
       POSTGRES_PORT: 5432
       POSTGRES_HOST: db
-      POSTGRES_DB: vibedb
+      POSTGRES_DB: leruchi
       POSTGRES_PASSWORD: postgres
       DATABASE_URL: ecto://supabase_admin:vibe_compat_admin@db:5432/_supabase
       CLUSTER_POSTGRES: "true"
@@ -140,4 +140,4 @@ services:
         condition: service_healthy
 
 volumes:
-  vibedb_storage:
+  leruchi_storage:
