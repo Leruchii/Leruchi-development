@@ -35,26 +35,26 @@ jobs:
           node tests/planner/planner.test.mjs
           node --test tests/graph-api/api.test.mjs
       - name: Build PostgreSQL image
-        run: docker build -t vibedb-stage21 -f infra/docker/postgres/Dockerfile .
+        run: docker build -t leruchi-stage21 -f infra/docker/postgres/Dockerfile .
       - name: Start PostgreSQL
         run: |
-          docker run -d --name vibedb-stage21-db -p 55435:5432             -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=vibedb             -e VIBE_MIGRATOR_PASSWORD=migrator -e VIBE_RUNTIME_PASSWORD=runtime -e VIBE_REALTIME_PASSWORD=realtime             -v "$GITHUB_WORKSPACE/infra/docker/postgres/init:/docker-entrypoint-initdb.d:ro" vibedb-stage21
+          docker run -d --name leruchi-stage21-db -p 55435:5432             -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=leruchi             -e VIBE_MIGRATOR_PASSWORD=migrator -e VIBE_RUNTIME_PASSWORD=runtime -e VIBE_REALTIME_PASSWORD=realtime             -v "$GITHUB_WORKSPACE/infra/docker/postgres/init:/docker-entrypoint-initdb.d:ro" leruchi-stage21
           for attempt in $(seq 1 60); do
-            docker exec vibedb-stage21-db pg_isready -U postgres -d vibedb >/dev/null 2>&1 && exit 0
+            docker exec leruchi-stage21-db pg_isready -U postgres -d leruchi >/dev/null 2>&1 && exit 0
             sleep 2
           done
-          docker logs vibedb-stage21-db
+          docker logs leruchi-stage21-db
           exit 1
       - name: Database traversal, RLS, depth, limit and parameter-safety evidence
         env:
-          ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55435/vibedb
-          DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:55435/vibedb
+          ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55435/leruchi
+          DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:55435/leruchi
         run: node tests/postgresql-recursive-compiler/integration.mjs
       - name: Database logs on failure
         if: failure()
-        run: docker logs vibedb-stage21-db || true
+        run: docker logs leruchi-stage21-db || true
       - name: Stop PostgreSQL
         if: always()
-        run: docker rm -f vibedb-stage21-db >/dev/null 2>&1 || true
+        run: docker rm -f leruchi-stage21-db >/dev/null 2>&1 || true
       - name: Architecture regression audit
         run: node tests/architecture/contract-audit.mjs
