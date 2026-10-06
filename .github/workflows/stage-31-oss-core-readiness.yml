@@ -27,6 +27,8 @@ jobs:
         run: node scripts/assert-runtime-policy.mjs
       - name: Run OSS readiness tests
         run: node --test tests/oss-core-readiness/*.test.mjs
+      - name: Validate public export manifest
+        run: node tests/oss-core-readiness/public-export-manifest.test.mjs && node scripts/public-oss-export-audit.mjs
       - name: Audit development tree for forbidden release content
         run: |
           temp_dir="$RUNNER_TEMP/vibedb-oss-audit"
