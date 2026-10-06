@@ -1,0 +1,38 @@
+name: Stage 29 - Agent Evaluation & Observability
+
+on:
+  pull_request:
+    paths:
+      - "packages/agent-evaluation/**"
+      - "packages/agent-intent/**"
+      - "packages/cross-modal-planner/**"
+      - "packages/observability/**"
+      - "packages/graph-api/**"
+      - "packages/vibe-sdk/**"
+      - "packages/vibe-cli/**"
+      - "packages/mcp-server/**"
+      - "tests/agent-evaluation/**"
+      - "tests/observability/**"
+  push:
+    branches:
+      - "stage29-*"
+
+jobs:
+  agent-evaluation-observability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Enforce runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Agent evaluation tests
+        run: node --test tests/agent-evaluation/*.test.mjs
+      - name: Observability regression tests
+        run: node --test tests/observability/*.test.mjs
+      - name: SDK/CLI/MCP regression
+        run: node --test tests/vibe-sdk/*.test.mjs tests/cli/*.test.mjs tests/mcp/*.test.mjs
