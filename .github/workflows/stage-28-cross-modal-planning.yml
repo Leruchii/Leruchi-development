@@ -21,14 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: npm install --ignore-scripts
-      - name: Reject deprecated Node 20 references
-        run: node scripts/assert-no-node20.mjs
+      - name: Enforce runtime policy
+        run: node scripts/assert-runtime-policy.mjs
       - name: Cross-modal planner tests
         run: node --test tests/cross-modal-planner/*.test.mjs
       - name: SDK plan tests
