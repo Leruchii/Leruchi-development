@@ -27,7 +27,9 @@ export const MCP_TOOL_POLICIES=Object.freeze({
   "context.resolve":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true}),
   "agent.intent.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
   "agent.plan.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
-  "agent.evaluate":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true})
+  "agent.evaluate":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
+  "agent.trace":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
+  "agent.replay":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true})
 });
 
 function maxDepth(value,depth=0){
@@ -58,6 +60,8 @@ export const MCP_TOOLS=[
   {name:"agent.intent.explain",description:"Validate and explain a structured Agent Intent without executing it. The intent must target a canonical VibeDB IR; authorization remains server-authoritative.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["intent"],properties:{intent:IR},additionalProperties:false}},
   {name:"agent.plan.explain",description:"Validate and explain a cross-modal plan without executing it. It may compose canonical Query, Retrieval, Context and Mutation IR steps.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["plan"],properties:{plan:IR},additionalProperties:false}},
   {name:"agent.evaluate",description:"Run bounded, non-executing evaluation cases for Agent Intents or cross-modal plans. Returns pass/fail metadata and hashes, never raw target IR.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["cases"],properties:{cases:{type:"array",maxItems:64,items:{type:"object"}}},additionalProperties:false}},
+  {name:"agent.trace",description:"Create a bounded sanitized Agent Trace without executing the traced artifact. Sensitive identity, credentials and engine fragments are removed.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["artifact_kind","artifact","expected"],properties:{artifact_kind:{type:"string",enum:["agent_intent","cross_modal_plan"]},artifact:IR,expected:{type:"object"},outcome:{type:"object"},case_name:{type:"string"}},additionalProperties:false}},
+  {name:"agent.replay",description:"Replay a validated Agent Trace through the existing explanation boundary without executing SQL, Cypher or mutations.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["trace"],properties:{trace:IR}},additionalProperties:false}});
 ];
 
 function result(data){return {content:[{type:"text",text:JSON.stringify(data)}]};}
