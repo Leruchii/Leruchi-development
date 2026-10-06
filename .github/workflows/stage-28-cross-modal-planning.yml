@@ -6,7 +6,7 @@ on:
       - "packages/cross-modal-planner/**"
       - "packages/graph-api/**"
       - "packages/leruchi-sdk/**"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-cli/**"
       - "packages/mcp-server/**"
       - "tests/cross-modal-planner/**"
       - "tests/leruchi-sdk/cross-modal-plan.test.mjs"
