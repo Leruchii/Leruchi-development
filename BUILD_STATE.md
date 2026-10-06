@@ -7,10 +7,10 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 29 — Agent Evaluation & Observability
-- Current status: IN_PROGRESS
-- Last validated stage: 28 — Cross-Modal Planning
-- Last validated main commit: 04f0f7c6ff0d2dc3c595c409b77fd5fe6c880e3e
-- Active branch: stage29-agent-evaluation-observability
+- Current status: VALIDATED — MERGED
+- Last validated stage: 29 — Agent Evaluation & Observability
+- Last validated main commit: 93022678b151b1945640967ecc09642271c23e62e
+- Active branch: main
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
 - Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
@@ -734,3 +734,8 @@ PR #50 merged as `1cd6a9ab42e7c681fe7c134890b8e360efa819a3`. The Stage 25 merge 
 ## Stage 29 handoff
 
 Implementation is in progress. Added bounded non-executing agent evaluation for Agent Intent and Cross-Modal Plan artifacts, with REST/SDK/MCP/CLI convergence and evaluation metrics. Focused CI and exact-head regression validation remain before merge.
+
+
+## Stage 29 validation
+
+Stage 29 merged as PR #58 at `93022678b151b1945640967ecc09642271c23e62`. Focused evaluation/observability CI, Stage State Gate, Architecture Regression Audit, and the historical regression workflows completed successfully on the candidate head. Evaluation remains non-executing and emits bounded metadata plus deterministic artifact hashes only.
