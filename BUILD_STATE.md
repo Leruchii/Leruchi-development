@@ -763,3 +763,8 @@ Deferred from this stage: DIDs/VCs, blockchain/immutable external ledgers, globa
 Validation status: not yet executed. GitHub Actions quota remains exhausted, so no CI rerun is claimed. Local executable validation is also not claimed because no local repository execution environment is available through the current GitHub connection.
 
 Exact next action: validate the focused Agent Governance tests and architecture/security/OSS gates when executable CI capacity is available; then decide Stage 31 merge readiness.
+
+
+## Stage 31A workflow integration
+
+The Stage 31 OSS readiness workflow now watches `packages/agent-governance/**` and `tests/agent-governance/**` and runs the focused Agent Governance test file. This workflow change has not been executed because GitHub Actions capacity is exhausted.
