@@ -11,6 +11,8 @@ on:
       - "tests/agent-trace-replay/**"
       - "tests/agent-evaluation/**"
       - "tests/observability/**"
+      - "packages/mcp-server/**"
+      - "tests/mcp/mcp-server.test.mjs"
   push:
     branches:
       - "stage30-*"
@@ -29,3 +31,4 @@ jobs:
       - run: node --test tests/agent-trace-replay/*.test.mjs
       - run: node --test tests/agent-evaluation/*.test.mjs
       - run: node --test tests/observability/*.test.mjs
+      - run: node --test tests/mcp/mcp-server.test.mjs
