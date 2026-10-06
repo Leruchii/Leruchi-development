@@ -9,7 +9,7 @@ on:
       - "packages/observability/**"
       - "packages/graph-api/**"
       - "packages/leruchi-sdk/**"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-cli/**"
       - "packages/mcp-server/**"
       - "tests/agent-evaluation/**"
       - "tests/observability/**"
