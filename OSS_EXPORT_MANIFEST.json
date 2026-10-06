@@ -3,6 +3,7 @@
   "purpose": "Explicit public OSS export allowlist for Fikunmii/vibeDB",
   "include": [
     "README.md",
+    ".nvmrc",
     "LICENSE",
     "CONTRIBUTING.md",
     "SECURITY.md",
