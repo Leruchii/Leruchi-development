@@ -11,7 +11,7 @@ test("Graph API pool defaults are explicit and bounded",async()=>{
     query_timeout:35000,
     allowExitOnIdle:false
   });
-  const pool=createPool("postgresql://example.invalid/vibedb",{max:4});
+  const pool=createPool("postgresql://example.invalid/leruchi",{max:4});
   try{
     assert.equal(pool.options.max,4);
     assert.equal(pool.options.connectionTimeoutMillis,5000);
