@@ -1,0 +1,34 @@
+name: Stage 30 Agent Trace Checks
+
+on:
+  pull_request:
+    paths:
+      - "packages/agent-trace-replay/**"
+      - "packages/agent-evaluation/**"
+      - "packages/agent-intent/**"
+      - "packages/cross-modal-planner/**"
+      - "packages/observability/**"
+      - "tests/agent-trace-replay/**"
+      - "tests/agent-evaluation/**"
+      - "tests/observability/**"
+      - "packages/mcp-server/**"
+      - "tests/mcp/mcp-server.test.mjs"
+  push:
+    branches:
+      - "stage30-*"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm install --ignore-scripts
+      - run: node scripts/assert-runtime-policy.mjs
+      - run: node --test tests/agent-trace-replay/*.test.mjs
+      - run: node --test tests/agent-evaluation/*.test.mjs
+      - run: node --test tests/observability/*.test.mjs
+      - run: node --test tests/mcp/mcp-server.test.mjs

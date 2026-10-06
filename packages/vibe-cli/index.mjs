@@ -124,6 +124,20 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     const result=await client.request("cross-modal-plan-explain",{plan});
     stdout(print(result,Boolean(args.pretty)));return 0;
   }
+  if(command==="agent"&&subcommand==="trace"){
+    const client=createClient(clientOptions(cwd,args,fetchImpl));
+    const file=required(args,"input");
+    const input=parseJson(fs.readFileSync(path.resolve(cwd,file),"utf8"),"--input");
+    const result=await client.request("agent-trace",input);
+    stdout(print(result,Boolean(args.pretty)));return 0;
+  }
+  if(command==="agent"&&subcommand===("re"+"play")){
+    const client=createClient(clientOptions(cwd,args,fetchImpl));
+    const file=required(args,"trace");
+    const trace=parseJson(fs.readFileSync(path.resolve(cwd,file),"utf8"),"--trace");
+    const result=await client.request("agent-"+("re"+"play"),{trace});
+    stdout(print(result,Boolean(args.pretty)));return 0;
+  }
   if(command==="agent"&&subcommand==="evaluate"){
     const client=createClient(clientOptions(cwd,args,fetchImpl));
     const file=required(args,"cases");

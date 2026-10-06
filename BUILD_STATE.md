@@ -6,28 +6,25 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 29 — Agent Evaluation & Observability
-- Current status: VALIDATED — MERGED
+- Current stage: 30 — Agent Trace & Replay
+- Current status: IN_PROGRESS
 - Last validated stage: 29 — Agent Evaluation & Observability
-- Last validated main commit: 93022678b151b1945640967ecc09642271c23e62e
-- Active branch: main
+- Last validated main commit: 91cb1cf0e0bf63ca1ba3748370003deb0bafadfb
+- Active branch: stage30-agent-trace-replay
+- Stage 30 candidate head: 15773ec190b2f68ee13558c0142ef0f4c9646bb5
+- Stage 30 PR: #59
 - Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
 - Development repository: Fikunmii/vibeDB-development (PRIVATE)
 - Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
 
-Stage 28 implementation checkpoint:
-- bounded Cross-Modal Plan v1;
-- Query/Retrieval/Context/Mutation canonical IR step composition;
-- dependency DAG validation and deterministic topological order;
-- capability union derived from target IR;
-- tenant/credential injection rejection;
-- destructive mutation metadata without execution;
-- authenticated non-executing plan explanation;
-- SDK, CLI and MCP convergence;
-- focused Stage 28 workflow.
-
-Validation complete: Stage 28 focused CI and the exact-head full regression matrix passed 30/30 before merge.
-
+Stage 30 implementation checkpoint:
+- bounded Agent Trace v1;
+- sanitized canonical Agent Intent/Cross-Modal Plan artifacts;
+- deterministic artifact hashing;
+- bounded expected/observed outcomes;
+- non-executing replay and regression diff;
+- REST, SDK, CLI and MCP convergence;
+- no new execution authority.
 
 ## Verified state
 
