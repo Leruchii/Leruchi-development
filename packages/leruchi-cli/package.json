@@ -1,12 +1,12 @@
 {
-  "name": "@vibeplatform/cli",
+  "name": "@leruchi/cli",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "vibe": "./bin/vibe.mjs"
+    "leruchi": "./bin/vibe.mjs"
   },
   "dependencies": {
-    "@vibeplatform/sdk": "file:../leruchi-sdk"
+    "@leruchi/sdk": "file:../leruchi-sdk"
   }
 }
