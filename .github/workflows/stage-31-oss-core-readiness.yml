@@ -1,0 +1,37 @@
+name: Stage 31 - OSS Core Readiness
+
+on:
+  pull_request:
+    paths:
+      - "scripts/oss-core-readiness-audit.mjs"
+      - "tests/oss-core-readiness/**"
+      - "knowledge/decisions/stage-31-oss-core-readiness.md"
+      - ".nvmrc"
+      - "package.json"
+  push:
+    branches:
+      - "stage31-*"
+
+jobs:
+  oss-core-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Enforce runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Run OSS readiness tests
+        run: node --test tests/oss-core-readiness/*.test.mjs
+      - name: Audit development tree for forbidden release content
+        run: |
+          temp_dir="$RUNNER_TEMP/vibedb-oss-audit"
+          rm -rf "$temp_dir"
+          mkdir -p "$temp_dir"
+          cp README.md "$temp_dir/README.md"
+          cp .nvmrc "$temp_dir/.nvmrc"
+          node scripts/oss-core-readiness-audit.mjs "$temp_dir"
