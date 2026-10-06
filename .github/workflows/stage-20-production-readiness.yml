@@ -10,7 +10,7 @@ on:
       - "infra/catalog/**"
       - "infra/docker/postgres/**"
       - "scripts/production-readiness-audit.mjs"
-      - "scripts/vibedb-backup.sh"
+      - "scripts/leruchi-backup.sh"
       - "tests/production-readiness/**"
       - "tests/backup-recovery/**"
       - "knowledge/decisions/stage-20-production-readiness.md"
@@ -37,42 +37,42 @@ jobs:
         run: node scripts/production-readiness-audit.mjs
       - name: Production readiness policy tests
         run: node --test tests/production-readiness/*.test.mjs
-      - name: Build production VibeDB database image
-        run: docker build -t vibedb-stage20 -f infra/docker/postgres/Dockerfile .
+      - name: Build production Leruchi database image
+        run: docker build -t leruchi-stage20 -f infra/docker/postgres/Dockerfile .
       - name: Start upgrade source database
         run: |
-          docker run -d --name vibedb-stage20-db \
+          docker run -d --name leruchi-stage20-db \
             -p 55434:5432 \
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=postgres \
-            -e POSTGRES_DB=vibedb \
+            -e POSTGRES_DB=leruchi \
             -e VIBE_MIGRATOR_PASSWORD=migrator \
             -e VIBE_RUNTIME_PASSWORD=runtime \
             -e VIBE_REALTIME_PASSWORD=realtime \
             -v "$GITHUB_WORKSPACE/infra/docker/postgres/init:/docker-entrypoint-initdb.d:ro" \
-            vibedb-stage20
+            leruchi-stage20
           for attempt in $(seq 1 60); do
-            if docker exec vibedb-stage20-db pg_isready -U postgres -d vibedb >/dev/null 2>&1; then
+            if docker exec leruchi-stage20-db pg_isready -U postgres -d leruchi >/dev/null 2>&1; then
               exit 0
             fi
             sleep 2
           done
-          docker logs vibedb-stage20-db
+          docker logs leruchi-stage20-db
           exit 1
       - name: Supported schema upgrade and checksum-drift drill
         env:
-          DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:55434/vibedb
-          ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55434/vibedb
+          DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:55434/leruchi
+          ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55434/leruchi
         run: bash tests/production-readiness/upgrade-drill.sh
       - name: Bounded database pool concurrency smoke
         env:
-          DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:55434/vibedb
+          DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:55434/leruchi
         run: node tests/production-readiness/concurrency-smoke.mjs
       - name: Database logs on failure
         if: failure()
-        run: docker logs vibedb-stage20-db || true
+        run: docker logs leruchi-stage20-db || true
       - name: Stop Stage 20 database
         if: always()
-        run: docker rm -f vibedb-stage20-db >/dev/null 2>&1 || true
+        run: docker rm -f leruchi-stage20-db >/dev/null 2>&1 || true
       - name: Architecture regression audit
         run: node tests/architecture/contract-audit.mjs
