@@ -1,12 +1,12 @@
-# VibePlatform AI Engineering Constitution
+# Leruchi AI Engineering Constitution
 
-VibePlatform is a secure developer platform that makes relational, graph, vector, realtime, and AI-agent access feel like one database.
+Leruchi is a secure developer platform that makes relational, graph, vector, realtime, and AI-agent access feel like one database.
 
 This file is the top-level engineering contract for coding agents. It governs architecture, security, implementation order, evidence, and UI work.
 
 ## 1. Core architecture
 
-VibePlatform is organised into five planes:
+Leruchi is organised into five planes:
 
 1. **Developer Plane** — JavaScript SDK, CLI, Dashboard, Graph Studio, MCP and REST surfaces.
 2. **API / Compiler Plane** — Graph API, Query IR, validation, planner, compilers, Schema Catalog, RAG API, mutation engine and policy evaluation.
@@ -73,7 +73,7 @@ Vibe's Intermediate Representation is not an implementation detail and must be r
 
 ## 3B. Agent action + developer-first product priority
 
-VibeDB is explicitly a two-way platform for AI agents and a first-class developer database.
+Leruchi is explicitly a two-way platform for AI agents and a first-class developer database.
 
 - MCP must support both **read/retrieval** and **authorized write/action** workflows.
 - An agent may act on behalf of a human only through the same trusted identity, tenant, capability, validation, RLS, mutation-approval and audit boundaries used by other Vibe clients.
@@ -81,7 +81,7 @@ VibeDB is explicitly a two-way platform for AI agents and a first-class develope
 - Destructive or high-impact agent actions require explicit policy such as preview/dry-run, impact/diff review, approval and audit before execution.
 - MCP tools must converge on Query IR / Mutation IR; do not create an agent-only query or mutation language.
 - Developers are a first-class audience: SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio must remain comfortable without requiring knowledge of planners, compilers, AGE or MCP internals.
-- Engine selection is an implementation concern. A developer or agent expresses intent once; VibeDB chooses a safe execution target behind the contract.
+- Engine selection is an implementation concern. A developer or agent expresses intent once; Leruchi chooses a safe execution target behind the contract.
 - Every new agent capability must be evaluated for both developer ergonomics and safe autonomous operation before it becomes a product contract.
 
 ## 3C. MCP tool contract safety
