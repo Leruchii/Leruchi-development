@@ -9,7 +9,7 @@ test("MCP advertises the canonical agent-native graph tools",async()=>{
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:2,method:"initialize",params:{protocolVersion:"2025-06-18"}});
-  assert.equal(response.result.serverInfo.name,"vibedb-mcp");
+  assert.equal(response.result.serverInfo.name,"leruchi-mcp");
   assert.deepEqual(response.result.capabilities,{tools:{}});
 });
 
