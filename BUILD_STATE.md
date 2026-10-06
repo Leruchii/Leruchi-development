@@ -768,3 +768,8 @@ Exact next action: validate the focused Agent Governance tests and architecture/
 ## Stage 31A workflow integration
 
 The Stage 31 OSS readiness workflow now watches `packages/agent-governance/**` and `tests/agent-governance/**` and runs the focused Agent Governance test file. This workflow change has not been executed because GitHub Actions capacity is exhausted.
+
+
+## Node.js 24 baseline hardening
+
+The Stage 31 branch standardized historical workflow runtime pins from Node.js 22 to Node.js 24 across the active repository workflows found during release-readiness audit. Node.js 24 remains the only supported project runtime. This change has not been executed in CI because GitHub Actions capacity is exhausted.
