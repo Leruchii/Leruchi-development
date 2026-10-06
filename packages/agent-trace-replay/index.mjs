@@ -21,6 +21,8 @@ function clean(value,depth=0){
   const out={};
   for(const [key,val] of Object.entries(value)){
     if(FORBIDDEN.test(key))continue;
+    if(/^query$/i.test(key)&&typeof val==="string")continue;
+    if(/^parameters?$/i.test(key)){out[key]=Array.isArray(val)?[]:undefined;continue;}
     out[key]=clean(val,depth+1);
   }
   return out;
