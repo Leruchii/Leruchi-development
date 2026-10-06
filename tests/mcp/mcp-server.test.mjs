@@ -4,7 +4,7 @@ import {handleMcpMessage,MCP_TOOLS} from "../../packages/mcp-server/index.mjs";
 
 test("MCP advertises the canonical agent-native graph tools",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/list"});
-  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query","context.explain","context.resolve","agent.intent.explain","agent.plan.explain","agent.evaluate"]);
+  assert.deepEqual(response.result.tools.map(tool=>tool.name),["schema.discover","graph.query","graph.traverse","graph.mutate","retrieval.explain","retrieval.query","context.explain","context.resolve","agent.intent.explain","agent.plan.explain","agent.evaluate","agent.trace","agent.replay"]);
 });
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
@@ -156,4 +156,80 @@ test("MCP agent.plan.explain is diagnostic", async () => {
   const tool = MCP_TOOLS.find(item => item.name === "agent.plan.explain");
   assert.equal(tool?.annotations.readOnlyHint, true);
   assert.equal(tool?.annotations.destructiveHint, false);
+});
+
+
+test("MCP agent trace and replay are diagnostic and non-executing", async () => {
+  const traceTool = MCP_TOOLS.find(tool => tool.name === "agent.trace");
+  const replayTool = MCP_TOOLS.find(tool => tool.name === "agent.replay");
+  assert.equal(traceTool?.annotations.readOnlyHint, true);
+  assert.equal(traceTool?.annotations.destructiveHint, false);
+  assert.deepEqual(traceTool?.inputSchema.required, ["artifact_kind","artifact","expected"]);
+  assert.equal(replayTool?.annotations.readOnlyHint, true);
+  assert.equal(replayTool?.annotations.destructiveHint, false);
+  assert.deepEqual(replayTool?.inputSchema.required, ["trace"]);
+
+  let calls = 0;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, options) => {
+    calls += 1;
+    assert.match(String(url), /\/v1\/agent\/(trace|replay)$/);
+    return new Response(JSON.stringify({version:"v1",status:"pass"}), {status:200});
+  };
+  const previousBase = process.env.VIBE_API_URL;
+  const previousToken = process.env.VIBE_MCP_ACCESS_TOKEN;
+  process.env.VIBE_API_URL = "https://example.test";
+  process.env.VIBE_MCP_ACCESS_TOKEN = "test-token";
+  try {
+    const traceResponse = await handleMcpMessage({
+      jsonrpc:"2.0", id:"trace", method:"tools/call",
+      params:{name:"agent.trace",arguments:{
+        artifact_kind:"cross_modal_plan",
+        artifact:{version:"v1",kind:"cross_modal_plan",steps:[]},
+        expected:{status:"rejected"}
+      }}
+    });
+    assert.equal(traceResponse.result.isError, undefined);
+    const replayResponse = await handleMcpMessage({
+      jsonrpc:"2.0", id:"replay", method:"tools/call",
+      params:{name:"agent.replay",arguments:{
+        trace:{version:"v1",kind:"agent_trace",trace_id:"t",artifact_kind:"cross_modal_plan",
+          artifact:{version:"v1",kind:"cross_modal_plan",steps:[]},artifact_hash:"0".repeat(64),
+          expected:{status:"rejected"},outcome:null,metadata:{}}
+      }}
+    });
+    assert.equal(replayResponse.result.isError, undefined);
+    assert.equal(calls, 2);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if(previousBase===undefined)delete process.env.VIBE_API_URL;else process.env.VIBE_API_URL=previousBase;
+    if(previousToken===undefined)delete process.env.VIBE_MCP_ACCESS_TOKEN;else process.env.VIBE_MCP_ACCESS_TOKEN=previousToken;
+  }
+});
+
+test("MCP trace rejects tenant identity before transport", async () => {
+  const originalFetch = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => { calls += 1; return new Response("{}", {status:200}); };
+  const previousBase = process.env.VIBE_API_URL;
+  const previousToken = process.env.VIBE_MCP_ACCESS_TOKEN;
+  process.env.VIBE_API_URL = "https://example.test";
+  process.env.VIBE_MCP_ACCESS_TOKEN = "test-token";
+  try {
+    const response = await handleMcpMessage({
+      jsonrpc:"2.0", id:"trace-tenant", method:"tools/call",
+      params:{name:"agent.trace",arguments:{
+        artifact_kind:"cross_modal_plan",
+        artifact:{version:"v1",kind:"cross_modal_plan",steps:[]},
+        expected:{status:"rejected"},tenant_id:"attacker"
+      }}
+    });
+    assert.equal(response.result.isError, true);
+    assert.match(response.result.content[0].text,/Tenant identity is derived/);
+    assert.equal(calls, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if(previousBase===undefined)delete process.env.VIBE_API_URL;else process.env.VIBE_API_URL=previousBase;
+    if(previousToken===undefined)delete process.env.VIBE_MCP_ACCESS_TOKEN;else process.env.VIBE_MCP_ACCESS_TOKEN=previousToken;
+  }
 });
