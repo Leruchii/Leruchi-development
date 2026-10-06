@@ -1,0 +1,36 @@
+name: OSS Core Readiness
+
+on:
+  pull_request:
+    paths:
+      - "OSS_EXPORT_MANIFEST.json"
+      - "scripts/public-oss-export-audit.mjs"
+      - "scripts/oss-core-readiness-audit.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - "README.md"
+      - "LICENSE"
+      - "CONTRIBUTING.md"
+      - "SECURITY.md"
+      - "docker-compose.yml"
+      - "packages/**"
+      - "apps/studio/**"
+      - "infra/**"
+      - "tests/**"
+  push:
+    branches:
+      - "oss-core-readiness"
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm install --ignore-scripts
+      - run: node scripts/assert-runtime-policy.mjs
+      - run: node scripts/public-oss-export-audit.mjs
+      - run: node scripts/oss-core-readiness-audit.mjs
