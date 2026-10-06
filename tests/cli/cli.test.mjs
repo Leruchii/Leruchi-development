@@ -33,7 +33,7 @@ test("remote schema inspection uses authenticated catalog endpoint",async()=>{
 
 test("migration command refuses non-migrator connection URLs",async()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-"));
-  process.env.VIBE_MIGRATOR_DATABASE_URL="postgresql://vibe_runtime:runtime@localhost:5432/vibedb";
+  process.env.VIBE_MIGRATOR_DATABASE_URL="postgresql://vibe_runtime:runtime@localhost:5432/leruchi";
   try {
     await assert.rejects(()=>run(["db","migrate"],{cwd,stdout:()=>{},stderr:()=>{}}),/vibe_migrator/);
   } finally { delete process.env.VIBE_MIGRATOR_DATABASE_URL; }
