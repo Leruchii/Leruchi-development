@@ -10,7 +10,7 @@ on:
       - "packages/retrieval-ir/**"
       - "packages/planner/**"
       - "packages/graph-api/**"
-      - "packages/vibe-sdk/**"
+      - "packages/leruchi-sdk/**"
       - "packages/vibe-cli/**"
       - "packages/mcp-server/**"
       - "packages/observability/**"
