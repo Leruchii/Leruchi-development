@@ -34,7 +34,7 @@ ALTER ROLE supabase_auth_admin SET search_path = auth, public;
 ALTER ROLE supabase_storage_admin SET search_path = storage, public;
 ALTER ROLE supabase_admin SET search_path = _realtime, public;
 
-GRANT CONNECT ON DATABASE vibedb TO anon, authenticated, service_role, authenticator, supabase_auth_admin, supabase_storage_admin, supabase_admin;
+GRANT CONNECT ON DATABASE leruchi TO anon, authenticated, service_role, authenticator, supabase_auth_admin, supabase_storage_admin, supabase_admin;
 GRANT USAGE ON SCHEMA auth TO supabase_auth_admin;
 GRANT USAGE ON SCHEMA storage TO supabase_storage_admin;
 GRANT USAGE ON SCHEMA _realtime TO supabase_admin;
