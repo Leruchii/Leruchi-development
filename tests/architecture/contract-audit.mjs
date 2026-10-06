@@ -44,7 +44,7 @@ for (const file of definerFiles) {
   }
 }
 
-const sdk = read("packages/vibe-sdk/index.mjs");
+const sdk = read("packages/leruchi-sdk/index.mjs");
 const cli = read("packages/vibe-cli/index.mjs");
 for (const [name, source] of [["SDK", sdk], ["CLI", cli]]) {
   if (/\b(cypher|ag_catalog|SELECT\s+|INSERT\s+|UPDATE\s+|DELETE\s+)/i.test(source)) {
