@@ -1,4 +1,4 @@
-# VibePlatform / VibeDB — Canonical Architecture & Build Plan
+# Leruchi / Leruchi — Canonical Architecture & Build Plan
 
 > **Primary source of truth for architecture and implementation order.**
 >
@@ -10,7 +10,7 @@
 
 ## 1. Product definition
 
-VibePlatform / VibeDB is a secure developer/database platform that makes **relational, graph, vector, realtime, and AI-agent access feel like one database**.
+Leruchi / Leruchi is a secure developer/database platform that makes **relational, graph, vector, realtime, and AI-agent access feel like one database**.
 
 The product is not "Supabase plus a graph feature." Its differentiated layer is the Vibe abstraction and developer experience across PostgreSQL, Apache AGE, pgvector, security, query compilation, graph mutations, realtime, and agent access.
 
@@ -170,7 +170,7 @@ Normalized mutation result
 
 ## 3A. Agent action and developer experience priority
 
-VibeDB must support two complementary usage modes without creating separate database semantics:
+Leruchi must support two complementary usage modes without creating separate database semantics:
 
 1. **Developer-first:** SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio provide ergonomic direct access.
 2. **Agent-first:** MCP and AI agents can read data and, when explicitly authorized, create/update/delete data and relationships on behalf of a human.
@@ -731,7 +731,7 @@ Observability must not leak secrets, tenant data or raw database errors.
 
 **Status:** VALIDATED.
 
-PR #42 merged as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`. Dedicated observability, Graph API telemetry, audit, execution, mutation and architecture checks passed. The GitHub Advanced Security external Processing Request failure is tracked as infrastructure/tooling noise rather than a VibeDB regression.
+PR #42 merged as `e3926c7a14a524b08266f7e45d69b2d74a025cbc`. Dedicated observability, Graph API telemetry, audit, execution, mutation and architecture checks passed. The GitHub Advanced Security external Processing Request failure is tracked as infrastructure/tooling noise rather than a Leruchi regression.
 
 ## Stage 17 — Backup + Recovery
 
@@ -1088,16 +1088,16 @@ Do not add autonomous authorization, a second executor, client-controlled tenant
 
 Objectives:
 1. Keep internal engineering control material private.
-2. Keep private implementation history in `vibeDB-development`.
-3. Make `vibeDB` a clean public OSS release target.
+2. Keep private implementation history in `Leruchi-development`.
+3. Make `Leruchi` a clean public OSS release target.
 4. Export only explicit public-safe paths.
 5. Prevent Core from depending on private Cloud/Enterprise implementation.
 6. Document the three-repository authority model for future coding agents.
 
 Repository model:
-- `Fikunmii/vibeDB-internal` — private engineering control plane.
-- `Fikunmii/vibeDB-development` — private implementation/source-of-truth for active engineering.
-- `Fikunmii/vibeDB` — public OSS Core release target.
+- `Fikunmii/Leruchi-internal` — private engineering control plane.
+- `Fikunmii/Leruchi-development` — private implementation/source-of-truth for active engineering.
+- `Fikunmii/Leruchi` — public OSS Core release target.
 
 Required gate:
 - `OSS_EXPORT_MANIFEST.json` is the primary publication allowlist.
@@ -1182,11 +1182,11 @@ Exit gate:
 Do not introduce autonomous authorization, an LLM planner, write-capable Context Resolution, or a second query/retrieval executor in this stage.
 
 
-# Stage 27 — Agent Intent → VibeDB IR Boundary
+# Stage 27 — Agent Intent → Leruchi IR Boundary
 
 **Status:** IMPLEMENTED — NOT YET VALIDATED.
 
-Purpose: give agents and future model adapters one closed, provider-neutral envelope for declaring an intended canonical VibeDB operation without making natural language, an LLM, or MCP an authorization/execution authority.
+Purpose: give agents and future model adapters one closed, provider-neutral envelope for declaring an intended canonical Leruchi operation without making natural language, an LLM, or MCP an authorization/execution authority.
 
 Required invariants:
 - Agent Intent targets exactly one canonical Query, Retrieval, Context or Mutation IR;
@@ -1231,7 +1231,7 @@ Do not add model-provider integration, free-form natural-language execution, aut
 Purpose: compose canonical Query, Retrieval, Context and Mutation IR steps into a bounded, dependency-aware planning contract without creating a second executor or authorization authority.
 
 Required invariants:
-- every step targets exactly one canonical VibeDB IR kind;
+- every step targets exactly one canonical Leruchi IR kind;
 - dependencies form an acyclic bounded graph;
 - required capabilities are derived from canonical target IR;
 - tenant identity, credentials and capability grants cannot be supplied by plans;
