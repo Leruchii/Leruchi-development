@@ -7,7 +7,7 @@ const MAX_DATASET_BYTES=512*1024;
 const MAX_CASES=128;
 const NAME=/^[A-Za-z][A-Za-z0-9_.-]{0,63}$/;
 const EXPECTED=new Set(["status","reason_code","destructive","approval_required"]);
-const FORBIDDEN=/(authorization|cookie|token|secret|password|api[_-]?key|private[_-]?key|credential|tenant[_-]?id|tenantId|embedding|sql|cypher|bindings?)/i;
+const FORBIDDEN=/(authorization|cookie|token|secret|password|api[_-]?key|private[_-]?key|credential|tenant|tenant[_-]?id|tenantId|embedding|sql|cypher|bindings?)/i;
 
 export class AgentTraceError extends Error{constructor(code,message,details=undefined){super(message);this.name="AgentTraceError";this.code=code;this.details=details;}}
 function fail(code,message,details){throw new AgentTraceError(code,message,details);}
@@ -29,6 +29,7 @@ function clean(value,depth=0){
 }
 function safeExpected(expected){
   if(!expected||typeof expected!=="object"||Array.isArray(expected))fail("TRACE_EXPECTATION_INVALID","Expected outcome must be an object");
+  if(Object.keys(expected).length<1)fail("TRACE_EXPECTATION_INVALID","Expected outcome must contain at least one bounded field");
   for(const key of Object.keys(expected))if(!EXPECTED.has(key))fail("TRACE_EXPECTATION_INVALID","Unsupported expected outcome field",{field:key});
   if(expected.status!==undefined&&!["ready","rejected"].includes(expected.status))fail("TRACE_EXPECTATION_INVALID","Expected status must be ready or rejected");
   for(const key of ["reason_code","destructive","approval_required"]){
