@@ -46,7 +46,7 @@ test("rejects credentials", () => {
   const root = makeFixture({
     "README.md": "# VibeDB\n",
     ".nvmrc": "24\n",
-    "config.txt": "github_pat_not-a-real-token\n",
+    "config.txt": ["github", "_pat_", "not-a-real-token\\n"].join(""),
   });
   const result = runAudit(root);
   assert.notEqual(result.status, 0);
