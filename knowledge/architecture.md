@@ -64,7 +64,7 @@ Current implementation target: Stage 24 — Retrieval Explainability, Evaluation
 
 ## Durable agent + developer architecture priority
 
-VibeDB is intentionally designed for both humans/developers and AI agents.
+Leruchi is intentionally designed for both humans/developers and AI agents.
 
 ### Developer path
 
@@ -104,7 +104,7 @@ PostgreSQL / AGE / RLS
 audit/outbox + normalized result
 ```
 
-MCP must support both read and authorized write/action workflows, but must never receive unrestricted database authority. Developers must be able to use VibeDB comfortably without understanding the internal execution engine. This is a durable product and architecture priority for all future coding agents.
+MCP must support both read and authorized write/action workflows, but must never receive unrestricted database authority. Developers must be able to use Leruchi comfortably without understanding the internal execution engine. This is a durable product and architecture priority for all future coding agents.
 
 ## Stage 21–22 planner architecture
 
@@ -165,7 +165,7 @@ Stage 24 remains unvalidated until focused and repository-wide CI evidence is gr
 
 ## Stage 25 architecture — MCP Agent Tool Contract & Input Safety
 
-The MCP gateway remains an agent-facing contract over the existing VibeDB API. Stage 25 adds deterministic safety metadata and bounded input admission before transport.
+The MCP gateway remains an agent-facing contract over the existing Leruchi API. Stage 25 adds deterministic safety metadata and bounded input admission before transport.
 
 - Every tool publishes read-only, destructive, idempotent and open-world hints for agent planning.
 - Tool annotations describe behavior; they do not grant authorization.
