@@ -15,14 +15,17 @@ const excludes = manifest.exclude.map(globToRegExp);
 
 const publicFiles = files.filter((file) => includes.some((r) => r.test(file)));
 const excludedMatches = files.filter((file) => excludes.some((r) => r.test(file)));
-const leaked = excludedMatches.filter((file) => publicFiles.includes(file));
+const uncovered = files.filter((file) => !includes.some((r) => r.test(file)) && !excludes.some((r) => r.test(file)));
+const leaked = excludedMatches.filter((file) => includes.some((r) => r.test(file)));
 
-if (leaked.length) {
+if (leaked.length || uncovered.length) {
   console.error("OSS export contract violation:");
-  for (const file of leaked) console.error(" - " + file);
+  for (const file of leaked) console.error(" - path matches both include and exclude: " + file);
+  for (const file of uncovered) console.error(" - path is neither explicitly exportable nor explicitly private: " + file);
   process.exit(1);
 }
 
 console.log("OSS export contract passed.");
 console.log("Tracked files:", files.length);
 console.log("Export-eligible files:", publicFiles.length);
+console.log("Explicitly private files:", excludedMatches.length);
