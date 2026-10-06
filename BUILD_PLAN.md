@@ -1311,3 +1311,23 @@ Do not add autonomous execution, model-provider orchestration, capability grants
 ## OSS Core Readiness Gate — after Stage 30
 
 The first public Core release is a readiness gate, not an arbitrary stage number. It must verify architecture stability, security boundaries, developer UX, complete required CI, and the public OSS export allowlist/history audit. Private Cloud/Enterprise concerns remain outside the OSS runtime contract.
+
+
+## Stage 31 — OSS Core Readiness Gate
+
+**Status:** IN_PROGRESS.
+
+Stage 31 turns the existing OSS boundary into an executable release-readiness gate. It does not publish the public repository.
+
+Required gates:
+- explicit public release allowlist and sanitized candidate construction;
+- executable audit rejecting internal control/build material, private cloud/enterprise paths, credentials and private keys;
+- Node 24 runtime policy with Node 20 rejected;
+- coherent public package metadata and required public documentation;
+- exact-head product, architecture and security regression evidence;
+- publication procedure tested without publishing;
+- no change to agent/MCP authority boundaries and no trace/replay execution authority.
+
+The public repository remains a separate repository. Internal AGENTS.md, BUILD_STATE.md, BUILD_PLAN.md, knowledge/, prompts/, .agents/ and private strategy/control material are never copied into the public release merely because they exist in development.
+
+Stage 31 exit requires a green readiness audit and exact candidate validation. The next controlled stage is Stage 32 — VibeDB Core Public Publication, which may publish only the sanitized candidate after the Stage 31 exit gate is green.
