@@ -773,3 +773,23 @@ The Stage 31 OSS readiness workflow now watches `packages/agent-governance/**` a
 ## Node.js 24 baseline hardening
 
 The Stage 31 branch standardized historical workflow runtime pins from Node.js 22 to Node.js 24 across the active repository workflows found during release-readiness audit. Node.js 24 remains the only supported project runtime. This change has not been executed in CI because GitHub Actions capacity is exhausted.
+
+
+## Stage 31 validation progress — 2026-10-07
+
+Status remains: IMPLEMENTED — NOT YET VALIDATED.
+
+Validation work completed in this session:
+- focused Agent Governance suite reconstructed from the exact branch files and executed in the available local runtime: 7/7 tests passed after two test-fixture defects were fixed;
+- runtime-policy logic was hardened from a Node 20 blacklist to a positive Node 24-only contract;
+- the runtime-policy script was exercised against positive Node 24 and negative Node 22 fixtures and behaved as expected;
+- the OSS candidate audit was hardened to reject non-24 workflow/Docker/NODE_VERSION configuration and package engines outside >=24 <25;
+- Stage 31 was reconciled with current main and canonical Leruchi identity; PR #62 now reports mergeable=true.
+
+Important evidence limitation:
+- the local container provides Node 22, not Node 24, so the local focused runs are supplemental evidence only and are not the release-runtime validation gate;
+- GitHub Actions runs for the exact head are currently queued; no CI success is claimed until those Node 24 jobs actually execute and pass.
+
+Current Stage 31 head: 311395f22ea4edfbd47656055edd190bcb790a52.
+
+Exact next action: wait for the queued exact-head Node 24 workflow matrix to execute, inspect failures if any, fix them, and only then mark Stage 31/31A validated and merge-ready.
