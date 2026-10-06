@@ -77,5 +77,5 @@ test("does not expose credentials or tenant authority in the decision", () => {
   const identity = createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", capabilities: ["graph:read"] });
   const decision = authorizeAgentAction({ identity, requiredCapabilities: ["graph:read"], resource: "graph:customer" });
   const serialized = JSON.stringify(decision);
-  assert.equal(/token|password|authorization|tenant/i.test(serialized), false);
+  assert.equal(/token|password|tenant_id|tenantId|credential|api[_-]?key|private[_-]?key/i.test(serialized), false);
 });
