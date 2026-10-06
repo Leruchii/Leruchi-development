@@ -1,12 +1,12 @@
-# VibePlatform AI Engineering Constitution
+# Leruchi AI Engineering Constitution
 
-VibePlatform is a secure developer platform that makes relational, graph, vector, realtime, and AI-agent access feel like one database.
+Leruchi is a secure developer platform that makes relational, graph, vector, realtime, and AI-agent access feel like one database.
 
 This file is the top-level engineering contract for coding agents. It governs architecture, security, implementation order, evidence, and UI work.
 
 ## 1. Core architecture
 
-VibePlatform is organised into five planes:
+Leruchi is organised into five planes:
 
 1. **Developer Plane** — JavaScript SDK, CLI, Dashboard, Graph Studio, MCP and REST surfaces.
 2. **API / Compiler Plane** — Graph API, Query IR, validation, planner, compilers, Schema Catalog, RAG API, mutation engine and policy evaluation.
