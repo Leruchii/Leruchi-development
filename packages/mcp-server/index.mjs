@@ -101,6 +101,8 @@ export async function handleMcpMessage(message){
     else if(name==="agent.intent.explain"){ validateAgentIntent(args.intent); data=await api("/v1/agent/intent/explain",{method:"POST",body:JSON.stringify({intent:args.intent})},name); }
     else if(name==="agent.plan.explain"){ data=await api("/v1/agent/plan/explain",{method:"POST",body:JSON.stringify({plan:args.plan})},name); }
     else if(name==="agent.evaluate"){ data=await api("/v1/agent/evaluate",{method:"POST",body:JSON.stringify({cases:args.cases})},name); }
+    else if(name==="agent.trace"){ data=await api("/v1/agent/trace",{method:"POST",body:JSON.stringify(args)},name); }
+    else if(name==="agent.replay"){ data=await api("/v1/agent/replay",{method:"POST",body:JSON.stringify({trace:args.trace})},name); }
     else return {jsonrpc:"2.0",id,result:error("Unknown tool: "+name)};
     return {jsonrpc:"2.0",id,result:result(data)};
   }catch(e){return {jsonrpc:"2.0",id,result:error(e instanceof Error?e.message:"MCP tool failed")};}
