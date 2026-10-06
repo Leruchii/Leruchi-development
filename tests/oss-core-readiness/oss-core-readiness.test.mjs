@@ -53,13 +53,25 @@ test("rejects credentials", () => {
   assert.match(result.stderr, /forbidden secret pattern/);
 });
 
-test("rejects Node.js 20 and requires Node 24", () => {
+test("rejects non-24 Node runtime configuration and requires Node 24", () => {
   const root = makeFixture({
     "README.md": "# VibeDB\n",
-    ".nvmrc": "20\n",
-    "docs/runtime.md": ["Node.js", "20", " is unsupported.\\n"].join(""),
+    ".nvmrc": "22\n",
+    ".github/workflows/test.yml": "steps:\\n  - uses: actions/setup-node@v6\\n    with:\\n      node-version: 22\\n",
   });
   const result = runAudit(root);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, new RegExp(["Node.js", "20"].join(" ") + "|runtime baseline"));
+  assert.match(result.stderr, /non-24 workflow runtime|runtime baseline/);
+});
+
+
+test("rejects a public package engine outside Node 24", () => {
+  const root = makeFixture({
+    "README.md": "# Leruchi\\n",
+    ".nvmrc": "24\\n",
+    "package.json": JSON.stringify({ engines: { node: ">=22 <23" } }),
+  });
+  const result = runAudit(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /public package engine must be >=24 <25/);
 });
