@@ -1,4 +1,4 @@
-# VibePlatform Build State
+# Leruchi Build State
 
 This file is the canonical handoff checkpoint for coding agents.
 
@@ -13,9 +13,9 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Stage 30 validated candidate head: d6105f32338d9d4461fc2099cc0485061c763aa2
 - Stage 30 PR: #59 (merged)
 - Active branch: main
-- Internal control repository: Fikunmii/vibeDB-internal (PRIVATE)
-- Development repository: Fikunmii/vibeDB-development (PRIVATE)
-- Public OSS release repository: Fikunmii/vibeDB (PUBLIC)
+- Internal control repository: Fikunmii/Leruchi-internal (PRIVATE)
+- Development repository: Fikunmii/Leruchi-development (PRIVATE)
+- Public OSS release repository: Fikunmii/Leruchi (PUBLIC)
 
 Stage 30 validation evidence:
 - exact candidate head d6105f32338d9d4461fc2099cc0485061c763aa2 passed 30/30 repository workflows;
@@ -541,7 +541,7 @@ Exact next action:
 
 ## Stage 17 handoff
 
-Stage 16 is merged to main. Repository-wide checks on the final Stage 16 head were green for the product test suites, including the dedicated observability gate, tenant isolation, query validation, retrieval, SDK, CLI and state checks. The GitHub Advanced Security `github-advanced-security` job failed in its external Processing Request step; it is not a VibeDB test or architecture regression and is not treated as a code failure.
+Stage 16 is merged to main. Repository-wide checks on the final Stage 16 head were green for the product test suites, including the dedicated observability gate, tenant isolation, query validation, retrieval, SDK, CLI and state checks. The GitHub Advanced Security `github-advanced-security` job failed in its external Processing Request step; it is not a Leruchi test or architecture regression and is not treated as a code failure.
 
 Stage 17 is now READY_TO_BUILD.
 
@@ -684,7 +684,7 @@ Stage 23 was merged to main in PR #48.
 - Stage State Gate passed.
 - The repository regression matrix passed its required product/architecture workflows.
 
-The separate Code Scanning AI review workflow failed because GitHub's Copilot code-scanning agent exceeded its monthly model quota. This was infrastructure/quota failure, not a VibeDB test, build, security, or product-code failure, and it was not used as a product validation signal.
+The separate Code Scanning AI review workflow failed because GitHub's Copilot code-scanning agent exceeded its monthly model quota. This was infrastructure/quota failure, not a Leruchi test, build, security, or product-code failure, and it was not used as a product validation signal.
 
 ## Stage 24 handoff
 
