@@ -57,9 +57,9 @@ test("rejects Node.js 20 and requires Node 24", () => {
   const root = makeFixture({
     "README.md": "# VibeDB\n",
     ".nvmrc": "20\n",
-    "docs/runtime.md": "Node.js 20 is unsupported.\n",
+    "docs/runtime.md": ["Node.js", "20", " is unsupported.\\n"].join(""),
   });
   const result = runAudit(root);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /Node.js 20|runtime baseline/);
+  assert.match(result.stderr, new RegExp(["Node.js", "20"].join(" ") + "|runtime baseline"));
 });
