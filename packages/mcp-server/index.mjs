@@ -26,7 +26,8 @@ export const MCP_TOOL_POLICIES=Object.freeze({
   "context.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
   "context.resolve":Object.freeze({operation:"read",readOnly:true,destructive:false,idempotent:true}),
   "agent.intent.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
-  "agent.plan.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true})
+  "agent.plan.explain":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true}),
+  "agent.evaluate":Object.freeze({operation:"diagnostic",readOnly:true,destructive:false,idempotent:true})
 });
 
 function maxDepth(value,depth=0){
@@ -56,6 +57,7 @@ export const MCP_TOOLS=[
   {name:"context.resolve",description:"Resolve bounded Context IR through the authenticated VibeDB secure execution path. Tenant identity and capabilities remain server-authoritative.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["ir"],properties:{ir:IR,parameters:PARAMETER_SETS},additionalProperties:false}},
   {name:"agent.intent.explain",description:"Validate and explain a structured Agent Intent without executing it. The intent must target a canonical VibeDB IR; authorization remains server-authoritative.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["intent"],properties:{intent:IR},additionalProperties:false}},
   {name:"agent.plan.explain",description:"Validate and explain a cross-modal plan without executing it. It may compose canonical Query, Retrieval, Context and Mutation IR steps.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["plan"],properties:{plan:IR},additionalProperties:false}},
+  {name:"agent.evaluate",description:"Run bounded, non-executing evaluation cases for Agent Intents or cross-modal plans. Returns pass/fail metadata and hashes, never raw target IR.",annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},inputSchema:{type:"object",required:["cases"],properties:{cases:{type:"array",maxItems:64,items:{type:"object"}}},additionalProperties:false}},
 ];
 
 function result(data){return {content:[{type:"text",text:JSON.stringify(data)}]};}
@@ -94,6 +96,7 @@ export async function handleMcpMessage(message){
     else if(name==="context.resolve"){ validateContextIR(args.ir); data=await api("/v1/context/resolve",{method:"POST",body:JSON.stringify({ir:args.ir,parameters:args.parameters??[]})},name); }
     else if(name==="agent.intent.explain"){ validateAgentIntent(args.intent); data=await api("/v1/agent/intent/explain",{method:"POST",body:JSON.stringify({intent:args.intent})},name); }
     else if(name==="agent.plan.explain"){ data=await api("/v1/agent/plan/explain",{method:"POST",body:JSON.stringify({plan:args.plan})},name); }
+    else if(name==="agent.evaluate"){ data=await api("/v1/agent/evaluate",{method:"POST",body:JSON.stringify({cases:args.cases})},name); }
     else return {jsonrpc:"2.0",id,result:error("Unknown tool: "+name)};
     return {jsonrpc:"2.0",id,result:result(data)};
   }catch(e){return {jsonrpc:"2.0",id,result:error(e instanceof Error?e.message:"MCP tool failed")};}

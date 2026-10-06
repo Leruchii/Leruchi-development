@@ -11,4 +11,4 @@ export class AgentIntentBuilder{
   build(){return {intent:JSON.parse(JSON.stringify(this.intent))};}
   async explain(){return this.client.request("agent-intent-explain",this.build());}
 }
-export function createAgentSurface(client){return {intent(action,ir){return new AgentIntentBuilder(client,action,ir);},plan(){return new CrossModalPlanBuilder(client);}};}
+export function createAgentSurface(client){return {intent(action,ir){return new AgentIntentBuilder(client,action,ir);},plan(){return new CrossModalPlanBuilder(client);},evaluate(cases){if(!Array.isArray(cases)||!cases.length)throw new VibeClientError("INVALID_EVALUATION_CASES","At least one evaluation case is required");return {build(){return {cases:JSON.parse(JSON.stringify(cases))};},async run(){return client.request("agent-evaluate",{cases:JSON.parse(JSON.stringify(cases))});}};}};}

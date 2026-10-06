@@ -124,6 +124,14 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     const result=await client.request("cross-modal-plan-explain",{plan});
     stdout(print(result,Boolean(args.pretty)));return 0;
   }
+  if(command==="agent"&&subcommand==="evaluate"){
+    const client=createClient(clientOptions(cwd,args,fetchImpl));
+    const file=required(args,"cases");
+    const cases=parseJson(fs.readFileSync(path.resolve(cwd,file),"utf8"),"--cases");
+    if(!Array.isArray(cases)||!cases.length)throw new Error("--cases must contain a non-empty JSON array");
+    const result=await client.request("agent-evaluate",{cases});
+    stdout(print(result,Boolean(args.pretty)));return 0;
+  }
   if(command==="agent"&&subcommand==="intent"&&rest[0]==="explain"){
     const client=createClient(clientOptions(cwd,args,fetchImpl));
     const file=required(args,"intent");
