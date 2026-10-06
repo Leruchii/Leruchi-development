@@ -1258,3 +1258,10 @@ Exit gate:
 5. post-merge main establishes a clean baseline before Stage 29.
 
 Do not add plan execution, autonomous authorization, provider-specific model orchestration or a second executor in Stage 28.
+
+
+## Stage 29 — Agent Evaluation & Observability
+
+Status: IN_PROGRESS.
+
+The stage establishes a bounded, non-executing evaluation boundary for Agent Intent and Cross-Modal Plan artifacts. Evaluation reuses existing validation and explanation paths, exposes only pass/fail metadata plus deterministic artifact hashes, and must not emit tenant identity, credentials, bindings, raw IR, query text, database fragments, embeddings or private catalog data. REST, SDK, CLI and MCP converge on the same evaluation contract. Merge requires focused CI, architecture/state gates and the complete exact-head regression matrix.
