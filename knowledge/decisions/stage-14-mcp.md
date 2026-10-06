@@ -4,7 +4,7 @@ Status: IMPLEMENTED — NOT YET VALIDATED
 
 ## Scope
 
-Stage 14 is the agent-native gateway over the canonical VibeDB ExecutionContext, Schema Catalog, Query IR and Mutation IR. MCP is an adapter, not a second execution engine.
+Stage 14 is the agent-native gateway over the canonical Leruchi ExecutionContext, Schema Catalog, Query IR and Mutation IR. MCP is an adapter, not a second execution engine.
 
 ## Scoped capability grants
 
@@ -14,7 +14,7 @@ A scoped capability grant is expected to contain:
 - `jti` for revocation;
 - `tenant_id` binding;
 - canonical capability names;
-- `aud=vibedb`;
+- `aud=leruchi`;
 - `exp` and optional `nbf`;
 - optional scope metadata.
 
