@@ -21,14 +21,14 @@ jobs:
       - name: Wait for database
         run: |
           for i in {1..90}; do
-            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            if docker compose exec -T db pg_isready -U postgres -d leruchi; then exit 0; fi
             sleep 2
           done
           docker compose logs db
           exit 1
 
       - name: Seed Stage 01 graph
-        run: docker compose exec -T db psql -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/db/stage-01.sql
+        run: docker compose exec -T db psql -U vibe_runtime -d leruchi -Xf /dev/stdin < tests/db/stage-01.sql
 
       - name: Run AGE compiler tests
         run: node --test tests/age-compiler/*.test.mjs
