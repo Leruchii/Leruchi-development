@@ -1265,3 +1265,49 @@ Do not add plan execution, autonomous authorization, provider-specific model orc
 Status: IN_PROGRESS.
 
 The stage establishes a bounded, non-executing evaluation boundary for Agent Intent and Cross-Modal Plan artifacts. Evaluation reuses existing validation and explanation paths, exposes only pass/fail metadata plus deterministic artifact hashes, and must not emit tenant identity, credentials, bindings, raw IR, query text, database fragments, embeddings or private catalog data. REST, SDK, CLI and MCP converge on the same evaluation contract. Merge requires focused CI, architecture/state gates and the complete exact-head regression matrix.
+
+
+## Stage 30 — Agent Trace & Replay
+
+**Status:** IN_PROGRESS.
+
+Purpose: make agent decisions durable, replayable and comparable without adding execution authority.
+
+Required invariants:
+- traces use a bounded canonical v1 diagnostic contract;
+- only Agent Intent or Cross-Modal Plan artifacts are traceable in v1;
+- sensitive tenant identity, credentials, bindings/parameter values, embeddings, raw SQL/Cypher and private engine fragments are sanitized before persistence or hashing;
+- trace artifact hashes are deterministic over the sanitized artifact;
+- replay reuses existing Agent Intent / Cross-Modal Plan explanation boundaries;
+- replay is always non-executing and cannot grant capabilities, change tenant context or invoke database execution;
+- expected outcomes are limited to status, reason_code, destructive and approval_required;
+- dataset size/count and trace depth are bounded;
+- SDK, REST, CLI and MCP converge on the same trace/replay contract;
+- regression diffs report bounded behavioral differences without exposing target IR;
+- Node 24 remains the only supported project runtime.
+
+Implemented:
+- `packages/agent-trace-replay/index.mjs`
+- authenticated `POST /v1/agent/trace`
+- authenticated `POST /v1/agent/replay`
+- SDK trace/replay surfaces
+- CLI trace/replay commands
+- MCP `agent.trace` and `agent.replay`
+- bounded sanitization, deterministic hashing, replay and regression diff
+- Stage 30 focused CI plus MCP contract coverage
+- Stage 30 decision record
+
+Exit gate:
+1. focused trace/replay and MCP tests pass;
+2. Stage 29, relevant historical regressions, Architecture Regression Audit and Stage State Gate pass on the exact PR head;
+3. complete required exact-head regression matrix passes;
+4. no trace/replay path executes SQL, Cypher or mutations;
+5. docs/BUILD_STATE/decision records identify the exact validated head;
+6. merge only after exact-head validation is green;
+7. post-merge main establishes a clean baseline.
+
+Do not add autonomous execution, model-provider orchestration, capability grants, raw query logging or private cloud dependencies in Stage 30.
+
+## OSS Core Readiness Gate — after Stage 30
+
+The first public Core release is a readiness gate, not an arbitrary stage number. It must verify architecture stability, security boundaries, developer UX, complete required CI, and the public OSS export allowlist/history audit. Private Cloud/Enterprise concerns remain outside the OSS runtime contract.
