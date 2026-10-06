@@ -8,8 +8,8 @@ const context=createExecutionContext({tenant_id:"tenant_a",role:"authenticated",
 
 function invalidPlan(){
   return {version:"v1",kind:"cross_modal_plan",steps:[{
-    id:"read",type:"query",ir:{version:"v1",kind:"graph_query",graph:"app",root:{label:"User",alias:"u"},steps:[],filters:[],projection:[],orderBy:[],limit:100,offset:0,depth:0,parameters:[]
-  }]};
+    id:"read",type:"query",ir:{version:"v1",kind:"graph_query",graph:"app",root:{label:"User",alias:"u"},steps:[],filters:[],projection:[],orderBy:[],limit:100,offset:0,depth:0,parameters:[]}}
+  ]};
 }
 
 test("evaluation validates bounded case count and unique names",()=>{
