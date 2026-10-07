@@ -14,7 +14,7 @@ test("OWASP ASVS profile is pinned to stable 5.0.0", () => {
 test("Level 2 baseline includes core security chapters", () => {
   const p = JSON.parse(fs.readFileSync("security/owasp-asvs-5.0.0-profile.json", "utf8"));
   const required = new Set(p.chapters.filter((c) => c.status === "REQUIRED").map((c) => c.id));
-  for (const id of ["V1","V2","V4","V5","V6","V7","V8","V9","V10","V11","V13","V14","V15"]) {
+  for (const id of ["V1","V2","V3","V4","V6","V7","V8","V9","V11","V12","V13","V14","V15","V16"]) {
     assert.ok(required.has(id), "missing required chapter " + id);
   }
 });
