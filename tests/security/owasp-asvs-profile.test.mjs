@@ -30,9 +30,9 @@ test("ASVS requirement evidence ledger is complete and conservative", () => {
 
   const baseline = ledger.requirements.filter((r) => r.level <= 2);
   assert.equal(baseline.length, 253);
-  assert.equal(baseline.filter((r) => r.status === "UNMAPPED").length, 203);
+  assert.equal(baseline.filter((r) => r.status === "UNMAPPED").length, 204);
   assert.equal(baseline.filter((r) => r.status === "SCOPING_REQUIRED").length, 45);
-  assert.equal(baseline.filter((r) => r.status === "PASS").length, 5);
+  assert.equal(baseline.filter((r) => r.status === "PASS").length, 4);
 
   for (const r of ledger.requirements) {
     assert.ok(["UNMAPPED","SCOPING_REQUIRED","DEFERRED_LEVEL3","PASS","PARTIAL","BLOCKED","NOT_APPLICABLE"].includes(r.status));
