@@ -822,4 +822,32 @@ Exact next action: allow the new exact-head Node 24 workflow to execute under th
 - Current remediation head is `4d8c9d9c92de8c5d626c93bdd7be675e3f1798bd`. The new exact-head workflow set is queued/pending and must complete before Stage 31 can be considered fully clean for merge/publication.
 - Do not merge PR #62 or begin Stage 32 publication until the new exact-head workflow results are reviewed.
 
-- Stage 15 GraphRAG hybrid integration env contract: corrected `tests/retrieval-execution/hybrid-integration.mjs` to use the canonical `LERUCHI_ADMIN_DATABASE_URL` and `LERUCHI_RUNTIME_DATABASE_URL` contracts. The previous exact-head failure was a stale `VIBE_*` test contract; the database build and prior vector-isolation proof passed.
+- Stage 15 GraphRAG hybrid integration env contract: corrected `tests/retrieval-execution/hybrid-integration.mjs` to use the canonical `LERUCHI_ADMIN_DATABASE_URL` and `LERUCHI_RUNTIME_DATABASE_URL` contracts. The previous exact-head failure was a stale `VIBE_*` test contract; the database build and prior vector-isolation proof passed.## Stage 31 final validation — 2026-10-08
+
+Status: VALIDATED.
+
+Exact validated code head: `69cca2565486d13ddd9d3ab029bdef6e0029d3ed` on PR #62.
+
+Evidence from that exact code head:
+- Stage 31 OSS Core Readiness: SUCCESS.
+- Stage 31 Agent Governance coverage: SUCCESS.
+- Architecture Regression Audit: SUCCESS.
+- Stage State Gate: SUCCESS.
+- Stage 15 GraphRAG: SUCCESS after correcting the stale `VIBE_*` test environment contract to canonical `LERUCHI_*` variables.
+- All other required product/regression workflows associated with the exact code head completed successfully.
+- PR #62 is open, non-draft, and currently mergeable.
+
+The previous Stage 31/31A validation limitation is closed. No merge or public publication has occurred. Documentation changes in this checkpoint do not alter the validated product code. Stage 32 remains a separate controlled publication step and must use the sanitized OSS candidate/export allowlist rather than copying the private development repository wholesale.
+
+## Stage 32 handoff — Leruchi Core Public Publication
+
+Stage 31 is now the completed release-readiness gate. The next build step is to prepare and validate the controlled public publication candidate for `Leruchii/Leruchi`.
+
+Required before publication:
+1. verify the public export allowlist and forbidden-path/secret audit;
+2. verify public repository contents and history policy;
+3. build the sanitized candidate from the validated Stage 31 code head;
+4. validate the candidate independently;
+5. publish only after the candidate passes; do not expose private control/build material.
+
+Do not merge PR #62 or publish the public repository automatically as part of this handoff; publication remains an explicit release action.
