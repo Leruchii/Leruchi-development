@@ -16,6 +16,10 @@ on:
     branches:
       - "stage28-*"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   cross-modal-planning:
     runs-on: ubuntu-latest
