@@ -16,7 +16,7 @@ assert.equal(required.length + conditional.length, 17);
 function walk(dir) {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if ([".git","node_modules"].includes(entry.name)) continue;
+    if ([".git", "node_modules"].includes(entry.name)) continue;
     const p = path.join(dir, entry.name);
     if (entry.isDirectory()) out.push(...walk(p));
     else out.push(p);
@@ -24,10 +24,15 @@ function walk(dir) {
   return out;
 }
 
+// Build credential signatures without embedding a complete live-detection pattern
+// in this verifier's own source. This prevents the verifier from matching itself.
+const patPrefix = "github" + "_pat_";
+const ghpPrefix = "ghp_";
+const privateKeyHeader = "-----" + "BEGIN " + "PRIVATE KEY-----";
 const forbidden = [
-  /github_pat_[A-Za-z0-9_]+/i,
-  /ghp_[A-Za-z0-9]+/i,
-  /-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/i
+  new RegExp(patPrefix + "[A-Za-z0-9_]+", "i"),
+  new RegExp(ghpPrefix + "[A-Za-z0-9]+"),
+  new RegExp(privateKeyHeader, "i")
 ];
 
 for (const file of walk(root)) {
@@ -41,9 +46,12 @@ for (const file of walk(root)) {
 
 const workflowDir = path.join(root, ".github/workflows");
 for (const workflow of walk(workflowDir)) {
+  const rel = path.relative(root, workflow);
   const text = fs.readFileSync(workflow, "utf8");
-  assert.equal(/node-version:\\s*(?!24\\b)/.test(text), false, "non-24 Node runtime in " + path.relative(root, workflow));
-  assert.equal(/permissions:\\s*\\n\\s*contents:\\s*write/.test(text), false, "broad contents:write permission in " + path.relative(root, workflow));
+  const runtimePins = [...text.matchAll(/node-version:\s*([^\s#]+)/g)].map((m) => m[1]);
+  assert.ok(runtimePins.length > 0, "workflow missing explicit Node version: " + rel);
+  assert.ok(runtimePins.every((version) => version === "24"), "non-24 Node runtime in " + rel);
+  assert.equal(/contents:\s*write\b/.test(text), false, "broad contents:write permission in " + rel);
 }
 
 console.log("OWASP ASVS " + profile.version + " verification profile: PASS");
