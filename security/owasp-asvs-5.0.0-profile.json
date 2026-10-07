@@ -1,7 +1,7 @@
 {
   "standard": "OWASP ASVS",
   "version": "5.0.0",
-  "profile": "Leruchi Core API, MCP, SDK, CLI and database-backed application",
+  "profile": "Leruchi public OSS Core API, MCP, SDK, CLI, Studio and database-backed application",
   "target": "Level 2 baseline; Level 3 controls are tracked separately where applicable",
   "rule": "A requirement is PASS only when executable evidence or an explicit architecture/security decision supports it. Unknown/partial requirements remain release blockers until resolved or formally scoped out.",
   "chapters": [
@@ -18,76 +18,76 @@
     {
       "id": "V3",
       "name": "Web Frontend Security",
-      "status": "CONDITIONAL"
+      "status": "REQUIRED"
     },
     {
       "id": "V4",
-      "name": "Authentication",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V5",
-      "name": "Authorization",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V6",
-      "name": "Stored Cryptography",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V7",
-      "name": "Error and Logging",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V8",
-      "name": "Data Protection",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V9",
-      "name": "Communications",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V10",
-      "name": "Malicious Code",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V11",
-      "name": "Business Logic",
-      "status": "REQUIRED"
-    },
-    {
-      "id": "V12",
-      "name": "Files and Resources",
-      "status": "CONDITIONAL"
-    },
-    {
-      "id": "V13",
       "name": "API and Web Service",
       "status": "REQUIRED"
     },
     {
-      "id": "V14",
+      "id": "V5",
+      "name": "File Handling",
+      "status": "CONDITIONAL"
+    },
+    {
+      "id": "V6",
+      "name": "Authentication",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V7",
+      "name": "Session Management",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V8",
+      "name": "Authorization",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V9",
+      "name": "Self-contained Tokens",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V10",
+      "name": "OAuth and OIDC",
+      "status": "CONDITIONAL"
+    },
+    {
+      "id": "V11",
+      "name": "Cryptography",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V12",
+      "name": "Secure Communication",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V13",
       "name": "Configuration",
       "status": "REQUIRED"
     },
     {
+      "id": "V14",
+      "name": "Data Protection",
+      "status": "REQUIRED"
+    },
+    {
       "id": "V15",
-      "name": "Architecture",
+      "name": "Secure Coding and Architecture",
       "status": "REQUIRED"
     },
     {
       "id": "V16",
-      "name": "Authentication Protocols",
-      "status": "CONDITIONAL"
+      "name": "Security Logging and Error Handling",
+      "status": "REQUIRED"
     },
     {
       "id": "V17",
-      "name": "HTTP Security",
+      "name": "WebRTC",
       "status": "CONDITIONAL"
     }
   ]
