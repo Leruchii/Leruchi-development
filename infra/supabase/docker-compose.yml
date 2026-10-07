@@ -16,7 +16,6 @@ services:
       GOTRUE_JWT_EXP: "3600"
       GOTRUE_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
       GOTRUE_JWT_ISSUER: http://localhost:9999
-      GOTRUE_JWT_AUD: authenticated
       GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
       GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
       GOTRUE_MAILER_AUTOCONFIRM: "false"
