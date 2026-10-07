@@ -38,7 +38,7 @@ jobs:
         run: docker build -t leruchi-stage21 -f infra/docker/postgres/Dockerfile .
       - name: Start PostgreSQL
         run: |
-          docker run -d --name leruchi-stage21-db -p 55435:5432             -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=leruchi             -e VIBE_MIGRATOR_PASSWORD=migrator -e VIBE_RUNTIME_PASSWORD=runtime -e VIBE_REALTIME_PASSWORD=realtime             -v "$GITHUB_WORKSPACE/infra/docker/postgres/init:/docker-entrypoint-initdb.d:ro" leruchi-stage21
+          docker run -d --name leruchi-stage21-db -p 55435:5432             -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=leruchi             -e LERUCHI_MIGRATOR_PASSWORD=migrator -e LERUCHI_RUNTIME_PASSWORD=runtime -e LERUCHI_REALTIME_PASSWORD=realtime             -v "$GITHUB_WORKSPACE/infra/docker/postgres/init:/docker-entrypoint-initdb.d:ro" leruchi-stage21
           for attempt in $(seq 1 60); do
             docker exec leruchi-stage21-db pg_isready -U postgres -d leruchi >/dev/null 2>&1 && exit 0
             sleep 2
