@@ -8,6 +8,7 @@ test("OWASP ASVS profile is pinned to stable 5.0.0", () => {
   assert.equal(p.version, "5.0.0");
   assert.equal(p.chapters.length, 17);
   assert.equal(new Set(p.chapters.map((c) => c.id)).size, 17);
+  assert.match(fs.readFileSync("scripts/owasp-asvs-verification.mjs", "utf8"), /github.*_pat_/);
 });
 
 test("Level 2 baseline includes core security chapters", () => {
