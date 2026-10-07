@@ -49,7 +49,7 @@ export function resolveQueryCompiler(ir,catalog,{
   return {plan,compile};
 }
 
-export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,verifyApproval,observability=createObservability(),queryEngines=DEFAULT_QUERY_ENGINE_CAPABILITIES,preferredQueryEngines=["apache-age","postgresql-recursive"],host="127.0.0.1",port=0}={}){
+export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=null,catalogProvider,auditSink,verifyApproval,observability=createObservability(),queryEngines=DEFAULT_QUERY_ENGINE_CAPABILITIES,preferredQueryEngines=["apache-age","postgresql-recursive"],host="127.0.0.1",port=0}={}){
   if(!pool||!jwtSecret||typeof catalogProvider!=="function")throw new Error("pool, jwtSecret and catalogProvider are required");
   const server=http.createServer(async(req,res)=>{
     const requestId=randomUUID();
@@ -80,7 +80,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain&&!isCrossModalPlanExplain&&!isAgentEvaluate&&!isAgentTrace&&!isAgentReplay)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
-      const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
+      const claims=verifyHs256Jwt(auth.slice(7),jwtSecret,Math.floor(Date.now()/1000),{issuer:jwtIssuer,audience:jwtAudience});
       context=contextFromClaims(claims,requestId);
       if(isCatalog&&!hasCapability(context,CAPABILITIES.GRAPH_READ)){
         await record("denied","CAPABILITY_DENIED");
