@@ -821,3 +821,5 @@ Exact next action: allow the new exact-head Node 24 workflow to execute under th
 - Repaired active workflow/runtime references from `packages/vibe-cli` to `packages/leruchi-cli`, migrated active public environment contracts from `VIBE_*` to `LERUCHI_*`, corrected the Stage 20 CLI executable path, and aligned MCP evaluation tests with the Leruchi MCP environment contract.
 - Current remediation head is `4d8c9d9c92de8c5d626c93bdd7be675e3f1798bd`. The new exact-head workflow set is queued/pending and must complete before Stage 31 can be considered fully clean for merge/publication.
 - Do not merge PR #62 or begin Stage 32 publication until the new exact-head workflow results are reviewed.
+
+- Stage 15 GraphRAG hybrid integration env contract: corrected `tests/retrieval-execution/hybrid-integration.mjs` to use the canonical `LERUCHI_ADMIN_DATABASE_URL` and `LERUCHI_RUNTIME_DATABASE_URL` contracts. The previous exact-head failure was a stale `VIBE_*` test contract; the database build and prior vector-isolation proof passed.
