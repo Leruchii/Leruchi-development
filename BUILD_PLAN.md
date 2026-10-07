@@ -1315,7 +1315,7 @@ The first public Core release is a readiness gate, not an arbitrary stage number
 
 ## Stage 31 — OSS Core Readiness Gate
 
-**Status:** IN_PROGRESS.
+**Status:** VALIDATED — exact code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed` passed the required exact-head regression matrix and OSS readiness gate.
 
 Stage 31 turns the existing OSS boundary into an executable release-readiness gate. It does not publish the public repository.
 
