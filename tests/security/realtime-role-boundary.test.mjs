@@ -25,5 +25,5 @@ test("realtime outbox is fail-closed for runtime tenant access",()=>{
 test("client realtime events never carry tenant authorization state",()=>{
   assert.match(realtime,/return \{[\s\S]*event_id:row\.event_id/);
   assert.match(realtime,/target:\{kind:row\.target_kind/);
-  assert.match(realtime,/\\"tenant_id\\" in event/);
+  assert.doesNotMatch(realtime,/\btenant_id\s*:/);
 });
