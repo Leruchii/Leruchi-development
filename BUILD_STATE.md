@@ -813,3 +813,11 @@ Exact next action: allow the new exact-head Node 24 workflow to execute under th
 - Stage 31 OSS candidate readiness failed because its negative fixture intentionally used Node 22; the fixture now uses Node 23 so the test still proves non-24 rejection without retaining the deprecated Node 20/22 baseline.
 - Architecture Regression Audit now uses `actions/checkout@v5` and `actions/setup-node@v6`, matching the current Node 24 policy, and has per-ref concurrency cancellation to reduce stale queue buildup.
 - Stage 31 remains unvalidated until the new exact-head runs complete successfully.
+
+## Stage 31 exact-head validation and rename regression cleanup
+
+- Stage 31 readiness gate and Architecture Regression Audit passed on exact head `79a2b46db94a0c351087359e3b24b85d310b33c4`.
+- Remaining failures on that validation set were traced to stale pre-Leruchi workflow/test contracts, not the Stage 31 OSS readiness gate itself.
+- Repaired active workflow/runtime references from `packages/vibe-cli` to `packages/leruchi-cli`, migrated active public environment contracts from `VIBE_*` to `LERUCHI_*`, corrected the Stage 20 CLI executable path, and aligned MCP evaluation tests with the Leruchi MCP environment contract.
+- Current remediation head is `4d8c9d9c92de8c5d626c93bdd7be675e3f1798bd`. The new exact-head workflow set is queued/pending and must complete before Stage 31 can be considered fully clean for merge/publication.
+- Do not merge PR #62 or begin Stage 32 publication until the new exact-head workflow results are reviewed.
