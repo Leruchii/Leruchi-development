@@ -1,0 +1,56 @@
+name: Stage 32 - OSS Core Publication Candidate
+
+on:
+  pull_request:
+    paths:
+      - "OSS_EXPORT_MANIFEST.json"
+      - "scripts/build-oss-core-candidate.mjs"
+      - "scripts/public-oss-export-audit.mjs"
+      - "scripts/oss-core-readiness-audit.mjs"
+      - "tests/oss-core-readiness/**"
+      - ".nvmrc"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/stage-32-oss-publication-candidate.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Enforce runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Validate public export manifest
+        run: node tests/oss-core-readiness/public-export-manifest.test.mjs
+      - name: Audit source export contract
+        run: node scripts/public-oss-export-audit.mjs
+      - name: Build sanitized OSS candidate
+        run: |
+          candidate="$RUNNER_TEMP/leruchi-oss-candidate"
+          mkdir -p "$candidate"
+          node scripts/build-oss-core-candidate.mjs "$GITHUB_WORKSPACE" "$candidate"
+          node scripts/oss-core-readiness-audit.mjs "$candidate"
+      - name: Package candidate
+        run: |
+          candidate="$RUNNER_TEMP/leruchi-oss-candidate"
+          tar -C "$candidate" -czf "$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz" .
+      - name: Upload candidate artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: leruchi-oss-core-candidate
+          path: ${{ runner.temp }}/leruchi-oss-core-candidate.tar.gz
+          if-no-files-found: error
