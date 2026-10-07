@@ -46,12 +46,12 @@ jobs:
       - name: Start live Graph API
         working-directory: .
         env:
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
-          VIBE_JWT_SECRET: stage-13-e2e-secret
-          VIBE_GRAPH_API_PORT: 4100
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
+          LERUCHI_JWT_SECRET: stage-13-e2e-secret
+          LERUCHI_GRAPH_API_PORT: 4100
         run: node scripts/start-stage13-graph-api.mjs > /tmp/leruchi-stage13-api.log 2>&1 &
       - name: Configure live Studio endpoint
-        run: echo 'VIBE_API_URL=http://127.0.0.1:4100' >> "$GITHUB_ENV"
+        run: echo 'LERUCHI_API_URL=http://127.0.0.1:4100' >> "$GITHUB_ENV"
       - name: Wait for live Graph API
         run: |
           for i in {1..30}; do
