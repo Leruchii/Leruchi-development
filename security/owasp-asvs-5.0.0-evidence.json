@@ -603,9 +603,12 @@
       "id": "V4.1.1",
       "chapter": "V4",
       "level": 1,
-      "status": "UNMAPPED",
-      "evidence": [],
-      "rationale": ""
+      "status": "PASS",
+      "evidence": [
+        "packages/leruchi-cli",
+        "apps/studio"
+      ],
+      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
     },
     {
       "id": "V4.1.2",
@@ -1363,9 +1366,12 @@
       "id": "V8.1.1",
       "chapter": "V8",
       "level": 1,
-      "status": "UNMAPPED",
-      "evidence": [],
-      "rationale": ""
+      "status": "PASS",
+      "evidence": [
+        "knowledge/security.md",
+        "knowledge/mcp.md"
+      ],
+      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
     },
     {
       "id": "V8.1.2",
@@ -1395,17 +1401,25 @@
       "id": "V8.2.1",
       "chapter": "V8",
       "level": 1,
-      "status": "UNMAPPED",
-      "evidence": [],
-      "rationale": ""
+      "status": "PASS",
+      "evidence": [
+        "knowledge/mcp.md",
+        "tests/mcp/mcp-server.test.mjs",
+        "tests/capability-policy/capability-grants.test.mjs"
+      ],
+      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
     },
     {
       "id": "V8.2.2",
       "chapter": "V8",
       "level": 1,
-      "status": "UNMAPPED",
-      "evidence": [],
-      "rationale": ""
+      "status": "PASS",
+      "evidence": [
+        "tests/security/stage-02-graph-api-e2e.test.mjs",
+        "tests/mutation/stage-09-integration.mjs",
+        "tests/schema-catalog/schema-catalog-tenant-isolation.test.mjs"
+      ],
+      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
     },
     {
       "id": "V8.2.3",
@@ -1427,9 +1441,12 @@
       "id": "V8.3.1",
       "chapter": "V8",
       "level": 1,
-      "status": "UNMAPPED",
-      "evidence": [],
-      "rationale": ""
+      "status": "PASS",
+      "evidence": [
+        "tests/architecture/contract-audit.mjs",
+        "tests/security/stage-02-graph-api-e2e.test.mjs"
+      ],
+      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
     },
     {
       "id": "V8.3.2",
@@ -2411,9 +2428,13 @@
       "id": "V15.2.1",
       "chapter": "V15",
       "level": 1,
-      "status": "UNMAPPED",
-      "evidence": [],
-      "rationale": ""
+      "status": "PASS",
+      "evidence": [
+        "package.json",
+        "package-lock.json",
+        ".github/workflows/stage-32-oss-publication-candidate.yml"
+      ],
+      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
     },
     {
       "id": "V15.2.2",
