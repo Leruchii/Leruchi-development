@@ -78,12 +78,12 @@ jobs:
         run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
       - name: Run approved migrations
         env:
-          VIBE_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/leruchi
-        run: node -e "import('./packages/vibe-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
+          LERUCHI_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/leruchi
+        run: node -e "import('./packages/leruchi-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
       - name: Prove tenant-isolated vector retrieval
         env:
-          VIBE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leruchi
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
+          LERUCHI_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leruchi
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
         run: node tests/vector-execution/integration.mjs
       - name: Seed AGE tenant isolation fixture
         run: |
@@ -91,12 +91,12 @@ jobs:
           docker compose exec -T db bash /tmp/stage-02-setup.sh
       - name: Prove real hybrid graph and vector retrieval
         env:
-          VIBE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leruchi
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
+          LERUCHI_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leruchi
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
         run: node tests/retrieval-execution/hybrid-integration.mjs
       - name: Prove live MCP GraphRAG retrieval
         env:
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
         run: node tests/mcp/live-mcp-retrieval.test.mjs
       - name: Show database logs on failure
         if: failure()
