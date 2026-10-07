@@ -1,6 +1,9 @@
 name: Stage 32 - OSS Core Publication Candidate
 
 on:
+  push:
+    branches:
+      - "stage32-*"
   pull_request:
     paths:
       - "OSS_EXPORT_MANIFEST.json"
