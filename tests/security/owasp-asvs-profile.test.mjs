@@ -18,3 +18,23 @@ test("Level 2 baseline includes core security chapters", () => {
     assert.ok(required.has(id), "missing required chapter " + id);
   }
 });
+
+test("ASVS requirement evidence ledger is complete and conservative", () => {
+  const ledger = JSON.parse(fs.readFileSync("security/owasp-asvs-5.0.0-evidence.json", "utf8"));
+  assert.equal(ledger.standard, "OWASP ASVS");
+  assert.equal(ledger.version, "5.0.0");
+  assert.equal(ledger.target, "Level 2");
+  assert.equal(ledger.compliance_claim, "NOT_CLAIMED");
+  assert.equal(ledger.requirements.length, 345);
+  assert.equal(new Set(ledger.requirements.map((r) => r.id)).size, 345);
+
+  const baseline = ledger.requirements.filter((r) => r.level <= 2);
+  assert.equal(baseline.length, 253);
+  assert.equal(baseline.filter((r) => r.status === "UNMAPPED").length, 208);
+  assert.equal(baseline.filter((r) => r.status === "SCOPING_REQUIRED").length, 45);
+
+  for (const r of ledger.requirements) {
+    assert.ok(["UNMAPPED","SCOPING_REQUIRED","DEFERRED_LEVEL3","PASS","PARTIAL","BLOCKED","NOT_APPLICABLE"].includes(r.status));
+    if (r.status === "PASS") assert.ok(r.evidence.length > 0, "PASS without evidence: " + r.id);
+  }
+});
