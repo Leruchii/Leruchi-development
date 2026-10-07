@@ -35,7 +35,7 @@ const forbidden = [
   new RegExp(privateKeyHeader, "i")
 ];
 
-for (const file of walk(root)) {\n  if (fs.statSync(file).isDirectory()) continue;
+for (const file of walk(root)) {
   const rel = path.relative(root, file);
   if (rel.startsWith("security" + path.sep)) continue;
   const text = fs.readFileSync(file, "utf8");
