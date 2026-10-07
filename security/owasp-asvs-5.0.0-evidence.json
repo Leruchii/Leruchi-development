@@ -603,12 +603,9 @@
       "id": "V4.1.1",
       "chapter": "V4",
       "level": 1,
-      "status": "PASS",
-      "evidence": [
-        "packages/leruchi-cli",
-        "apps/studio"
-      ],
-      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
+      "status": "UNMAPPED",
+      "evidence": [],
+      "rationale": "Existing repository surfaces do not by themselves provide sufficient requirement-specific executable evidence."
     },
     {
       "id": "V4.1.2",
@@ -2428,13 +2425,9 @@
       "id": "V15.2.1",
       "chapter": "V15",
       "level": 1,
-      "status": "PASS",
-      "evidence": [
-        "package.json",
-        "package-lock.json",
-        ".github/workflows/stage-32-oss-publication-candidate.yml"
-      ],
-      "rationale": "Direct repository documentation and/or executable test or workflow evidence supports this requirement at the stated scope."
+      "status": "UNMAPPED",
+      "evidence": [],
+      "rationale": "Existing repository surfaces do not by themselves provide sufficient requirement-specific executable evidence."
     },
     {
       "id": "V15.2.2",
