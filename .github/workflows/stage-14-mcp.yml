@@ -40,9 +40,9 @@ jobs:
         run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
       - name: Start live Graph API
         env:
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
-          VIBE_JWT_SECRET: stage-14-e2e-secret
-          VIBE_GRAPH_API_PORT: 4100
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
+          LERUCHI_JWT_SECRET: stage-14-e2e-secret
+          LERUCHI_GRAPH_API_PORT: 4100
         run: node scripts/start-stage13-graph-api.mjs > /tmp/leruchi-stage14-api.log 2>&1 &
       - name: Wait for live Graph API
         run: |
@@ -54,8 +54,8 @@ jobs:
           exit 1
       - name: Live MCP integration
         env:
-          VIBE_API_URL: http://127.0.0.1:4100
-          VIBE_JWT_SECRET: stage-14-e2e-secret
+          LERUCHI_API_URL: http://127.0.0.1:4100
+          LERUCHI_JWT_SECRET: stage-14-e2e-secret
         run: node --test tests/mcp/live-mcp-graph-api.test.mjs
       - name: Show live Graph API logs on failure
         if: failure()
