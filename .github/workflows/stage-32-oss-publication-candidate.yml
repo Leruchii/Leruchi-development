@@ -37,6 +37,8 @@ jobs:
         run: npm install --ignore-scripts
       - name: Enforce runtime policy
         run: node scripts/assert-runtime-policy.mjs
+      - name: Run OWASP ASVS 5.0.0 verification gate
+        run: node scripts/owasp-asvs-verification.mjs && node --test tests/security/owasp-asvs-profile.test.mjs
       - name: Validate public export manifest
         run: node tests/oss-core-readiness/public-export-manifest.test.mjs
       - name: Audit source export contract
