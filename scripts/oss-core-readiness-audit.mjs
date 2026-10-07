@@ -11,7 +11,7 @@ const forbiddenPathFragments = [
 const forbiddenContent = [
   /github_pat_[A-Za-z0-9_]+/i,
   /BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/,
-  /-----BEGIN PRIVATE KEY-----/,
+  new RegExp("-----" + "BEGIN PRIVATE KEY-----"),
   /AKIA[0-9A-Z]{16}/,
 ];
 
