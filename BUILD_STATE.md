@@ -851,3 +851,15 @@ Required before publication:
 5. publish only after the candidate passes; do not expose private control/build material.
 
 Do not merge PR #62 or publish the public repository automatically as part of this handoff; publication remains an explicit release action.
+
+
+## Stage 32 ASVS verification update
+
+- Stage 32 OSS publication PR remains draft and must not be merged yet.
+- Stage 32 candidate workflow run 37637551479 failed at the initial ASVS verifier because the verifier matched its own private-key detection regex; no application-security finding was established.
+- Corrected verifier commit: 2e6e176be94a855454e54ecbf9ab712c553257c7.
+- Corrected ASVS 5.0.0 chapter applicability/profile commit: edc238aa15069026e56e530721a32325c6bbf28d.
+- Corrected OSS export manifest identity text commit: e2edfbbba49ff215b538f8e63a5476b39ddaa48d.
+- Latest profile-test head: 70599507a74b39431c17d0c3cce99519ff8c4d73.
+- Latest Stage 32 candidate run for that exact head: 37638603708, currently queued; no pass claim yet.
+- Official OWASP ASVS stable baseline remains 5.0.0. Requirement-level verification is still in progress; full compliance is not claimed.
