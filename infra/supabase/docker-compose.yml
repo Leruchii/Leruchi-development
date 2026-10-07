@@ -6,7 +6,7 @@ services:
       GOTRUE_API_PORT: 9999
       API_EXTERNAL_URL: http://localhost:9999
       GOTRUE_DB_DRIVER: postgres
-      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:vibe_compat_auth@db:5432/leruchi?search_path=auth
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:leruchi_compat_auth@db:5432/leruchi?search_path=auth
       GOTRUE_SITE_URL: http://localhost:3000
       GOTRUE_URI_ALLOW_LIST: http://localhost:3000
       GOTRUE_DISABLE_SIGNUP: "true"
@@ -14,8 +14,9 @@ services:
       GOTRUE_JWT_AUD: authenticated
       GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
       GOTRUE_JWT_EXP: "3600"
-      GOTRUE_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      GOTRUE_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
       GOTRUE_JWT_ISSUER: http://localhost:9999
+      GOTRUE_JWT_AUD: authenticated
       GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
       GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
       GOTRUE_MAILER_AUTOCONFIRM: "false"
@@ -33,12 +34,12 @@ services:
   rest:
     image: postgrest/postgrest:v14.17
     environment:
-      PGRST_DB_URI: postgres://authenticator:vibe_compat_authenticator@db:5432/leruchi
+      PGRST_DB_URI: postgres://authenticator:leruchi_compat_authenticator@db:5432/leruchi
       PGRST_DB_SCHEMAS: vibe_app
       PGRST_DB_EXTRA_SEARCH_PATH: public,ag_catalog
       PGRST_DB_ANON_ROLE: anon
       PGRST_DB_MAX_ROWS: "1000"
-      PGRST_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      PGRST_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
       PGRST_DB_USE_LEGACY_GUCS: "false"
       PGRST_APP_SETTINGS_JWT_EXP: "3600"
     ports:
@@ -60,13 +61,13 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: supabase_admin
-      DB_PASSWORD: vibe_compat_admin
+      DB_PASSWORD: leruchi_compat_admin
       DB_NAME: leruchi
       DB_AFTER_CONNECT_QUERY: SET search_path TO _realtime
       DB_ENC_KEY: supabaserealtime
-      API_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
-      METRICS_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
-      SECRET_KEY_BASE: vibe-stage-03-secret-key-base-change-this-to-a-long-secret
+      API_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
+      METRICS_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
+      SECRET_KEY_BASE: leruchi-local-secret-key-base-change-this-to-a-long-secret
       ERL_AFLAGS: -proto_dist inet_tcp
       DNS_NODES: "''"
       RLIMIT_NOFILE: "10000"
@@ -84,14 +85,14 @@ services:
       ANON_KEY: stage-03-anon
       SERVICE_KEY: stage-03-service
       POSTGREST_URL: http://rest:3000
-      AUTH_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
-      DATABASE_URL: postgres://supabase_storage_admin:vibe_compat_storage@db:5432/leruchi?search_path=storage
+      AUTH_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
+      DATABASE_URL: postgres://supabase_storage_admin:leruchi_compat_storage@db:5432/leruchi?search_path=storage
       STORAGE_PUBLIC_URL: http://localhost:5000
       FILE_SIZE_LIMIT: 52428800
       STORAGE_BACKEND: file
       GLOBAL_S3_BUCKET: leruchi
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
-      TENANT_ID: vibe-stage-03
+      TENANT_ID: leruchi-stage-03
       REGION: local
       ENABLE_IMAGE_TRANSFORMATION: "false"
       IMGPROXY_URL: http://imgproxy:5001
@@ -122,15 +123,15 @@ services:
       POSTGRES_HOST: db
       POSTGRES_DB: leruchi
       POSTGRES_PASSWORD: postgres
-      DATABASE_URL: ecto://supabase_admin:vibe_compat_admin@db:5432/_supabase
+      DATABASE_URL: ecto://supabase_admin:leruchi_compat_admin@db:5432/_supabase
       CLUSTER_POSTGRES: "true"
-      SECRET_KEY_BASE: vibe-stage-03-secret-key-base-change-this-to-a-long-secret
-      VAULT_ENC_KEY: vibe-stage-03-vault-key-32-characters
-      API_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
-      METRICS_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
+      SECRET_KEY_BASE: leruchi-local-secret-key-base-change-this-to-a-long-secret
+      VAULT_ENC_KEY: leruchi-local-vault-key-32-characters
+      API_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
+      METRICS_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
       REGION: local
       ERL_AFLAGS: -proto_dist inet_tcp
-      POOLER_TENANT_ID: vibe-stage-03
+      POOLER_TENANT_ID: leruchi-stage-03
       POOLER_DEFAULT_POOL_SIZE: "10"
       POOLER_MAX_CLIENT_CONN: "50"
       POOLER_POOL_MODE: transaction
