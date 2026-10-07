@@ -1,0 +1,94 @@
+{
+  "standard": "OWASP ASVS",
+  "version": "5.0.0",
+  "profile": "Leruchi Core API, MCP, SDK, CLI and database-backed application",
+  "target": "Level 2 baseline; Level 3 controls are tracked separately where applicable",
+  "rule": "A requirement is PASS only when executable evidence or an explicit architecture/security decision supports it. Unknown/partial requirements remain release blockers until resolved or formally scoped out.",
+  "chapters": [
+    {
+      "id": "V1",
+      "name": "Encoding and Sanitization",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V2",
+      "name": "Validation and Business Logic",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V3",
+      "name": "Web Frontend Security",
+      "status": "CONDITIONAL"
+    },
+    {
+      "id": "V4",
+      "name": "Authentication",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V5",
+      "name": "Authorization",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V6",
+      "name": "Stored Cryptography",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V7",
+      "name": "Error and Logging",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V8",
+      "name": "Data Protection",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V9",
+      "name": "Communications",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V10",
+      "name": "Malicious Code",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V11",
+      "name": "Business Logic",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V12",
+      "name": "Files and Resources",
+      "status": "CONDITIONAL"
+    },
+    {
+      "id": "V13",
+      "name": "API and Web Service",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V14",
+      "name": "Configuration",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V15",
+      "name": "Architecture",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V16",
+      "name": "Authentication Protocols",
+      "status": "CONDITIONAL"
+    },
+    {
+      "id": "V17",
+      "name": "HTTP Security",
+      "status": "CONDITIONAL"
+    }
+  ]
+}
