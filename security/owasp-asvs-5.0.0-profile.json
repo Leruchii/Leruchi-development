@@ -90,5 +90,75 @@
       "name": "WebRTC",
       "status": "CONDITIONAL"
     }
-  ]
+  ],
+  "evidence": {
+    "V1": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V2": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V3": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V4": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V5": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V6": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V7": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V8": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V9": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V10": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V11": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V12": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V13": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V14": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V15": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V16": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V17": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    }
+  }
 }
