@@ -14,6 +14,10 @@ on:
     branches:
       - "stage31-*"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   oss-core-readiness:
     runs-on: ubuntu-latest
@@ -35,7 +39,7 @@ jobs:
         run: node tests/oss-core-readiness/public-export-manifest.test.mjs && node scripts/public-oss-export-audit.mjs
       - name: Build sanitized OSS candidate
         run: |
-          candidate="$RUNNER_TEMP/vibedb-oss-candidate"
+          candidate="$RUNNER_TEMP/leruchi-oss-candidate"
           mkdir -p "$candidate"
           node scripts/build-oss-core-candidate.mjs "$GITHUB_WORKSPACE" "$candidate"
           node scripts/oss-core-readiness-audit.mjs "$candidate"
