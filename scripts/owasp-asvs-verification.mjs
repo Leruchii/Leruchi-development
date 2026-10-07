@@ -18,8 +18,12 @@ function walk(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if ([".git", "node_modules"].includes(entry.name)) continue;
     const p = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walk(p));
-    else out.push(p);
+    if (entry.isDirectory()) {
+      out.push(...walk(p));
+      continue;
+    }
+    if (entry.isSymbolicLink()) continue;
+    if (entry.isFile()) out.push(p);
   }
   return out;
 }
