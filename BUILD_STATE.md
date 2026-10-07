@@ -790,6 +790,8 @@ Important evidence limitation:
 - the local container provides Node 22, not Node 24, so the local focused runs are supplemental evidence only and are not the release-runtime validation gate;
 - GitHub Actions runs for the exact head are currently queued; no CI success is claimed until those Node 24 jobs actually execute and pass.
 
-Current Stage 31 head: 311395f22ea4edfbd47656055edd190bcb790a52.
+Current Stage 31 head: ae5f5efcb225863350537af727003ffae456ec60.
 
-Exact next action: wait for the queued exact-head Node 24 workflow matrix to execute, inspect failures if any, fix them, and only then mark Stage 31/31A validated and merge-ready.
+CI queue-control hardening: the Stage 31 workflow now uses GitHub Actions concurrency keyed by workflow plus PR/branch ref, with `cancel-in-progress: true`, so stale Stage 31 runs are automatically cancelled when a newer commit supersedes them. The sanitized candidate temp path was also normalized to `leruchi-oss-candidate`.
+
+Exact next action: allow the new exact-head Node 24 workflow to execute under the now-public repository runner capacity, inspect failures if any, fix them, and only then mark Stage 31/31A validated and merge-ready.
