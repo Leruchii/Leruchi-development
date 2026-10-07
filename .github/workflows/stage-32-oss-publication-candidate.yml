@@ -11,6 +11,10 @@ on:
       - "scripts/public-oss-export-audit.mjs"
       - "scripts/oss-core-readiness-audit.mjs"
       - "tests/oss-core-readiness/**"
+      - "tests/security/realtime-role-boundary.test.mjs"
+      - "infra/docker/postgres/init/01-leruchi-bootstrap.sh"
+      - "infra/migrations/0002-graph-realtime-outbox.sql"
+      - "packages/realtime-outbox/index.mjs"
       - ".nvmrc"
       - "package.json"
       - "package-lock.json"
@@ -39,6 +43,8 @@ jobs:
         run: node scripts/assert-runtime-policy.mjs
       - name: Run OWASP ASVS 5.0.0 verification gate
         run: node scripts/owasp-asvs-verification.mjs && node --test tests/security/owasp-asvs-profile.test.mjs
+      - name: Verify tenant and realtime security boundary
+        run: node --test tests/security/realtime-role-boundary.test.mjs
       - name: Validate public export manifest
         run: node tests/oss-core-readiness/public-export-manifest.test.mjs
       - name: Audit source export contract
