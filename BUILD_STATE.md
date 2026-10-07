@@ -805,3 +805,11 @@ Exact next action: allow the new exact-head Node 24 workflow to execute under th
 - Corrective commit: `5be5467eeb2dab6b82e6dec5bf2bc72385f29a32`.
 - A new Stage 31 run is queued for that exact head; Stage 31 remains unvalidated until this run completes successfully.
 - CI observation: PR updates currently fan out into roughly 30 workflow runs. Stage 31 has per-ref concurrency protection, but broader workflow concurrency hardening remains CI infrastructure follow-up work.
+
+
+## Stage 31 follow-up workflow fixes
+
+- Architecture Regression Audit failed on Node.js 24 because `tests/architecture/contract-audit.mjs` still referenced the renamed `infra/docker/postgres/init/01-vibe-bootstrap.sh`. The audit now targets `01-leruchi-bootstrap.sh`.
+- Stage 31 OSS candidate readiness failed because its negative fixture intentionally used Node 22; the fixture now uses Node 23 so the test still proves non-24 rejection without retaining the deprecated Node 20/22 baseline.
+- Architecture Regression Audit now uses `actions/checkout@v5` and `actions/setup-node@v6`, matching the current Node 24 policy, and has per-ref concurrency cancellation to reduce stale queue buildup.
+- Stage 31 remains unvalidated until the new exact-head runs complete successfully.
