@@ -39,7 +39,7 @@ test("requires mandate capability and resource scope", () => {
 });
 
 test("requires delegation capability when delegation is supplied", () => {
-  const identity = createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", capabilities: ["graph:read"] });
+  const identity = createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", capabilities: ["graph:read", "vector:read"] });
   const delegation = createDelegation({
     delegationId: "delegation-1",
     fromPrincipalId: "principal-1",
