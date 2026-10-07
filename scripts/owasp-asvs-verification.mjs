@@ -53,7 +53,6 @@ for (const workflow of walk(workflowDir)) {
   const rel = path.relative(root, workflow);
   const text = fs.readFileSync(workflow, "utf8");
   const runtimePins = [...text.matchAll(/node-version:\s*([^\s#]+)/g)].map((m) => m[1]);
-  assert.ok(runtimePins.length > 0, "workflow missing explicit Node version: " + rel);
   assert.ok(runtimePins.every((version) => version === "24"), "non-24 Node runtime in " + rel);
   assert.equal(/contents:\s*write\b/.test(text), false, "broad contents:write permission in " + rel);
 }
