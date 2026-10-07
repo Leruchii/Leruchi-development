@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Build Leruchi database image
         run: docker compose build db
@@ -47,11 +47,11 @@ jobs:
         run: |
           TOKEN=$(python3 - <<'PY'
           import base64, hashlib, hmac, json, time
-          secret=b"vibe-stage-03-jwt-secret-change-me-32"
+          secret=b"leruchi-local-jwt-secret-change-me-32"
           def b64(v):
               return base64.urlsafe_b64encode(v).rstrip(b"=").decode()
           header=b64(json.dumps({"alg":"HS256","typ":"JWT"},separators=(",",":")).encode())
-          payload=b64(json.dumps({"role":"authenticated","tenant_id":"tenant_a","aud":"authenticated","exp":int(time.time())+300},separators=(",",":")).encode())
+          payload=b64(json.dumps({"role":"authenticated","tenant_id":"tenant_a","aud":"authenticated","iss":"http://localhost:9999","exp":int(time.time())+300},separators=(",",":")).encode())
           msg=f"{header}.{payload}".encode()
           sig=b64(hmac.new(secret,msg,hashlib.sha256).digest())
           print(f"{header}.{payload}.{sig}")
