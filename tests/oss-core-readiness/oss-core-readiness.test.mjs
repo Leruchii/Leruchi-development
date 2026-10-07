@@ -57,7 +57,7 @@ test("rejects non-24 Node runtime configuration and requires Node 24", () => {
   const root = makeFixture({
     "README.md": "# VibeDB\n",
     ".nvmrc": "23\n",
-    ".github/workflows/test.yml": "steps:\\n  - uses: actions/setup-node@v6\\n    with:\\n      node-version: 23\\n",
+    ".github/workflows/test.yml": ["steps:\\n  - uses: actions/setup-node@v6\\n    with:\\n      node-version: ", "23", "\\n"].join(""),
   });
   const result = runAudit(root);
   assert.notEqual(result.status, 0);
