@@ -795,3 +795,13 @@ Current Stage 31 head: ae5f5efcb225863350537af727003ffae456ec60.
 CI queue-control hardening: the Stage 31 workflow now uses GitHub Actions concurrency keyed by workflow plus PR/branch ref, with `cancel-in-progress: true`, so stale Stage 31 runs are automatically cancelled when a newer commit supersedes them. The sanitized candidate temp path was also normalized to `leruchi-oss-candidate`.
 
 Exact next action: allow the new exact-head Node 24 workflow to execute under the now-public repository runner capacity, inspect failures if any, fix them, and only then mark Stage 31/31A validated and merge-ready.
+
+
+## Stage 31 CI validation note
+
+- The first Node 24 Stage 31 PR run reached GitHub Actions successfully on Node.js 24.21.0.
+- Runtime policy passed and all OSS Core readiness tests passed (7/7).
+- Agent Governance initially failed one test because the test identity lacked `vector:read`, causing the implementation's earlier `AGENT_CAPABILITY_DENIED` response before delegation-specific authorization. The test was corrected to include the required identity capability while preserving the delegation-specific denial assertion.
+- Corrective commit: `5be5467eeb2dab6b82e6dec5bf2bc72385f29a32`.
+- A new Stage 31 run is queued for that exact head; Stage 31 remains unvalidated until this run completes successfully.
+- CI observation: PR updates currently fan out into roughly 30 workflow runs. Stage 31 has per-ref concurrency protection, but broader workflow concurrency hardening remains CI infrastructure follow-up work.
