@@ -29,26 +29,26 @@ BEGIN
   IF deleted_rows <> 0 THEN RAISE EXCEPTION 'Tenant A deleted tenant B'; END IF;
 
   SELECT count(*) INTO graph_rows
-  FROM ag_catalog.cypher('vibe_security', $cypher$
+  FROM ag_catalog.cypher('leruchi_security', $cypher$
     MATCH (n:Account) RETURN n
   $cypher$) AS (n ag_catalog.agtype);
   IF graph_rows <> 2 THEN RAISE EXCEPTION 'Tenant A graph visibility expected 2, got %', graph_rows; END IF;
 
   SELECT count(*) INTO leaked_rows
-  FROM ag_catalog.cypher('vibe_security', $cypher$
+  FROM ag_catalog.cypher('leruchi_security', $cypher$
     MATCH (n:Account) WHERE n.name = 'B1' RETURN n
   $cypher$) AS (n ag_catalog.agtype);
   IF leaked_rows <> 0 THEN RAISE EXCEPTION 'Tenant A directly read tenant B graph vertex'; END IF;
 
   SELECT count(*) INTO leaked_rows
-  FROM ag_catalog.cypher('vibe_security', $cypher$
+  FROM ag_catalog.cypher('leruchi_security', $cypher$
     MATCH (a:Account)-[:KNOWS]->(b:Account)
     WHERE a.name = 'A1' AND b.name = 'B1' RETURN b
   $cypher$) AS (n ag_catalog.agtype);
   IF leaked_rows <> 0 THEN RAISE EXCEPTION 'Tenant A inferred tenant B through a graph edge'; END IF;
 
   SELECT count(*) INTO graph_rows
-  FROM ag_catalog.cypher('vibe_security', $cypher$
+  FROM ag_catalog.cypher('leruchi_security', $cypher$
     MATCH (a:Account)-[:KNOWS]->(b:Account)
     WHERE a.name = 'A1' AND b.name = 'A2' RETURN b
   $cypher$) AS (n ag_catalog.agtype);
