@@ -3,7 +3,7 @@ import {Pool} from "pg";
 
 const secret=process.env.VIBE_JWT_SECRET??"stage-13-e2e-secret";
 const port=Number(process.env.VIBE_GRAPH_API_PORT??"4100");
-const connectionString=process.env.VIBE_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb";
+const connectionString=process.env.VIBE_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi";
 const pool=new Pool({connectionString});
 const catalog={version:"v1",graphs:{vibe_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
 
