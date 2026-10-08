@@ -16,5 +16,5 @@ RUN apt-get update \
     && apt-get purge -y --auto-remove build-essential git postgresql-server-dev-17 \
     && rm -rf /var/lib/apt/lists/*
 
-LABEL org.opencontainers.image.title="vibeDB PostgreSQL"
+LABEL org.opencontainers.image.title="Leruchi PostgreSQL"
 LABEL org.opencontainers.image.description="PostgreSQL 17.11 + Apache AGE 1.7.0 + pgvector 0.8.7"
