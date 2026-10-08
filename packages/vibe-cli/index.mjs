@@ -80,7 +80,7 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
       const config=loadConfig(cwd);
       stdout(print({baseUrl:process.env.VIBE_BASE_URL||config.baseUrl||null,token:process.env.VIBE_TOKEN?"configured":"not configured"},true));return 0;
     }
-    throw new Error("Usage: vibe config set|show");
+    throw new Error("Usage: leruchi config set|show");
   }
   if(command==="db"&&subcommand==="migrate"){
     const result=await runMigrations({cwd});
@@ -223,7 +223,7 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
       const result=await client.graph(graph).deleteVertex(required(args,"label"),required(args,"field"),required(args,"value")).execute();
       stdout(print(result,Boolean(args.pretty)));return 0;
     }
-    throw new Error("Usage: vibe graph query|create-vertex|create-edge|update-vertex|delete-vertex");
+    throw new Error("Usage: leruchi graph query|create-vertex|create-edge|update-vertex|delete-vertex");
   }
   throw new Error("Unknown command");
 }
