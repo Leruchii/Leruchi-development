@@ -11,7 +11,7 @@ const ALLOWED_METRICS=new Set([
   "vibe_mutation_duration_ms",
   "vibe_mutation_db_duration_ms",
   "vibe_retrieval_duration_ms",
-  "vibe_security_events_total",
+  "leruchi_security_events_total",
   "vibe_agent_evaluations_total",
   "vibe_agent_evaluation_duration_ms"
 ]);
