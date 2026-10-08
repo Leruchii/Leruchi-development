@@ -37,6 +37,8 @@ test("control-plane revocation adapter requires authenticated active decisions",
   });
   assert.equal(await verifier("jti-2"),false);
   assert.equal(calls[0].authorization,"Bearer secret");
+  const inactive=createControlPlaneRevocationVerifier({baseUrl:"http://127.0.0.1:4101",bearerToken:"secret",fetchImpl:async()=>({ok:true,json:async()=>({active:false,revoked:false})})});
+  assert.equal(await inactive("jti-inactive"),true);
   const malformed=createControlPlaneRevocationVerifier({baseUrl:"http://localhost:4101",bearerToken:"secret",fetchImpl:async()=>({ok:true,json:async()=>({revoked:false})})});
   await assert.rejects(()=>malformed("jti-3"),{code:"CAPABILITY_REVOCATION_UNAVAILABLE"});
   assert.throws(()=>createControlPlaneRevocationVerifier({baseUrl:"http://control.example",bearerToken:"secret"}),/HTTPS/);
