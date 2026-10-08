@@ -13,7 +13,24 @@ VALUES
 ON CONFLICT (id) DO UPDATE
   SET encrypted_password = EXCLUDED.encrypted_password,
       email_confirmed_at = EXCLUDED.email_confirmed_at,
+      raw_app_meta_data = EXCLUDED.raw_app_meta_data,
       raw_user_meta_data = EXCLUDED.raw_user_meta_data,
+      updated_at = now();
+
+INSERT INTO auth.identities
+  (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+VALUES
+  ('00000000-0000-0000-0000-000000000101',
+   '00000000-0000-0000-0000-000000000101',
+   '{"sub":"00000000-0000-0000-0000-000000000101","email":"stage03-tenant-a@example.test"}'::jsonb,
+   'email', NULL, now(), now()),
+  ('00000000-0000-0000-0000-000000000102',
+   '00000000-0000-0000-0000-000000000102',
+   '{"sub":"00000000-0000-0000-0000-000000000102","email":"stage03-tenant-b@example.test"}'::jsonb,
+   'email', NULL, now(), now())
+ON CONFLICT (provider_id, provider) DO UPDATE
+  SET user_id = EXCLUDED.user_id,
+      identity_data = EXCLUDED.identity_data,
       updated_at = now();
 
 INSERT INTO vibe_auth.user_tenant_memberships
