@@ -24,7 +24,7 @@ const includes = manifest.include.map(globToRegExp);
 const excludes = manifest.exclude.map(globToRegExp);
 const selected = trackedEntries.filter(({ file }) => includes.some((r) => r.test(file)))
   .filter(({ file }) => !excludes.some((r) => r.test(file)))
-  .sort((a, b) => a.file.localeCompare(b.file));
+  .sort((a, b) => a.file < b.file ? -1 : a.file > b.file ? 1 : 0);
 
 for (const { file, mode } of selected) {
   if (mode === "120000") throw new Error("Symlinks are not allowed in the OSS candidate: " + file);
