@@ -1,6 +1,6 @@
 import {test,expect,type Page,type Route} from "@playwright/test";
 
-const catalog={version:"v1",graphs:{vibe_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
+const catalog={version:"v1",graphs:{leruchi_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
 
 function rows(count:number){
   return Array.from({length:count},(_,index)=>({id:String(index+1),name:`node-${index+1}`}));
