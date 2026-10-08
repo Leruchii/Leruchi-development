@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Run realtime contract tests
@@ -23,20 +23,20 @@ jobs:
       - name: Wait for database
         run: |
           for i in {1..90}; do
-            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            if docker compose exec -T db pg_isready -U postgres -d leruchi; then exit 0; fi
             sleep 2
           done
           docker compose logs db
           exit 1
       - name: Install Schema Catalog baseline
-        run: docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
+        run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
       - name: Apply migrations as approved migrator
         env:
-          VIBE_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/vibedb
-        run: node -e "import('./packages/vibe-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
+          LERUCHI_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/leruchi
+        run: node -e "import('./packages/leruchi-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
       - name: Prove relay role cannot bypass RLS
         run: |
-          docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
           SELECT rolname, rolsuper, rolbypassrls
             FROM pg_roles
            WHERE rolname='vibe_realtime';
@@ -57,8 +57,8 @@ jobs:
       - name: Run database-backed realtime integration
         timeout-minutes: 2
         env:
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
-          VIBE_REALTIME_DATABASE_URL: postgresql://vibe_realtime:realtime@127.0.0.1:5432/vibedb
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
+          LERUCHI_REALTIME_DATABASE_URL: postgresql://vibe_realtime:realtime@127.0.0.1:5432/leruchi
           RUN_STAGE12_INTEGRATION: "1"
         run: node --test tests/realtime/stage-12-integration.mjs
       - name: Show database logs on failure

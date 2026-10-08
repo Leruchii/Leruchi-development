@@ -5,7 +5,7 @@ import {executeGraphMutation} from "../../packages/mutation-execution/index.mjs"
 import {createMutationApprovalDigest} from "../../packages/mutation-approval/index.mjs";
 const catalog={graphs:{vibe_security:{labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",directions:["out","in","both"]}]}}};
 const context={trusted:true,tenantId:"vibe_tenant_a",role:"authenticated",capabilities:["graph:write","graph:delete"]};
-const dbClient=new Client({host:"127.0.0.1",port:5432,database:"vibedb",user:"vibe_tenant_a",password:"tenant-a-ci"});
+const dbClient=new Client({host:"127.0.0.1",port:5432,database:"leruchi",user:"vibe_tenant_a",password:"tenant-a-ci"});
 const db={begin:()=>dbClient.query("BEGIN"),execute:(compiled,parameterMap)=>dbClient.query({text:compiled.sql,values:[JSON.stringify(parameterMap)],rowMode:"array"}),commit:()=>dbClient.query("COMMIT"),rollback:()=>dbClient.query("ROLLBACK")};
 const run=async()=>{await dbClient.connect();try{
 const create={version:"v1",kind:"graph_mutation",graph:"vibe_security",operation:"create_vertex",target:{label:"Account"},properties:{name:{param:"name"}},parameters:[{name:"name",type:"string",required:true}]};

@@ -8,44 +8,44 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Run CLI tests
         run: node --test tests/cli/cli.test.mjs
       - name: Run Schema Catalog API unit tests
         run: node --test tests/schema-catalog-api/api.test.mjs
-      - name: Build VibeDB database image
+      - name: Build Leruchi database image
         run: docker compose build db
       - name: Start database
         run: docker compose up -d db
       - name: Wait for database
         run: |
           for i in {1..90}; do
-            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            if docker compose exec -T db pg_isready -U postgres -d leruchi; then exit 0; fi
             sleep 2
           done
           docker compose logs db
           exit 1
       - name: Install Schema Catalog baseline
-        run: docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
+        run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
       - name: Run migrations through approved migrator role
         env:
-          VIBE_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/vibedb
-        run: node -e "import('./packages/vibe-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
+          LERUCHI_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/leruchi
+        run: node -e "import('./packages/leruchi-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
       - name: Prove migration ledger and role
         run: |
-          docker compose exec -T db psql -U vibe_migrator -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          docker compose exec -T db psql -U vibe_migrator -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
           SELECT current_user;
           SELECT migration_id FROM vibe_meta.schema_migrations ORDER BY migration_id;
           SQL
       - name: Prove remote Schema Catalog over HTTP
         env:
-          VIBE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/vibedb
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+          LERUCHI_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leruchi
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
         run: node tests/schema-catalog-api/integration.mjs
       - name: Run architecture regression audit
         run: node tests/architecture/contract-audit.mjs

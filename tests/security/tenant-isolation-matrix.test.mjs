@@ -67,10 +67,9 @@ test("tenant isolation matrix separates capability denial from authentication",a
       headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:[]}),"content-type":"application/json"},
       body:JSON.stringify({ir:queryIr()})
     });
-    assert.equal(res.status,400);
+    assert.equal(res.status,403);
     const body=await res.json();
-    assert.equal(body.code,"VALIDATION_FAILED");
-    assert.equal(body.details[0].code,"CAPABILITY_DENIED");
+    assert.equal(body.code,"CAPABILITY_DENIED");
   }finally{await api.close();}
 });
 

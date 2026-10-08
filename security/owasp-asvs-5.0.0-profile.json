@@ -1,0 +1,164 @@
+{
+  "standard": "OWASP ASVS",
+  "version": "5.0.0",
+  "profile": "Leruchi public OSS Core API, MCP, SDK, CLI, Studio and database-backed application",
+  "target": "Level 2 baseline; Level 3 controls are tracked separately where applicable",
+  "rule": "A requirement is PASS only when executable evidence or an explicit architecture/security decision supports it. Unknown/partial requirements remain release blockers until resolved or formally scoped out.",
+  "chapters": [
+    {
+      "id": "V1",
+      "name": "Encoding and Sanitization",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V2",
+      "name": "Validation and Business Logic",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V3",
+      "name": "Web Frontend Security",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V4",
+      "name": "API and Web Service",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V5",
+      "name": "File Handling",
+      "status": "CONDITIONAL"
+    },
+    {
+      "id": "V6",
+      "name": "Authentication",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V7",
+      "name": "Session Management",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V8",
+      "name": "Authorization",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V9",
+      "name": "Self-contained Tokens",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V10",
+      "name": "OAuth and OIDC",
+      "status": "CONDITIONAL"
+    },
+    {
+      "id": "V11",
+      "name": "Cryptography",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V12",
+      "name": "Secure Communication",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V13",
+      "name": "Configuration",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V14",
+      "name": "Data Protection",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V15",
+      "name": "Secure Coding and Architecture",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V16",
+      "name": "Security Logging and Error Handling",
+      "status": "REQUIRED"
+    },
+    {
+      "id": "V17",
+      "name": "WebRTC",
+      "status": "CONDITIONAL"
+    }
+  ],
+  "evidence": {
+    "V1": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V2": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V3": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V4": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V5": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V6": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V7": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V8": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V9": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V10": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V11": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V12": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V13": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V14": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V15": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V16": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    },
+    "V17": {
+      "status": "UNMAPPED",
+      "note": "Requirement-level evidence must be added before claiming ASVS compliance."
+    }
+  }
+}

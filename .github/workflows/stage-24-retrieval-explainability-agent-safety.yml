@@ -10,8 +10,8 @@ on:
       - "packages/retrieval-ir/**"
       - "packages/planner/**"
       - "packages/graph-api/**"
-      - "packages/vibe-sdk/**"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-sdk/**"
+      - "packages/leruchi-cli/**"
       - "packages/mcp-server/**"
       - "packages/observability/**"
       - "tests/retrieval-explainability/**"
@@ -26,10 +26,10 @@ jobs:
   stage-24:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: npm install --ignore-scripts
       - name: Stage 24 focused suite

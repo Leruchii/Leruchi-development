@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {createClient} from "../../packages/vibe-sdk/index.mjs";
+import {createClient} from "../../packages/leruchi-sdk/index.mjs";
 
 const query={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:5,offset:0,depth:0,parameters:[]};
 

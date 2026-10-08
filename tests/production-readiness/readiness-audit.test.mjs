@@ -7,7 +7,7 @@ import {
   auditDatabaseImage,
   runReadinessAudit
 } from "../../scripts/production-readiness-audit.mjs";
-import {migrationChecksum as computeMigrationChecksum} from "../../packages/vibe-cli/migrate.mjs";
+import {migrationChecksum as computeMigrationChecksum} from "../../packages/leruchi-cli/migrate.mjs";
 import {mkdtempSync,writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
@@ -53,7 +53,7 @@ test("database image policy rejects floating AGE/pgvector versions",()=>{
 });
 
 test("migration checksum accepts descriptor objects as used by the runner",()=>{
-  const root=mkdtempSync(join(tmpdir(),"vibedb-migration-checksum-"));
+  const root=mkdtempSync(join(tmpdir(),"leruchi-migration-checksum-"));
   const file=join(root,"0001-fixture.sql");
   writeFileSync(file,"fixture");
   const descriptor={name:"0001-fixture.sql",id:"0001-fixture",file};

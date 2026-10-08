@@ -1,5 +1,5 @@
 {
-  "name": "@vibeplatform/execution-engine",
+  "name": "@leruchi/execution-engine",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -7,5 +7,6 @@
   },
   "engines": {
     "node": ">=24 <25"
-  }
+  },
+  "license": "Apache-2.0"
 }

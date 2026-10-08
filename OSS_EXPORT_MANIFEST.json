@@ -1,8 +1,9 @@
 {
   "version": 1,
-  "purpose": "Explicit public OSS export allowlist for Fikunmii/vibeDB",
+  "purpose": "Explicit public OSS export allowlist for Leruchi",
   "include": [
     "README.md",
+    ".nvmrc",
     "LICENSE",
     "CONTRIBUTING.md",
     "SECURITY.md",
@@ -27,7 +28,9 @@
     "OSS_BOUNDARY.md",
     "knowledge/**",
     "prompts/**",
-    "scripts/audit-oss-boundary.mjs"
+    "scripts/audit-oss-boundary.mjs",
+    "tests/oss-core-readiness/public-export-manifest.test.mjs",
+    "tests/security/owasp-asvs-profile.test.mjs"
   ],
   "rule": "Only paths matched by include may be exported. Exclusions are defense-in-depth, not the primary boundary."
 }

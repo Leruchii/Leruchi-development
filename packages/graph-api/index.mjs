@@ -1,4 +1,7 @@
 import {CAPABILITIES,hasCapability} from "../capability-policy/index.mjs";
+import {verifyCapabilityGrant,isCapabilityGrantScopeAllowed} from "../capability-policy/grants.mjs";
+import {verifyEdDsaCapabilityGrant} from "../capability-policy/jwt.mjs";
+import {isDestructiveMutation} from "../mutation-approval/index.mjs";
 import http from "node:http";
 import {randomUUID} from "node:crypto";
 import {Pool} from "pg";
@@ -49,8 +52,8 @@ export function resolveQueryCompiler(ir,catalog,{
   return {plan,compile};
 }
 
-export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,verifyApproval,observability=createObservability(),queryEngines=DEFAULT_QUERY_ENGINE_CAPABILITIES,preferredQueryEngines=["apache-age","postgresql-recursive"],host="127.0.0.1",port=0}={}){
-  if(!pool||!jwtSecret||typeof catalogProvider!=="function")throw new Error("pool, jwtSecret and catalogProvider are required");
+export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=null,capabilityPublicKeys=null,catalogProvider,auditSink,verifyApproval,isGrantRevoked,requireCapabilityGrant=false,observability=createObservability(),queryEngines=DEFAULT_QUERY_ENGINE_CAPABILITIES,preferredQueryEngines=["apache-age","postgresql-recursive"],host="127.0.0.1",port=0}={}){
+  if(!pool||(!jwtSecret&&!requireCapabilityGrant)||typeof catalogProvider!=="function")throw new Error("pool, a JWT verifier configuration and catalogProvider are required");
   const server=http.createServer(async(req,res)=>{
     const requestId=randomUUID();
     const started=Date.now();
@@ -58,6 +61,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
     res.setHeader("x-vibe-request-id",requestId);
     res.setHeader("x-vibe-trace-id",span.context.traceId);
     let context=null;
+    let capabilityGrant=null;
     let auditInput=null;
     const record=async(outcome,errorCode=null)=>{try{await emitAudit(auditSink,createAuditEvent({
       requestId,traceId:span.context.traceId,context,route:req.url?.split("?")[0]??null,tool:req.headers["x-vibe-mcp-tool"]??null,
@@ -80,8 +84,26 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
       if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain&&!isCrossModalPlanExplain&&!isAgentEvaluate&&!isAgentTrace&&!isAgentReplay)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
-      const claims=verifyHs256Jwt(auth.slice(7),jwtSecret);
-      context=contextFromClaims(claims,requestId);
+      const claims=requireCapabilityGrant
+        ?verifyEdDsaCapabilityGrant(auth.slice(7),{publicKeys:capabilityPublicKeys,issuer:jwtIssuer,audience:jwtAudience??"leruchi"})
+        :verifyHs256Jwt(auth.slice(7),jwtSecret,Math.floor(Date.now()/1000),{issuer:jwtIssuer,audience:jwtAudience});
+      const grantRequired=requireCapabilityGrant||claims.jti!==undefined||claims.aud==="leruchi";
+      let trustedClaims=claims;
+      if(grantRequired){
+        const decision=await verifyCapabilityGrant(claims,{isRevoked:isGrantRevoked});
+        if(!decision.ok){
+          const error=new Error(decision.code==="CAPABILITY_REVOCATION_UNAVAILABLE"?"Capability revocation decision unavailable":"Capability grant was rejected");
+          error.code=decision.code;
+          throw error;
+        }
+        capabilityGrant=decision.grant;
+        trustedClaims={...claims,tenant_id:decision.grant.tenant_id,capabilities:decision.grant.capabilities};
+      }
+      context=contextFromClaims(trustedClaims,requestId);
+      if(capabilityGrant&&!isCapabilityGrantScopeAllowed(capabilityGrant,"/v1/schema/catalog")){
+        await record("denied","CAPABILITY_SCOPE_DENIED");
+        return json(res,403,{version:"v1",code:"CAPABILITY_SCOPE_DENIED",message:"Capability grant scope does not permit Schema Catalog discovery",request_id:requestId});
+      }
       if(isCatalog&&!hasCapability(context,CAPABILITIES.GRAPH_READ)){
         await record("denied","CAPABILITY_DENIED");
         return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for Schema Catalog discovery",request_id:requestId});
@@ -92,6 +114,25 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
         return json(res,200,catalog);
       }
       const input=await body(req);
+      auditInput=input;
+      if(capabilityGrant&&!isCapabilityGrantScopeAllowed(capabilityGrant,req.url,input?.ir?.graph)){
+        await record("denied","CAPABILITY_SCOPE_DENIED");
+        return json(res,403,{version:"v1",code:"CAPABILITY_SCOPE_DENIED",message:"Capability grant scope does not permit this route or graph",request_id:requestId});
+      }
+      if(req.url==="/v1/graph/query"&&!hasCapability(context,CAPABILITIES.GRAPH_READ)){
+        await record("denied","CAPABILITY_DENIED");
+        return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for graph queries",request_id:requestId});
+      }
+      if(req.url==="/v1/graph/mutations"){
+        if(!hasCapability(context,CAPABILITIES.GRAPH_WRITE)){
+          await record("denied","CAPABILITY_DENIED");
+          return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:write capability is required for graph mutations",request_id:requestId});
+        }
+        if(isDestructiveMutation(input.ir)&&!hasCapability(context,CAPABILITIES.GRAPH_DELETE)){
+          await record("denied","CAPABILITY_DENIED");
+          return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:delete capability is required for destructive graph mutations",request_id:requestId});
+        }
+      }
       if(isAgentEvaluate){
         const catalog=await catalogProvider(context);
         try{
@@ -235,6 +276,8 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
     }catch(error){
       await record("error",error?.code??"INTERNAL_ERROR");
       if(error?.code==="BODY_TOO_LARGE")return json(res,413,{error:{version:"v1",code:"BODY_TOO_LARGE",message:"Request body is too large",request_id:requestId}});
+      if(error?.code==="CAPABILITY_REVOCATION_UNAVAILABLE")return json(res,503,{version:"v1",code:error.code,message:"Capability authorization is temporarily unavailable",request_id:requestId});
+      if(error?.code==="INVALID_CAPABILITY_GRANT"||error?.code==="CAPABILITY_GRANT_REVOKED")return json(res,401,{version:"v1",code:error.code,message:"Capability grant was rejected",request_id:requestId});
       if(error?.code==="UNAUTHORIZED"||error instanceof ExecutionContextError||error?.message?.includes("Bearer token"))return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:error.message,request_id:requestId});
       if(error instanceof ExecutionError||error instanceof MutationExecutionError)return json(res,400,error.toJSON());
       if(error instanceof RetrievalExecutionError)return json(res,400,{version:"v1",code:error.code,message:error.message,details:error.details,request_id:requestId});

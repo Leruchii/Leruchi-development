@@ -2,8 +2,8 @@ name: Stage 17 Backup and Recovery
 on:
   pull_request:
     paths:
-      - "scripts/vibedb-backup.sh"
-      - "scripts/vibedb-restore.sh"
+      - "scripts/leruchi-backup.sh"
+      - "scripts/leruchi-restore.sh"
       - "packages/backup-recovery/**"
       - "tests/backup-recovery/**"
       - "infra/docker/postgres/**"
@@ -18,61 +18,61 @@ jobs:
         image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: vibedb
+          POSTGRES_DB: leruchi
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d vibedb"
+          --health-cmd "pg_isready -U postgres -d leruchi"
           --health-interval 2s
           --health-timeout 5s
           --health-retries 30
     env:
-      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/vibedb
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leruchi
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Backup contract tests
         run: node --test tests/backup-recovery/backup-recovery.test.mjs
       - name: PostgreSQL 17 recovery drill
         run: docker run --rm --network host -v "$GITHUB_WORKSPACE:/workspace" -w /workspace -e DATABASE_URL="$DATABASE_URL" postgres:17 bash tests/backup-recovery/backup-recovery-drill.sh
-      - name: Build production VibeDB database image
-        run: docker build -t vibedb-stage17 -f infra/docker/postgres/Dockerfile .
-      - name: Start production VibeDB recovery source
+      - name: Build production Leruchi database image
+        run: docker build -t leruchi-stage17 -f infra/docker/postgres/Dockerfile .
+      - name: Start production Leruchi recovery source
         run: |
-          docker run -d --name vibedb-stage17-db \
+          docker run -d --name leruchi-stage17-db \
             -p 55432:5432 \
             -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=postgres \
-            -e POSTGRES_DB=vibedb \
-            -e VIBE_MIGRATOR_PASSWORD=migrator \
-            -e VIBE_RUNTIME_PASSWORD=runtime \
-            -e VIBE_REALTIME_PASSWORD=realtime \
+            -e POSTGRES_DB=leruchi \
+            -e LERUCHI_MIGRATOR_PASSWORD=migrator \
+            -e LERUCHI_RUNTIME_PASSWORD=runtime \
+            -e LERUCHI_REALTIME_PASSWORD=realtime \
             -v "$GITHUB_WORKSPACE/infra/docker/postgres/init:/docker-entrypoint-initdb.d:ro" \
-            vibedb-stage17
+            leruchi-stage17
           for attempt in $(seq 1 60); do
-            if docker exec vibedb-stage17-db pg_isready -U postgres -d vibedb >/dev/null 2>&1; then
+            if docker exec leruchi-stage17-db pg_isready -U postgres -d leruchi >/dev/null 2>&1; then
               exit 0
             fi
             sleep 2
           done
-          docker logs vibedb-stage17-db
+          docker logs leruchi-stage17-db
           exit 1
       - name: Production AGE + pgvector recovery drill
         run: |
           docker run --rm --network host \
             -v "$GITHUB_WORKSPACE:/workspace" \
             -w /workspace \
-            -e SOURCE_DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55432/vibedb" \
-            -e TARGET_DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55432/vibedb_restore" \
-            vibedb-stage17 \
+            -e SOURCE_DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55432/leruchi" \
+            -e TARGET_DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55432/leruchi_restore" \
+            leruchi-stage17 \
             bash tests/backup-recovery/production-image-recovery-drill.sh
       - name: Production database logs on failure
         if: failure()
-        run: docker logs vibedb-stage17-db || true
-      - name: Stop production VibeDB recovery source
+        run: docker logs leruchi-stage17-db || true
+      - name: Stop production Leruchi recovery source
         if: always()
-        run: docker rm -f vibedb-stage17-db >/dev/null 2>&1 || true
+        run: docker rm -f leruchi-stage17-db >/dev/null 2>&1 || true
       - name: Architecture regression audit
         run: node tests/architecture/contract-audit.mjs
