@@ -912,3 +912,8 @@ Candidate fixes the Playwright live-composition JWT to use the strict signed-gra
 ## Pre-run checkpoint — asymmetric capability grant signatures, 2026-10-08
 
 The prior exact head 57dd4815d7137945945c234f5d7ca9970e637bef passed 30 workflows. This next candidate replaces the production strict-grant HS256/shared-secret path with EdDSA verification using a key-id-selected public-key ring. The OSS data plane receives public keys only; private signing keys remain in the separate control plane. Required grant claims now include actor sub, jti, tenant_id, canonical capabilities, aud=leruchi and exp, with optional nbf and route/graph scope. Test-only Ed25519 keys are isolated under tests/fixtures; Stage 13 and Stage 14 workflows will use the public test key and a test-only revocation service. Candidate has not run CI. Re-read the internal handoff and record the exact new SHA before advancing the validation branch. Production control-plane issuance, private-key custody/rotation and operational revocation remain release gates.
+
+
+## EdDSA CI key hygiene fix candidate — 2026-10-08
+
+The first EdDSA candidate failed the Stage 32 ASVS gate because a PEM-formatted test private key was committed in a test fixture. The fix removes that static key and generates an ephemeral Ed25519 keypair in Stage 13/14 CI. The Graph API receives only the public DER key; browser/MCP test helpers read the ephemeral private-key file from /tmp. Unit tests generate an in-memory pair. This candidate has not run CI. The previous exact-head Stage 32 workflow failure is documented in the internal handoff; no pass claim until the next full matrix completes.

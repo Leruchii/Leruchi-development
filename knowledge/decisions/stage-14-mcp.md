@@ -100,3 +100,8 @@ Candidate `2ae9de766bc31a9542c4e782170b0834857d69cb` updates Stage 13 to start t
 ## Asymmetric grant signing boundary — candidate, 2026-10-08
 
 Strict Graph API grant verification is moving to EdDSA JWTs with kid-selected public keys. The data plane will hold only a public-key ring; the private signing keys stay in the separate control plane. Key rotation supports overlapping key IDs. CI uses a clearly test-only private key fixture and does not establish a production issuer. Production key custody, rotation, membership-aware grant issuance and revocation operations remain release gates. Candidate has not run CI.
+
+
+## EdDSA test-key hygiene fix candidate — 2026-10-08
+
+The Stage 32 ASVS gate rejected the previous candidate because a test-only PEM private key was embedded in source. The candidate replaces it with an ephemeral keypair generated in CI, passes only the public key to the Graph API, and keeps the private test key in runner temporary storage. No private key is committed. Production private-key custody and rotation remain release gates. Candidate has not run CI.

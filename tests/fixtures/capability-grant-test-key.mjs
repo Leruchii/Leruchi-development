@@ -1,13 +1,16 @@
-import {createPrivateKey,sign} from "node:crypto";
+import {createPrivateKey,createPublicKey,generateKeyPairSync,sign} from "node:crypto";
+import {readFileSync} from "node:fs";
 
-const privateKey=createPrivateKey(`-----BEGIN PRIVATE KEY-----
-MC4CAQAwBQYDK2VwBCIEIHWFIyFtSlqXbY7OHg1bxgjVC8xisczckCNjbcdto5K9
------END PRIVATE KEY-----`);
+const privateKeyPath=process.env.LERUCHI_CAPABILITY_TEST_PRIVATE_KEY_PATH;
+const privateKey=privateKeyPath
+  ?createPrivateKey(readFileSync(privateKeyPath))
+  :generateKeyPairSync("ed25519").privateKey;
+const publicKey=createPublicKey(privateKey).export({format:"der",type:"spki"}).toString("base64");
 
 export const TEST_CAPABILITY_KEY_ID="stage-test-2026";
 export const TEST_CAPABILITY_ISSUER="leruchi-test-control-plane";
 export const TEST_CAPABILITY_PUBLIC_KEYS=Object.freeze({
-  [TEST_CAPABILITY_KEY_ID]:"MCowBQYDK2VwAyEAiMVGMY/24AIfhf68FhNA+CnQFLjVJTOU1GTRuH7g3NI="
+  [TEST_CAPABILITY_KEY_ID]:publicKey
 });
 export const TEST_CAPABILITY_PUBLIC_KEYS_JSON=JSON.stringify(TEST_CAPABILITY_PUBLIC_KEYS);
 
