@@ -40,7 +40,7 @@ jobs:
           docker compose exec -T db psql -U postgres -d leruchi -Xf /dev/stdin < infra/supabase/roles.sql
 
       - name: Start Auth and PostgREST
-        run: docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d auth rest
+        run: GOTRUE_EXTERNAL_EMAIL_ENABLED=true docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d --force-recreate auth rest
 
       - name: Wait for Auth and PostgREST
         run: |
@@ -97,6 +97,46 @@ jobs:
           $check$;
           RESET ROLE;
           SQL
+
+      - name: Seed test users and memberships for real Auth token issuance
+        run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < tests/security/tenant-claim-hook-fixture.sql
+
+      - name: Verify real Auth-issued tenant claims and RLS isolation
+        run: |
+          ANON_TOKEN=$(python3 - <<'PY'
+          import base64, hashlib, hmac, json, time
+          secret=b"leruchi-local-jwt-secret-change-me-32"
+          def b64(v):
+              return base64.urlsafe_b64encode(v).rstrip(b"=").decode()
+          header=b64(json.dumps({"alg":"HS256","typ":"JWT"},separators=(",",":")).encode())
+          payload=b64(json.dumps({"role":"anon","aud":"authenticated","iss":"http://localhost:9999","iat":int(time.time()),"exp":int(time.time())+600},separators=(",",":")).encode())
+          msg=f"{header}.{payload}".encode()
+          sig=b64(hmac.new(secret,msg,hashlib.sha256).digest())
+          print(f"{header}.{payload}.{sig}")
+          PY
+          )
+          TOKEN_A=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!"}')
+          TOKEN_B=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!"}')
+          python3 - "\${TOKEN_A}" "\${TOKEN_B}" <<'PY'
+          import base64, json, sys
+          def claims(response):
+              token=json.loads(response)["access_token"]
+              part=token.split(".")[1]
+              return json.loads(base64.urlsafe_b64decode(part+"="*(-len(part)%4)))
+          a,b=claims(sys.argv[1]),claims(sys.argv[2])
+          assert a.get("tenant_id")=="tenant_a", f"valid membership did not issue tenant_a: {a}"
+          assert "tenant_id" not in b, f"revoked tenant selector issued tenant_id: {b}"
+          print("Real Auth-issued tenant claim assertions passed")
+          PY
+          ACCESS_A=$(printf '%s' "\${TOKEN_A}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+          ACCESS_B=$(printf '%s' "\${TOKEN_B}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+          RESPONSE_A=$(curl -fsS -H "Authorization: Bearer \${ACCESS_A}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
+          echo "\${RESPONSE_A}"
+          echo "\${RESPONSE_A}" | grep -q '"tenant_a"'
+          if echo "\${RESPONSE_A}" | grep -q 'tenant_b'; then echo "Tenant B leaked into Tenant A response"; exit 1; fi
+          RESPONSE_B=$(curl -fsS -H "Authorization: Bearer \${ACCESS_B}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
+          echo "\${RESPONSE_B}"
+          if echo "\${RESPONSE_B}" | grep -q 'tenant_a\|tenant_b'; then echo "Token without authorized tenant claim returned tenant rows"; exit 1; fi
 
       - name: Verify signed JWT reaches PostgREST RLS
         run: |
