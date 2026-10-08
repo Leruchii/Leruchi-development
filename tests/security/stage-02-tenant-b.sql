@@ -28,13 +28,13 @@ BEGIN
   IF deleted_rows <> 0 THEN RAISE EXCEPTION 'Tenant B deleted tenant A'; END IF;
 
   SELECT count(*) INTO visible_rows
-  FROM ag_catalog.cypher('vibe_security', $cypher$
+  FROM ag_catalog.cypher('leruchi_security', $cypher$
     MATCH (n:Account) RETURN n
   $cypher$) AS (n ag_catalog.agtype);
   IF visible_rows <> 2 THEN RAISE EXCEPTION 'Tenant B graph visibility expected 2, got %', visible_rows; END IF;
 
   SELECT count(*) INTO leaked_rows
-  FROM ag_catalog.cypher('vibe_security', $cypher$
+  FROM ag_catalog.cypher('leruchi_security', $cypher$
     MATCH (n:Account) WHERE n.name = 'A1' RETURN n
   $cypher$) AS (n ag_catalog.agtype);
   IF leaked_rows <> 0 THEN RAISE EXCEPTION 'Tenant B directly read tenant A graph vertex'; END IF;
