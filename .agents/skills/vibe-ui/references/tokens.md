@@ -1,4 +1,4 @@
-# Vibe UI Tokens
+# Leruchi UI Tokens
 
 Use semantic tokens only. Component code must not introduce raw hex/rgb colors or Tailwind palette colors.
 
