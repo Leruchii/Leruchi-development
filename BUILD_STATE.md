@@ -772,13 +772,13 @@ Implementation is in progress. Added bounded non-executing agent evaluation for 
 Stage 29 merged as PR #58 at `93022678b151b1945640967ecc09642271c23e62`. Focused evaluation/observability CI, Stage State Gate, Architecture Regression Audit, and the historical regression workflows completed successfully on the candidate head. Evaluation remains non-executing and emits bounded metadata plus deterministic artifact hashes only.
 
 
+
 ## Stage 32 — live checkpoint (2026-10-09)
 
-- Development main: `2e3997a75c709b58da14c454b356ae9778d1e1be`.
-- Candidate PR #63 is open/draft; candidate HEAD at this checkpoint: `d39c49aeb2c9a1aae62cf44279494a235361da56`.
-- Exact-HEAD GitHub Actions matrix: 36/36 succeeded; 0 failures. Stage 32 run `37831617690`; PR check `37831621640`; Stage 31 readiness `37831626312`; Stage 11 CLI `37831626103`; Stage 13 Graph Studio `37831626076`; Architecture Regression Audit `37831626179`.
-- Sanitized export artifact ID `11573287694`, produced by Stage 32 run `37831617690` from the same exact candidate SHA. ZIP SHA-256 `c125e8810ec788cbd6eec72dc51b33c5ff531c8047860f3962f6d89debec099a`; packaged tar.gz SHA-256 `436efd61f12dbc084fd881ef97ce8596629c1f7c4c1f372ee18d37f78f806ca6`.
-- Independent inspection: 184 files, `.nvmrc=24`, engine `>=24 <25`, no GitHub PAT-pattern matches and no retired `Fikunmii/vibeDB` repository-name matches. Node.js 20 remains prohibited.
-- PR reconciliation: #14/#22/#26/#29/#60 closed unmerged; #64/#65 closed merged. Legacy migration safety behaviors have canonical CLI tests; Stage 11 exact-head workflow passed. Do not merge stale branches wholesale.
-- Integration/publication remain blocked by pending formal product-name clearance and the need to review the broad 357-commit/148-file PR diff. Repository visibility is user-owned and remains the user's action. No public OSS release has been made.
-- Every new candidate commit requires fresh exact-head CI and a newly verified artifact. These results apply only to the SHA named above.
+Verified source candidate SHA: `c40da1f25a3d2d372310f28bfadbecc5708d13cb`; exact-head matrix completed 36/36 successfully, 0 failures. Stage 32 workflow `37833464361`; PR check `37833464172`; Stage 31 readiness `37833464538`; Stage 11 CLI `37833464621`; Stage 13 Graph Studio `37833464516`; Stage State Gate `37833464328`; Architecture Regression Audit `37833464260`.
+
+Sanitized export artifact `leruchi-oss-core-candidate`, ID `11573439350`, produced from that exact source SHA. ZIP SHA-256 `ac60d3fe0346804478508c6b45399be8773e7fb04d622233271777b793e5626a`; packaged tar.gz SHA-256 `436efd61f12dbc084fd881ef97ce8596629c1f7c4c1f372ee18d37f78f806ca6`. Independent inspection: 184 files; `.nvmrc=24`; engine `>=24 <25`; no GitHub PAT-pattern or retired `Fikunmii/vibeDB` repository-name matches.
+
+PR reconciliation: #14/#22/#26/#29/#60 closed unmerged; #64/#65 closed merged. Canonical CLI migration safety coverage passed Stage 11 CI. The compare is broad (359 commits ahead, 0 behind, 149 files, 5,848 additions, 574 deletions), so integration strategy review remains mandatory. Formal product-name clearance is still open; no public OSS release has been made. Repository visibility is user-owned and remains the user's action.
+
+This entry documents the verified source candidate, not a guarantee for a later tip. The live PR #63 description is authoritative for the current head and its exact-head CI/artifact evidence. Any subsequent candidate commit requires a fresh matrix and artifact verification.
