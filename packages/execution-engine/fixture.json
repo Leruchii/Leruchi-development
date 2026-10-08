@@ -1,7 +1,7 @@
 {
   "version":"v1",
   "kind":"graph_query",
-  "graph":"vibe_security",
+  "graph":"leruchi_security",
   "root":{"label":"Account","alias":"account"},
   "steps":[{"edge":"KNOWS","direction":"out","target":{"label":"Account","alias":"friend"}}],
   "filters":[{"field":"account.name","op":"eq","value":{"param":"name"}}],
