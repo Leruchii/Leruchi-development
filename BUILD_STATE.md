@@ -70,7 +70,7 @@ Stage 11 PR #13 was merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`. The la
 
 ## Stage 09 objective
 
-Implement safe graph create/update/delete through Vibe abstractions without bypassing the Secure Execution Engine or PostgreSQL RLS.
+Implement safe graph create/update/delete through Leruchi abstractions without bypassing the Secure Execution Engine or PostgreSQL RLS.
 
 Required work:
 
