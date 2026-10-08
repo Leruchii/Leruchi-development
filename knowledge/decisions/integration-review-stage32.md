@@ -48,3 +48,8 @@ For each slice: record the exact base/head SHAs; review every changed file; run 
 ## Decision
 
 **No wholesale merge.** Use a clean main-based integration branch and port reviewed slices in the order above. This document is a risk-based grouping and integration plan; it is not a claim that every line in the 155-file diff has already received semantic review.
+
+
+## Follow-up security review — revocation response semantics
+
+On 2026-10-09, code review found a contradictory response in the candidate control plane: a revoked grant could be returned with `active: true`. The issuer/revocation adapter now returns `active: false` when revocation succeeds and computes lookup activity as `not expired AND not revoked`. The service test now asserts both responses. This fix must pass the exact-head Stage 32 workflow before the control-plane slice is considered validated.
