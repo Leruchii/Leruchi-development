@@ -5,9 +5,9 @@ const manifest = JSON.parse(readFileSync(new URL("../OSS_EXPORT_MANIFEST.json", 
 const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 
 const globToRegExp = (glob) => new RegExp("^" + glob
-  .replace(/[.+^$(){}|[\\]\\\\]/g, "\\\\$&")
-  .replace(/\\*\\*/g, "§DOUBLE§")
-  .replace(/\\*/g, "[^/]*")
+  .replace(/[.+^$(){}|[\]\\]/g, "\\$&")
+  .replace(/\*\*/g, "§DOUBLE§")
+  .replace(/\*/g, "[^/]*")
   .replace(/§DOUBLE§/g, ".*") + "$");
 
 const includes = manifest.include.map(globToRegExp);
@@ -20,7 +20,7 @@ const matchesExclude = (file) => excludes.some((pattern) => pattern.test(file));
 // deliberate include/exclude overlap was incorrectly reported as a leak.
 const publicFiles = files.filter((file) => matchesInclude(file) && !matchesExclude(file));
 const excludedIncludeMatches = files.filter((file) => matchesInclude(file) && matchesExclude(file));
-const forbiddenPublicPath = /^(?:AGENTS\\.md|BUILD_(?:STATE|PLAN)\\.md|NORTH_STAR\\.md|OSS_BOUNDARY\\.md|\\.agents(?:\\/|$)|\\.claude(?:\\/|$)|knowledge\\/|prompts\\/|\\.github\\/workflows\\/|scripts\\/audit-oss-boundary\\.mjs$)/;
+const forbiddenPublicPath = /^(?:AGENTS\.md|BUILD_(?:STATE|PLAN)\.md|NORTH_STAR\.md|OSS_BOUNDARY\.md|\.agents(?:\/|$)|\.claude(?:\/|$)|knowledge\/|prompts\/|\.github\/workflows\/|scripts\/audit-oss-boundary\.mjs$)/;
 const leaked = publicFiles.filter((file) => forbiddenPublicPath.test(file));
 
 if (leaked.length) {
