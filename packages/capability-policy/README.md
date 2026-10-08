@@ -12,3 +12,6 @@ Configure the production Graph API with:
 Keep current and previous public keys during rotation until all grants signed by the old key have expired. The control-plane private keys must be held in its secret-management system and rotated independently from data-plane deployments. Revocation lookup is mandatory and fail-closed; an unavailable or malformed decision must not permit database access.
 
 CI generates ephemeral Ed25519 test keys at runtime and uses a test-only control-plane stub. These fixtures are not production credentials or an issuance service. The real issuer, private-key lifecycle, membership-aware issuance policy, and operational revocation SLO remain outside the OSS runtime and are release gates.
+
+
+For the complete self-hosted issuer/revocation contract and deployment checklist, see [docs/security/capability-grants.md](../../docs/security/capability-grants.md).

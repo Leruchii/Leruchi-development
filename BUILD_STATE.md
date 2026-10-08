@@ -922,3 +922,8 @@ The first EdDSA candidate failed the Stage 32 ASVS gate because a PEM-formatted 
 ## Live revocation integration candidate — 2026-10-08
 
 The next candidate adds a live MCP-to-Graph API test using a grant jti configured as revoked in the test control-plane stub. The test asserts the Graph API denies the grant through the HTTP revocation adapter. The production control plane is still not implemented/deployed in OSS; the stub validates only the interface contract. Candidate has not run CI.
+
+
+## Self-hosted capability authority documentation candidate — 2026-10-08
+
+Adds a public guide describing the external EdDSA grant issuer and revocation endpoint contract, strict-mode environment, key rotation, fail-closed behavior, membership-aware issuance obligations and deployment checklist. It explicitly states that the OSS runtime contains a verifier/adapter, not a production issuer, and that self-hosted/third-party authority is supported without Leruchi Cloud. The guide is eligible for export under docs/**. Candidate has not run CI.
