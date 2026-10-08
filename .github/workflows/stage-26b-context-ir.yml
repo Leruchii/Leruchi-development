@@ -4,12 +4,12 @@ on:
   pull_request:
     paths:
       - "packages/context-ir/**"
-      - "packages/vibe-sdk/context.mjs"
-      - "packages/vibe-sdk/index.mjs"
+      - "packages/leruchi-sdk/context.mjs"
+      - "packages/leruchi-sdk/index.mjs"
       - "packages/mcp-server/index.mjs"
       - "packages/graph-api/index.mjs"
       - "tests/context-ir/**"
-      - "tests/vibe-sdk/context.test.mjs"
+      - "tests/leruchi-sdk/context.test.mjs"
   push:
     branches:
       - "stage26b-*"
@@ -18,13 +18,13 @@ jobs:
   context-ir:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: npm install --ignore-scripts
       - name: Context IR tests
-        run: node --test tests/context-ir/*.test.mjs tests/vibe-sdk/context.test.mjs
+        run: node --test tests/context-ir/*.test.mjs tests/leruchi-sdk/context.test.mjs
       - name: MCP server tests
         run: node --test tests/mcp/mcp-server.test.mjs

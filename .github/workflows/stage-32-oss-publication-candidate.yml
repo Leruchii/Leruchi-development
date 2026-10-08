@@ -1,0 +1,76 @@
+name: Stage 32 - OSS Core Publication Candidate
+
+on:
+  push:
+    branches:
+      - "stage32-*"
+  pull_request:
+    paths:
+      - "OSS_EXPORT_MANIFEST.json"
+      - "scripts/build-oss-core-candidate.mjs"
+      - "scripts/public-oss-export-audit.mjs"
+      - "scripts/oss-core-readiness-audit.mjs"
+      - "tests/oss-core-readiness/**"
+      - "tests/security/realtime-role-boundary.test.mjs"
+      - "infra/docker/postgres/init/01-leruchi-bootstrap.sh"
+      - "infra/migrations/0002-graph-realtime-outbox.sql"
+      - "packages/realtime-outbox/index.mjs"
+      - ".nvmrc"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/stage-32-oss-publication-candidate.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Enforce runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Run OWASP ASVS 5.0.0 verification gate
+        run: node scripts/owasp-asvs-verification.mjs && node --test tests/security/owasp-asvs-profile.test.mjs
+      - name: Verify tenant and realtime security boundary
+        run: node --test tests/security/realtime-role-boundary.test.mjs
+      - name: Validate public export manifest
+        run: node tests/oss-core-readiness/public-export-manifest.test.mjs
+      - name: Audit source export contract
+        run: node scripts/public-oss-export-audit.mjs
+      - name: Build sanitized OSS candidate
+        run: |
+          candidate="$RUNNER_TEMP/leruchi-oss-candidate"
+          mkdir -p "$candidate"
+          node scripts/build-oss-core-candidate.mjs "$GITHUB_WORKSPACE" "$candidate"
+          node scripts/oss-core-readiness-audit.mjs "$candidate"
+      - name: Rebuild and package candidate reproducibly
+        run: |
+          candidate="$RUNNER_TEMP/leruchi-oss-candidate"
+          verify="$RUNNER_TEMP/leruchi-oss-candidate-verify"
+          mkdir -p "$verify"
+          node scripts/build-oss-core-candidate.mjs "$GITHUB_WORKSPACE" "$verify"
+          node scripts/oss-core-readiness-audit.mjs "$verify"
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner -cf "$RUNNER_TEMP/leruchi-oss-core-candidate.tar" -C "$candidate" .
+          tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner -cf "$RUNNER_TEMP/leruchi-oss-core-candidate-verify.tar" -C "$verify" .
+          gzip -n -c "$RUNNER_TEMP/leruchi-oss-core-candidate.tar" > "$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz"
+          gzip -n -c "$RUNNER_TEMP/leruchi-oss-core-candidate-verify.tar" > "$RUNNER_TEMP/leruchi-oss-core-candidate-verify.tar.gz"
+          cmp "$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz" "$RUNNER_TEMP/leruchi-oss-core-candidate-verify.tar.gz"
+          sha256sum "$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz"
+      - name: Upload candidate artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: leruchi-oss-core-candidate
+          path: ${{ runner.temp }}/leruchi-oss-core-candidate.tar.gz
+          if-no-files-found: error

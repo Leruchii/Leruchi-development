@@ -3,12 +3,12 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import {run} from "../../packages/vibe-cli/index.mjs";
+import {run} from "../../packages/leruchi-cli/index.mjs";
 
 test("CLI agent evaluate sends the canonical cases file without inventing a second contract",async()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-agent-eval-"));
-  fs.mkdirSync(path.join(cwd,".vibe"));
-  fs.writeFileSync(path.join(cwd,".vibe","config.json"),JSON.stringify({baseUrl:"https://example.test"}));
+  fs.mkdirSync(path.join(cwd,".leruchi"));
+  fs.writeFileSync(path.join(cwd,".leruchi","config.json"),JSON.stringify({baseUrl:"https://example.test"}));
   const file=path.join(cwd,"cases.json");
   const cases=[{name:"case",plan:{version:"v1",kind:"cross_modal_plan",steps:[{id:"x",type:"query",ir:{version:"v1",kind:"graph_query"}}]},expected:{status:"rejected"}}];
   fs.writeFileSync(file,JSON.stringify(cases));

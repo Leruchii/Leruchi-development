@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {createClient} from "../../packages/vibe-sdk/index.mjs";
+import {createClient} from "../../packages/leruchi-sdk/index.mjs";
 
 test("SDK agent evaluation converges on the canonical evaluation transport",async()=>{
   const calls=[];

@@ -7,7 +7,7 @@ function decodePart(value) {
   return JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
 }
 
-export function verifyHs256Jwt(token, secret, now=Math.floor(Date.now()/1000)) {
+export function verifyHs256Jwt(token, secret, now=Math.floor(Date.now()/1000), {issuer=null,audience=null}={}) {
   if (!token || !secret) { const error = new Error("Missing bearer token or JWT secret"); error.code = "UNAUTHORIZED"; throw error; }
   const parts = token.split(".");
   if (parts.length !== 3) { const error = new Error("Invalid JWT"); error.code = "UNAUTHORIZED"; throw error; }
@@ -27,6 +27,8 @@ export function verifyHs256Jwt(token, secret, now=Math.floor(Date.now()/1000)) {
   const supplied = Buffer.from(signature, "base64url");
   if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) { const error = new Error("Invalid JWT signature"); error.code = "UNAUTHORIZED"; throw error; }
   if (payload.exp !== undefined && (!Number.isInteger(payload.exp) || payload.exp <= now)) { const error = new Error("Expired JWT"); error.code = "UNAUTHORIZED"; throw error; }
+  if (issuer !== null && payload.iss !== issuer) { const error = new Error("Invalid JWT issuer"); error.code = "UNAUTHORIZED"; throw error; }
+  if (audience !== null && payload.aud !== audience && !(Array.isArray(payload.aud) && payload.aud.includes(audience))) { const error = new Error("Invalid JWT audience"); error.code = "UNAUTHORIZED"; throw error; }
   if (typeof payload.tenant_id !== "string" || payload.tenant_id === "") { const error = new Error("JWT tenant_id claim is required"); error.code = "UNAUTHORIZED"; throw error; }
   return payload;
 }

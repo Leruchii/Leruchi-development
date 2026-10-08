@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Usage:
-#   DATABASE_URL=postgresql://... scripts/vibedb-backup.sh /path/to/backup-dir
+#   DATABASE_URL=postgresql://... scripts/leruchi-backup.sh /path/to/backup-dir
 #
 # Produces a self-describing custom-format dump plus a manifest. The manifest
 # is intentionally generated from the dump itself so integrity can be checked
@@ -13,8 +13,8 @@ DATABASE_URL="${DATABASE_URL:?DATABASE_URL is required}"
 mkdir -p "$OUT_DIR"
 
 timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
-dump="$OUT_DIR/vibedb-$timestamp.dump"
-manifest="$OUT_DIR/vibedb-$timestamp.manifest.json"
+dump="$OUT_DIR/leruchi-$timestamp.dump"
+manifest="$OUT_DIR/leruchi-$timestamp.manifest.json"
 tmp="$manifest.tmp"
 
 start_ns="$(date +%s%N)"

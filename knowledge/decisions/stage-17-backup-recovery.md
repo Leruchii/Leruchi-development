@@ -4,7 +4,7 @@ Status: VALIDATED.
 
 ## Contract
 
-VibeDB backups are PostgreSQL-native because PostgreSQL is the system of record. The OSS recovery contract uses PostgreSQL custom-format dumps (`pg_dump --format=custom`) and `pg_restore`.
+Leruchi backups are PostgreSQL-native because PostgreSQL is the system of record. The OSS recovery contract uses PostgreSQL custom-format dumps (`pg_dump --format=custom`) and `pg_restore`.
 
 The backup artifact is paired with a manifest containing:
 - artifact name;
@@ -58,14 +58,14 @@ Stage 17 CI builds the repository's production database image:
 - pgvector 0.8.7.
 
 The production-like drill:
-1. initializes the real VibeDB database image;
+1. initializes the real Leruchi database image;
 2. creates the Stage 17 relational/migration fixture;
 3. creates and verifies a real AGE vertex;
 4. verifies pgvector-backed fixture data;
 5. captures a custom-format backup;
 6. commits a distinct post-backup write;
 7. creates a fresh empty recovery database;
-8. restores with `VIBEDB_RESTORE_MODE=fresh`;
+8. restores with `LERUCHI_RESTORE_MODE=fresh`;
 9. verifies AGE and pgvector extensions are present;
 10. verifies the AGE vertex, vector object/data and migration ledger are equal to the source snapshot;
 11. verifies pre-backup data is present and the post-backup write is absent.
@@ -98,7 +98,7 @@ The shell restore path also regained an explicit manifest byte-size verification
 ## Validation evidence
 
 - Stage 17 workflow run `37289351363` — production PostgreSQL/AGE/pgvector recovery drill passed.
-- Stage 01 database-foundation run `37288434154` — clean VibeDB initialization passed after AGE bootstrap ordering was corrected.
+- Stage 01 database-foundation run `37288434154` — clean Leruchi initialization passed after AGE bootstrap ordering was corrected.
 - Architecture regression audit passed inside the Stage 17 validation workflow.
 - Contract tests cover manifest integrity, tampering, size mismatch and restore-mode behavior.
 

@@ -3,25 +3,25 @@ services:
     build:
       context: .
       dockerfile: infra/docker/postgres/Dockerfile
-    image: vibedb/postgres:stage-01
+    image: leruchi/postgres:stage-01
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: vibedb
-      VIBE_MIGRATOR_PASSWORD: migrator
-      VIBE_RUNTIME_PASSWORD: runtime
-      VIBE_REALTIME_PASSWORD: realtime
+      POSTGRES_DB: leruchi
+      LERUCHI_MIGRATOR_PASSWORD: migrator
+      LERUCHI_RUNTIME_PASSWORD: runtime
+      LERUCHI_REALTIME_PASSWORD: realtime
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d vibedb"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d leruchi"]
       interval: 2s
       timeout: 5s
       retries: 30
     volumes:
-      - vibedb_pgdata:/var/lib/postgresql/data
-      - ./infra/docker/postgres/init/01-vibe-bootstrap.sh:/docker-entrypoint-initdb.d/01-vibe-bootstrap.sh:ro
+      - leruchi_pgdata:/var/lib/postgresql/data
+      - ./infra/docker/postgres/init/01-leruchi-bootstrap.sh:/docker-entrypoint-initdb.d/01-leruchi-bootstrap.sh:ro
       - ./infra/docker/postgres/init/02-foundation.sql:/docker-entrypoint-initdb.d/02-foundation.sql:ro
 
 volumes:
-  vibedb_pgdata:
+  leruchi_pgdata:

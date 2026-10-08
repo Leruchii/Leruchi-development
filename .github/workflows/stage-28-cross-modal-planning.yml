@@ -5,16 +5,20 @@ on:
     paths:
       - "packages/cross-modal-planner/**"
       - "packages/graph-api/**"
-      - "packages/vibe-sdk/**"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-sdk/**"
+      - "packages/leruchi-cli/**"
       - "packages/mcp-server/**"
       - "tests/cross-modal-planner/**"
-      - "tests/vibe-sdk/cross-modal-plan.test.mjs"
+      - "tests/leruchi-sdk/cross-modal-plan.test.mjs"
       - "tests/cli/cross-modal-plan.test.mjs"
       - "tests/mcp/mcp-server.test.mjs"
   push:
     branches:
       - "stage28-*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   cross-modal-planning:
@@ -32,7 +36,7 @@ jobs:
       - name: Cross-modal planner tests
         run: node --test tests/cross-modal-planner/*.test.mjs
       - name: SDK plan tests
-        run: node --test tests/vibe-sdk/cross-modal-plan.test.mjs
+        run: node --test tests/leruchi-sdk/cross-modal-plan.test.mjs
       - name: CLI plan tests
         run: node --test tests/cli/cross-modal-plan.test.mjs
       - name: MCP contract tests

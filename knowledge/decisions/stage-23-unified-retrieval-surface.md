@@ -20,9 +20,9 @@ No surface may expose Apache AGE, Cypher, PostgreSQL recursive SQL, pgvector int
 
 ## Implementation
 
-- packages/vibe-sdk/retrieval.mjs provides a bounded Retrieval IR builder.
-- packages/vibe-sdk/index.mjs exposes client.retrieval() and routes retrieval requests to /v1/retrieval/query.
-- packages/vibe-cli/index.mjs exposes vibe retrieval query while delegating construction and transport to the SDK.
+- packages/leruchi-sdk/retrieval.mjs provides a bounded Retrieval IR builder.
+- packages/leruchi-sdk/index.mjs exposes client.retrieval() and routes retrieval requests to /v1/retrieval/query.
+- packages/leruchi-cli/index.mjs exposes vibe retrieval query while delegating construction and transport to the SDK.
 - packages/mcp-server/index.mjs validates Retrieval IR before forwarding retrieval.query to the same Graph API route.
 - packages/graph-api/index.mjs already owns the authenticated retrieval endpoint and capability checks; Stage 23 preserves that boundary.
 - Retrieval execution continues to consume the Stage 22 planner and exposes only bounded plan mode/engine metadata.

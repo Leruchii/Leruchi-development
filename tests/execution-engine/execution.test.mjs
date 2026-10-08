@@ -70,7 +70,7 @@ test("real tenant A execution is isolated by PostgreSQL RLS", async (t) => {
     return;
   }
   const client = new Client({
-    host:"127.0.0.1", port:5432, database:"vibedb",
+    host:"127.0.0.1", port:5432, database:"leruchi",
     user:"vibe_tenant_a", password:"tenant-a-ci"
   });
   await client.connect();

@@ -56,7 +56,7 @@ test("executes generated one-hop query against AGE", () => {
     "EXECUTE vibe_stage07('" + agtype + "'::agtype);",
     "DEALLOCATE vibe_stage07;"
   ].join("\n");
-  const output = execFileSync("docker", ["compose","exec","-T","db","psql","-U","vibe_runtime","-d","vibedb","-X","-tA","-v","ON_ERROR_STOP=1"], { input: sql, encoding: "utf8" });
+  const output = execFileSync("docker", ["compose","exec","-T","db","psql","-U","vibe_runtime","-d","leruchi","-X","-tA","-v","ON_ERROR_STOP=1"], { input: sql, encoding: "utf8" });
   assert.match(output, /Alice/);
   assert.match(output, /Bob/);
 });

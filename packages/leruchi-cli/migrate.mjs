@@ -31,10 +31,10 @@ export function migrationChecksum(file) {
 }
 
 function requireMigratorUrl() {
-  const value = process.env.VIBE_MIGRATOR_DATABASE_URL;
-  if (!value) throw new Error("VIBE_MIGRATOR_DATABASE_URL is required for migrations");
+  const value = process.env.LERUCHI_MIGRATOR_DATABASE_URL;
+  if (!value) throw new Error("LERUCHI_MIGRATOR_DATABASE_URL is required for migrations");
   let parsed;
-  try { parsed = new URL(value); } catch { throw new Error("VIBE_MIGRATOR_DATABASE_URL must be a valid PostgreSQL URL"); }
+  try { parsed = new URL(value); } catch { throw new Error("LERUCHI_MIGRATOR_DATABASE_URL must be a valid PostgreSQL URL"); }
   if (parsed.username !== "vibe_migrator") {
     throw new Error("Migrations require a database URL authenticated as vibe_migrator");
   }

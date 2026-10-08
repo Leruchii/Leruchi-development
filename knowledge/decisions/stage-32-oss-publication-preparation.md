@@ -1,0 +1,27 @@
+# Stage 32 — OSS Core Public Publication Preparation
+
+Status: IN PROGRESS — technical candidate gates passed; development-main integration and public publication remain blocked pending security-boundary remediation.
+
+Stage 31 is the validated release-readiness gate. Stage 32 is the controlled publication preparation layer for Leruchii/Leruchi.
+
+Rules:
+- The public repository is a separate release target.
+- The private development repository is never copied wholesale.
+- OSS_EXPORT_MANIFEST.json is the publication allowlist.
+- scripts/public-oss-export-audit.mjs and the sanitized candidate audit must pass before publication.
+- Node.js 24 is the only supported publication runtime.
+- Internal build/control documents, private strategy, private cloud/enterprise material and internal workflows are not exported.
+- Publication credentials must never be committed to the repository.
+- The Stage 32 workflow only builds and validates a candidate artifact; it does not publish the public repository.
+- Actual publication remains an explicit release action after candidate review.
+
+
+## Verified current checkpoint — 2026-10-09
+
+- Candidate code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`: 57/57 workflow runs passed, zero failures.
+- Most recent fully validated synchronization candidate head before this documentation refresh: `70e31332e2ad79e9865fb6eece132a614fba30ce`; 36/36 workflow runs passed. Stage 32 candidate workflow [37808127971](https://github.com/Leruchii/Leruchi-development/actions/runs/37808127971) passed.
+- Sanitized candidate: 184 files; normalized archive SHA-256 `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`; uploaded artifact ZIP digest is run-specific and should be read from the linked workflow logs. Node.js 24 runtime policy passed. ASVS 5.0.0 verification profile passed; full ASVS compliance is not claimed.
+- PR #63 is the primary draft integration path. PR #64 and PR #65 changes are included in its branch, not in main. PR #60 is closed as superseded.
+- GitHub reports both development and internal control repositories as public despite the intended private topology. Stop development-main integration and public publication until an authorized administrator changes and verifies visibility.
+- Formal product-name clearance remains open. No public files, tag, or release have been published.
+- PR #14's migration-runner hardening/tests are not fully represented by the current renamed CLI migration runner; port and validate the still-relevant safety guarantees before integration. Review legacy PRs #22, #26 and #29 for unique changes before closing or integrating them.
