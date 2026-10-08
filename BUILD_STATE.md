@@ -868,3 +868,18 @@ Do not merge PR #62 or publish the public repository automatically as part of th
 - Latest profile-test head: 70599507a74b39431c17d0c3cce99519ff8c4d73.
 - Latest Stage 32 candidate run for that exact head: 37638603708, currently queued; no pass claim yet.
 - Official OWASP ASVS stable baseline remains 5.0.0. Requirement-level verification is still in progress; full compliance is not claimed.
+
+
+## Superseding checkpoint — 2026-10-08, Stage 32 tenant/MCP security
+
+This section supersedes older candidate-matrix notes above when they conflict.
+
+- Stage 32 remains active. PR #63 is the primary Stage 32 PR and remains draft/open on branch `stage32-oss-publication-prep`; its live head must be resolved from GitHub before merge decisions.
+- PR #64 is an isolated validation PR targeting the Stage 32 branch: https://github.com/Leruchii/Leruchi-development/pull/64. Validation branch: `stage32-tenant-claim-hook-validation`.
+- Fully green security baseline: commit `d3b251ddee29e9d16a12a42fa0bbfc87d551962f`, 17 workflow successes and zero failures. Stage 03 proved actual self-hosted Supabase Auth-issued tenant claims and PostgREST tenant isolation.
+- The next candidate code commit `f552e568ba57561599b7b1d7737ac5d180797ca2` updates the Graph API to enforce `graph:read` on graph queries, `graph:write` on mutations, and `graph:delete` on destructive deletes. It updates the tenant isolation test to expect HTTP 403 `CAPABILITY_DENIED` before query validation and pins Node.js 24 in Stage 02, Stage 06, Stage 07 and Stage 08 workflows.
+- The previous candidate `6ed63d32f395ed30f1105bfa13d98cc7383ab575` had 26 successful workflow runs and one failure in Stage 02 due to the now-obsolete 400/validation assertion. Node.js 22 was observed in that workflow because it lacked explicit setup-node configuration.
+- The f552 candidate has not run CI yet. Resolve the live validation branch head and inspect Stage 02, Stage 14, Stage 25 and the full exact-head matrix after the next run. Update this handoff and the internal `Leruchii/Leruchi-internal/BUILD_STATE.md` after results.
+- Scoped capability grant issuance and revocation through a production control plane remain unimplemented. Do not claim that revocation is enforced without a live verifier.
+- Runtime policy: Node.js 24 only; Node.js 20 and unpinned Node.js 22 runtimes are prohibited.
+- Do not merge PR #63 or #64, and do not publish to the public repository, without release-gate completion and explicit approval.
