@@ -83,3 +83,10 @@ The Graph API route boundary is being hardened so that:
 - Denials are audited with `CAPABILITY_DENIED` and occur before catalog/database access.
 
 The scoped capability grant validator and revocation helper are not yet wired to a production control-plane verifier. Treat this as an explicit follow-up security gate.
+
+
+## Stage 32 capability-grant enforcement candidate — 2026-10-08
+
+Candidate change: Graph API strict grant mode validates the signed bearer claims as a control-plane grant, requires canonical capabilities, tenant binding, audience and expiry, enforces optional route/graph scope, and checks jti revocation through an authenticated external control-plane adapter. The adapter requires an explicit active/revoked response, enforces HTTPS outside loopback, and fails closed on malformed, inactive, timed-out or unavailable decisions. The production launcher enables strict mode and requires issuer/control-plane configuration.
+
+Stage 14 CI now starts a dedicated test-only control-plane stub and exercises the production adapter path. This verifies integration mechanics, not production control-plane deployment. The real issuer/revocation service, key rotation, tenant-aware issuance, revocation latency/SLA and production integration remain release blockers. This candidate has not run CI yet; record exact-head results before advancing.

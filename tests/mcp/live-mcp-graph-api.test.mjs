@@ -8,7 +8,7 @@ const base=(process.env.LERUCHI_API_URL??"").replace(/\/$/,"");
 const token=()=>{
   const enc=value=>Buffer.from(JSON.stringify(value)).toString("base64url");
   const header=enc({alg:"HS256",typ:"JWT"});
-  const payload=enc({sub:"stage-14-mcp",tenant_id:"vibe_tenant_a",exp:Math.floor(Date.now()/1000)+300,capabilities:["graph:read"]});
+  const payload=enc({iss:"leruchi-test-control-plane",sub:"stage-14-mcp",jti:"stage-14-grant-1",tenant_id:"vibe_tenant_a",aud:"leruchi",exp:Math.floor(Date.now()/1000)+300,capabilities:["graph:read"]});
   const signing=header+"."+payload;
   return signing+"."+createHmac("sha256",secret).update(signing).digest("base64url");
 };

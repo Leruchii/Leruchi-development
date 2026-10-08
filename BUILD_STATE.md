@@ -883,3 +883,17 @@ This section supersedes older candidate-matrix notes above when they conflict.
 - Scoped capability grant issuance and revocation through a production control plane remain unimplemented. Do not claim that revocation is enforced without a live verifier.
 - Runtime policy: Node.js 24 only; Node.js 20 and unpinned Node.js 22 runtimes are prohibited.
 - Do not merge PR #63 or #64, and do not publish to the public repository, without release-gate completion and explicit approval.
+
+
+## Pre-run checkpoint — signed capability grant integration candidate (2026-10-08)
+
+Active Stage 32 validation branch prior to this candidate: d754c43aa666cf37cbfba8fe874411e5ff27add1. Its exact-head matrix completed with 30 successes and zero failures. Current next security gate is signed scoped capability grant validation with mandatory control-plane revocation.
+
+Candidate adds:
+- strict grant verification wired into Graph API authentication, including tenant/audience/expiry/canonical capability validation and mandatory jti revocation lookup;
+- route/graph scope enforcement before catalog/database access;
+- authenticated control-plane HTTP adapter with HTTPS enforcement off loopback and fail-closed handling;
+- production launcher strict-mode configuration and a test-only CI control-plane stub;
+- unit and Graph API tests for missing revocation service, revoked grants, unavailable control plane and scope denial.
+
+This candidate is not yet on the validation branch and has not run CI. Do not claim the production control plane exists. Next: record the candidate SHA in internal handoff, advance only the isolated validation branch, inspect the exact-head matrix and update the handoff after results. No merge or public publication.

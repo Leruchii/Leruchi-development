@@ -284,3 +284,36 @@ test("Graph API requires graph:delete in addition to graph:write for destructive
     assert.equal(dbConnects,0);
   }finally{await api.close();}
 });
+
+
+test("Graph API strict capability grants fail closed when revocation is unavailable",async()=>{
+  let catalogCalls=0;
+  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",requireCapabilityGrant:true,catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const grant=token({sub:"u",tenant_id:"tenant_a",jti:"jti-1",aud:"leruchi",exp:Math.floor(Date.now()/1000)+60,capabilities:["graph:read"]},"secret");
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+grant}});
+    assert.equal(res.status,503);
+    assert.equal((await res.json()).code,"CAPABILITY_REVOCATION_UNAVAILABLE");
+    assert.equal(catalogCalls,0);
+  }finally{await api.close();}
+});
+
+test("Graph API strict capability grants enforce revocation and route scope before catalog access",async()=>{
+  let catalogCalls=0;
+  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",jwtIssuer:"control-plane",jwtAudience:"leruchi",requireCapabilityGrant:true,isGrantRevoked:async jti=>jti==="revoked",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  const makeGrant=(jti,scope)=>token({iss:"control-plane",sub:"u",tenant_id:"tenant_a",jti,aud:"leruchi",exp:Math.floor(Date.now()/1000)+60,capabilities:["graph:read"],scope},"secret");
+  try{
+    const revoked=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+makeGrant("revoked")}});
+    assert.equal(revoked.status,401);
+    assert.equal((await revoked.json()).code,"CAPABILITY_GRANT_REVOKED");
+    const scoped=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+makeGrant("active",{routes:["/v1/graph/query"]})}});
+    assert.equal(scoped.status,403);
+    assert.equal((await scoped.json()).code,"CAPABILITY_SCOPE_DENIED");
+    assert.equal(catalogCalls,0);
+    const allowed=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+makeGrant("active",{routes:["/v1/schema/catalog"]})}});
+    assert.equal(allowed.status,200);
+    assert.equal(catalogCalls,1);
+  }finally{await api.close();}
+});
