@@ -26,4 +26,4 @@ Leruchi is the canonical name across the application, UI, SDK, CLI, MCP server, 
 
 ## Initial implementation notes
 
-The current draft PR updates the Studio title, MCP tool descriptions, capability audience, SDK/CLI package names, product documentation, database/test fixtures, workflow references, and OSS export metadata. Filesystem paths such as `packages/vibe-sdk` and `packages/vibe-cli`, some legacy environment variables, and historical references still require an explicit compatibility review before claiming the rename is complete.
+The current draft PR updates the Studio title, MCP tool descriptions, capability audience, SDK/CLI package names and directories (`packages/leruchi-sdk`, `packages/leruchi-cli`), SDK tests, product documentation, database/test fixtures, workflow references, and OSS export metadata. Backup/restore scripts and the database bootstrap script now use Leruchi filenames. Legacy `VIBE_*` environment variables remain temporary fallback aliases; the `.agents/skills/vibe-*` internal skill paths and historical references still require an explicit compatibility review before claiming every identifier is migrated.
