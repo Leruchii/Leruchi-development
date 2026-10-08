@@ -4,7 +4,7 @@ on:
     paths:
       - "package.json"
       - "packages/**/package.json"
-      - "packages/vibe-cli/migrate.mjs"
+      - "packages/leruchi-cli/migrate.mjs"
       - "apps/**/package.json"
       - "infra/migrations/**"
       - "infra/catalog/**"
