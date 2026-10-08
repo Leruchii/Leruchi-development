@@ -6,7 +6,7 @@ Required:
 - project configuration without persisted secrets;
 - schema inspection/type generation from an authoritative Schema Catalog;
 - migration workflow using an approved migrator boundary;
-- graph query/mutation commands delegated to @vibeplatform/sdk;
+- graph query/mutation commands delegated to @leruchi/sdk;
 - diagnostics;
 - local development workflow;
 - no second compiler/security boundary;
