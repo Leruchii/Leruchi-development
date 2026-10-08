@@ -57,9 +57,23 @@ The engine is read-only in v1. Mutations are Stage 09.
 - Graph Studio: VALIDATED (Stage 13 CI and browser tenant/responsive evidence)
 - MCP: VALIDATED (Stage 14 MCP Agent Gateway and Stage 25 input-safety contract)
 - GraphRAG: VALIDATED (Stage 15 exact-head regression workflow)
-- Observability: VALIDATED (Stage 16)\n- Backup and recovery: VALIDATED (Stage 17; reference CI evidence only, not hosted SLA)\n- Production readiness: VALIDATED (Stage 20; no commercial/hosted SLA claims)\n- PostgreSQL recursive compiler: VALIDATED (Stage 21)\n- Retrieval planner: VALIDATED (Stage 22)\n- Unified retrieval surface: VALIDATED (Stage 23)\n- Retrieval explainability and agent safety: VALIDATED (Stage 24)\n- Agent intent boundary: VALIDATED (Stage 27)\n- Cross-modal planning: VALIDATED (Stage 28)\n- Agent evaluation/observability: VALIDATED (Stage 29)\n- Agent trace/replay: VALIDATED (Stage 30; non-executing)\n- Agent Governance foundation: VALIDATED on exact Stage 31 head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`; governance records are not authentication proof\n- OSS Core readiness: VALIDATED technically; sanitized candidate audit passed 184 files on Stage 32 candidate\n- Public OSS publication: BLOCKED pending repository-visibility remediation, naming clearance, final candidate review, and explicit release approval\n- Cloud: DEFERRED
+- Observability: VALIDATED (Stage 16)
+- Backup and recovery: VALIDATED (Stage 17; reference CI evidence only, not hosted SLA)
+- Production readiness: VALIDATED (Stage 20; no commercial/hosted SLA claims)
+- PostgreSQL recursive compiler: VALIDATED (Stage 21)
+- Retrieval planner: VALIDATED (Stage 22)
+- Unified retrieval surface: VALIDATED (Stage 23)
+- Retrieval explainability and agent safety: VALIDATED (Stage 24)
+- Agent intent boundary: VALIDATED (Stage 27)
+- Cross-modal planning: VALIDATED (Stage 28)
+- Agent evaluation/observability: VALIDATED (Stage 29)
+- Agent trace/replay: VALIDATED (Stage 30; non-executing)
+- Agent Governance foundation: VALIDATED on exact Stage 31 head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`; governance records are not authentication proof
+- OSS Core readiness: VALIDATED technically; sanitized candidate audit passed 184 files on Stage 32 candidate
+- Public OSS publication: BLOCKED pending repository-visibility remediation, naming clearance, final candidate review, and explicit release approval
+- Cloud: DEFERRED
 
-Current implementation target: Stage 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary.
+Current implementation target: Stage 32 — controlled OSS publication preparation. Technical candidate checks are green; integration and public release remain blocked by repository visibility, legacy-PR reconciliation, and product-name clearance.
 
 
 ## Durable agent + developer architecture priority
@@ -160,7 +174,7 @@ Developer SDK/CLI and MCP explanation requests converge on the Graph API `/v1/re
 
 Retrieval execution now emits a sanitized correlation event containing request ID, retrieval mode, planner decision and outcome. Observability excludes tenant identifiers, embeddings, raw parameters, catalog references and physical engine names.
 
-Stage 24 remains unvalidated until focused and repository-wide CI evidence is green.
+Stage 24 is validated on the current Stage 32 candidate; the exact-head regression matrix passed. Its diagnostics remain non-executing.
 
 
 ## Stage 25 architecture — MCP Agent Tool Contract & Input Safety
