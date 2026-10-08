@@ -1017,20 +1017,23 @@ Next actions:
 
 ## Handoff — tenant-claim tamper/revocation evidence (branch `stage32-tenant-revocation-evidence`)
 
-Author: Claude (chat session, 2026-10-09). Branched from `stage32-oss-publication-prep` at `da390bb`. **Not pushed by the author** (no GitHub credentials in that session); delivered as a patch series. If this section is on `origin`, someone applied it.
+Author: Claude (chat session, 2026-10-09). Branched from `stage32-oss-publication-prep` at `da390bb`. Pushed to origin by the author after Fikun supplied credentials.
 
 What changed:
 - `.github/workflows/stage-03-supabase.yml`: new step "Verify tenant claim resists tampering and drops on revocation", placed after the real Auth-issued claim/RLS isolation step. Against live GoTrue + PostgREST it proves: (1) a user who rewrites their own `user_metadata` (selecting revoked `tenant_b`, planting a fake `tenant_id`) gets **no** tenant claim on refresh; (2) after a valid selector is restored the claim returns, then revoking the membership in `vibe_auth.user_tenant_memberships` makes the **next refresh** issue no claim and PostgREST returns no tenant rows; (3) records the residual window: an access token issued before revocation stays valid until `GOTRUE_JWT_EXP` (3600s in the local compose).
 - No exported file changed: workflows, `knowledge/**` and `BUILD_STATE.md` are excluded by `OSS_EXPORT_MANIFEST.json`, so the public candidate (184 files) and its archive SHA-256 should stay `a37f46e0…17df8`. Verify this in CI rather than assuming it.
 
-Verification status — READ THIS:
-- The new step passed YAML parsing and `bash -n`. It has **not run in CI** (no Docker where it was written). If it fails, suspect first: GoTrue `PUT /user` behavior with the anon `apikey`, refresh-token rotation order, or email autoconfirm. Fix the step; do not weaken the assertions.
+Verification status (updated after the branch was pushed):
+- Pushed as branch `stage32-tenant-revocation-evidence`, draft PR #65 into `stage32-oss-publication-prep`, head `5d3d7ef`.
+- Stage 03 Supabase compatibility run https://github.com/Leruchii/Leruchi-development/actions/runs/37801292894 passed, and its step "Verify tenant claim resists tampering and drops on revocation" concluded success, so tamper, revocation-on-refresh and the documented window assertions all held against live GoTrue + PostgREST.
+- All 21 workflow runs on head `5d3d7ef` completed green, none pending (PR #63's head `da390bb` had 36/36 green; the smaller count here is probably path filtering, not verified).
+- The Stage 32 candidate workflow also passed on the push, so the public candidate was not disturbed.
 
 Still open (release blockers unchanged until these have evidence):
 1. Graph API with a real Auth-issued token: send a GoTrue token (`iss=http://localhost:9999`, `aud=authenticated`) through `createGraphApiServer({jwtSecret, jwtIssuer, jwtAudience})` and show wrong issuer/audience are rejected. Not written yet.
 2. Decide the revocation-window policy (see `Leruchii/Leruchi-internal` decision `stage-32-tenant-claim-issuance.md`, status PROPOSED).
-3. Exact-head regression matrix must be re-run and be fully green after this branch lands; update this file with the final count and head SHA.
+3. Once PR #65 is merged into the Stage 32 branch the head moves again: re-run the exact-head matrix and Stage 32 candidate workflow on the final head and record the count here. PR #63 head `da390bb` was 36/36 green before this branch.
 4. Production identity-provider issuance beyond the Supabase GoTrue reference path is documented as a contract, not certified.
-5. PR #64 state is inconsistent between repos (dev says merged into #63; internal checkpoint says draft). Check with `gh pr view 64` and correct whichever is stale.
+5. PR #64 is MERGED into `stage32-oss-publication-prep` (verified via GitHub API 2026-10-09); the internal checkpoint saying draft was stale.
 
 Rules unchanged: do not merge PR #63, publish to `Leruchii/Leruchi`, or tag/release without explicit approval from Fikun.
