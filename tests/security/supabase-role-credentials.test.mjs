@@ -4,6 +4,7 @@ import {readFileSync} from "node:fs";
 
 const rolesSql = readFileSync(new URL("../../infra/supabase/roles.sql", import.meta.url), "utf8");
 const compose = readFileSync(new URL("../../infra/supabase/docker-compose.yml", import.meta.url), "utf8");
+const rootCompose = readFileSync(new URL("../../docker-compose.yml", import.meta.url), "utf8");
 
 function sqlPassword(role) {
   const block = rolesSql.match(new RegExp("CREATE ROLE\\s+" + role + "\\b([\\s\\S]*?)END IF;"))?.[1];
@@ -26,3 +27,13 @@ for (const [role, pattern] of cases) {
     assert.equal(sqlPassword(role), configured);
   });
 }
+
+test("development database and Supabase ports bind to loopback only", () => {
+  assert.ok(rootCompose.includes('- "127.0.0.1:5432:5432"'));
+  assert.ok(compose.includes('- "127.0.0.1:9999:9999"'));
+  assert.ok(compose.includes('- "127.0.0.1:3000:3000"'));
+  const publishedPorts = [rootCompose, compose].flatMap((source) =>
+    source.split("\n").map((line) => line.trim()).filter((line) => line.startsWith('- "') && line.includes(':'))
+  );
+  assert.ok(publishedPorts.every((line) => line.includes("127.0.0.1:")), "every published port must bind to loopback");
+});

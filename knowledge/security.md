@@ -72,3 +72,19 @@ Graph catalog metadata has two explicit scopes: shared (`tenant_id = ''`) and te
 The authenticated remote Schema Catalog API verifies the bearer token before placing its trusted tenant claim into transaction-local PostgreSQL request context. The runtime database role remains NOSUPERUSER/NOBYPASSRLS, so catalog visibility is enforced by the database rather than by the HTTP layer alone.
 
 Adversarial CI must prove Tenant A cannot see Tenant B's private graph name, label, edge or catalog metadata, while both can see shared metadata.
+
+
+## Stage 32 — Supabase tenant-claim issuance boundary (IMPLEMENTED, end-to-end issuance still unvalidated)
+
+The self-hosted Supabase Auth configuration enables the custom access-token hook at `vibe_auth.custom_access_token_hook`. The hook derives the top-level `tenant_id` claim only from `vibe_auth.user_tenant_memberships`.
+
+Security contract:
+- `user_metadata.active_tenant_id` is only a requested tenant selector; it is not authorization evidence.
+- The hook removes any existing top-level `tenant_id` before resolving membership.
+- A requested tenant is issued only if the user has an active membership for that tenant.
+- Without an explicit selector, the hook resolves a sole active membership or a unique active default membership.
+- Revoked, unknown or ambiguous tenant selections result in no `tenant_id` claim.
+- The membership table is private, has RLS enabled and forced, and grants SELECT only to `supabase_auth_admin`; the hook uses invoker permissions rather than SECURITY DEFINER.
+- PostgREST continues to expose only the `vibe_app` schema; normal API roles cannot read the membership table.
+
+The Stage 03 workflow applies the hook after Supabase Auth initializes and checks its function/table grants and fail-closed behavior. This is not yet proof of a complete production identity-provider issuance path: the hook must still be validated through an actual Auth-issued access token in the supported deployment configuration, including issuer/audience/signature and token-refresh/revocation semantics. Keep the production tenant-claim blocker open until that evidence exists.

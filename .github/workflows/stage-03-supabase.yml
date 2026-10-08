@@ -17,6 +17,8 @@ jobs:
 
       - name: Verify Supabase role credentials
         run: node --test tests/security/supabase-role-credentials.test.mjs
+      - name: Verify tenant-claim hook contract
+        run: node --test tests/security/tenant-claim-hook-contract.test.mjs
 
       - name: Build Leruchi database image
         run: docker compose build db
@@ -38,7 +40,7 @@ jobs:
           docker compose exec -T db psql -U postgres -d leruchi -Xf /dev/stdin < infra/supabase/roles.sql
 
       - name: Start Auth and PostgREST
-        run: docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d auth rest
+        run: GOTRUE_EXTERNAL_EMAIL_ENABLED=true GOTRUE_DISABLE_SIGNUP=false GOTRUE_MAILER_AUTOCONFIRM=true docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d --force-recreate auth rest
 
       - name: Wait for Auth and PostgREST
         run: |
@@ -48,6 +50,97 @@ jobs:
           done
           curl -fsS http://127.0.0.1:9999/health
           curl -fsS http://127.0.0.1:3000/
+
+      - name: Install tenant-claim hook
+        run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/supabase/tenant-claim-hook.sql
+
+      - name: Verify tenant-claim hook permissions
+        run: |
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
+          DO $check$
+          BEGIN
+            IF to_regprocedure('vibe_auth.custom_access_token_hook(jsonb)') IS NULL THEN
+              RAISE EXCEPTION 'tenant-claim hook function is missing';
+            END IF;
+            IF NOT has_function_privilege('supabase_auth_admin', 'vibe_auth.custom_access_token_hook(jsonb)', 'EXECUTE') THEN
+              RAISE EXCEPTION 'Auth admin cannot execute tenant-claim hook';
+            END IF;
+            IF NOT has_table_privilege('supabase_auth_admin', 'vibe_auth.user_tenant_memberships', 'SELECT') THEN
+              RAISE EXCEPTION 'Auth admin cannot read membership records';
+            END IF;
+            IF has_table_privilege('authenticated', 'vibe_auth.user_tenant_memberships', 'SELECT') THEN
+              RAISE EXCEPTION 'Authenticated clients must not read membership records';
+            END IF;
+            IF has_schema_privilege('authenticated', 'vibe_auth', 'USAGE') THEN
+              RAISE EXCEPTION 'Authenticated clients must not use the private auth schema';
+            END IF;
+          END
+          $check$;
+          SQL
+
+      - name: Verify unbound tenant claims fail closed
+        run: |
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
+          SET ROLE supabase_auth_admin;
+          DO $check$
+          DECLARE
+            claims jsonb;
+          BEGIN
+            claims := vibe_auth.custom_access_token_hook(jsonb_build_object(
+              'user_id', '00000000-0000-0000-0000-000000000199',
+              'claims', jsonb_build_object('tenant_id', 'tenant_b')
+            ))->'claims';
+            IF claims ? 'tenant_id' THEN
+              RAISE EXCEPTION 'Unbound caller-supplied tenant_id must be removed';
+            END IF;
+          END
+          $check$;
+          RESET ROLE;
+          SQL
+
+      - name: Create Auth users, issue tenant claims and verify RLS isolation
+        run: |
+          ANON_TOKEN=$(python3 - <<'PY'
+          import base64, hashlib, hmac, json, time
+          secret=b"leruchi-local-jwt-secret-change-me-32"
+          def b64(v):
+              return base64.urlsafe_b64encode(v).rstrip(b"=").decode()
+          header=b64(json.dumps({"alg":"HS256","typ":"JWT"},separators=(",",":")).encode())
+          payload=b64(json.dumps({"role":"anon","aud":"authenticated","iss":"http://localhost:9999","iat":int(time.time()),"exp":int(time.time())+600},separators=(",",":")).encode())
+          msg=f"{header}.{payload}".encode()
+          sig=b64(hmac.new(secret,msg,hashlib.sha256).digest())
+          print(f"{header}.{payload}.{sig}")
+          PY
+          )
+          SIGNUP_A=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_a"}}')
+          SIGNUP_B=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_b"}}')
+          USER_A_ID=$(printf '%s' "${SIGNUP_A}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
+          USER_B_ID=$(printf '%s' "${SIGNUP_B}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
+          test -n "${USER_A_ID}"
+          test -n "${USER_B_ID}"
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -v user_a="${USER_A_ID}" -v user_b="${USER_B_ID}" -Xf /dev/stdin < tests/security/tenant-claim-hook-fixture.sql
+          TOKEN_A=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!"}')
+          TOKEN_B=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!"}')
+          python3 - "${TOKEN_A}" "${TOKEN_B}" <<'PY'
+          import base64, json, sys
+          def claims(response):
+              token=json.loads(response)["access_token"]
+              part=token.split(".")[1]
+              return json.loads(base64.urlsafe_b64decode(part+"="*(-len(part)%4)))
+          a,b=claims(sys.argv[1]),claims(sys.argv[2])
+          assert a.get("tenant_id")=="tenant_a", f"active membership did not issue tenant_a: {a}"
+          assert "tenant_id" not in b, f"revoked tenant selector issued tenant_id: {b}"
+          print("Real Auth-issued tenant claim assertions passed")
+          PY
+          ACCESS_A=$(printf '%s' "${TOKEN_A}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+          ACCESS_B=$(printf '%s' "${TOKEN_B}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+          RESPONSE_A=$(curl -fsS -H "Authorization: Bearer ${ACCESS_A}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
+          echo "${RESPONSE_A}"
+          echo "${RESPONSE_A}" | grep -q '"tenant_a"'
+          if echo "${RESPONSE_A}" | grep -q 'tenant_b'; then echo "Tenant B leaked into Tenant A response"; exit 1; fi
+          RESPONSE_B=$(curl -fsS -H "Authorization: Bearer ${ACCESS_B}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
+          echo "${RESPONSE_B}"
+          if echo "${RESPONSE_B}" | grep -q 'tenant_a\|tenant_b'; then echo "Token without authorized tenant claim returned tenant rows"; exit 1; fi
 
       - name: Verify signed JWT reaches PostgREST RLS
         run: |

@@ -18,6 +18,8 @@ jobs:
         run: node --test tests/capability-policy/capability-policy.test.mjs
       - name: Graph API catalog capability tests
         run: node --test tests/graph-api/graph-api-catalog.test.mjs
+      - name: Graph API route capability enforcement tests
+        run: node --test tests/graph-api/api.test.mjs
       - name: MCP contract tests
         run: node --test tests/mcp/mcp-server.test.mjs
       - name: Capability grant contract tests
@@ -38,12 +40,34 @@ jobs:
           exit 1
       - name: Seed MCP tenant fixture
         run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
+      - name: Generate ephemeral EdDSA test keypair
+        run: |
+          openssl genpkey -algorithm ED25519 -out /tmp/leruchi-capability-test-private.pem
+          openssl pkey -in /tmp/leruchi-capability-test-private.pem -pubout -outform DER | base64 -w0 > /tmp/leruchi-capability-test-public.b64
+      - name: Start test capability control plane
+        env:
+          LERUCHI_CONTROL_PLANE_TOKEN: stage-14-control-plane-secret
+          LERUCHI_CONTROL_PLANE_PORT: 4101
+          LERUCHI_TEST_REVOKED_JTIS: stage-14-grant-revoked
+        run: node scripts/start-test-capability-control-plane.mjs > /tmp/leruchi-stage14-control-plane.log 2>&1 &
+      - name: Wait for test capability control plane
+        run: |
+          for i in {1..30}; do
+            if grep -q test-control-plane-ready /tmp/leruchi-stage14-control-plane.log 2>/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/leruchi-stage14-control-plane.log || true
+          exit 1
       - name: Start live Graph API
         env:
           LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
-          LERUCHI_JWT_SECRET: stage-14-e2e-secret
+          LERUCHI_CAPABILITY_ISSUER: leruchi-test-control-plane
+          LERUCHI_CAPABILITY_CONTROL_PLANE_URL: http://127.0.0.1:4101
+          LERUCHI_CAPABILITY_CONTROL_PLANE_TOKEN: stage-14-control-plane-secret
           LERUCHI_GRAPH_API_PORT: 4100
-        run: node scripts/start-stage13-graph-api.mjs > /tmp/leruchi-stage14-api.log 2>&1 &
+        run: |
+          export LERUCHI_CAPABILITY_PUBLIC_KEYS="{\"stage-test-2026\":\"$(cat /tmp/leruchi-capability-test-public.b64)\"}"
+          node scripts/start-stage13-graph-api.mjs > /tmp/leruchi-stage14-api.log 2>&1 &
       - name: Wait for live Graph API
         run: |
           for i in {1..30}; do
@@ -55,11 +79,11 @@ jobs:
       - name: Live MCP integration
         env:
           LERUCHI_API_URL: http://127.0.0.1:4100
-          LERUCHI_JWT_SECRET: stage-14-e2e-secret
+          LERUCHI_CAPABILITY_TEST_PRIVATE_KEY_PATH: /tmp/leruchi-capability-test-private.pem
         run: node --test tests/mcp/live-mcp-graph-api.test.mjs
       - name: Show live Graph API logs on failure
         if: failure()
-        run: cat /tmp/leruchi-stage14-api.log || true
+        run: cat /tmp/leruchi-stage14-api.log /tmp/leruchi-stage14-control-plane.log || true
       - name: Cleanup live database
         if: always()
         run: docker compose down -v
