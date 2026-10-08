@@ -20,7 +20,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - **Legacy PR reconciliation remains open:** PRs [#14](https://github.com/Leruchii/Leruchi-development/pull/14), [#22](https://github.com/Leruchii/Leruchi-development/pull/22), [#26](https://github.com/Leruchii/Leruchi-development/pull/26), and [#29](https://github.com/Leruchii/Leruchi-development/pull/29) remain open. Review their unique changes individually; do not merge old branches wholesale. In particular, port and validate still-relevant migration-runner safety guarantees/tests from #14 against the current `packages/leruchi-cli` implementation before integration.
 - **Product naming clearance is open.** Keep the public brand provisional until formal clearance is recorded.
 - **Production authorization boundary:** OSS verifies signed capability grants and provides a fail-closed revocation adapter; it does not include a deployed production grant issuer/revocation control plane. Deployments must provide a trusted authority.
-- **Runtime rule:** Node.js 24 is the only supported runtime. Node.js 20 must not be introduced in package metadata, CI, Docker images, scripts, docs, or build environments.
+- **Runtime rule:** Node.js 24 is the only supported runtime. Earlier Node.js runtime majors must not be introduced in package metadata, CI, Docker images, scripts, docs, or build environments.
 
 ### Required next actions (in order)
 
