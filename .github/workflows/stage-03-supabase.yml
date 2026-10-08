@@ -40,7 +40,7 @@ jobs:
           docker compose exec -T db psql -U postgres -d leruchi -Xf /dev/stdin < infra/supabase/roles.sql
 
       - name: Start Auth and PostgREST
-        run: GOTRUE_EXTERNAL_EMAIL_ENABLED=true docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d --force-recreate auth rest
+        run: GOTRUE_EXTERNAL_EMAIL_ENABLED=true GOTRUE_DISABLE_SIGNUP=false GOTRUE_MAILER_AUTOCONFIRM=true docker compose -f docker-compose.yml -f infra/supabase/docker-compose.yml up -d --force-recreate auth rest
 
       - name: Wait for Auth and PostgREST
         run: |
@@ -98,10 +98,7 @@ jobs:
           RESET ROLE;
           SQL
 
-      - name: Seed test users and memberships for real Auth token issuance
-        run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < tests/security/tenant-claim-hook-fixture.sql
-
-      - name: Verify real Auth-issued tenant claims and RLS isolation
+      - name: Create Auth users, issue tenant claims and verify RLS isolation
         run: |
           ANON_TOKEN=$(python3 - <<'PY'
           import base64, hashlib, hmac, json, time
@@ -115,6 +112,13 @@ jobs:
           print(f"{header}.{payload}.{sig}")
           PY
           )
+          SIGNUP_A=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_a"}}')
+          SIGNUP_B=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_b"}}')
+          USER_A_ID=$(printf '%s' "\${SIGNUP_A}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
+          USER_B_ID=$(printf '%s' "\${SIGNUP_B}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
+          test -n "\${USER_A_ID}"
+          test -n "\${USER_B_ID}"
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -v user_a="\${USER_A_ID}" -v user_b="\${USER_B_ID}" -Xf /dev/stdin < tests/security/tenant-claim-hook-fixture.sql
           TOKEN_A=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!"}')
           TOKEN_B=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!"}')
           python3 - "\${TOKEN_A}" "\${TOKEN_B}" <<'PY'
@@ -124,7 +128,7 @@ jobs:
               part=token.split(".")[1]
               return json.loads(base64.urlsafe_b64decode(part+"="*(-len(part)%4)))
           a,b=claims(sys.argv[1]),claims(sys.argv[2])
-          assert a.get("tenant_id")=="tenant_a", f"valid membership did not issue tenant_a: {a}"
+          assert a.get("tenant_id")=="tenant_a", f"active membership did not issue tenant_a: {a}"
           assert "tenant_id" not in b, f"revoked tenant selector issued tenant_id: {b}"
           print("Real Auth-issued tenant claim assertions passed")
           PY
