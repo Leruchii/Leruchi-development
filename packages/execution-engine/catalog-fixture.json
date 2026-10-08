@@ -1,6 +1,6 @@
 {
   "graphs": {
-    "vibe_security": {
+    "leruchi_security": {
       "labels": ["Account"],
       "edges": [
         {"name":"KNOWS","from":"Account","to":"Account","directions":["out","in","both"]}
