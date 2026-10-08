@@ -53,3 +53,13 @@ For each slice: record the exact base/head SHAs; review every changed file; run 
 ## Follow-up security review — revocation response semantics
 
 On 2026-10-09, code review found a contradictory response in the candidate control plane: a revoked grant could be returned with `active: true`. The issuer/revocation adapter now returns `active: false` when revocation succeeds and computes lookup activity as `not expired AND not revoked`. The service test now asserts both responses. This fix must pass the exact-head Stage 32 workflow before the control-plane slice is considered validated.
+
+
+## Follow-up security review — data-plane grant verification and scope
+
+A second review pass found two Graph API boundary defects in the candidate and added fixes/tests:
+
+- Capability grants must be verified with the configured EdDSA public keys. The legacy HS256 path now rejects grant-shaped tokens carrying a JTI or the `leruchi` grant audience instead of passing them into grant-claim validation without EdDSA signature verification.
+- Route/graph scope is checked against the actual request. The Schema Catalog scope check now runs only for Schema Catalog requests; previously it ran unconditionally and could deny a valid grant scoped to a graph query.
+
+Added regression coverage for rejecting HS256 grant-shaped tokens and allowing an active EdDSA grant scoped to its requested graph route. These fixes are pending exact-head CI and must not be treated as validated until the workflow passes.
