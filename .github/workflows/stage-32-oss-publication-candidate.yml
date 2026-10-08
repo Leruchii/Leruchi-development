@@ -60,7 +60,7 @@ jobs:
           candidate="$RUNNER_TEMP/leruchi-oss-candidate"
           tar -C "$candidate" -czf "$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz" .
       - name: Upload candidate artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: leruchi-oss-core-candidate
           path: ${{ runner.temp }}/leruchi-oss-core-candidate.tar.gz
