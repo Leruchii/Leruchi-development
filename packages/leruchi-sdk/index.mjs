@@ -9,11 +9,11 @@ const PARAM_TYPES = new Set(["string", "integer", "number", "boolean", "uuid", "
 const MUTATIONS = new Set(["create_vertex", "create_edge", "update_vertex", "update_edge", "delete_vertex", "delete_edge"]);
 
 function assertIdentifier(value, name) {
-  if (typeof value !== "string" || !IDENT.test(value)) throw new VibeClientError("INVALID_IDENTIFIER", `${name} must be a valid identifier`);
+  if (typeof value !== "string" || !IDENT.test(value)) throw new LeruchiClientError("INVALID_IDENTIFIER", `${name} must be a valid identifier`);
   return value;
 }
 function assertField(value) {
-  if (typeof value !== "string" || !FIELD.test(value)) throw new VibeClientError("INVALID_FIELD", "Field must be a valid Vibe field");
+  if (typeof value !== "string" || !FIELD.test(value)) throw new LeruchiClientError("INVALID_FIELD", "Field must be a valid Leruchi field");
   return value;
 }
 function clone(value) {
@@ -29,15 +29,15 @@ function valueForIr(value) {
       assertIdentifier(value.param, "parameter");
       return { param: value.param };
     }
-    throw new VibeClientError("INVALID_VALUE", "Query values must be primitives, arrays, or parameter references");
+    throw new LeruchiClientError("INVALID_VALUE", "Query values must be primitives, arrays, or parameter references");
   }
   return clone(value);
 }
 
-export class VibeClientError extends Error {
+export class LeruchiClientError extends Error {
   constructor(code, message, details = undefined) {
     super(message);
-    this.name = "VibeClientError";
+    this.name = "LeruchiClientError";
     this.code = code;
     this.details = details;
   }
@@ -46,9 +46,12 @@ export class VibeClientError extends Error {
   }
 }
 
+// Temporary compatibility alias for consumers upgrading from the former SDK name.
+export const VibeClientError = LeruchiClientError;
+
 export function param(name, type) {
   assertIdentifier(name, "Parameter name");
-  if (!PARAM_TYPES.has(type)) throw new VibeClientError("INVALID_PARAMETER_TYPE", "Unsupported parameter type");
+  if (!PARAM_TYPES.has(type)) throw new LeruchiClientError("INVALID_PARAMETER_TYPE", "Unsupported parameter type");
   return Object.freeze({ param: name, type });
 }
 
@@ -67,7 +70,7 @@ class QueryBuilder {
   }
   select(fields) {
     const list = Array.isArray(fields) ? fields : [fields];
-    if (!list.length) throw new VibeClientError("EMPTY_PROJECTION", "At least one projection is required");
+    if (!list.length) throw new LeruchiClientError("EMPTY_PROJECTION", "At least one projection is required");
     this.ir.projection = list.map(item => {
       const spec = typeof item === "string" ? { field: item } : item;
       const field = normalizeField(spec.field, this.ir.root.alias);
@@ -78,7 +81,7 @@ class QueryBuilder {
   }
   traverse(edge, direction, targetLabel, targetAlias) {
     assertIdentifier(edge, "Edge");
-    if (!DIRECTIONS.has(direction)) throw new VibeClientError("INVALID_DIRECTION", "Direction must be out, in, or both");
+    if (!DIRECTIONS.has(direction)) throw new LeruchiClientError("INVALID_DIRECTION", "Direction must be out, in, or both");
     assertIdentifier(targetLabel, "Target label");
     const alias = targetAlias ?? `node${this.ir.steps.length + 1}`;
     assertIdentifier(alias, "Target alias");
@@ -88,9 +91,9 @@ class QueryBuilder {
   }
   where(field, op, value) {
     assertField(field);
-    if (!FILTER_OPS.has(op)) throw new VibeClientError("INVALID_FILTER_OPERATOR", "Unsupported filter operator");
+    if (!FILTER_OPS.has(op)) throw new LeruchiClientError("INVALID_FILTER_OPERATOR", "Unsupported filter operator");
     if (op === "is_null" && value !== null && typeof value !== "boolean") {
-      throw new VibeClientError("INVALID_FILTER_VALUE", "is_null expects null or a boolean");
+      throw new LeruchiClientError("INVALID_FILTER_VALUE", "is_null expects null or a boolean");
     }
     this.ir.filters.push({ field: normalizeField(field, this.ir.root.alias), op, value: valueForIr(value) });
     return this;
@@ -106,35 +109,35 @@ class QueryBuilder {
   isNull(field, value = true) { return this.where(field, "is_null", value); }
   bind(name, type, value, required = true) {
     assertIdentifier(name, "Parameter name");
-    if (!PARAM_TYPES.has(type)) throw new VibeClientError("INVALID_PARAMETER_TYPE", "Unsupported parameter type");
-    if (this.ir.parameters.some(p => p.name === name)) throw new VibeClientError("DUPLICATE_PARAMETER", "Parameter names must be unique");
+    if (!PARAM_TYPES.has(type)) throw new LeruchiClientError("INVALID_PARAMETER_TYPE", "Unsupported parameter type");
+    if (this.ir.parameters.some(p => p.name === name)) throw new LeruchiClientError("DUPLICATE_PARAMETER", "Parameter names must be unique");
     this.ir.parameters.push({ name, type, required });
     this.bound[name] = value;
     return { param: name };
   }
   orderBy(field, direction = "asc") {
     assertField(field);
-    if (!["asc", "desc"].includes(direction)) throw new VibeClientError("INVALID_ORDER_DIRECTION", "Order direction must be asc or desc");
+    if (!["asc", "desc"].includes(direction)) throw new LeruchiClientError("INVALID_ORDER_DIRECTION", "Order direction must be asc or desc");
     this.ir.orderBy.push({ field: normalizeField(field, this.ir.root.alias), direction });
     return this;
   }
   limit(value) {
-    if (!Number.isInteger(value) || value < 1 || value > 1000) throw new VibeClientError("INVALID_LIMIT", "Limit must be an integer between 1 and 1000");
+    if (!Number.isInteger(value) || value < 1 || value > 1000) throw new LeruchiClientError("INVALID_LIMIT", "Limit must be an integer between 1 and 1000");
     this.ir.limit = value;
     return this;
   }
   offset(value) {
-    if (!Number.isInteger(value) || value < 0) throw new VibeClientError("INVALID_OFFSET", "Offset must be a non-negative integer");
+    if (!Number.isInteger(value) || value < 0) throw new LeruchiClientError("INVALID_OFFSET", "Offset must be a non-negative integer");
     this.ir.offset = value;
     return this;
   }
   depth(value) {
-    if (!Number.isInteger(value) || value < 0 || value > 6) throw new VibeClientError("INVALID_DEPTH", "Depth must be an integer between 0 and 6");
+    if (!Number.isInteger(value) || value < 0 || value > 6) throw new LeruchiClientError("INVALID_DEPTH", "Depth must be an integer between 0 and 6");
     this.ir.depth = value;
     return this;
   }
   build() {
-    if (!this.ir.projection.length) throw new VibeClientError("EMPTY_PROJECTION", "Call select() before executing a query");
+    if (!this.ir.projection.length) throw new LeruchiClientError("EMPTY_PROJECTION", "Call select() before executing a query");
     return { ir: clone(this.ir), parameters: clone(this.bound) };
   }
   async execute(parameters = undefined) {
@@ -147,20 +150,20 @@ class QueryBuilder {
 class MutationBuilder {
   constructor(client, graph, operation, target) {
     assertIdentifier(graph, "Graph");
-    if (!MUTATIONS.has(operation)) throw new VibeClientError("INVALID_OPERATION", "Unsupported graph mutation");
+    if (!MUTATIONS.has(operation)) throw new LeruchiClientError("INVALID_OPERATION", "Unsupported graph mutation");
     this.client = client;
     this.ir = { version: "v1", kind: "graph_mutation", graph, operation, target: clone(target), parameters: [] };
     this.bound = {};
   }
   properties(properties) {
-    if (!properties || typeof properties !== "object" || Array.isArray(properties)) throw new VibeClientError("INVALID_PROPERTIES", "Properties must be an object");
+    if (!properties || typeof properties !== "object" || Array.isArray(properties)) throw new LeruchiClientError("INVALID_PROPERTIES", "Properties must be an object");
     this.ir.properties = clone(properties);
     return this;
   }
   bind(name, type, value, required = true) {
     assertIdentifier(name, "Parameter name");
-    if (!PARAM_TYPES.has(type)) throw new VibeClientError("INVALID_PARAMETER_TYPE", "Unsupported parameter type");
-    if (this.ir.parameters.some(p => p.name === name)) throw new VibeClientError("DUPLICATE_PARAMETER", "Parameter names must be unique");
+    if (!PARAM_TYPES.has(type)) throw new LeruchiClientError("INVALID_PARAMETER_TYPE", "Unsupported parameter type");
+    if (this.ir.parameters.some(p => p.name === name)) throw new LeruchiClientError("DUPLICATE_PARAMETER", "Parameter names must be unique");
     this.ir.parameters.push({ name, type, required });
     this.bound[name] = value;
     return { param: name };
@@ -175,12 +178,12 @@ class MutationBuilder {
 }
 
 export function createFetchTransport({ baseUrl, token, fetchImpl = globalThis.fetch, headers = {} }) {
-  if (typeof baseUrl !== "string" || !baseUrl) throw new VibeClientError("INVALID_BASE_URL", "baseUrl is required");
-  if (typeof fetchImpl !== "function") throw new VibeClientError("FETCH_UNAVAILABLE", "A fetch implementation is required");
+  if (typeof baseUrl !== "string" || !baseUrl) throw new LeruchiClientError("INVALID_BASE_URL", "baseUrl is required");
+  if (typeof fetchImpl !== "function") throw new LeruchiClientError("FETCH_UNAVAILABLE", "A fetch implementation is required");
   const root = baseUrl.replace(/\/$/, "");
   return {
     async request(kind, body) {
-      const path = kind === "query" ? "/v1/graph/query" : kind === "mutation" ? "/v1/graph/mutations" : kind === "retrieval" ? "/v1/retrieval/query" : kind === "retrieval-explain" ? "/v1/retrieval/explain" : kind === "context-explain" ? "/v1/context/explain" : kind === "context-resolve" ? "/v1/context/resolve" : kind === "agent-intent-explain" ? "/v1/agent/intent/explain" : kind === "cross-modal-plan-explain" ? "/v1/agent/plan/explain" : kind === "agent-evaluate" ? "/v1/agent/evaluate" : kind === "agent-trace" ? "/v1/agent/trace" : kind === ("agent-"+"re"+"play") ? "/v1/agent/"+"re"+"play" : (() => { throw new VibeClientError("INVALID_REQUEST_KIND", "Unsupported Vibe request kind"); })();
+      const path = kind === "query" ? "/v1/graph/query" : kind === "mutation" ? "/v1/graph/mutations" : kind === "retrieval" ? "/v1/retrieval/query" : kind === "retrieval-explain" ? "/v1/retrieval/explain" : kind === "context-explain" ? "/v1/context/explain" : kind === "context-resolve" ? "/v1/context/resolve" : kind === "agent-intent-explain" ? "/v1/agent/intent/explain" : kind === "cross-modal-plan-explain" ? "/v1/agent/plan/explain" : kind === "agent-evaluate" ? "/v1/agent/evaluate" : kind === "agent-trace" ? "/v1/agent/trace" : kind === ("agent-"+"re"+"play") ? "/v1/agent/"+"re"+"play" : (() => { throw new LeruchiClientError("INVALID_REQUEST_KIND", "Unsupported Leruchi request kind"); })();
       const response = await fetchImpl(root + path, {
         method: "POST",
         headers: { "content-type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}), ...headers },
@@ -189,7 +192,7 @@ export function createFetchTransport({ baseUrl, token, fetchImpl = globalThis.fe
       let payload;
       try { payload = await response.json(); } catch { payload = undefined; }
       if (!response.ok) {
-        throw new VibeClientError(payload?.code ?? "HTTP_ERROR", payload?.message ?? `Vibe request failed with HTTP ${response.status}`, payload?.details);
+        throw new LeruchiClientError(payload?.code ?? "HTTP_ERROR", payload?.message ?? `Leruchi request failed with HTTP ${response.status}`, payload?.details);
       }
       return payload;
     }
@@ -197,7 +200,7 @@ export function createFetchTransport({ baseUrl, token, fetchImpl = globalThis.fe
 }
 
 export function createClient(options = {}) {
-  if (!options.transport && !options.baseUrl) throw new VibeClientError("MISSING_TRANSPORT", "Provide baseUrl or a custom transport");
+  if (!options.transport && !options.baseUrl) throw new LeruchiClientError("MISSING_TRANSPORT", "Provide baseUrl or a custom transport");
   const transport = options.transport ?? createFetchTransport(options);
   const client = {
     graph(graph) {
@@ -209,7 +212,7 @@ export function createClient(options = {}) {
         createEdge(edge, from, to, properties = {}) {
           assertIdentifier(edge, "Edge");
           const normalizeEndpoint = (endpoint, name) => {
-            if (!endpoint || typeof endpoint !== "object") throw new VibeClientError("INVALID_ENDPOINT", `${name} endpoint is required`);
+            if (!endpoint || typeof endpoint !== "object") throw new LeruchiClientError("INVALID_ENDPOINT", `${name} endpoint is required`);
             return { label: assertIdentifier(endpoint.label, `${name} label`), field: assertField(endpoint.field), value: valueForIr(endpoint.value) };
           };
           const target = { label: assertIdentifier(from.label, "From label"), edge, from: normalizeEndpoint(from, "From"), to: normalizeEndpoint(to, "To") };
