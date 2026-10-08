@@ -232,3 +232,55 @@ test("Graph API Agent Intent capability denial occurs before catalog/database ac
     assert.equal(dbConnects,0);
   }finally{await api.close();}
 });
+
+
+test("Graph API denies graph queries without graph:read before catalog or database access",async()=>{
+  let catalogCalls=0,dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return{query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/query",{
+      method:"POST",headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["vector:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir:{version:"v1",kind:"graph_query"}})
+    });
+    assert.equal(res.status,403);
+    assert.equal((await res.json()).code,"CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});
+
+test("Graph API denies graph mutations without graph:write before catalog or database access",async()=>{
+  let catalogCalls=0,dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return{query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/mutations",{
+      method:"POST",headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir:{version:"v1",kind:"graph_mutation",operation:"create_vertex"}})
+    });
+    assert.equal(res.status,403);
+    assert.equal((await res.json()).code,"CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});
+
+test("Graph API requires graph:delete in addition to graph:write for destructive mutations",async()=>{
+  let catalogCalls=0,dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return{query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/mutations",{
+      method:"POST",headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:write"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir:{version:"v1",kind:"graph_mutation",operation:"delete_vertex"}})
+    });
+    assert.equal(res.status,403);
+    assert.equal((await res.json()).code,"CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});

@@ -1,6 +1,6 @@
 # Stage 14 MCP Governance Decisions
 
-Status: IMPLEMENTED — NOT YET VALIDATED
+Status: CORE CONTRACT VALIDATED — CONTROL-PLANE GRANT REVOCATION NOT YET INTEGRATED
 
 ## Scope
 
@@ -72,3 +72,14 @@ Stage 14 may only become VALIDATED after:
 - audit contract tests pass;
 - live MCP → Graph API → PostgreSQL/AGE/RLS integration passes;
 - architecture regression audit passes.
+
+
+## Stage 32 route authorization hardening — pending CI
+
+The Graph API route boundary is being hardened so that:
+- `POST /v1/graph/query` requires `graph:read` before catalog or database access.
+- `POST /v1/graph/mutations` requires `graph:write`.
+- Destructive delete mutations additionally require `graph:delete`.
+- Denials are audited with `CAPABILITY_DENIED` and occur before catalog/database access.
+
+The scoped capability grant validator and revocation helper are not yet wired to a production control-plane verifier. Treat this as an explicit follow-up security gate.

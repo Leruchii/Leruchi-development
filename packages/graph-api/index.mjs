@@ -1,4 +1,5 @@
 import {CAPABILITIES,hasCapability} from "../capability-policy/index.mjs";
+import {isDestructiveMutation} from "../mutation-approval/index.mjs";
 import http from "node:http";
 import {randomUUID} from "node:crypto";
 import {Pool} from "pg";
@@ -92,6 +93,21 @@ export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=
         return json(res,200,catalog);
       }
       const input=await body(req);
+      auditInput=input;
+      if(req.url==="/v1/graph/query"&&!hasCapability(context,CAPABILITIES.GRAPH_READ)){
+        await record("denied","CAPABILITY_DENIED");
+        return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:read capability is required for graph queries",request_id:requestId});
+      }
+      if(req.url==="/v1/graph/mutations"){
+        if(!hasCapability(context,CAPABILITIES.GRAPH_WRITE)){
+          await record("denied","CAPABILITY_DENIED");
+          return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:write capability is required for graph mutations",request_id:requestId});
+        }
+        if(isDestructiveMutation(input.ir)&&!hasCapability(context,CAPABILITIES.GRAPH_DELETE)){
+          await record("denied","CAPABILITY_DENIED");
+          return json(res,403,{version:"v1",code:"CAPABILITY_DENIED",message:"graph:delete capability is required for destructive graph mutations",request_id:requestId});
+        }
+      }
       if(isAgentEvaluate){
         const catalog=await catalogProvider(context);
         try{

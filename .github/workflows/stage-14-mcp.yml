@@ -18,6 +18,8 @@ jobs:
         run: node --test tests/capability-policy/capability-policy.test.mjs
       - name: Graph API catalog capability tests
         run: node --test tests/graph-api/graph-api-catalog.test.mjs
+      - name: Graph API route capability enforcement tests
+        run: node --test tests/graph-api/api.test.mjs
       - name: MCP contract tests
         run: node --test tests/mcp/mcp-server.test.mjs
       - name: Capability grant contract tests
