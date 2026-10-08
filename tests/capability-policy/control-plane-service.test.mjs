@@ -72,9 +72,10 @@ test("revocation endpoints are internal-only, persistent and fail closed for unk
   const revoked = response();
   await service.handle(request("POST", `/v1/capability-grants/${jti}/revoke`, { headers: { authorization: "Bearer internal-test-token" } }), revoked);
   assert.equal(revoked.status, 200);
+  assert.deepEqual(revoked.body, { jti, active: false, revoked: true });
   const after = response();
   await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer internal-test-token" } }), after);
-  assert.deepEqual(after.body, { active: true, revoked: true });
+  assert.deepEqual(after.body, { active: false, revoked: true });
   const unknown = response();
   await service.handle(request("GET", "/v1/capability-grants/unknown/revocation", { headers: { authorization: "Bearer internal-test-token" } }), unknown);
   assert.deepEqual(unknown.body, { active: false, revoked: true });
