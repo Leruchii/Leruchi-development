@@ -17,7 +17,7 @@ export function createControlPlaneRevocationVerifier({baseUrl,bearerToken,fetchI
       const decision=await response.json();
       if(!decision||typeof decision.active!=="boolean"||typeof decision.revoked!=="boolean")throw new Error("Invalid control-plane revocation response");
       if(decision.active!==true)return true;
-      return decision.revoked;
+      return decision.revoked || !decision.active;
     }catch{
       const error=new Error("Capability revocation decision unavailable");
       error.code="CAPABILITY_REVOCATION_UNAVAILABLE";
