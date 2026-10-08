@@ -126,9 +126,9 @@ Stage 09 may be marked `VALIDATED` only when:
 ## Stage 10 implementation
 
 Implemented:
-- `packages/vibe-sdk/index.mjs`
-- `packages/vibe-sdk/package.json`
-- `packages/vibe-sdk/README.md`
+- `packages/leruchi-sdk/index.mjs`
+- `packages/leruchi-sdk/package.json`
+- `packages/leruchi-sdk/README.md`
 - `tests/sdk/sdk.test.mjs`
 - `.github/workflows/stage-10-javascript-sdk.yml`
 - `prompts/10-javascript-sdk.md`
@@ -141,10 +141,10 @@ The SDK does not claim server authorization, Schema Catalog validation, tenant a
 ## Stage 11 implementation
 
 Implemented:
-- `packages/vibe-cli/index.mjs`
-- `packages/vibe-cli/package.json`
-- `packages/vibe-cli/bin/vibe.mjs`
-- `packages/vibe-cli/README.md`
+- `packages/leruchi-cli/index.mjs`
+- `packages/leruchi-cli/package.json`
+- `packages/leruchi-cli/bin/leruchi.mjs`
+- `packages/leruchi-cli/README.md`
 - `tests/cli/cli.test.mjs`
 - `.github/workflows/stage-11-cli.yml`
 
