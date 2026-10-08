@@ -11,5 +11,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
       - name: Run query validation tests
         run: node --test tests/query-validation/*.test.mjs
