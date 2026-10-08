@@ -52,7 +52,7 @@ function saveConfig(cwd,config){
 function clientOptions(cwd,args,fetchImpl){
   const config=loadConfig(cwd);
   const baseUrl=args["base-url"]||(process.env.LERUCHI_BASE_URL ?? process.env.VIBE_BASE_URL)||config.baseUrl;
-  const token=(process.env.LERUCHI_TOKEN ?? (process.env.LERUCHI_TOKEN ?? process.env.VIBE_TOKEN));
+  const token=(process.env.LERUCHI_TOKEN ?? process.env.VIBE_TOKEN);
   if(!baseUrl)throw new Error("LERUCHI_BASE_URL or .leruchi/config.json baseUrl is required (legacy VIBE_BASE_URL and .vibe/config.json are supported temporarily)");
   return {baseUrl,token,fetchImpl};
 }
@@ -91,7 +91,7 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
   }
   if(command==="schema"&&(subcommand==="inspect"||subcommand==="types")){
     const baseUrl=(args["base-url"]||(process.env.LERUCHI_BASE_URL ?? process.env.VIBE_BASE_URL)||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
-    if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
+    if(!baseUrl)throw new Error("LERUCHI_BASE_URL or .leruchi/config.json baseUrl is required (legacy VIBE_BASE_URL and .vibe/config.json are supported temporarily)");
     let catalog;
     if(args.remote||subcommand==="inspect"){
       if(!(process.env.LERUCHI_TOKEN ?? process.env.VIBE_TOKEN))throw new Error("LERUCHI_TOKEN is required for remote Schema Catalog inspection (legacy VIBE_TOKEN is supported temporarily)");
@@ -114,7 +114,7 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
   }
   if(command==="diagnostics"){
     const baseUrl=(args["base-url"]||(process.env.LERUCHI_BASE_URL ?? process.env.VIBE_BASE_URL)||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
-    if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
+    if(!baseUrl)throw new Error("LERUCHI_BASE_URL or .leruchi/config.json baseUrl is required (legacy VIBE_BASE_URL and .vibe/config.json are supported temporarily)");
     const response=await fetchImpl(baseUrl+"/health",{headers:(process.env.LERUCHI_TOKEN ?? process.env.VIBE_TOKEN)?{authorization:`Bearer ${(process.env.LERUCHI_TOKEN ?? process.env.VIBE_TOKEN)}`}:{}});
     const payload=await response.text();
     if(!response.ok)throw new Error(`Diagnostics failed with HTTP ${response.status}`);
