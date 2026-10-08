@@ -79,7 +79,7 @@ jobs:
       - name: Run approved migrations
         env:
           VIBE_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/leruchi
-        run: node -e "import('./packages/vibe-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
+        run: node -e "import('./packages/leruchi-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
       - name: Prove tenant-isolated vector retrieval
         env:
           VIBE_ADMIN_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/leruchi
