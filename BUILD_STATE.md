@@ -979,3 +979,38 @@ Exact next action before release:
 3. Keep PR #63 draft until explicit approval to release. Do not merge to `main`, push files to `Leruchii/Leruchi`, or create a public release/tag without that approval.
 4. If documentation changes advance the branch head, rerun candidate and required checks on the latest head before merging.
 
+## Stage 32 sanitized OSS candidate — latest exact-head review (2026-10-08)
+
+This section supersedes the earlier Stage 32 candidate hashes and the older `da81d76` checkpoint above. The publication PR remains draft/open and the public repository has not been changed.
+
+Latest validated code head before this handoff update: `d5afb5fb56870a71f72691dd92993af3db4cda7f` on PR #63.
+- Exact-head PR regression matrix: 34/34 workflows passed, zero failures.
+- Exact-head push-triggered Stage 32 candidate workflow passed as well (35 successful workflow runs total when counting the PR checks and the push candidate run).
+- Node.js 24 runtime policy passed; the OWASP ASVS 5.0.0 verification profile passed. This is a profile/verification gate only, not a claim of full ASVS compliance.
+- Export contract audit passed after fixing its exclusion-precedence bug. Two internal release-gate tests are explicitly excluded from the public artifact because their private control-plane manifest/evidence inputs are intentionally not exported.
+- Candidate contains 184 files, 100 directories, and zero symlinks. Candidate readiness audit passed twice and two independently built normalized archives compared byte-for-byte.
+- Candidate archive SHA-256: `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`.
+- GitHub Actions uploaded artifact ZIP SHA-256: `72dd95c006de1e0750db6abae9feab32209c65c8930cde51887302772fa93126`.
+- Independent local review confirmed the 184-file count, Node 24 baseline in `.nvmrc`, `>=24 <25` package engine, no forbidden internal/control paths, no symlinks, and no matches for GitHub PAT/private-key/AWS access-key patterns. Twelve focused tenant-claim and realtime/role-boundary tests passed against the extracted candidate. The local inspection runtime is Node 22, so only the Node 24 CI jobs certify the supported runtime policy.
+- Local compatibility database/service credentials remain present in Compose/role setup by design for local development and CI, are documented as non-production credentials, and published ports bind to loopback. They must never be reused in production.
+
+Corrections made while reviewing the actual packaged artifact:
+1. The first independent package test found two internal release-gate tests copied into the public candidate without the private inputs they require.
+2. Added explicit manifest exclusions for those two tests.
+3. Fixed `scripts/public-oss-export-audit.mjs` to honor exclusions overriding broad includes (for example `tests/**`) and to reject private control paths if they become export-eligible.
+4. Added a regression test that keeps the intentional include/exclude behavior explicit.
+5. Rebuilt and re-audited the candidate; the revised candidate passed packaging, reproducibility, and upload on the exact head above.
+
+Public-release boundary:
+- Public target: `Leruchii/Leruchi`; its main branch still contains only the existing README.
+- No public files, tag, release, or publication PR have been created.
+- PR #63 remains draft/open pending a final documentation-head regression run and explicit approval to publish.
+- PR #64's tenant-claim validation was merged into the Stage 32 preparation branch after its own 30/30 exact-head matrix passed.
+- PR #62's Stage 31 changes are ancestors of PR #63; do not merge the two independently and create duplicate integration work.
+
+Next actions:
+1. This handoff documentation commit advances the branch head. Re-run the full required regression matrix and Stage 32 candidate workflow on the new exact head; the archive checksum should remain stable because internal `BUILD_STATE.md` is excluded from the public candidate.
+2. Verify the resulting exact-head run set is all green and refresh this handoff with the new commit SHA/artifact evidence if any candidate output changes.
+3. Present the candidate archive, checksums, public-repository diff (README-only baseline to the 184-file candidate), and remaining production-authority limitation for explicit approval.
+4. Do not merge PR #63 into `main`, publish to `Leruchii/Leruchi`, or create a public tag/release without explicit approval.
+
