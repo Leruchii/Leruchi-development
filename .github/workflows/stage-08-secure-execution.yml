@@ -24,7 +24,7 @@ jobs:
       - name: Wait for database
         run: |
           for i in {1..90}; do
-            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            if docker compose exec -T db pg_isready -U postgres -d leruchi; then exit 0; fi
             sleep 2
           done
           docker compose logs db
