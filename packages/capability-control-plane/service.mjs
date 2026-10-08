@@ -1,4 +1,4 @@
-import { createPrivateKey, sign } from "node:crypto";
+import { createPrivateKey, sign, timingSafeEqual } from "node:crypto";
 import { randomUUID } from "node:crypto";
 
 const ALLOWED_CAPABILITIES = new Set(["graph:read", "graph:write", "graph:delete", "vector:read"]);
@@ -14,6 +14,15 @@ function problem(status, code, message) {
 
 function b64url(value) {
   return Buffer.from(value).toString("base64url");
+}
+
+function hasInternalAuthorization(req, token) {
+  const provided = req.headers.authorization;
+  if (typeof provided !== "string") return false;
+  const expected = "Bearer " + token;
+  const actualBytes = Buffer.from(provided);
+  const expectedBytes = Buffer.from(expected);
+  return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes);
 }
 
 function signGrant(claims, { privateKey, keyId }) {
@@ -114,7 +123,7 @@ export function createCapabilityControlPlane({
       }
       const revokeMatch = url.pathname.match(/^\/v1\/capability-grants\/([^/]+)\/revoke$/);
       if (req.method === "POST" && revokeMatch) {
-        if (req.headers.authorization !== "Bearer " + internalBearerToken) throw problem(401, "UNAUTHENTICATED", "Internal control-plane authentication required");
+        if (!hasInternalAuthorization(req, internalBearerToken)) throw problem(401, "UNAUTHENTICATED", "Internal control-plane authentication required");
         const jti = decodeURIComponent(revokeMatch[1]);
         const updated = await store.revokeGrant(jti, clock());
         if (!updated) throw problem(404, "GRANT_NOT_FOUND", "Capability grant not found");
