@@ -1,0 +1,13 @@
+{
+  "name": "@leruchi/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "leruchi": "./bin/leruchi.mjs",
+    "vibe": "./bin/leruchi.mjs"
+  },
+  "dependencies": {
+    "@leruchi/sdk": "file:../leruchi-sdk"
+  }
+}
