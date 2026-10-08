@@ -3,8 +3,8 @@ name: Stage 23 Unified Retrieval Surface
 on:
   pull_request:
     paths:
-      - "packages/vibe-sdk/**"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-sdk/**"
+      - "packages/leruchi-cli/**"
       - "packages/mcp-server/**"
       - "packages/retrieval-ir/**"
       - "packages/retrieval-execution/**"
