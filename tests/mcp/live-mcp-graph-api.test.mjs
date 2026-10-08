@@ -4,8 +4,8 @@ import {signTestCapabilityGrant} from "../fixtures/capability-grant-test-key.mjs
 import {handleMcpMessage} from "../../packages/mcp-server/index.mjs";
 
 const base=(process.env.LERUCHI_API_URL??"").replace(/\/$/,"");
-const token=()=>signTestCapabilityGrant({
-  sub:"stage-14-mcp",jti:"stage-14-grant-1",tenant_id:"vibe_tenant_a",capabilities:["graph:read"]
+const token=(jti="stage-14-grant-1")=>signTestCapabilityGrant({
+  sub:"stage-14-mcp",jti,tenant_id:"vibe_tenant_a",capabilities:["graph:read"]
 });
 
 const ir={
@@ -46,4 +46,12 @@ test("MCP live query remains tenant-authoritative when the agent supplies a conf
   });
   assert.equal(response.result.isError,true);
   assert.match(response.result.content[0].text,/Tenant identity is derived/);
+});
+
+
+test("MCP rejects a grant revoked by the live control plane",async()=>{
+  process.env.LERUCHI_MCP_ACCESS_TOKEN=token("stage-14-grant-revoked");
+  const denied=await handleMcpMessage({jsonrpc:"2.0",id:5,method:"tools/call",params:{name:"schema.discover",arguments:{}}});
+  assert.equal(denied.result.isError,true);
+  assert.match(denied.result.content[0].text,/Capability grant was rejected/);
 });

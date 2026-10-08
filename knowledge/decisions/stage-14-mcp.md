@@ -105,3 +105,8 @@ Strict Graph API grant verification is moving to EdDSA JWTs with kid-selected pu
 ## EdDSA test-key hygiene fix candidate — 2026-10-08
 
 The Stage 32 ASVS gate rejected the previous candidate because a test-only PEM private key was embedded in source. The candidate replaces it with an ephemeral keypair generated in CI, passes only the public key to the Graph API, and keeps the private test key in runner temporary storage. No private key is committed. Production private-key custody and rotation remain release gates. Candidate has not run CI.
+
+
+## Live revocation integration candidate — 2026-10-08
+
+The next candidate adds a live MCP-to-Graph API test using a grant jti configured as revoked in the test control-plane stub. The test asserts the Graph API denies the grant through the HTTP revocation adapter. The production control plane is still not implemented/deployed in OSS; the stub validates only the interface contract. Candidate has not run CI.

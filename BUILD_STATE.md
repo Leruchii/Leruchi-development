@@ -917,3 +917,8 @@ The prior exact head 57dd4815d7137945945c234f5d7ca9970e637bef passed 30 workflow
 ## EdDSA CI key hygiene fix candidate — 2026-10-08
 
 The first EdDSA candidate failed the Stage 32 ASVS gate because a PEM-formatted test private key was committed in a test fixture. The fix removes that static key and generates an ephemeral Ed25519 keypair in Stage 13/14 CI. The Graph API receives only the public DER key; browser/MCP test helpers read the ephemeral private-key file from /tmp. Unit tests generate an in-memory pair. This candidate has not run CI. The previous exact-head Stage 32 workflow failure is documented in the internal handoff; no pass claim until the next full matrix completes.
+
+
+## Live revocation integration candidate — 2026-10-08
+
+The next candidate adds a live MCP-to-Graph API test using a grant jti configured as revoked in the test control-plane stub. The test asserts the Graph API denies the grant through the HTTP revocation adapter. The production control plane is still not implemented/deployed in OSS; the stub validates only the interface contract. Candidate has not run CI.

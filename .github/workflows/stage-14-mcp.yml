@@ -48,6 +48,7 @@ jobs:
         env:
           LERUCHI_CONTROL_PLANE_TOKEN: stage-14-control-plane-secret
           LERUCHI_CONTROL_PLANE_PORT: 4101
+          LERUCHI_TEST_REVOKED_JTIS: stage-14-grant-revoked
         run: node scripts/start-test-capability-control-plane.mjs > /tmp/leruchi-stage14-control-plane.log 2>&1 &
       - name: Wait for test capability control plane
         run: |
