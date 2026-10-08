@@ -12,7 +12,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - Stage 31 — OSS Core Readiness Gate: PR #62, head `1dffb521f48b49f2a2596ac808491e3356e57eaa`; its exact-head workflow matrix completed successfully. PR remains open pending the Stage 32 publication-preparation flow.
 - Stage 32 PR: #63 — [Stage 32: OSS Core Publication Preparation](https://github.com/Leruchii/Leruchi-development/pull/63), draft and open.
 - Stage 32 branch: `stage32-oss-publication-prep`.
-- Current Stage 32 head: `3d7b3e1e00a7df89d07e46644c440f000bbaf812`.
+- Current Stage 32 head: always resolve the live head from PR #63 before validating or merging; documentation updates themselves advance the branch head.
 - Base main commit for PR #63: `48ef18d376e69686e5e5950dd508d4534da187b3`.
 - Development repository: `Leruchii/Leruchi-development`.
 - Internal control repository: `Leruchii/Leruchi-internal`.
@@ -24,11 +24,11 @@ Stage 31 exact-head evidence:
 - PR #62 remains open; do not claim it is merged.
 
 Stage 32 candidate evidence:
-- The Stage 32 candidate workflow succeeded on head `3d7b3e1e00a7df89d07e46644c440f000bbaf812`.
+- The Stage 32 candidate workflow succeeded on code head `3d7b3e1e00a7df89d07e46644c440f000bbaf812` before the checkpoint documentation update. Re-run the candidate and full regression matrix on the latest PR #63 head before merge.
 - Candidate artifact: `leruchi-oss-core-candidate`.
 - Artifact SHA-256: `bcdeed870224290a70a3256ea9bf0b7e5ad06ff2ede13a8f0e4ae122da739851`.
 - The first candidate run exposed a brittle realtime RLS source assertion that expected double quotes while the SQL correctly uses single quotes. The test now accepts either quote style; fix commit: `3d7b3e1e00a7df89d07e46644c440f000bbaf812`.
-- The full Stage 32 exact-head regression matrix was still running at the time of this checkpoint; do not merge PR #63 until every required workflow is green on its final head.
+- The full Stage 32 exact-head regression matrix was still running on the pre-documentation code head; do not merge PR #63 until every required workflow is green on the live final head.
 - The candidate workflow builds an artifact only. It does not publish or push the candidate into the public `Leruchii/Leruchi` repository.
 - Public target inspection currently shows only a README, so publication remains a separate gated action.
 
