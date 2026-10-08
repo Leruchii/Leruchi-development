@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {createGraphApiServer,resolveQueryCompiler} from "../../packages/graph-api/index.mjs";
 import {engineCapabilities} from "../../packages/planner/index.mjs";
 import {createHmac} from "node:crypto";
+import {signTestCapabilityGrant,TEST_CAPABILITY_ISSUER,TEST_CAPABILITY_PUBLIC_KEYS} from "../fixtures/capability-grant-test-key.mjs";
 
 function fakePool(){
   return {connect:async()=>({query:async()=>({rows:[]}),release(){}})};
@@ -288,10 +289,10 @@ test("Graph API requires graph:delete in addition to graph:write for destructive
 
 test("Graph API strict capability grants fail closed when revocation is unavailable",async()=>{
   let catalogCalls=0;
-  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",requireCapabilityGrant:true,catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const api=createGraphApiServer({pool:fakePool(),jwtIssuer:TEST_CAPABILITY_ISSUER,jwtAudience:"leruchi",capabilityPublicKeys:TEST_CAPABILITY_PUBLIC_KEYS,requireCapabilityGrant:true,catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
   const address=await api.listen();
   try{
-    const grant=token({sub:"u",tenant_id:"tenant_a",jti:"jti-1",aud:"leruchi",exp:Math.floor(Date.now()/1000)+60,capabilities:["graph:read"]},"secret");
+    const grant=signTestCapabilityGrant({sub:"u",tenant_id:"tenant_a",jti:"jti-1",capabilities:["graph:read"]});
     const res=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+grant}});
     assert.equal(res.status,503);
     assert.equal((await res.json()).code,"CAPABILITY_REVOCATION_UNAVAILABLE");
@@ -301,9 +302,9 @@ test("Graph API strict capability grants fail closed when revocation is unavaila
 
 test("Graph API strict capability grants enforce revocation and route scope before catalog access",async()=>{
   let catalogCalls=0;
-  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",jwtIssuer:"control-plane",jwtAudience:"leruchi",requireCapabilityGrant:true,isGrantRevoked:async jti=>jti==="revoked",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const api=createGraphApiServer({pool:fakePool(),jwtIssuer:TEST_CAPABILITY_ISSUER,jwtAudience:"leruchi",capabilityPublicKeys:TEST_CAPABILITY_PUBLIC_KEYS,requireCapabilityGrant:true,isGrantRevoked:async jti=>jti==="revoked",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
   const address=await api.listen();
-  const makeGrant=(jti,scope)=>token({iss:"control-plane",sub:"u",tenant_id:"tenant_a",jti,aud:"leruchi",exp:Math.floor(Date.now()/1000)+60,capabilities:["graph:read"],scope},"secret");
+  const makeGrant=(jti,scope)=>signTestCapabilityGrant({sub:"u",tenant_id:"tenant_a",jti,capabilities:["graph:read"],scope});
   try{
     const revoked=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+makeGrant("revoked")}});
     assert.equal(revoked.status,401);

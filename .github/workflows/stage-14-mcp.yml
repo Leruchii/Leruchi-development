@@ -56,8 +56,8 @@ jobs:
       - name: Start live Graph API
         env:
           LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
-          LERUCHI_JWT_SECRET: stage-14-e2e-secret
           LERUCHI_CAPABILITY_ISSUER: leruchi-test-control-plane
+          LERUCHI_CAPABILITY_PUBLIC_KEYS: '{"stage-test-2026":"MCowBQYDK2VwAyEAiMVGMY/24AIfhf68FhNA+CnQFLjVJTOU1GTRuH7g3NI="}'
           LERUCHI_CAPABILITY_CONTROL_PLANE_URL: http://127.0.0.1:4101
           LERUCHI_CAPABILITY_CONTROL_PLANE_TOKEN: stage-14-control-plane-secret
           LERUCHI_GRAPH_API_PORT: 4100
@@ -73,7 +73,6 @@ jobs:
       - name: Live MCP integration
         env:
           LERUCHI_API_URL: http://127.0.0.1:4100
-          LERUCHI_JWT_SECRET: stage-14-e2e-secret
         run: node --test tests/mcp/live-mcp-graph-api.test.mjs
       - name: Show live Graph API logs on failure
         if: failure()

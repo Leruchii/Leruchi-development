@@ -95,3 +95,8 @@ Stage 14 CI now starts a dedicated test-only control-plane stub and exercises th
 ## Stage 13 workflow strict-grant fixture fix candidate — 2026-10-08
 
 Candidate `2ae9de766bc31a9542c4e782170b0834857d69cb` updates Stage 13 to start the test-only control-plane stub and configure strict capability-grant verification in the Graph API launcher. This addresses the confirmed prior failure where the launcher exited for missing `LERUCHI_CAPABILITY_ISSUER`. Candidate has not run CI. Production control-plane deployment remains a release blocker.
+
+
+## Asymmetric grant signing boundary — candidate, 2026-10-08
+
+Strict Graph API grant verification is moving to EdDSA JWTs with kid-selected public keys. The data plane will hold only a public-key ring; the private signing keys stay in the separate control plane. Key rotation supports overlapping key IDs. CI uses a clearly test-only private key fixture and does not establish a production issuer. Production key custody, rotation, membership-aware grant issuance and revocation operations remain release gates. Candidate has not run CI.

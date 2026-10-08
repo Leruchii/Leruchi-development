@@ -6,6 +6,7 @@ const SCOPE_KEYS=new Set(["routes","graphs"]);
 export function validateCapabilityGrant(grant,now=Math.floor(Date.now()/1000)){
   const errors=[];
   if(!grant||typeof grant!=="object"||Array.isArray(grant))return{ok:false,errors:["grant is required"]};
+  if(typeof grant.sub!=="string"||!grant.sub.trim())errors.push("sub is required");
   if(typeof grant.jti!=="string"||!grant.jti.trim())errors.push("jti is required");
   if(typeof grant.tenant_id!=="string"||!grant.tenant_id.trim())errors.push("tenant_id is required");
   if(!Array.isArray(grant.capabilities)||grant.capabilities.length===0)errors.push("capabilities are required");
@@ -56,7 +57,7 @@ export async function isCapabilityGrantRevoked(grant,{isRevoked}={}){
 export const CAPABILITY_GRANT_CONTRACT=Object.freeze({
   issuer:"control-plane",
   audience:"leruchi",
-  required:["jti","tenant_id","capabilities","aud","exp"],
+  required:["sub","jti","tenant_id","capabilities","aud","exp"],
   revocation:"mandatory fail-closed control-plane lookup by jti",
   dataPlaneRule:"validate and enforce the signed grant; do not issue or persist authorization state"
 });

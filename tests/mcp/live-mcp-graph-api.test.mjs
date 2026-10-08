@@ -1,17 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {createHmac} from "node:crypto";
+import {signTestCapabilityGrant} from "../fixtures/capability-grant-test-key.mjs";
 import {handleMcpMessage} from "../../packages/mcp-server/index.mjs";
 
-const secret=process.env.LERUCHI_JWT_SECRET??"stage-14-e2e-secret";
 const base=(process.env.LERUCHI_API_URL??"").replace(/\/$/,"");
-const token=()=>{
-  const enc=value=>Buffer.from(JSON.stringify(value)).toString("base64url");
-  const header=enc({alg:"HS256",typ:"JWT"});
-  const payload=enc({iss:"leruchi-test-control-plane",sub:"stage-14-mcp",jti:"stage-14-grant-1",tenant_id:"vibe_tenant_a",aud:"leruchi",exp:Math.floor(Date.now()/1000)+300,capabilities:["graph:read"]});
-  const signing=header+"."+payload;
-  return signing+"."+createHmac("sha256",secret).update(signing).digest("base64url");
-};
+const token=()=>signTestCapabilityGrant({
+  sub:"stage-14-mcp",jti:"stage-14-grant-1",tenant_id:"vibe_tenant_a",capabilities:["graph:read"]
+});
 
 const ir={
   version:"v1",kind:"graph_query",graph:"vibe_security",

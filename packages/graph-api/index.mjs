@@ -1,5 +1,6 @@
 import {CAPABILITIES,hasCapability} from "../capability-policy/index.mjs";
 import {verifyCapabilityGrant,isCapabilityGrantScopeAllowed} from "../capability-policy/grants.mjs";
+import {verifyEdDsaCapabilityGrant} from "../capability-policy/jwt.mjs";
 import {isDestructiveMutation} from "../mutation-approval/index.mjs";
 import http from "node:http";
 import {randomUUID} from "node:crypto";
@@ -51,8 +52,8 @@ export function resolveQueryCompiler(ir,catalog,{
   return {plan,compile};
 }
 
-export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=null,catalogProvider,auditSink,verifyApproval,isGrantRevoked,requireCapabilityGrant=false,observability=createObservability(),queryEngines=DEFAULT_QUERY_ENGINE_CAPABILITIES,preferredQueryEngines=["apache-age","postgresql-recursive"],host="127.0.0.1",port=0}={}){
-  if(!pool||!jwtSecret||typeof catalogProvider!=="function")throw new Error("pool, jwtSecret and catalogProvider are required");
+export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=null,capabilityPublicKeys=null,catalogProvider,auditSink,verifyApproval,isGrantRevoked,requireCapabilityGrant=false,observability=createObservability(),queryEngines=DEFAULT_QUERY_ENGINE_CAPABILITIES,preferredQueryEngines=["apache-age","postgresql-recursive"],host="127.0.0.1",port=0}={}){
+  if(!pool||(!jwtSecret&&!requireCapabilityGrant)||typeof catalogProvider!=="function")throw new Error("pool, a JWT verifier configuration and catalogProvider are required");
   const server=http.createServer(async(req,res)=>{
     const requestId=randomUUID();
     const started=Date.now();
@@ -83,7 +84,9 @@ export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=
       if(!isCatalog&&!isGraphRequest&&!isRetrievalRequest&&!isRetrievalExplain&&!isContextExplain&&!isContextResolve&&!isAgentIntentExplain&&!isCrossModalPlanExplain&&!isAgentEvaluate&&!isAgentTrace&&!isAgentReplay)return json(res,404,{error:{version:"v1",code:"NOT_FOUND",message:"Not found",request_id:requestId}});
       const auth=req.headers.authorization??"";
       if(!auth.startsWith("Bearer ")){await record("denied","UNAUTHORIZED");return json(res,401,{version:"v1",code:"UNAUTHORIZED",message:"Bearer token required",request_id:requestId});}
-      const claims=verifyHs256Jwt(auth.slice(7),jwtSecret,Math.floor(Date.now()/1000),{issuer:jwtIssuer,audience:jwtAudience});
+      const claims=requireCapabilityGrant
+        ?verifyEdDsaCapabilityGrant(auth.slice(7),{publicKeys:capabilityPublicKeys,issuer:jwtIssuer,audience:jwtAudience??"leruchi"})
+        :verifyHs256Jwt(auth.slice(7),jwtSecret,Math.floor(Date.now()/1000),{issuer:jwtIssuer,audience:jwtAudience});
       const grantRequired=requireCapabilityGrant||claims.jti!==undefined||claims.aud==="leruchi";
       let trustedClaims=claims;
       if(grantRequired){
