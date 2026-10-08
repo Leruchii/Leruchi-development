@@ -66,6 +66,9 @@ test("revocation endpoints are internal-only, persistent and fail closed for unk
   const denied = response();
   await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`), denied);
   assert.equal(denied.status, 401);
+  const wrongToken = response();
+  await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer incorrect-token" } }), wrongToken);
+  assert.equal(wrongToken.status, 401);
   const lookup = response();
   await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer internal-test-token" } }), lookup);
   assert.deepEqual(lookup.body, { active: true, revoked: false });
