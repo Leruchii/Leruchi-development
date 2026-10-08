@@ -1,6 +1,6 @@
-# @vibeplatform/sdk
+# @leruchi/sdk
 
-The Vibe JavaScript SDK exposes Vibe graph intent without exposing Apache AGE, Cypher, SQL, database credentials, or tenant identifiers.
+The Leruchi JavaScript SDK exposes Vibe graph intent without exposing Apache AGE, Cypher, SQL, database credentials, or tenant identifiers.
 
 ## Contract
 
@@ -17,7 +17,7 @@ The server remains authoritative for Schema Catalog validation, capabilities, RL
 ## Example
 
 ```js
-import { createClient } from "@vibeplatform/sdk";
+import { createClient } from "@leruchi/sdk";
 
 const vibe = createClient({ baseUrl: "https://api.example" });
 

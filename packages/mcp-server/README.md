@@ -1,6 +1,6 @@
-# VibeDB MCP Server
+# Leruchi MCP Server
 
-The MCP gateway is an agent-native adapter over the existing VibeDB execution boundary.
+The MCP gateway is an agent-native adapter over the existing Leruchi execution boundary.
 
 ## Security contract
 
@@ -8,7 +8,7 @@ The gateway does not accept tenant identity as a tool argument. It uses `VIBE_MC
 
 Required environment:
 
-- `VIBE_API_URL` — VibeDB API base URL.
+- `VIBE_API_URL` — Leruchi API base URL.
 - `VIBE_MCP_ACCESS_TOKEN` — access token representing the authenticated agent/user.
 
 ## Current tools

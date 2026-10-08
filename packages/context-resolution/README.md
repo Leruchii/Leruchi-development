@@ -1,6 +1,6 @@
-# VibeDB Context Resolution
+# Leruchi Context Resolution
 
-Stage 26C resolves validated Context IR through existing trusted VibeDB execution boundaries.
+Stage 26C resolves validated Context IR through existing trusted Leruchi execution boundaries.
 
 ## Contract
 
