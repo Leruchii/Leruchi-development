@@ -10,7 +10,7 @@
 
 ## 1. Product definition
 
-Leruchi is a secure developer/database platform that makes **relational, graph, vector, realtime, and AI-agent access feel like one database**.
+Leruchi / Leruchi is a secure developer/database platform that makes **relational, graph, vector, realtime, and AI-agent access feel like one database**.
 
 The product is not "Supabase plus a graph feature." Its differentiated layer is the Vibe abstraction and developer experience across PostgreSQL, Apache AGE, pgvector, security, query compilation, graph mutations, realtime, and agent access.
 
@@ -361,7 +361,7 @@ UI must consume the Schema Catalog and proven API contracts rather than inventin
 
 ---
 
-## 8. OSS / Leruchi Cloud separation
+## 8. OSS / Vibe Cloud separation
 
 The open-source repository owns:
 
@@ -1088,16 +1088,16 @@ Do not add autonomous authorization, a second executor, client-controlled tenant
 
 Objectives:
 1. Keep internal engineering control material private.
-2. Keep private implementation history in `vibeDB-development`.
-3. Make `vibeDB` a clean public OSS release target.
+2. Keep private implementation history in `Leruchi-development`.
+3. Make `Leruchi` a clean public OSS release target.
 4. Export only explicit public-safe paths.
 5. Prevent Core from depending on private Cloud/Enterprise implementation.
 6. Document the three-repository authority model for future coding agents.
 
 Repository model:
-- `Fikunmii/vibeDB-internal` — private engineering control plane.
-- `Fikunmii/vibeDB-development` — private implementation/source-of-truth for active engineering.
-- `Fikunmii/vibeDB` — public OSS Core release target.
+- `Fikunmii/Leruchi-internal` — private engineering control plane.
+- `Fikunmii/Leruchi-development` — private implementation/source-of-truth for active engineering.
+- `Fikunmii/Leruchi` — public OSS Core release target.
 
 Required gate:
 - `OSS_EXPORT_MANIFEST.json` is the primary publication allowlist.
@@ -1184,7 +1184,7 @@ Do not introduce autonomous authorization, an LLM planner, write-capable Context
 
 # Stage 27 — Agent Intent → Leruchi IR Boundary
 
-**Status:** VALIDATED — focused Agent Governance coverage and the Stage 31 exact-head validation matrix passed on code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`.
+**Status:** IMPLEMENTED — NOT YET VALIDATED.
 
 Purpose: give agents and future model adapters one closed, provider-neutral envelope for declaring an intended canonical Leruchi operation without making natural language, an LLM, or MCP an authorization/execution authority.
 
@@ -1315,56 +1315,37 @@ The first public Core release is a readiness gate, not an arbitrary stage number
 
 ## Stage 31 — OSS Core Readiness Gate
 
-**Status:** VALIDATED — exact code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed` passed the required exact-head regression matrix and OSS readiness gate.
+**Status:** VALIDATED technically on the Stage 32 candidate branch, not yet integrated into main. Exact candidate code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff` passed the sanitized OSS readiness audit (184 files) and the 57/57 exact-head workflow matrix. Node.js 24 is the only supported runtime; Apache-2.0 is the selected license.
 
-Stage 31 turns the existing OSS boundary into an executable release-readiness gate. It does not publish the public repository.
-
-Required gates:
-- explicit public release allowlist and sanitized candidate construction;
-- executable audit rejecting internal control/build material, private cloud/enterprise paths, credentials and private keys;
-- Node 24 runtime policy with Node 20 rejected;
-- coherent public package metadata and required public documentation;
-- exact-head product, architecture and security regression evidence;
-- publication procedure tested without publishing;
-- no change to agent/MCP authority boundaries and no trace/replay execution authority.
-
-The public repository remains a separate repository. Internal AGENTS.md, BUILD_STATE.md, BUILD_PLAN.md, knowledge/, prompts/, .agents/ and private strategy/control material are never copied into the public release merely because they exist in development.
-
-Stage 31 exit requires a green readiness audit and exact candidate validation. The next controlled stage is Stage 32 — Leruchi Core Public Publication, which may publish only the sanitized candidate after the Stage 31 exit gate is green.
-
+Public publication remains separately gated on repository visibility remediation, formal product-name clearance, final artifact review and explicit release approval.
 
 ## Stage 31A — Agent Governance Foundation
 
-**Status:** VALIDATED on exact Stage 31 code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`; focused governance tests and the Stage 31 readiness/regression matrix passed.
-
-Purpose: add a small Core contract for agent identity, ownership, bounded capabilities, delegation, mandates and revocation so developers can model agent authority without introducing a new execution engine or hosted identity dependency.
-
-Implemented:
-- `packages/agent-governance/index.mjs`
-- `packages/agent-governance/README.md`
-- focused `tests/agent-governance/agent-governance.test.mjs`
-- `knowledge/decisions/stage-31-agent-governance-foundation.md`
-
-Invariants:
-- governance records are not authentication credentials;
-- capability grants are bounded and explicit;
-- revocation and expiry fail closed;
-- mandate/delegation resource scope is enforced when supplied;
-- authorization decisions are non-executing;
-- existing ExecutionContext, IR validation, planner and Secure Execution Engine remain authoritative;
-- DIDs/VCs, blockchain, reputation networks, hardware identity and regulatory graph infrastructure remain deferred.
-
-Validation required before merge: focused tests, adversarial governance checks, architecture/state gates and OSS boundary checks. Do not claim validation without executable evidence.
+**Status:** VALIDATED on exact Stage 31 code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`. Focused Agent Governance coverage and the Stage 31 readiness/regression matrix passed. Governance records are not authentication proof; authorization decisions are non-executing and revocation/expiry fail closed.
 
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status:** IN PROGRESS — candidate technical gates passed; development-main integration and public publication remain blocked pending repository-visibility remediation and legacy-PR reconciliation.
+**Status: IN PROGRESS — technical candidate gates green; integration/publication blocked.**
 
-Validated candidate code head: `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff` with 57/57 workflow runs successful. Most recent fully validated synchronization candidate head before this documentation refresh: `70e31332e2ad79e9865fb6eece132a614fba30ce`, with 36/36 workflow runs successful; Stage 32 candidate workflow [37808127971](https://github.com/Leruchii/Leruchi-development/actions/runs/37808127971) passed. The sanitized candidate contains 184 files and normalized archive SHA-256 `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`. The uploaded artifact ZIP digest is run-specific; use the linked workflow logs/artifact metadata. Node.js 24 only; ASVS 5.0.0 profile verification passed, without claiming full ASVS compliance.
+Live checkpoint verified 2026-10-09:
+- Development main at verification: `aa574ec0f3a1e5c28a34d15892730605b5aecbd7`; product-code baseline remains Stage 30 at `2bf62dc138667d834728d0dbddbdd8c29dd1fda9`.
+- Candidate PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63), draft/open, branch `stage32-oss-publication-prep`.
+- Exact candidate HEAD: `229efd856123ff21335d106138e774d569e2798a`; at verification, compare showed 340 commits ahead and 0 behind main.
+- Exact-head CI: 35/35 runs successful on that SHA, including Stage 31 readiness, Stage 32 candidate, Stage 03 compatibility, Stage State Gate and Architecture Regression Audit. [Stage 32 candidate run](https://github.com/Leruchii/Leruchi-development/actions/runs/37808685995).
+- PR #63 description still references an older head (`da390bb5c760c046ced7c48abd682784825fa2b0)); synchronize it to the live head before review. Every new commit requires fresh exact-head checks.
+- Last recorded normalized archive has 184 files and SHA-256 `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`. This is historical artifact evidence; it must not be attributed to a later HEAD unless that exact run reproduces it. Node.js 24 only. ASVS 5.0.0 profile verification passed; full ASVS compliance is not claimed.
+- Legacy PRs [#14](https://github.com/Leruchii/Leruchi-development/pull/14), [#22](https://github.com/Leruchii/Leruchi-development/pull/22), [#26](https://github.com/Leruchii/Leruchi-development/pull/26), and [#29](https://github.com/Leruchii/Leruchi-development/pull/29) remain open and require diff-level reconciliation. Port still-relevant migration safety guarantees/tests from #14; do not wholesale-merge stale VibeDB-era branches.
+- GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as public, despite the intended private topology. An authorized administrator must change and verify visibility; do not merge Stage 32 or publish while this remains unresolved.
+- Product-name clearance remains open. Public destination `Leruchii/Leruchi` remains unchanged (README only); no public tag/release exists. Explicit release approval is required.
+- The OSS runtime provides signed grant verification and a fail-closed revocation adapter, not a deployed production grant issuer/revocation control plane. Deployments must provide a trusted authority.
 
-**Outstanding technical reconciliation:** PR #14's older migration runner contains safety guarantees and unit tests that are not fully represented in the current `packages/leruchi-cli/migrate.mjs`. Port relevant guarantees/tests into the current product-named implementation, then rerun Stage 11 and the full candidate matrix. PRs #22, #26 and #29 require diff-level review; do not merge old branches wholesale because they contain superseded VibeDB-era paths.
+### Stage 32 exit gate
 
-**Security/release blockers:** GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as public despite the intended private topology. Formal product-name clearance remains open. The OSS runtime does not include a deployed production capability-grant issuer/revocation control plane. Do not integrate the candidate into main or publish publicly until repository visibility and branch reconciliation are resolved.
-
-The public destination `Leruchii/Leruchi` remains unchanged (README only); no public release/tag has been created.
+1. An authorized administrator changes development/internal repository visibility to private and verifies `private: true`.
+2. Reconcile legacy PRs by reviewing unique diffs and porting only required, relevant changes. Validate migration runner safety and tests after any port.
+3. Synchronize PR #63 description, BUILD_STATE, BUILD_PLAN, candidate SHA, artifact provenance, and exact-head workflow evidence.
+4. All required exact-head CI passes after the final candidate commit.
+5. Review Apache-2.0 licensing, formal product-name clearance, export manifest, sanitized artifact file list, provenance, and public diff.
+6. Integrate Stage 32 into development main only after the security and reconciliation gates are closed. This is separate from public publication.
+7. Publish/tag only after explicit approval and record the resulting public commit, artifact, tag and release evidence.
