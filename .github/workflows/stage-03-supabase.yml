@@ -112,16 +112,16 @@ jobs:
           print(f"{header}.{payload}.{sig}")
           PY
           )
-          SIGNUP_A=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_a"}}')
-          SIGNUP_B=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_b"}}')
-          USER_A_ID=$(printf '%s' "\${SIGNUP_A}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
-          USER_B_ID=$(printf '%s' "\${SIGNUP_B}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
-          test -n "\${USER_A_ID}"
-          test -n "\${USER_B_ID}"
-          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -v user_a="\${USER_A_ID}" -v user_b="\${USER_B_ID}" -Xf /dev/stdin < tests/security/tenant-claim-hook-fixture.sql
-          TOKEN_A=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!"}')
-          TOKEN_B=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: \${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!"}')
-          python3 - "\${TOKEN_A}" "\${TOKEN_B}" <<'PY'
+          SIGNUP_A=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_a"}}')
+          SIGNUP_B=$(curl -fsS -X POST "http://127.0.0.1:9999/signup" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!","data":{"active_tenant_id":"tenant_b"}}')
+          USER_A_ID=$(printf '%s' "${SIGNUP_A}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
+          USER_B_ID=$(printf '%s' "${SIGNUP_B}" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id") or d.get("user",{}).get("id",""))')
+          test -n "${USER_A_ID}"
+          test -n "${USER_B_ID}"
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -v user_a="${USER_A_ID}" -v user_b="${USER_B_ID}" -Xf /dev/stdin < tests/security/tenant-claim-hook-fixture.sql
+          TOKEN_A=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!"}')
+          TOKEN_B=$(curl -fsS -X POST "http://127.0.0.1:9999/token?grant_type=password" -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" --data '{"email":"stage03-tenant-b@example.test","password":"Stage03-Password-24!"}')
+          python3 - "${TOKEN_A}" "${TOKEN_B}" <<'PY'
           import base64, json, sys
           def claims(response):
               token=json.loads(response)["access_token"]
@@ -132,15 +132,15 @@ jobs:
           assert "tenant_id" not in b, f"revoked tenant selector issued tenant_id: {b}"
           print("Real Auth-issued tenant claim assertions passed")
           PY
-          ACCESS_A=$(printf '%s' "\${TOKEN_A}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
-          ACCESS_B=$(printf '%s' "\${TOKEN_B}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
-          RESPONSE_A=$(curl -fsS -H "Authorization: Bearer \${ACCESS_A}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
-          echo "\${RESPONSE_A}"
-          echo "\${RESPONSE_A}" | grep -q '"tenant_a"'
-          if echo "\${RESPONSE_A}" | grep -q 'tenant_b'; then echo "Tenant B leaked into Tenant A response"; exit 1; fi
-          RESPONSE_B=$(curl -fsS -H "Authorization: Bearer \${ACCESS_B}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
-          echo "\${RESPONSE_B}"
-          if echo "\${RESPONSE_B}" | grep -q 'tenant_a\|tenant_b'; then echo "Token without authorized tenant claim returned tenant rows"; exit 1; fi
+          ACCESS_A=$(printf '%s' "${TOKEN_A}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+          ACCESS_B=$(printf '%s' "${TOKEN_B}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+          RESPONSE_A=$(curl -fsS -H "Authorization: Bearer ${ACCESS_A}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
+          echo "${RESPONSE_A}"
+          echo "${RESPONSE_A}" | grep -q '"tenant_a"'
+          if echo "${RESPONSE_A}" | grep -q 'tenant_b'; then echo "Tenant B leaked into Tenant A response"; exit 1; fi
+          RESPONSE_B=$(curl -fsS -H "Authorization: Bearer ${ACCESS_B}" "http://127.0.0.1:3000/supabase_rls_probe?select=id,tenant_id,payload")
+          echo "${RESPONSE_B}"
+          if echo "${RESPONSE_B}" | grep -q 'tenant_a\|tenant_b'; then echo "Token without authorized tenant claim returned tenant rows"; exit 1; fi
 
       - name: Verify signed JWT reaches PostgREST RLS
         run: |
