@@ -1,0 +1,49 @@
+name: Capability Control Plane Security
+on:
+  pull_request:
+    paths:
+      - "packages/capability-policy/**"
+      - "packages/capability-control-plane/**"
+      - "packages/graph-api/index.mjs"
+      - "packages/schema-catalog-api/index.mjs"
+      - "scripts/start-capability-*.mjs"
+      - "tests/capability-policy/**"
+      - "tests/graph-api/api.test.mjs"
+      - "tests/fixtures/capability-grant-test-key.*"
+      - ".github/workflows/capability-control-plane.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/capability-policy/**"
+      - "packages/capability-control-plane/**"
+      - "packages/graph-api/index.mjs"
+      - "packages/schema-catalog-api/index.mjs"
+      - "scripts/start-capability-*.mjs"
+      - "tests/capability-policy/**"
+      - "tests/graph-api/api.test.mjs"
+      - "tests/fixtures/capability-grant-test-key.*"
+      - ".github/workflows/capability-control-plane.yml"
+permissions:
+  contents: read
+concurrency:
+  group: capability-control-plane-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  security-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Validate runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Capability policy and JWT tests
+        run: node --test tests/capability-policy/capability-grants.test.mjs
+      - name: Control-plane issuer and revocation service tests
+        run: node --test tests/capability-policy/control-plane-service.test.mjs
+      - name: Graph API authorization boundary tests
+        run: node --test tests/graph-api/api.test.mjs
