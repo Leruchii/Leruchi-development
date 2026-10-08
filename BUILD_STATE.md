@@ -897,3 +897,8 @@ Candidate adds:
 - unit and Graph API tests for missing revocation service, revoked grants, unavailable control plane and scope denial.
 
 This candidate is not yet on the validation branch and has not run CI. Do not claim the production control plane exists. Next: record the candidate SHA in internal handoff, advance only the isolated validation branch, inspect the exact-head matrix and update the handoff after results. No merge or public publication.
+
+
+## Stage 13 workflow config fix candidate — 2026-10-08
+
+The first strict-grant matrix had 29 successes and one Stage 13 failure. Log confirmed the launcher exited because Stage 13 did not set the required capability issuer/control-plane configuration. This is now corrected in the workflow by starting the test-only control-plane stub, waiting for readiness, and passing the same strict grant configuration used by Stage 14. The fix candidate is `2ae9de766bc31a9542c4e782170b0834857d69cb`; it has not run CI yet. The test stub is only a CI fixture, not a production control plane.
