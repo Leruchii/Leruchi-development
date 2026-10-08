@@ -69,7 +69,7 @@ jobs:
         run: |
           export LERUCHI_CAPABILITY_CONTROL_PLANE_TOKEN="$LERUCHI_CONTROL_PLANE_TOKEN"
           export LERUCHI_CAPABILITY_PUBLIC_KEYS="{\"stage-test-2026\":\"$(cat /tmp/leruchi-capability-test-public.b64)\"}"
-          node scripts/start-capability-graph-api.mjs > /tmp/leruchi-stage14-api.log 2>&1 &
+          node scripts/start-test-capability-graph-api.mjs > /tmp/leruchi-stage14-api.log 2>&1 &
       - name: Wait for live Graph API
         run: |
           for i in {1..30}; do
