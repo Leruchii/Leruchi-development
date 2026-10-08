@@ -11,6 +11,12 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Verify Supabase role credentials
+        run: node --test tests/security/supabase-role-credentials.test.mjs
 
       - name: Build Leruchi database image
         run: docker compose build db
