@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Build VibeDB database image
+      - name: Build Leruchi database image
         run: docker compose build db
 
       - name: Start database
@@ -21,7 +21,7 @@ jobs:
       - name: Wait for database
         run: |
           for i in {1..90}; do
-            if docker compose exec -T db pg_isready -U postgres -d vibedb; then exit 0; fi
+            if docker compose exec -T db pg_isready -U postgres -d leruchi; then exit 0; fi
             sleep 2
           done
           docker compose logs db
@@ -29,11 +29,11 @@ jobs:
 
       - name: Install Schema Catalog
         run: |
-          docker compose exec -T db psql -U postgres -d vibedb -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
+          docker compose exec -T db psql -U postgres -d leruchi -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
 
       - name: Prove deterministic refresh
         run: |
-          docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
           SELECT md5(string_agg(
             catalog_version || '|' || object_kind || '|' || schema_name || '|' ||
             object_name || '|' || parent_name || '|' || tenant_id || '|' || metadata::text,
@@ -51,7 +51,7 @@ jobs:
 
       - name: Seed private catalog fixtures as migrator
         run: |
-          docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
           INSERT INTO vibe_meta.graph_catalog_registry
             (tenant_id, graph_name, object_kind, object_name, from_label, to_label, properties)
           VALUES
@@ -63,11 +63,11 @@ jobs:
 
       - name: Run shared catalog assertions as runtime
         run: |
-          docker compose exec -T db psql -U vibe_runtime -d vibedb -Xf /dev/stdin < tests/catalog/stage-04.sql
+          docker compose exec -T db psql -U vibe_runtime -d leruchi -Xf /dev/stdin < tests/catalog/stage-04.sql
 
       - name: Run tenant catalog RLS assertions as runtime
         run: |
-          docker compose exec -T db psql -U postgres -d vibedb -v ON_ERROR_STOP=1 -X <<'SQL'
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
           SET ROLE vibe_runtime;
           SELECT set_config('request.jwt.claims', '{"tenant_id":"tenant_a"}', false);
           DO $vibe$

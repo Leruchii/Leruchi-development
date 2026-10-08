@@ -8,11 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Run SDK tests
         run: node --test tests/sdk/sdk.test.mjs
       - name: Import SDK
-        run: node -e "import('./packages/vibe-sdk/index.mjs').then(() => console.log('SDK import OK'))"
+        run: node -e "import('./packages/leruchi-sdk/index.mjs').then(() => console.log('SDK import OK'))"

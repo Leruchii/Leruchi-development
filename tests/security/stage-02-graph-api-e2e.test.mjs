@@ -5,7 +5,7 @@ import {createGraphApiServer} from "../../packages/graph-api/index.mjs";
 import {Pool} from "pg";
 
 const secret="stage-02-e2e-secret";
-const runtimeUrl=process.env.VIBE_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb";
+const runtimeUrl=process.env.LERUCHI_RUNTIME_DATABASE_URL??"postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi";
 
 function token(tenant_id){
   const enc=v=>Buffer.from(JSON.stringify(v)).toString("base64url");

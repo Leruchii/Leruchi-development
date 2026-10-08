@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-psql -v ON_ERROR_STOP=1 -U postgres -d vibedb <<'SQL'
+psql -v ON_ERROR_STOP=1 -U postgres -d leruchi <<'SQL'
 CREATE ROLE vibe_tenant_a
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
 
@@ -14,7 +14,7 @@ ALTER ROLE vibe_tenant_b PASSWORD 'tenant-b-ci';
 ALTER ROLE vibe_tenant_a SET search_path = "$user", public, ag_catalog;
 ALTER ROLE vibe_tenant_b SET search_path = "$user", public, ag_catalog;
 
-GRANT CONNECT ON DATABASE vibedb TO vibe_tenant_a, vibe_tenant_b;
+GRANT CONNECT ON DATABASE leruchi TO vibe_tenant_a, vibe_tenant_b;
 GRANT USAGE ON SCHEMA vibe_app, vibe_meta, ag_catalog TO vibe_tenant_a, vibe_tenant_b;
 GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, ag_catalog.agtype) TO vibe_tenant_a, vibe_tenant_b;
 

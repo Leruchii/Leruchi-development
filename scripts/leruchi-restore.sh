@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # Usage:
-#   DATABASE_URL=postgresql://... VIBEDB_RESTORE_MODE=fresh|replace \
-#     scripts/vibedb-restore.sh backup.dump backup.manifest.json
+#   DATABASE_URL=postgresql://... LERUCHI_RESTORE_MODE=fresh|replace \
+#     scripts/leruchi-restore.sh backup.dump backup.manifest.json
 #
 # fresh   -> restore into a newly-created empty database (no destructive cleanup)
 # replace -> clean conflicting objects before restore
@@ -14,7 +14,7 @@ set -euo pipefail
 DUMP="${1:?dump file is required}"
 MANIFEST="${2:?manifest file is required}"
 DATABASE_URL="${DATABASE_URL:?DATABASE_URL is required}"
-RESTORE_MODE="${VIBEDB_RESTORE_MODE:-replace}"
+RESTORE_MODE="${LERUCHI_RESTORE_MODE:-replace}"
 
 test -f "$DUMP" || { echo "RESTORE_ERROR: dump not found" >&2; exit 2; }
 test -f "$MANIFEST" || { echo "RESTORE_ERROR: manifest not found" >&2; exit 2; }

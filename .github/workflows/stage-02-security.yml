@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
 
       - name: Install runtime dependencies
         run: npm install --no-audit --no-fund
@@ -27,7 +30,7 @@ jobs:
       - name: Wait for database
         run: |
           for i in {1..90}; do
-            if docker compose exec -T db pg_isready -U postgres -d vibedb; then
+            if docker compose exec -T db pg_isready -U postgres -d leruchi; then
               exit 0
             fi
             sleep 2
@@ -41,16 +44,16 @@ jobs:
 
       - name: Prove Graph API tenant isolation end-to-end
         env:
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
         run: node --test tests/security/stage-02-graph-api-e2e.test.mjs
 
       - name: Prove tenant A isolation
         run: |
-          docker compose exec -T db             psql -U vibe_tenant_a -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-a.sql
+          docker compose exec -T db             psql -U vibe_tenant_a -d leruchi -Xf /dev/stdin < tests/security/stage-02-tenant-a.sql
 
       - name: Prove tenant B isolation
         run: |
-          docker compose exec -T db             psql -U vibe_tenant_b -d vibedb -Xf /dev/stdin < tests/security/stage-02-tenant-b.sql
+          docker compose exec -T db             psql -U vibe_tenant_b -d leruchi -Xf /dev/stdin < tests/security/stage-02-tenant-b.sql
 
       - name: Show database logs on failure
         if: failure()

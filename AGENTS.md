@@ -295,6 +295,13 @@ Before ending a work session, update `BUILD_STATE.md` with the current stage and
 Use the checkpoint status vocabulary defined in `BUILD_STATE.md`. Code that exists without the required executable evidence is `IMPLEMENTED — NOT YET VALIDATED`, not `VALIDATED`.
 
 
+## Agent Governance v1 handoff
+
+Leruchi Core now contains a bounded Agent Governance foundation under `packages/agent-governance/`. It is a developer-facing identity/authority data contract, not an authentication provider and not an execution authority. Reuse it rather than creating parallel agent identity, mandate, delegation or revocation representations. Actual authorization/execution remains in the existing trusted ExecutionContext → IR validation → planner → Secure Execution Engine path.
+
+Governance records must never be treated as proof of authentication, and future extensions must preserve fail-closed revocation, bounded capabilities and resource scope.
+
+
 ## 9. Repository visibility and release synchronization
 
 Before integrating a large staged candidate into `main`, or publishing any sanitized OSS artifact, verify actual GitHub repository visibility through the repository API/settings. Names such as `*-development` and `*-internal` do not prove a repository is private. If either development or internal control repositories are public when intended to be private, stop merge/publication actions, alert the authorized administrator, and verify the visibility change before continuing.

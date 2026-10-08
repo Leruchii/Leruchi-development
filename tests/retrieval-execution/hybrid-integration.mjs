@@ -5,9 +5,9 @@ import {createExecutionContext} from "../../packages/execution-context/index.mjs
 import {createPgExecutor} from "../../packages/execution-engine/index.mjs";
 import {executeRetrieval} from "../../packages/retrieval-execution/index.mjs";
 
-const adminUrl=process.env.VIBE_ADMIN_DATABASE_URL;
-const runtimeUrl=process.env.VIBE_RUNTIME_DATABASE_URL;
-if(!adminUrl||!runtimeUrl) throw new Error("VIBE_ADMIN_DATABASE_URL and VIBE_RUNTIME_DATABASE_URL are required");
+const adminUrl=process.env.LERUCHI_ADMIN_DATABASE_URL;
+const runtimeUrl=process.env.LERUCHI_RUNTIME_DATABASE_URL;
+if(!adminUrl||!runtimeUrl) throw new Error("LERUCHI_ADMIN_DATABASE_URL and LERUCHI_RUNTIME_DATABASE_URL are required");
 
 const admin=new Pool({connectionString:adminUrl});
 const runtime=new Pool({connectionString:runtimeUrl});

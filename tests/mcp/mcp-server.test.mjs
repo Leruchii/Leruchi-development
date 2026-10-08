@@ -9,7 +9,7 @@ test("MCP advertises the canonical agent-native graph tools",async()=>{
 
 test("MCP initialize exposes a protocol-compatible tool server",async()=>{
   const response=await handleMcpMessage({jsonrpc:"2.0",id:2,method:"initialize",params:{protocolVersion:"2025-06-18"}});
-  assert.equal(response.result.serverInfo.name,"vibedb-mcp");
+  assert.equal(response.result.serverInfo.name,"leruchi-mcp");
   assert.deepEqual(response.result.capabilities,{tools:{}});
 });
 
@@ -176,10 +176,10 @@ test("MCP agent trace and replay are diagnostic and non-executing", async () => 
     assert.match(String(url), /\/v1\/agent\/(trace|replay)$/);
     return new Response(JSON.stringify({version:"v1",status:"pass"}), {status:200});
   };
-  const previousBase = process.env.VIBE_API_URL;
-  const previousToken = process.env.VIBE_MCP_ACCESS_TOKEN;
-  process.env.VIBE_API_URL = "https://example.test";
-  process.env.VIBE_MCP_ACCESS_TOKEN = "test-token";
+  const previousBase = process.env.LERUCHI_API_URL;
+  const previousToken = process.env.LERUCHI_MCP_ACCESS_TOKEN;
+  process.env.LERUCHI_API_URL = "https://example.test";
+  process.env.LERUCHI_MCP_ACCESS_TOKEN = "test-token";
   try {
     const traceResponse = await handleMcpMessage({
       jsonrpc:"2.0", id:"trace", method:"tools/call",
@@ -202,8 +202,8 @@ test("MCP agent trace and replay are diagnostic and non-executing", async () => 
     assert.equal(calls, 2);
   } finally {
     globalThis.fetch = originalFetch;
-    if(previousBase===undefined)delete process.env.VIBE_API_URL;else process.env.VIBE_API_URL=previousBase;
-    if(previousToken===undefined)delete process.env.VIBE_MCP_ACCESS_TOKEN;else process.env.VIBE_MCP_ACCESS_TOKEN=previousToken;
+    if(previousBase===undefined)delete process.env.LERUCHI_API_URL;else process.env.LERUCHI_API_URL=previousBase;
+    if(previousToken===undefined)delete process.env.LERUCHI_MCP_ACCESS_TOKEN;else process.env.LERUCHI_MCP_ACCESS_TOKEN=previousToken;
   }
 });
 
@@ -211,10 +211,10 @@ test("MCP trace rejects tenant identity before transport", async () => {
   const originalFetch = globalThis.fetch;
   let calls = 0;
   globalThis.fetch = async () => { calls += 1; return new Response("{}", {status:200}); };
-  const previousBase = process.env.VIBE_API_URL;
-  const previousToken = process.env.VIBE_MCP_ACCESS_TOKEN;
-  process.env.VIBE_API_URL = "https://example.test";
-  process.env.VIBE_MCP_ACCESS_TOKEN = "test-token";
+  const previousBase = process.env.LERUCHI_API_URL;
+  const previousToken = process.env.LERUCHI_MCP_ACCESS_TOKEN;
+  process.env.LERUCHI_API_URL = "https://example.test";
+  process.env.LERUCHI_MCP_ACCESS_TOKEN = "test-token";
   try {
     const response = await handleMcpMessage({
       jsonrpc:"2.0", id:"trace-tenant", method:"tools/call",
@@ -229,7 +229,7 @@ test("MCP trace rejects tenant identity before transport", async () => {
     assert.equal(calls, 0);
   } finally {
     globalThis.fetch = originalFetch;
-    if(previousBase===undefined)delete process.env.VIBE_API_URL;else process.env.VIBE_API_URL=previousBase;
-    if(previousToken===undefined)delete process.env.VIBE_MCP_ACCESS_TOKEN;else process.env.VIBE_MCP_ACCESS_TOKEN=previousToken;
+    if(previousBase===undefined)delete process.env.LERUCHI_API_URL;else process.env.LERUCHI_API_URL=previousBase;
+    if(previousToken===undefined)delete process.env.LERUCHI_MCP_ACCESS_TOKEN;else process.env.LERUCHI_MCP_ACCESS_TOKEN=previousToken;
   }
 });

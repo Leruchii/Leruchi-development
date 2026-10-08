@@ -6,10 +6,10 @@ import {join,resolve} from "node:path";
 import {createHash} from "node:crypto";
 import {spawnSync} from "node:child_process";
 
-const restoreScript=resolve("scripts/vibedb-restore.sh");
+const restoreScript=resolve("scripts/leruchi-restore.sh");
 
 function fixture({declaredSize}={}){
-  const root=mkdtempSync(join(tmpdir(),"vibedb-restore-mode-"));
+  const root=mkdtempSync(join(tmpdir(),"leruchi-restore-mode-"));
   const bin=join(root,"bin");
   mkdirSync(bin);
   const dump=join(root,"backup.dump");
@@ -35,8 +35,8 @@ function run(mode,fx){
     env:{
       ...process.env,
       PATH:`${fx.bin}:${process.env.PATH}`,
-      DATABASE_URL:"postgresql://example.invalid/vibedb",
-      VIBEDB_RESTORE_MODE:mode,
+      DATABASE_URL:"postgresql://example.invalid/leruchi",
+      LERUCHI_RESTORE_MODE:mode,
       PG_RESTORE_LOG:fx.log
     }
   });
