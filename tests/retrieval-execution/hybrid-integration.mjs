@@ -42,13 +42,13 @@ async function seed(){
       ('B2','vibe_tenant_b','B2 vector evidence','[0.99,0.01,0]')
     `);
     await client.query("SET LOCAL ROLE vibe_migrator");
-    await client.query("DELETE FROM vibe_meta.graph_catalog_registry WHERE graph_name='vibe_security' AND tenant_id=''");
+    await client.query("DELETE FROM vibe_meta.graph_catalog_registry WHERE graph_name='leruchi_security' AND tenant_id=''");
     await client.query(`
       INSERT INTO vibe_meta.graph_catalog_registry
         (tenant_id,graph_name,object_kind,object_name,from_label,to_label,properties)
       VALUES
-        ('','vibe_security','label','Account','','','{"name":"text","tenant_id":"text"}'),
-        ('','vibe_security','edge','KNOWS','Account','Account','{"tenant_id":"text"}')
+        ('','leruchi_security','label','Account','','','{"name":"text","tenant_id":"text"}'),
+        ('','leruchi_security','edge','KNOWS','Account','Account','{"tenant_id":"text"}')
     `);
     await client.query("DELETE FROM vibe_meta.vector_catalog_registry WHERE catalog_ref='stage15.hybrid.embedding'");
     await client.query(`
@@ -69,7 +69,7 @@ function retrievalIr(){
       vector:{catalog_ref:"stage15.hybrid.embedding",query_parameter:"embedding",top_k:2,identity_field:"id"},
       graph:{
         query:{
-          version:"v1",kind:"graph_query",graph:"vibe_security",
+          version:"v1",kind:"graph_query",graph:"leruchi_security",
           root:{label:"Account",alias:"n"},steps:[],filters:[],
           projection:[{field:"n.name",alias:"id"}],
           orderBy:[{field:"n.name",direction:"asc"}],
@@ -87,7 +87,7 @@ async function runTenant(tenant,expected){
   const context=createExecutionContext({tenant_id:tenant,role:"authenticated",capabilities:["graph:read","vector:read"]});
   const provider=createTenantCatalogProvider(runtime);
   const catalog=await provider(context);
-  assert.ok(catalog.graphs.vibe_security);
+  assert.ok(catalog.graphs.leruchi_security);
   assert.ok(catalog.vectors["stage15.hybrid.embedding"]);
   const client=await runtime.connect();
   const db=createPgExecutor(client,context);
