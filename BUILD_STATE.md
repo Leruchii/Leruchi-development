@@ -7,7 +7,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 ## Current checkpoint
 
 - Current stage: 32 — OSS Core Publication Preparation
-- Current status: IN_PROGRESS — sanitized candidate built; exact-head full regression matrix still running.
+- Current status: IN_PROGRESS — integrated sanitized candidate and full regression matrix validated on the latest code head; public release remains gated pending explicit approval.
 - Last validated stage: 30 — Agent Trace & Replay.
 - Stage 31 — Leruchi Core Readiness Gate: PR #62, head `1dffb521f48b49f2a2596ac808491e3356e57eaa`; its exact-head workflow matrix completed successfully. PR remains open pending the Stage 32 publication-preparation flow.
 - Stage 32 PR: #63 — [Stage 32: Leruchi Core Publication Preparation](https://github.com/Leruchii/Leruchi-development/pull/63), draft and open.
@@ -24,13 +24,16 @@ Stage 31 exact-head evidence:
 - PR #62 remains open; do not claim it is merged.
 
 Stage 32 candidate evidence:
-- The Stage 32 candidate workflow succeeded on code head `3d7b3e1e00a7df89d07e46644c440f000bbaf812` before the checkpoint documentation update. Re-run the candidate and full regression matrix on the latest PR #63 head before merge.
-- Candidate artifact: `leruchi-oss-core-candidate` (existing CI artifact identifier; do not treat “OSS Core” as the product name).
-- Artifact SHA-256: `bcdeed870224290a70a3256ea9bf0b7e5ad06ff2ede13a8f0e4ae122da739851`.
-- The first candidate run exposed a brittle realtime RLS source assertion that expected double quotes while the SQL correctly uses single quotes. The test now accepts either quote style; fix commit: `3d7b3e1e00a7df89d07e46644c440f000bbaf812`.
-- The full Stage 32 exact-head regression matrix was still running on the pre-documentation code head; do not merge PR #63 until every required workflow is green on the live final head.
-- The candidate workflow builds an artifact only. It does not publish or push the candidate into the public `Leruchii/Leruchi` repository.
-- Public target inspection currently shows only a README, so publication remains a separate gated action.
+- PR #64 (tenant-claim/security validation) was squash-merged into PR #63's `stage32-oss-publication-prep` branch only; it was not merged into `main` or published publicly. Integration commit: `2621cf06604f2994e2b8bcef7ffcfeca60026e0f`.
+- On that exact integrated head, all 34 pull-request workflows completed successfully with zero failures, including Stage 03 Supabase compatibility, Stage 31 readiness, Stage State Gate and Architecture Regression Audit.
+- Stage 32 candidate workflow run `37787789055` passed Node.js 24 policy, ASVS 5.0.0 profile verification, export manifest/source audits, candidate audit, deterministic packaging and upload. The ASVS profile check passed; full ASVS compliance is not claimed.
+- Candidate artifact `leruchi-oss-core-candidate` audited 186 files.
+- Normalized candidate archive SHA-256: `b5c9979dbf85923a059f762f1abc6980ff378d10e5373d3c5b9ae5cfbabb175a`.
+- GitHub Actions uploaded artifact ZIP digest for run `37787789055`: `5a7415739f07fef4ebc3c6a6b611130b3e469c817818a90f07297977cad6dfaf`.
+- Two independent candidate builds were byte-identical. The archive uses locale-independent file ordering, fixed timestamps/ownership, gzip without timestamp/name metadata, preserves tracked file modes, and rejects exported symlinks.
+- Candidate workflow uses `actions/upload-artifact@v6`; Node.js 24 is the only supported runtime.
+- The candidate workflow builds/uploads an artifact only. It does not publish to `Leruchii/Leruchi`.
+- Public target remains unchanged and still has the previous README; publication remains a separate gated action requiring explicit approval.
 
 Execution rules:
 - Verify the latest branch head and all required workflow conclusions before merging.
@@ -959,4 +962,20 @@ Exact next actions:
 3. Re-run the candidate and full required regression matrix on the resulting exact PR #63 head.
 4. Update this checkpoint with the final integrated head and evidence.
 5. Present the sanitized candidate, checksum, exact CI evidence, remaining production limitations, and public-repository diff for explicit publication approval. Do not publish or merge the release PR without that approval.
+
+## Stage 32 integrated candidate — exact-head handoff (2026-10-08)
+
+Latest validated code head: `2621cf06604f2994e2b8bcef7ffcfeca60026e0f` on PR #63. PR #63 remains draft/open; public publication has not occurred.
+
+Security and deployment boundaries verified:
+- The Supabase Auth custom access-token hook removes caller-supplied tenant claims and resolves tenant identity from private active membership records.
+- Exact-head Stage 03 workflow passed real Auth-issued token checks for active versus revoked membership and PostgREST RLS isolation.
+- Development database, Auth and PostgREST published ports bind to loopback only; README warns that compatibility credentials are local development/CI only.
+- Signed capability grants are verified by the data plane and revocation lookups fail closed. A production grant issuer and deployed production revocation control plane are not included; self-hosted deployments must provide a trusted authority.
+
+Exact next action before release:
+1. Resolve the live PR #63 head and rerun the Stage 32 candidate workflow plus every required regression check on that exact head before any merge to `main`.
+2. Review the actual candidate archive and public-repository diff, including license, README/product identity, public file list, history policy and secret/path hygiene.
+3. Keep PR #63 draft until explicit approval to release. Do not merge to `main`, push files to `Leruchii/Leruchi`, or create a public release/tag without that approval.
+4. If documentation changes advance the branch head, rerun candidate and required checks on the latest head before merging.
 
