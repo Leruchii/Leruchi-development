@@ -310,4 +310,4 @@ After every candidate-branch change, synchronize the checkpoint and PR body so t
 
 Never merge or publish an OSS candidate while repository visibility, licensing/naming clearance, legacy-change reconciliation, export audit, artifact provenance, or exact-head CI gates remain unresolved. If the GitHub connection cannot change repository settings, record the blocker and request an authorized administrator; do not imply it was fixed.
 
-Node.js 24 is the only supported runtime. Do not introduce Node.js 20 in code, workflows, Docker, scripts, package metadata, or docs.
+Node.js 24 is the only supported runtime. Do not introduce an older Node.js major in code, workflows, Docker, scripts, package metadata, or docs.

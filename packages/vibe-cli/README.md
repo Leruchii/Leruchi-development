@@ -23,7 +23,7 @@ leruchi graph create-vertex --graph vibe_security --label Account --property nam
 ## Schema types
 
 ```bash
-leruchi schema types --file catalog.json --out vibe.d.ts
+leruchi schema types --file catalog.json --out leruchi.d.ts
 ```
 
 ## Diagnostics/local development
