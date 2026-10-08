@@ -7,7 +7,8 @@ import {runMigrations} from "./migrate.mjs";
 import {validateAgentIntent} from "../agent-intent/index.mjs";
 
 const execFileAsync=promisify(execFile);
-const CONFIG_DIR=".vibe";
+const CONFIG_DIR=".leruchi";
+const LEGACY_CONFIG_DIR=".vibe";
 const CONFIG_FILE="config.json";
 
 export function parseArgs(argv) {
@@ -35,10 +36,12 @@ function parseProperties(values){
   return out;
 }
 function loadConfig(cwd){
-  const file=path.join(cwd,CONFIG_DIR,CONFIG_FILE);
+  const primaryFile=path.join(cwd,CONFIG_DIR,CONFIG_FILE);
+  const legacyFile=path.join(cwd,LEGACY_CONFIG_DIR,CONFIG_FILE);
+  const file=fs.existsSync(primaryFile)?primaryFile:legacyFile;
   if(!fs.existsSync(file))return {};
   const parsed=JSON.parse(fs.readFileSync(file,"utf8"));
-  if(!parsed||typeof parsed!=="object")throw new Error("Invalid .vibe/config.json");
+  if(!parsed||typeof parsed!=="object")throw new Error("Invalid .leruchi/config.json or legacy .vibe/config.json");
   return parsed;
 }
 function saveConfig(cwd,config){
@@ -48,9 +51,9 @@ function saveConfig(cwd,config){
 }
 function clientOptions(cwd,args,fetchImpl){
   const config=loadConfig(cwd);
-  const baseUrl=args["base-url"]||process.env.VIBE_BASE_URL||config.baseUrl;
-  const token=process.env.VIBE_TOKEN;
-  if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
+  const baseUrl=args["base-url"]||(process.env.LERUCHI_BASE_URL ?? process.env.VIBE_BASE_URL)||config.baseUrl;
+  const token=(process.env.LERUCHI_TOKEN ?? process.env.VIBE_TOKEN);
+  if(!baseUrl)throw new Error("LERUCHI_BASE_URL or .leruchi/config.json baseUrl is required (legacy VIBE_BASE_URL and .vibe/config.json are supported temporarily)");
   return {baseUrl,token,fetchImpl};
 }
 function print(value,pretty=false){return JSON.stringify(value,null,pretty?2:0);}
@@ -91,7 +94,7 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
     let catalog;
     if(args.remote||subcommand==="inspect"){
-      if(!process.env.VIBE_TOKEN)throw new Error("VIBE_TOKEN is required for remote Schema Catalog inspection");
+      if(!process.env.VIBE_TOKEN)throw new Error("LERUCHI_TOKEN is required for remote Schema Catalog inspection (legacy VIBE_TOKEN is supported temporarily)");
       const response=await fetchImpl(baseUrl+"/v1/schema/catalog",{headers:{authorization:`Bearer ${process.env.VIBE_TOKEN}`}});
       const payload=await response.json();
       if(!response.ok)throw new Error(payload?.error?.message||`Schema Catalog failed with HTTP ${response.status}`);
