@@ -1,6 +1,6 @@
 import {test,expect,type Page,type Route} from "@playwright/test";
 
-const catalog={version:"v1",graphs:{vibe_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
+const catalog={version:"v1",graphs:{leruchi_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
 
 async function mockStudio(page:Page,names:string[]){
   await page.route("**/api/studio/catalog",(route:Route)=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(catalog)}));
