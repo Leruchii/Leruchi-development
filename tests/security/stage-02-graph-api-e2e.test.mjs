@@ -14,9 +14,9 @@ function token(tenant_id){
   return h+"."+p+"."+createHmac("sha256",secret).update(h+"."+p).digest("base64url");
 }
 
-const catalog={version:"v1",graphs:{vibe_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
+const catalog={version:"v1",graphs:{leruchi_security:{visibility:"shared",tenantId:null,labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",properties:{}}]}}};
 const ir={
-  version:"v1",kind:"graph_query",graph:"vibe_security",
+  version:"v1",kind:"graph_query",graph:"leruchi_security",
   root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.name",alias:"name"}],
   orderBy:[{field:"n.name",direction:"asc"}],limit:100,offset:0,depth:0,parameters:[]
 };
