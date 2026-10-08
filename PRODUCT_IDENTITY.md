@@ -1,8 +1,8 @@
 # Leruchi Product Identity
 
-Status: Engineering identity decided; public brand clearance pending.
+Status: Canonical product name confirmed by owner on 2026-10-09; engineering rename in progress; formal public brand clearance remains pending.
 
-Leruchi is the canonical engineering working name. **VibeDB is the former product name and must not be reintroduced as a current product, repository, organization, package, CLI, documentation, or architectural identity.** Formal trademark/domain/package/namespace clearance remains open; do not treat Leruchi as a cleared public brand or publish the public OSS repository until the naming review is completed and recorded.
+Leruchi is the sole canonical product name for application UI, docs, packages, CLI, schemas, examples, and architecture. VibeDB is historical-only and must not appear as a current product identity. The owner has confirmed the name; this is an engineering naming decision, not legal clearance. Trademark, domain, package, and namespace checks remain open; public OSS publication remains blocked until those checks and the security visibility gate are recorded as complete.
 
 ## Canonical GitHub topology
 
@@ -14,7 +14,7 @@ Leruchi is the canonical engineering working name. **VibeDB is the former produc
 
 ## Engineering rule
 
-All new engineering work and internal references MUST use Leruchi as the working name. Public brand lock, package/repository publication, and release announcements remain blocked until formal naming clearance is recorded. Coding agents must treat the GitHub topology above as authoritative and must not recreate the former VibeDB naming.
+All new engineering work and active product references MUST use Leruchi. Legacy environment variables and filesystem paths may remain temporarily only where required for backward compatibility, and must be tracked for migration. Public brand lock, package/repository publication, and release announcements remain blocked until formal naming clearance is recorded. Coding agents must treat the GitHub topology above as authoritative and must not recreate the former VibeDB naming.
 
 Stable internal database identifiers, migration names, historical commit references, compatibility values, or externally persisted identifiers are not renamed merely for branding; changing those requires an explicit migration decision and compatibility plan.
 
