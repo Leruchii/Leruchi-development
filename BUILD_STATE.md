@@ -902,3 +902,8 @@ This candidate is not yet on the validation branch and has not run CI. Do not cl
 ## Stage 13 workflow config fix candidate — 2026-10-08
 
 The first strict-grant matrix had 29 successes and one Stage 13 failure. Log confirmed the launcher exited because Stage 13 did not set the required capability issuer/control-plane configuration. This is now corrected in the workflow by starting the test-only control-plane stub, waiting for readiness, and passing the same strict grant configuration used by Stage 14. The fix candidate is `2ae9de766bc31a9542c4e782170b0834857d69cb`; it has not run CI yet. The test stub is only a CI fixture, not a production control plane.
+
+
+## Stage 13 browser grant fixture fix candidate — 2026-10-08
+
+Candidate fixes the Playwright live-composition JWT to use the strict signed-grant contract: configured secret, test-control-plane issuer, unique jti, tenant_id, aud=leruchi, expiry and graph:read. Prior exact head b806511f854b33b125e04d6c787351813acf1fd5 had 29 successes and one Stage 13 browser timeout because this test token lacked grant claims. Candidate is not on the validation branch and has not run CI. Production control-plane deployment remains a release blocker.

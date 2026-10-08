@@ -2,10 +2,10 @@ import {test,expect} from "@playwright/test";
 import {createHmac} from "node:crypto";
 
 function token(tenant_id:string){
-  const secret=process.env.VIBE_JWT_SECRET??"stage-13-e2e-secret";
+  const secret=process.env.LERUCHI_JWT_SECRET??process.env.VIBE_JWT_SECRET??"stage-13-e2e-secret";
   const enc=(value:unknown)=>Buffer.from(JSON.stringify(value)).toString("base64url");
   const h=enc({alg:"HS256",typ:"JWT"});
-  const p=enc({sub:"stage-13-studio",tenant_id,exp:Math.floor(Date.now()/1000)+300,capabilities:["graph:read"]});
+  const p=enc({iss:"leruchi-test-control-plane",sub:"stage-13-studio",jti:"stage-13-studio-"+tenant_id,tenant_id,aud:"leruchi",exp:Math.floor(Date.now()/1000)+300,capabilities:["graph:read"]});
   return h+"."+p+"."+createHmac("sha256",secret).update(h+"."+p).digest("base64url");
 }
 
