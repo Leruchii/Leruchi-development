@@ -12,13 +12,13 @@
 
 Leruchi / Leruchi is a secure developer/database platform that makes **relational, graph, vector, realtime, and AI-agent access feel like one database**.
 
-The product is not "Supabase plus a graph feature." Its differentiated layer is the Vibe abstraction and developer experience across PostgreSQL, Apache AGE, pgvector, security, query compilation, graph mutations, realtime, and agent access.
+The product is not "Supabase plus a graph feature." Its differentiated layer is the Leruchi abstraction and developer experience across PostgreSQL, Apache AGE, pgvector, security, query compilation, graph mutations, realtime, and agent access.
 
 Core database strategy:
 
 - PostgreSQL is the system of record.
 - PostgreSQL/RLS is the authoritative tenant security boundary.
-- Apache AGE provides graph execution behind Vibe abstractions.
+- Apache AGE provides graph execution behind Leruchi abstractions.
 - pgvector provides vector search inside PostgreSQL.
 - Supabase services are reused where they reduce unnecessary reinvention.
 - Vibe exposes stable, engine-neutral contracts rather than exposing AGE internals.
@@ -1335,7 +1335,7 @@ Live checkpoint verified 2026-10-09:
 - Documentation-only synchronization commits and a merge parent have since been added to align checkpoint/plan/agent instructions with main. The SHA above is the last validated code SHA, not the current branch tip. Resolve the live head and verify checks on it before review or integration; do not treat old green checks as validation for a newer SHA.
 - PR #63 body has been refreshed for the synchronization commit; always verify the named SHA against the live PR head before review. Every new commit requires fresh exact-head checks.
 - Last recorded normalized archive has 184 files and SHA-256 `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`. This is historical artifact evidence; it must not be attributed to a later HEAD unless that exact run reproduces it. Node.js 24 only. ASVS 5.0.0 profile verification passed; full ASVS compliance is not claimed.
-- Legacy PRs [#14](https://github.com/Leruchii/Leruchi-development/pull/14), [#22](https://github.com/Leruchii/Leruchi-development/pull/22), [#26](https://github.com/Leruchii/Leruchi-development/pull/26), and [#29](https://github.com/Leruchii/Leruchi-development/pull/29) remain open and require diff-level reconciliation. Port still-relevant migration safety guarantees/tests from #14; do not wholesale-merge stale VibeDB-era branches.
+- Legacy PRs [#14](https://github.com/Leruchii/Leruchi-development/pull/14), [#22](https://github.com/Leruchii/Leruchi-development/pull/22), [#26](https://github.com/Leruchii/Leruchi-development/pull/26), and [#29](https://github.com/Leruchii/Leruchi-development/pull/29) remain open and require diff-level reconciliation. Port still-relevant migration safety guarantees/tests from #14; do not wholesale-merge stale Leruchi-era branches.
 - GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as public, despite the intended private topology. An authorized administrator must change and verify visibility; do not merge Stage 32 or publish while this remains unresolved.
 - Product-name clearance remains open. Public destination `Leruchii/Leruchi` remains unchanged (README only); no public tag/release exists. Explicit release approval is required.
 - The OSS runtime provides signed grant verification and a fail-closed revocation adapter, not a deployed production grant issuer/revocation control plane. Deployments must provide a trusted authority.
