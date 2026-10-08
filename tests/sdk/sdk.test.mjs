@@ -10,7 +10,7 @@ function transportRecorder() {
 test("builds engine-neutral Query IR without Cypher or SQL", async () => {
   const transport = transportRecorder();
   const vibe = createClient({ transport });
-  const result = await vibe.graph("vibe_security").query("Account")
+  const result = await vibe.graph("leruchi_security").query("Account")
     .select(["name"])
     .eq("name", "Alice")
     .traverse("KNOWS", "out", "Account", "friend")
@@ -32,7 +32,7 @@ test("builds engine-neutral Query IR without Cypher or SQL", async () => {
 test("supports explicit parameter binding without putting values into IR", async () => {
   const transport = transportRecorder();
   const vibe = createClient({ transport });
-  const query = vibe.graph("vibe_security").query("Account").select(["name"]);
+  const query = vibe.graph("leruchi_security").query("Account").select(["name"]);
   const ref = query.bind("name", "string", "Alice");
   query.eq("name", ref);
   await query.execute();
@@ -45,7 +45,7 @@ test("supports explicit parameter binding without putting values into IR", async
 test("builds graph mutations through the same Vibe surface", async () => {
   const transport = transportRecorder();
   const vibe = createClient({ transport });
-  await vibe.graph("vibe_security").createEdge(
+  await vibe.graph("leruchi_security").createEdge(
     "KNOWS",
     { label: "Account", field: "name", value: "Alice" },
     { label: "Account", field: "name", value: "Bob" },
@@ -61,15 +61,15 @@ test("builds graph mutations through the same Vibe surface", async () => {
 
 test("rejects unsafe identifiers and client-side guardrail violations", () => {
   const vibe = createClient({ transport: transportRecorder() });
-  assert.throws(() => vibe.graph("vibe_security").query("Account").select(["name; DROP"]), e => e instanceof VibeClientError && e.code === "INVALID_FIELD");
-  assert.throws(() => vibe.graph("vibe_security").query("Account").select(["name"]).limit(1001), e => e instanceof VibeClientError && e.code === "INVALID_LIMIT");
-  assert.throws(() => vibe.graph("vibe_security").query("Account").select(["name"]).depth(7), e => e instanceof VibeClientError && e.code === "INVALID_DEPTH");
+  assert.throws(() => vibe.graph("leruchi_security").query("Account").select(["name; DROP"]), e => e instanceof VibeClientError && e.code === "INVALID_FIELD");
+  assert.throws(() => vibe.graph("leruchi_security").query("Account").select(["name"]).limit(1001), e => e instanceof VibeClientError && e.code === "INVALID_LIMIT");
+  assert.throws(() => vibe.graph("leruchi_security").query("Account").select(["name"]).depth(7), e => e instanceof VibeClientError && e.code === "INVALID_DEPTH");
 });
 
 test("does not accept engine fragments through query builders", () => {
   const transport = transportRecorder();
   const vibe = createClient({ transport });
-  const query = vibe.graph("vibe_security").query("Account").select(["name"]);
+  const query = vibe.graph("leruchi_security").query("Account").select(["name"]);
   assert.throws(() => query.where("name", "eq", { sql: "DROP TABLE" }), e => e instanceof VibeClientError && e.code === "INVALID_VALUE");
   assert.equal(transport.calls.length, 0);
 });
@@ -90,7 +90,7 @@ test("HTTP transport sends bearer token and Vibe endpoint", async () => {
 test("builds canonical engine-neutral retrieval IR through the SDK",async()=>{
   const transport=transportRecorder();
   const vibe=createClient({transport});
-  const graph=vibe.graph("vibe_security").query("Account").select(["name"]).limit(5).build().ir;
+  const graph=vibe.graph("leruchi_security").query("Account").select(["name"]).limit(5).build().ir;
   const result=await vibe.retrieval()
     .graph(graph,{identityField:"id",candidateLimit:5})
     .vector({catalogRef:"documents.embedding",queryParameter:"embedding",topK:5,identityField:"id"})
