@@ -29,9 +29,11 @@ for (const [role, pattern] of cases) {
 }
 
 test("development database and Supabase ports bind to loopback only", () => {
-  assert.match(rootCompose, /- "127\\.0\\.0\\.1:5432:5432"/);
-  assert.match(compose, /- "127\\.0\\.0\\.1:9999:9999"/);
-  assert.match(compose, /- "127\\.0\\.0\\.1:3000:3000"/);
-  assert.doesNotMatch(rootCompose, /- "\\d{2,5}:\\d{2,5}"/);
-  assert.doesNotMatch(compose, /- "\\d{2,5}:\\d{2,5}"/);
+  assert.ok(rootCompose.includes('- "127.0.0.1:5432:5432"'));
+  assert.ok(compose.includes('- "127.0.0.1:9999:9999"'));
+  assert.ok(compose.includes('- "127.0.0.1:3000:3000"'));
+  const publishedPorts = [rootCompose, compose].flatMap((source) =>
+    source.split("\n").map((line) => line.trim()).filter((line) => line.startsWith('- "') && line.includes(':'))
+  );
+  assert.ok(publishedPorts.every((line) => line.includes("127.0.0.1:")), "every published port must bind to loopback");
 });
