@@ -1361,3 +1361,16 @@ The live PR #63 description and the current candidate's exact-head CI/artifact e
 4. **Owner actions:** repository visibility and GitHub token revocation/rotation are intentionally left to the owner.
 5. **Exact-head rule:** rerun the Stage 32 workflow, relevant regressions, Architecture Regression Audit, Stage State Gate, sanitized export and independent artifact inspection after this commit. Historical green checks do not validate the new tip.
 6. **Release:** no merge, public export, tag or release without a separate explicit approval.
+
+
+## Owner naming decision and completion gate — 2026-10-09
+
+The owner confirmed they are comfortable with the product name **Leruchi**. Treat that as the canonical product name; do not initiate a rename. This records the product decision, not a legal trademark clearance opinion.
+
+The previous exact-head matrix completed at 36/36 green for `b9c558bc29e6638696de7551a37878498fba1217`, including Stage 13 Graph Studio. A documentation-only follow-up creates a new SHA, so exact-head CI and artifact checks must be rerun before marking that new SHA validated.
+
+Remaining release/integration gates:
+- Never merge the full 364-commit / 155-file candidate as one unit; use the clean-`main`, reviewed-slice strategy in `knowledge/decisions/integration-review-stage32.md`.
+- Complete production capability-control-plane adapters and deployment proof.
+- Owner handles repository visibility and token rotation.
+- Keep release/export/tag gated behind explicit approval and exact-SHA artifact inspection.

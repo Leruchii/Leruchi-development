@@ -1,6 +1,6 @@
 # Stage 32 Integration Review
 
-Status: REVIEW IN PROGRESS — DO NOT MERGE THE CANDIDATE WHOLESALE
+Status: RISK-BASED REVIEW PLAN RECORDED — DO NOT MERGE THE CANDIDATE WHOLESALE
 
 Review date: 2026-10-09
 Base: `main` at the currently verified repository checkpoint
@@ -8,7 +8,7 @@ Candidate: `stage32-oss-publication-prep`
 
 ## Current comparison
 
-The live compare is the source of truth. At review time the candidate is 362 commits ahead and 0 behind, with 149 changed files. The changed-file inventory spans CI, runtime configuration, tenant/security boundaries, package renames, product capabilities, export tooling, security evidence, and release documentation. This is a cross-cutting integration, not a single-stage release change.
+The live compare is the source of truth. At review time the candidate is 364 commits ahead and 0 behind, with 155 changed files. The changed-file inventory spans CI, runtime configuration, tenant/security boundaries, package renames, product capabilities, export tooling, security evidence, and release documentation. This is a cross-cutting integration, not a single-stage release change.
 
 A passing workflow matrix establishes that checked workflows passed for a particular SHA; it does not prove the entire diff is semantically safe, that every changed path was reviewed, or that the whole branch is an appropriate merge unit.
 
@@ -43,7 +43,8 @@ For each slice: record the exact base/head SHAs; review every changed file; run 
 - Formal product-name clearance remains a release blocker.
 - Production grant issuance and persistent revocation authority require implementation, deployment, key/identity configuration and operational validation. The current test stub is not a production service.
 - Public OSS publication remains separately gated and requires explicit approval.
+- Product owner has confirmed the canonical product name is **Leruchi**. The engineering rename question is resolved; this is not a legal trademark-clearance opinion.
 
 ## Decision
 
-**No wholesale merge.** Use a clean main-based integration branch and port reviewed slices in the order above. This document is a risk-based grouping and integration plan; it is not a claim that every line in the 149-file diff has already received semantic review.
+**No wholesale merge.** Use a clean main-based integration branch and port reviewed slices in the order above. This document is a risk-based grouping and integration plan; it is not a claim that every line in the 155-file diff has already received semantic review.

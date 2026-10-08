@@ -772,3 +772,16 @@ Important limits:
 - Candidate compare at last check: 362 commits ahead of main, 0 behind, 149 files. Do not merge wholesale.
 - Repository privacy and GitHub token rotation are left to the owner as explicitly requested.
 - Node.js 24 remains the only supported runtime. No public release or merge is authorized by this work.
+
+
+## Follow-up checkpoint — all workflows green, naming decision recorded (2026-10-09)
+
+- Owner decision: retain **Leruchi** as the canonical product name. Engineering will not initiate a rename. This resolves the product team's naming choice but is not a legal trademark-clearance opinion.
+- Candidate head before this documentation follow-up: `b9c558bc29e6638696de7551a37878498fba1217`.
+- At the last exact-head check, the full matrix for that SHA reached **36/36 workflow runs successful, 0 failed, 0 pending**. Stage 13 Graph Studio completed successfully. Stage 32 candidate workflow and the PR aggregate both passed.
+- Sanitized candidate artifact from Stage 32 run `37846417884`: artifact `leruchi-oss-core-candidate` (ID `11579607853`), metadata digest `sha256:9d15fd3b6265c4e90369dbd5a597265a64dcf57b59e85dea6171b24c5f0d23ab`; packaged tar.gz SHA-256 `8dcd234c8d9389b11c2119670419a8888f38c14c5b1b8177b835d1c002732b17`.
+- Current live comparison: 364 commits ahead of `main`, 0 behind, 155 changed files, 6,216 additions, 606 deletions. This is not a small release-only diff; no wholesale merge is authorized.
+- Production capability control-plane code is implemented and unit-tested but is **not deployed**. Real identity/policy adapters, production key management, Postgres deployment, private networking, monitoring, and end-to-end staging evidence remain outstanding.
+- Repository privacy and token rotation remain owner actions, as requested.
+- Because this follow-up changes documentation after the green checkpoint, rerun exact-head CI and regenerate/inspect the export artifact for the new SHA before claiming the new head is fully validated.
+- No merge, public export, tag or release has occurred. Node.js 24 only.
