@@ -6,32 +6,37 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 31 — OSS Core Readiness Gate
-- Current status: IN_PROGRESS
-- Last validated stage: 30 — Agent Trace & Replay
-- Last validated main commit: 2bf62dc138667d834728d0dbddbdd8c29dd1fda9
-- Stage 31 branch: stage31-oss-core-readiness
-- Stage 30 PR: #59 (merged)
-- Internal control repository: Leruchii/Leruchi-internal (PRIVATE)
-- Development repository: Leruchii/Leruchi-development (PRIVATE)
-- Public OSS release repository: Leruchii/Leruchi (PUBLIC)
+- Current stage: 32 — OSS Core Publication Preparation
+- Current status: IN_PROGRESS — sanitized candidate built; exact-head full regression matrix still running.
+- Last validated stage: 30 — Agent Trace & Replay.
+- Stage 31 — OSS Core Readiness Gate: PR #62, head `1dffb521f48b49f2a2596ac808491e3356e57eaa`; its exact-head workflow matrix completed successfully. PR remains open pending the Stage 32 publication-preparation flow.
+- Stage 32 PR: #63 — [Stage 32: OSS Core Publication Preparation](https://github.com/Leruchii/Leruchi-development/pull/63), draft and open.
+- Stage 32 branch: `stage32-oss-publication-prep`.
+- Current Stage 32 head: `3d7b3e1e00a7df89d07e46644c440f000bbaf812`.
+- Base main commit for PR #63: `48ef18d376e69686e5e5950dd508d4534da187b3`.
+- Development repository: `Leruchii/Leruchi-development`.
+- Internal control repository: `Leruchii/Leruchi-internal`.
+- Public OSS target repository: `Leruchii/Leruchi`.
+- Runtime baseline: Node.js 24 only; Node.js 20 is prohibited.
 
-Stage 31 implementation checkpoint:
-- executable OSS Core readiness audit;
-- adversarial readiness tests for private paths, credentials and Node 20;
-- Stage 31 focused workflow using Node 24;
-- durable Stage 31 decision record;
-- build plan updated to make Stage 32 the controlled public-publication stage after Stage 31 exits green.
+Stage 31 exact-head evidence:
+- Stage 31 workflow, architecture regression audit, stage-state gate, and full regression matrix completed successfully on PR #62 head `1dffb521f48b49f2a2596ac808491e3356e57eaa`.
+- PR #62 remains open; do not claim it is merged.
 
-Stage 31 is intentionally pre-publication. Do not publish the public repository until the exact candidate passes the readiness gate and required regression matrix.
+Stage 32 candidate evidence:
+- The Stage 32 candidate workflow succeeded on head `3d7b3e1e00a7df89d07e46644c440f000bbaf812`.
+- Candidate artifact: `leruchi-oss-core-candidate`.
+- Artifact SHA-256: `bcdeed870224290a70a3256ea9bf0b7e5ad06ff2ede13a8f0e4ae122da739851`.
+- The first candidate run exposed a brittle realtime RLS source assertion that expected double quotes while the SQL correctly uses single quotes. The test now accepts either quote style; fix commit: `3d7b3e1e00a7df89d07e46644c440f000bbaf812`.
+- The full Stage 32 exact-head regression matrix was still running at the time of this checkpoint; do not merge PR #63 until every required workflow is green on its final head.
+- The candidate workflow builds an artifact only. It does not publish or push the candidate into the public `Leruchii/Leruchi` repository.
+- Public target inspection currently shows only a README, so publication remains a separate gated action.
 
-Exact next action:
-1. run the Stage 31 focused workflow and inspect failures;
-2. fix real audit/test defects without weakening the gate;
-3. add/verify the sanitized release candidate construction and public package metadata;
-4. run the exact-head repository regression matrix;
-5. merge only after the exact head is green;
-6. update main and internal control state to the validated Stage 31 checkpoint, then begin Stage 32 publication.
+Execution rules:
+- Verify the latest branch head and all required workflow conclusions before merging.
+- If any required workflow fails, inspect the failing job logs, fix the root cause, and rerun the exact-head matrix.
+- After any fix that changes the head, revalidate the candidate artifact and all required checks on that new exact head.
+- Update this checkpoint again before ending the build session.
 
 ## Verified state
 
