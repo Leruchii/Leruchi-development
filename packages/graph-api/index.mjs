@@ -87,7 +87,12 @@ export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=
       const claims=requireCapabilityGrant
         ?verifyEdDsaCapabilityGrant(auth.slice(7),{publicKeys:capabilityPublicKeys,issuer:jwtIssuer,audience:jwtAudience??"leruchi"})
         :verifyHs256Jwt(auth.slice(7),jwtSecret,Math.floor(Date.now()/1000),{issuer:jwtIssuer,audience:jwtAudience});
-      const grantRequired=requireCapabilityGrant||claims.jti!==undefined||claims.aud==="leruchi";
+      if(!requireCapabilityGrant&&(claims.jti!==undefined||claims.aud==="leruchi")){
+        const error=new Error("Capability grants must be verified with the configured EdDSA public keys");
+        error.code="UNAUTHORIZED";
+        throw error;
+      }
+      const grantRequired=requireCapabilityGrant;
       let trustedClaims=claims;
       if(grantRequired){
         const decision=await verifyCapabilityGrant(claims,{isRevoked:isGrantRevoked});
@@ -100,7 +105,7 @@ export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=
         trustedClaims={...claims,tenant_id:decision.grant.tenant_id,capabilities:decision.grant.capabilities};
       }
       context=contextFromClaims(trustedClaims,requestId);
-      if(capabilityGrant&&!isCapabilityGrantScopeAllowed(capabilityGrant,"/v1/schema/catalog")){
+      if(isCatalog&&capabilityGrant&&!isCapabilityGrantScopeAllowed(capabilityGrant,"/v1/schema/catalog")){
         await record("denied","CAPABILITY_SCOPE_DENIED");
         return json(res,403,{version:"v1",code:"CAPABILITY_SCOPE_DENIED",message:"Capability grant scope does not permit Schema Catalog discovery",request_id:requestId});
       }
