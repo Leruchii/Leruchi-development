@@ -23,7 +23,7 @@ function makeFixture(files) {
 
 test("accepts a minimal sanitized public candidate", () => {
   const root = makeFixture({
-    "README.md": "# VibeDB\n",
+    "README.md": "# Leruchi\n",
     ".nvmrc": "24\n",
     "packages/core/index.mjs": "export const core = true;\n",
   });
@@ -33,7 +33,7 @@ test("accepts a minimal sanitized public candidate", () => {
 
 test("rejects internal build documents", () => {
   const root = makeFixture({
-    "README.md": "# VibeDB\n",
+    "README.md": "# Leruchi\n",
     ".nvmrc": "24\n",
     "BUILD_STATE.md": "private\n",
   });
@@ -44,7 +44,7 @@ test("rejects internal build documents", () => {
 
 test("rejects credentials", () => {
   const root = makeFixture({
-    "README.md": "# VibeDB\n",
+    "README.md": "# Leruchi\n",
     ".nvmrc": "24\n",
     "config.txt": ["github", "_pat_", "not-a-real-token\n"].join(""),
   });
@@ -55,7 +55,7 @@ test("rejects credentials", () => {
 
 test("rejects non-24 Node runtime configuration and requires Node 24", () => {
   const root = makeFixture({
-    "README.md": "# VibeDB\n",
+    "README.md": "# Leruchi\n",
     ".nvmrc": "24\n",
     [".github/workflows/" + "test.yml"]: [
       ["node-", "version"].join(""),
