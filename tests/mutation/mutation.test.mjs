@@ -4,9 +4,9 @@ import {validateMutation} from "../../packages/mutation-validation/index.mjs";
 import {compileAgeMutation} from "../../packages/compiler-age-mutation/index.mjs";
 import {executeGraphMutation} from "../../packages/mutation-execution/index.mjs";
 
-const catalog={graphs:{vibe_security:{labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",directions:["out"]}]}}};
+const catalog={graphs:{leruchi_security:{labels:["Account"],edges:[{name:"KNOWS",from:"Account",to:"Account",directions:["out"]}]}}};
 const ctx={trusted:true,tenantId:"vibe_tenant_a",role:"authenticated",capabilities:["graph:write","graph:delete"]};
-const create={version:"v1",kind:"graph_mutation",graph:"vibe_security",operation:"create_vertex",target:{label:"Account"},properties:{name:{param:"name"}},parameters:[{name:"name",type:"string",required:true}]};
+const create={version:"v1",kind:"graph_mutation",graph:"leruchi_security",operation:"create_vertex",target:{label:"Account"},properties:{name:{param:"name"}},parameters:[{name:"name",type:"string",required:true}]};
 
 test("accepts create vertex and injects trusted tenant",()=>{const v=validateMutation(create,ctx,catalog);assert.equal(v.ok,true);const c=compileAgeMutation(create,{tenantId:ctx.tenantId});assert.match(c.cypher,/tenant_id: \$__vibe_tenant_id/);assert.equal(c.literalBindings.__vibe_tenant_id,"vibe_tenant_a")});
 test("rejects client tenant override",()=>{const bad=structuredClone(create);bad.properties.tenant_id="vibe_tenant_b";assert.equal(validateMutation(bad,ctx,catalog).errors[0].code,"TENANT_FIELD_FORBIDDEN")});
@@ -18,7 +18,7 @@ test("commits successful mutation",async()=>{const calls=[];const db={async begi
 test("rolls back failed mutation and hides db details",async()=>{const calls=[];const db={async begin(){calls.push("BEGIN")},async execute(){calls.push("EXECUTE");throw new Error("secret")},async commit(){calls.push("COMMIT")},async rollback(){calls.push("ROLLBACK")}};await assert.rejects(()=>executeGraphMutation({ir:create,context:ctx,catalog,requestParameters:{name:"Alice"},db}),e=>e.code==="DATABASE_EXECUTION_FAILED"&&e.details===undefined);assert.deepEqual(calls,["BEGIN","EXECUTE","ROLLBACK"])});
 test("rejects mutation parameter collision with internal literal binding",async()=>{const ir=structuredClone(create);ir.properties={name:"Alice"};ir.parameters=[...ir.parameters,{name:"__vibe_literal_0",type:"string",required:false}];const db={async begin(){},async execute(){throw new Error("must not execute")},async rollback(){}};await assert.rejects(()=>executeGraphMutation({ir,context:ctx,catalog,requestParameters:{name:"Alice",__vibe_literal_0:"override"},db}),e=>e.code==="PARAMETER_COLLISION");});
 
-test("cross-tenant edge is structurally impossible",()=>{const edge={version:"v1",kind:"graph_mutation",graph:"vibe_security",operation:"create_edge",target:{label:"Account",edge:"KNOWS",from:{label:"Account",field:"name",value:{param:"from"}},to:{label:"Account",field:"name",value:{param:"to"}}},properties:{kind:"friend"},parameters:[{name:"from",type:"string",required:true},{name:"to",type:"string",required:true}]};const c=compileAgeMutation(edge,{tenantId:"vibe_tenant_a"});assert.match(c.cypher,/a\.tenant_id = \$__vibe_tenant_id/);assert.match(c.cypher,/b\.tenant_id = \$__vibe_tenant_id/)});
+test("cross-tenant edge is structurally impossible",()=>{const edge={version:"v1",kind:"graph_mutation",graph:"leruchi_security",operation:"create_edge",target:{label:"Account",edge:"KNOWS",from:{label:"Account",field:"name",value:{param:"from"}},to:{label:"Account",field:"name",value:{param:"to"}}},properties:{kind:"friend"},parameters:[{name:"from",type:"string",required:true},{name:"to",type:"string",required:true}]};const c=compileAgeMutation(edge,{tenantId:"vibe_tenant_a"});assert.match(c.cypher,/a\.tenant_id = \$__vibe_tenant_id/);assert.match(c.cypher,/b\.tenant_id = \$__vibe_tenant_id/)});
 
 test("rejects a mutation against a graph owned by another tenant",()=>{
   const privateCatalog={graphs:{private:{visibility:"tenant",tenantId:"vibe_tenant_b",labels:["Account"],edges:[]}}};
