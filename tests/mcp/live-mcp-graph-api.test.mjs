@@ -14,7 +14,7 @@ const token=()=>{
 };
 
 const ir={
-  version:"v1",kind:"graph_query",graph:"vibe_security",
+  version:"v1",kind:"graph_query",graph:"leruchi_security",
   root:{label:"Account",alias:"n"},steps:[],filters:[],
   projection:[{field:"n.name",alias:"name"}],
   orderBy:[{field:"n.name",direction:"asc"}],limit:100,offset:0,depth:0,parameters:[]
@@ -30,7 +30,7 @@ test("MCP schema discovery and graph query traverse the live Graph API security 
   assert.equal(schema.result.content[0].type,"text");
   const catalog=JSON.parse(schema.result.content[0].text);
   assert.equal(catalog.version,"v1");
-  assert.ok(catalog.graphs.vibe_security);
+  assert.ok(catalog.graphs.leruchi_security);
 
   const query=await handleMcpMessage({jsonrpc:"2.0",id:2,method:"tools/call",params:{name:"graph.query",arguments:{ir}}});
   assert.equal(query.result.isError,undefined);
