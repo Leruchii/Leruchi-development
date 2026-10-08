@@ -17,6 +17,8 @@ jobs:
 
       - name: Verify Supabase role credentials
         run: node --test tests/security/supabase-role-credentials.test.mjs
+      - name: Verify tenant-claim hook contract
+        run: node --test tests/security/tenant-claim-hook-contract.test.mjs
 
       - name: Build Leruchi database image
         run: docker compose build db
@@ -49,7 +51,34 @@ jobs:
           curl -fsS http://127.0.0.1:9999/health
           curl -fsS http://127.0.0.1:3000/
 
-      - name: Prove unbound tenant claims fail closed
+      - name: Install tenant-claim hook
+        run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/supabase/tenant-claim-hook.sql
+
+      - name: Verify tenant-claim hook permissions
+        run: |
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
+          DO $check$
+          BEGIN
+            IF to_regprocedure('vibe_auth.custom_access_token_hook(jsonb)') IS NULL THEN
+              RAISE EXCEPTION 'tenant-claim hook function is missing';
+            END IF;
+            IF NOT has_function_privilege('supabase_auth_admin', 'vibe_auth.custom_access_token_hook(jsonb)', 'EXECUTE') THEN
+              RAISE EXCEPTION 'Auth admin cannot execute tenant-claim hook';
+            END IF;
+            IF NOT has_table_privilege('supabase_auth_admin', 'vibe_auth.user_tenant_memberships', 'SELECT') THEN
+              RAISE EXCEPTION 'Auth admin cannot read membership records';
+            END IF;
+            IF has_table_privilege('authenticated', 'vibe_auth.user_tenant_memberships', 'SELECT') THEN
+              RAISE EXCEPTION 'Authenticated clients must not read membership records';
+            END IF;
+            IF has_schema_privilege('authenticated', 'vibe_auth', 'USAGE') THEN
+              RAISE EXCEPTION 'Authenticated clients must not use the private auth schema';
+            END IF;
+          END
+          $check$;
+          SQL
+
+      - name: Verify unbound tenant claims fail closed
         run: |
           docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
           SET ROLE supabase_auth_admin;
