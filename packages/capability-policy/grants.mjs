@@ -9,7 +9,7 @@ export function validateCapabilityGrant(grant,now=Math.floor(Date.now()/1000)){
   if(typeof grant.tenant_id!=="string"||!grant.tenant_id)errors.push("tenant_id is required");
   if(!Array.isArray(grant.capabilities)||grant.capabilities.length===0)errors.push("capabilities are required");
   else if(grant.capabilities.some(value=>typeof value!=="string"||!ALLOWED.has(value)))errors.push("capability is outside the canonical vocabulary");
-  if(grant.aud!=="vibedb")errors.push("aud must be vibedb");
+  if(grant.aud!=="leruchi")errors.push("aud must be leruchi");
   if(!Number.isInteger(grant.exp)||grant.exp<=now)errors.push("grant is expired or missing exp");
   if(grant.nbf!==undefined&&(!Number.isInteger(grant.nbf)||grant.nbf>now))errors.push("grant is not active");
   if(grant.scope!==undefined&&(!grant.scope||typeof grant.scope!=="object"))errors.push("scope must be an object");
@@ -23,7 +23,7 @@ export async function isCapabilityGrantRevoked(grant,{isRevoked}={}){
 
 export const CAPABILITY_GRANT_CONTRACT=Object.freeze({
   issuer:"control-plane",
-  audience:"vibedb",
+  audience:"leruchi",
   required:["jti","tenant_id","capabilities","aud","exp"],
   revocation:"external control-plane lookup by jti",
   dataPlaneRule:"validate and enforce the grant; do not issue or persist authorization state"
