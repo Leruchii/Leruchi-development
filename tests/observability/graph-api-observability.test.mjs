@@ -17,7 +17,7 @@ test("Graph API emits bounded request telemetry without tenant or credential fie
     assert.ok(response.headers.get("x-vibe-trace-id"));
     assert.ok(logs.some(e=>e.event==="span.end"&&e.status==="error"));
     assert.ok(metrics.some(e=>e.name==="vibe_http_requests_total"));
-    assert.ok(metrics.some(e=>e.name==="vibe_security_events_total"));
+    assert.ok(metrics.some(e=>e.name==="leruchi_security_events_total"));
     assert.ok(traces.some(e=>e.duration_ms>=0));
     for(const event of [...logs,...traces]){
       assert.equal(Object.hasOwn(event,"authorization"),false);
