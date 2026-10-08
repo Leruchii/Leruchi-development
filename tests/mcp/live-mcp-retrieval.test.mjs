@@ -21,7 +21,7 @@ const ir={
   sources:{
     vector:{catalog_ref:"stage15.hybrid.embedding",query_parameter:"embedding",top_k:2,identity_field:"id"},
     graph:{
-      query:{version:"v1",kind:"graph_query",graph:"vibe_security",root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.name",alias:"id"}],orderBy:[{field:"n.name",direction:"asc"}],limit:2,offset:0,depth:0,parameters:[]},
+      query:{version:"v1",kind:"graph_query",graph:"leruchi_security",root:{label:"Account",alias:"n"},steps:[],filters:[],projection:[{field:"n.name",alias:"id"}],orderBy:[{field:"n.name",direction:"asc"}],limit:2,offset:0,depth:0,parameters:[]},
       candidate_limit:2,identity_field:"id"
     }
   },
