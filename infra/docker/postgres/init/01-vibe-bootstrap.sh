@@ -18,7 +18,7 @@ CREATE ROLE vibe_runtime
 ALTER ROLE vibe_migrator SET search_path = "$user", public, ag_catalog;
 ALTER ROLE vibe_runtime SET search_path = "$user", public, ag_catalog;
 
-GRANT CONNECT ON DATABASE vibedb TO vibe_migrator, vibe_runtime;
+GRANT CONNECT ON DATABASE leruchi TO vibe_migrator, vibe_runtime;
 
 -- AGE must exist before granting access to ag_catalog. Keeping this in the
 -- bootstrap phase makes clean cluster initialization deterministic; the
@@ -37,6 +37,6 @@ CREATE ROLE vibe_realtime
   PASSWORD :'vibe_realtime_password';
 
 ALTER ROLE vibe_realtime SET search_path = "$user", public, ag_catalog;
-GRANT CONNECT ON DATABASE vibedb TO vibe_realtime;
+GRANT CONNECT ON DATABASE leruchi TO vibe_realtime;
 SQL
 fi
