@@ -1,6 +1,6 @@
 # Stage 31 — OSS Core Readiness Gate
 
-Status: IN_PROGRESS
+Status: VALIDATED — technical readiness gate passed on exact candidate code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`.
 
 ## Purpose
 
@@ -71,5 +71,5 @@ Do not publish the public Leruchi repository during Stage 31. Publication is a s
 
 Apache-2.0 is the approved license for Leruchi Core's public OSS release. The repository root includes the standard Apache-2.0 LICENSE file, and the root package metadata declares the SPDX identifier `Apache-2.0`. This decision applies to the Leruchi Core OSS release boundary; private Cloud/Enterprise code remains outside that public release.
 
-The license decision resolves the Stage 31 OSS release license blocker. Stage 31 remains IN_PROGRESS until the exact candidate, readiness audit, and required regression matrix are green.
+The license decision resolves the license-selection blocker. The technical Stage 31 readiness gate is validated: the candidate readiness audit passed on the exact candidate and the post-fast-forward regression matrix completed 57/57 successfully. Formal product-name clearance remains a separate blocker to public publication; this decision does not authorize publication.
 

@@ -1184,7 +1184,7 @@ Do not introduce autonomous authorization, an LLM planner, write-capable Context
 
 # Stage 27 — Agent Intent → Leruchi IR Boundary
 
-**Status:** IMPLEMENTED — NOT YET VALIDATED.
+**Status:** VALIDATED — focused Agent Governance coverage and the Stage 31 exact-head validation matrix passed on code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`.
 
 Purpose: give agents and future model adapters one closed, provider-neutral envelope for declaring an intended canonical Leruchi operation without making natural language, an LLM, or MCP an authorization/execution authority.
 
@@ -1355,3 +1355,14 @@ Invariants:
 - DIDs/VCs, blockchain, reputation networks, hardware identity and regulatory graph infrastructure remain deferred.
 
 Validation required before merge: focused tests, adversarial governance checks, architecture/state gates and OSS boundary checks. Do not claim validation without executable evidence.
+
+
+## Stage 32 — OSS Core Publication Preparation
+
+**Status:** IN PROGRESS — technical candidate gates passed; development-main integration and public publication remain distinct gates.
+
+Validated candidate code head: `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff` on PR #63. Its exact post-fast-forward matrix completed 57/57 workflow runs successfully, and Stage 32 candidate workflow run 37806120762 passed. The sanitized candidate contains 184 files and its normalized archive SHA-256 is `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`. Node.js 24 is the only supported runtime; ASVS 5.0.0 profile verification passed, without claiming full ASVS compliance.
+
+**Public-release blockers:** formal product-name clearance is still required; GitHub reports `Leruchii/Leruchi-internal` as public despite its intended internal-control role; and the OSS runtime does not include a production capability-grant issuer/deployed revocation control plane. The public destination has not been published or tagged.
+
+Do not publish until those blockers are resolved, the final candidate/diff is reviewed, the exact final source head passes required checks, and explicit release approval is recorded. The candidate workflow does not publish the public repository.

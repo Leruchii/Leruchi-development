@@ -6,40 +6,43 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 32 — OSS Core Publication Preparation
-- Current status: IN_PROGRESS — integrated sanitized candidate and full regression matrix validated on the latest code head; public release remains gated pending explicit approval.
-- Last validated stage: 30 — Agent Trace & Replay.
-- Stage 31 — Leruchi Core Readiness Gate: PR #62, head `1dffb521f48b49f2a2596ac808491e3356e57eaa`; its exact-head workflow matrix completed successfully. PR remains open pending the Stage 32 publication-preparation flow.
-- Stage 32 PR: #63 — [Stage 32: Leruchi Core Publication Preparation](https://github.com/Leruchii/Leruchi-development/pull/63), draft and open.
-- Stage 32 branch: `stage32-oss-publication-prep`.
-- Current Stage 32 head: always resolve the live head from PR #63 before validating or merging; documentation updates themselves advance the branch head.
-- Base main commit for PR #63: `48ef18d376e69686e5e5950dd508d4534da187b3`.
+**Canonical state as of the Stage 32 candidate review on 2026-10-09. This section is authoritative; any older handoff text below it is historical only.**
+
+- Current stage: **Stage 32 — OSS Core Publication Preparation**.
+- Current status: **IN_PROGRESS — technical candidate gates are green; development-main integration and public-release gates are still separate actions**.
+- Last validated main commit before integration: `48ef18d376e69686e5e5950dd508d4534da187b3`.
+- Validated Stage 32 candidate code head: `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`.
+- Primary development PR: [#63 — Stage 32: OSS Core Publication Preparation](https://github.com/Leruchii/Leruchi-development/pull/63), branch `stage32-oss-publication-prep`, base `main`.
+- The tenant-claim tampering/revocation changes from PR #65 are incorporated into this candidate head. PR #65 is closed as superseded/empty after the candidate branch was advanced to include its head; do not re-integrate its commits.
+- Older readiness PR #60 is superseded by the Stage 32 candidate; its old run failed because the then-candidate lacked `LICENSE`. The current candidate contains `LICENSE` and passes the current readiness audit.
 - Development repository: `Leruchii/Leruchi-development`.
-- Internal control repository: `Leruchii/Leruchi-internal`.
-- Public Leruchi repository: `Leruchii/Leruchi`.
-- Runtime baseline: Node.js 24 only; Node.js 20 is prohibited.
+- Internal control repository intended by the architecture: `Leruchii/Leruchi-internal`. **GitHub currently reports this repository as public; this is a security-boundary incident/blocker that must be corrected in GitHub repository settings and independently verified. Do not describe it as private until that is done.**
+- Public OSS destination: `Leruchii/Leruchi`. It has not been published to by this workflow.
+- Runtime policy: **Node.js 24 only**; Node.js 20 is prohibited. Latest candidate CI used Node.js 24.21.0.
+- OSS license decision: Apache-2.0; the root `LICENSE` exists and package metadata declares `Apache-2.0`.
+- Product naming clearance: **OPEN / release-blocking**. `knowledge/decisions/product-naming-review.md` explicitly requires formal clearance before public brand lock/publication. Keep “Leruchi” provisional until the clearance decision is recorded.
+- Production identity boundary: OSS contains a signed capability-grant verifier and fail-closed revocation adapter, not a deployed production grant issuer/revocation control plane. A trusted authority must be supplied by the deployment; do not claim the production control plane exists.
 
-Stage 31 exact-head evidence:
-- Stage 31 workflow, architecture regression audit, stage-state gate, and full regression matrix completed successfully on PR #62 head `1dffb521f48b49f2a2596ac808491e3356e57eaa`.
-- PR #62 remains open; do not claim it is merged.
+### Exact-head validation evidence
 
-Stage 32 candidate evidence:
-- PR #64 (tenant-claim/security validation) was squash-merged into PR #63's `stage32-oss-publication-prep` branch only; it was not merged into `main` or published publicly. Integration commit: `2621cf06604f2994e2b8bcef7ffcfeca60026e0f`.
-- On that exact integrated head, all 34 pull-request workflows completed successfully with zero failures, including Stage 03 Supabase compatibility, Stage 31 readiness, Stage State Gate and Architecture Regression Audit.
-- Stage 32 candidate workflow run `37787789055` passed Node.js 24 policy, ASVS 5.0.0 profile verification, export manifest/source audits, candidate audit, deterministic packaging and upload. The ASVS profile check passed; full ASVS compliance is not claimed.
-- Candidate artifact `leruchi-oss-core-candidate` audited 186 files.
-- Normalized candidate archive SHA-256: `b5c9979dbf85923a059f762f1abc6980ff378d10e5373d3c5b9ae5cfbabb175a`.
-- GitHub Actions uploaded artifact ZIP digest for run `37787789055`: `5a7415739f07fef4ebc3c6a6b611130b3e469c817818a90f07297977cad6dfaf`.
-- Two independent candidate builds were byte-identical. The archive uses locale-independent file ordering, fixed timestamps/ownership, gzip without timestamp/name metadata, preserves tracked file modes, and rejects exported symlinks.
-- Candidate workflow uses `actions/upload-artifact@v6`; Node.js 24 is the only supported runtime.
-- The candidate workflow builds/uploads an artifact only. It does not publish to `Leruchii/Leruchi`.
-- Public target remains unchanged and still has the previous README; publication remains a separate gated action requiring explicit approval.
+- On candidate code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`, **57/57 workflow runs completed successfully, zero failures, zero pending** after the candidate branch was fast-forwarded to include the tenant-claim/revocation evidence.
+- Stage 32 candidate workflow: [run 37806120762](https://github.com/Leruchii/Leruchi-development/actions/runs/37806120762) — success.
+- The Stage 32 workflow enforced the Node.js 24 runtime policy, passed the OWASP ASVS 5.0.0 verification profile, validated the export manifest and source export audit, built and audited the sanitized candidate, rebuilt it reproducibly, and uploaded the artifact.
+- Candidate readiness audit: **PASS, 184 files audited**. Export audit reported 306 tracked files and 184 export-eligible files.
+- Normalized candidate archive SHA-256: `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`.
+- GitHub Actions uploaded-artifact ZIP digest for run 37806120762: `cd9e2a91919abd202eef6cf8d619983a441535b15ba9e194bcf4ca57491814f8`.
+- ASVS profile verification passing is **not** a claim of full OWASP ASVS compliance.
+- The current checkpoint edit is documentation-only and excluded from the public candidate by the export manifest. Resolve the live head from PR #63 before any merge decision; require all checks triggered by this documentation commit to finish successfully too.
 
-Execution rules:
-- Verify the latest branch head and all required workflow conclusions before merging.
-- If any required workflow fails, inspect the failing job logs, fix the root cause, and rerun the exact-head matrix.
-- After any fix that changes the head, revalidate the candidate artifact and all required checks on that new exact head.
-- Update this checkpoint again before ending the build session.
+### Release boundary and exact next actions
+
+1. Complete this documentation synchronization and verify all checks on the resulting PR #63 head.
+2. Integrate the validated Stage 32 development candidate into `main` only after its exact-head checks are green; this is a development-repository integration, **not** public publication.
+3. Verify and correct the visibility of `Leruchii/Leruchi-internal`; review its public exposure before continuing with any sensitive control-plane material.
+4. Complete the formal product-name clearance decision. Do not publish the public repository or create a public tag/release before that gate and explicit release approval.
+5. Before any public release, review the actual sanitized artifact and public diff, rerun the candidate audit on the final source head, and preserve the production-authority limitation in public documentation.
+6. After any code or workflow change, rerun the relevant exact-head matrix. Do not weaken tests to obtain a green result.
+7. After development-main integration, update this file again with the resulting main SHA, exact post-merge checks, and the remaining public-release blockers.
 
 ## Verified state
 
@@ -755,285 +758,21 @@ Stage 29 merged as PR #58 at `93022678b151b1945640967ecc09642271c23e62`. Focused
 
 ## Stage 31A — Agent Governance Foundation
 
-Status: IMPLEMENTED — NOT YET VALIDATED.
+**Status: VALIDATED** on the Stage 31 exact code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`, as recorded by the exact-head validation matrix on 2026-10-08.
 
-Added packages/agent-governance/ with engine-neutral Agent Governance v1 primitives for agent identity, explicit ownership, bounded capabilities, delegation, mandates, revocation and deterministic non-executing authorization decisions. Added focused tests and a decision record.
+The focused Agent Governance suite, Stage 31 OSS readiness, Architecture Regression Audit, Stage State Gate, and required product/regression workflows passed on that exact Stage 31 head. Governance remains a non-authentication, non-executing contract: identity/ownership records are not proof of authentication; bounded capabilities, delegation, mandate scope, expiry and revocation fail closed; the existing ExecutionContext → IR validation → planner → Secure Execution Engine path remains authoritative.
 
-Security contract:
-- governance records are not authentication proof;
-- revocation and mandate expiry fail closed;
-- capabilities and resource scope are bounded;
-- authorization decisions never execute operations or grant capabilities;
-- existing ExecutionContext, canonical IR validation, planner and Secure Execution Engine remain authoritative.
+Node.js 24 is the only supported runtime. The Stage 32 candidate workflow independently confirmed Node.js 24.21.0 and the runtime-policy gate on candidate head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`.
 
-Deferred from this stage: DIDs/VCs, blockchain/immutable external ledgers, global reputation, hardware-rooted identity, regulatory/legal graph infrastructure and hosted Agent Passport products.
+## Stage 32 — canonical handoff
 
-Validation status: not yet executed. GitHub Actions quota remains exhausted, so no CI rerun is claimed. Local executable validation is also not claimed because no local repository execution environment is available through the current GitHub connection.
+This is the single current Stage 32 handoff. Older Stage 32 candidate checkpoints, hashes and pending-run notes have been removed from the active handoff to prevent them from being mistaken for current state.
 
-Exact next action: validate the focused Agent Governance tests and architecture/security/OSS gates when executable CI capacity is available; then decide Stage 31 merge readiness.
+- Technical candidate validation is green on code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`: 57/57 workflow runs passed and the sanitized candidate audit passed for 184 files.
+- PR #63 is the primary integration path. Tenant-claim tampering/revocation evidence is already included; PR #65 is closed as superseded. PR #60 is stale and should be closed as superseded after its historical failure is retained in the PR record.
+- The public repository has not been modified, no public release/tag exists, and no publication approval is implied by green CI.
+- Public publication is blocked on formal product-name clearance. The internal control repository is also reported public by GitHub and must be made private and verified by an authorized repository administrator.
+- The data plane does not ship a production grant issuer or deployed production revocation control plane. Deployments must provide a trusted authority; existing CI proves the verifier/adapter contract only.
+- The documented access-token revocation window remains until the issued JWT expires; local Compose currently uses a 3600-second expiry. Do not claim instant revocation of already-issued access tokens.
 
-
-## Stage 31A workflow integration
-
-The Stage 31 OSS readiness workflow now watches `packages/agent-governance/**` and `tests/agent-governance/**` and runs the focused Agent Governance test file. This workflow change has not been executed because GitHub Actions capacity is exhausted.
-
-
-## Node.js 24 baseline hardening
-
-The Stage 31 branch standardized historical workflow runtime pins from Node.js 22 to Node.js 24 across the active repository workflows found during release-readiness audit. Node.js 24 remains the only supported project runtime. This change has not been executed in CI because GitHub Actions capacity is exhausted.
-
-
-## Stage 31 validation progress — 2026-10-07
-
-Status remains: IMPLEMENTED — NOT YET VALIDATED.
-
-Validation work completed in this session:
-- focused Agent Governance suite reconstructed from the exact branch files and executed in the available local runtime: 7/7 tests passed after two test-fixture defects were fixed;
-- runtime-policy logic was hardened from a Node 20 blacklist to a positive Node 24-only contract;
-- the runtime-policy script was exercised against positive Node 24 and negative Node 22 fixtures and behaved as expected;
-- the OSS candidate audit was hardened to reject non-24 workflow/Docker/NODE_VERSION configuration and package engines outside >=24 <25;
-- Stage 31 was reconciled with current main and canonical Leruchi identity; PR #62 now reports mergeable=true.
-
-Important evidence limitation:
-- the local container provides Node 22, not Node 24, so the local focused runs are supplemental evidence only and are not the release-runtime validation gate;
-- GitHub Actions runs for the exact head are currently queued; no CI success is claimed until those Node 24 jobs actually execute and pass.
-
-Current Stage 31 head: ae5f5efcb225863350537af727003ffae456ec60.
-
-CI queue-control hardening: the Stage 31 workflow now uses GitHub Actions concurrency keyed by workflow plus PR/branch ref, with `cancel-in-progress: true`, so stale Stage 31 runs are automatically cancelled when a newer commit supersedes them. The sanitized candidate temp path was also normalized to `leruchi-oss-candidate`.
-
-Exact next action: allow the new exact-head Node 24 workflow to execute under the now-public repository runner capacity, inspect failures if any, fix them, and only then mark Stage 31/31A validated and merge-ready.
-
-
-## Stage 31 CI validation note
-
-- The first Node 24 Stage 31 PR run reached GitHub Actions successfully on Node.js 24.21.0.
-- Runtime policy passed and all OSS Core readiness tests passed (7/7).
-- Agent Governance initially failed one test because the test identity lacked `vector:read`, causing the implementation's earlier `AGENT_CAPABILITY_DENIED` response before delegation-specific authorization. The test was corrected to include the required identity capability while preserving the delegation-specific denial assertion.
-- Corrective commit: `5be5467eeb2dab6b82e6dec5bf2bc72385f29a32`.
-- A new Stage 31 run is queued for that exact head; Stage 31 remains unvalidated until this run completes successfully.
-- CI observation: PR updates currently fan out into roughly 30 workflow runs. Stage 31 has per-ref concurrency protection, but broader workflow concurrency hardening remains CI infrastructure follow-up work.
-
-
-## Stage 31 follow-up workflow fixes
-
-- Architecture Regression Audit failed on Node.js 24 because `tests/architecture/contract-audit.mjs` still referenced the renamed `infra/docker/postgres/init/01-vibe-bootstrap.sh`. The audit now targets `01-leruchi-bootstrap.sh`.
-- Stage 31 OSS candidate readiness failed because its negative fixture intentionally used Node 22; the fixture now uses Node 23 so the test still proves non-24 rejection without retaining the deprecated Node 20/22 baseline.
-- Architecture Regression Audit now uses `actions/checkout@v5` and `actions/setup-node@v6`, matching the current Node 24 policy, and has per-ref concurrency cancellation to reduce stale queue buildup.
-- Stage 31 remains unvalidated until the new exact-head runs complete successfully.
-
-## Stage 31 exact-head validation and rename regression cleanup
-
-- Stage 31 readiness gate and Architecture Regression Audit passed on exact head `79a2b46db94a0c351087359e3b24b85d310b33c4`.
-- Remaining failures on that validation set were traced to stale pre-Leruchi workflow/test contracts, not the Stage 31 OSS readiness gate itself.
-- Repaired active workflow/runtime references from `packages/vibe-cli` to `packages/leruchi-cli`, migrated active public environment contracts from `VIBE_*` to `LERUCHI_*`, corrected the Stage 20 CLI executable path, and aligned MCP evaluation tests with the Leruchi MCP environment contract.
-- Current remediation head is `4d8c9d9c92de8c5d626c93bdd7be675e3f1798bd`. The new exact-head workflow set is queued/pending and must complete before Stage 31 can be considered fully clean for merge/publication.
-- Do not merge PR #62 or begin Stage 32 publication until the new exact-head workflow results are reviewed.
-
-- Stage 15 GraphRAG hybrid integration env contract: corrected `tests/retrieval-execution/hybrid-integration.mjs` to use the canonical `LERUCHI_ADMIN_DATABASE_URL` and `LERUCHI_RUNTIME_DATABASE_URL` contracts. The previous exact-head failure was a stale `VIBE_*` test contract; the database build and prior vector-isolation proof passed.## Stage 31 final validation — 2026-10-08
-
-Status: VALIDATED.
-
-Exact validated code head: `69cca2565486d13ddd9d3ab029bdef6e0029d3ed` on PR #62.
-
-Evidence from that exact code head:
-- Stage 31 OSS Core Readiness: SUCCESS.
-- Stage 31 Agent Governance coverage: SUCCESS.
-- Architecture Regression Audit: SUCCESS.
-- Stage State Gate: SUCCESS.
-- Stage 15 GraphRAG: SUCCESS after correcting the stale `VIBE_*` test environment contract to canonical `LERUCHI_*` variables.
-- All other required product/regression workflows associated with the exact code head completed successfully.
-- PR #62 is open, non-draft, and currently mergeable.
-
-The previous Stage 31/31A validation limitation is closed. No merge or public publication has occurred. Documentation changes in this checkpoint do not alter the validated product code. Stage 32 remains a separate controlled publication step and must use the sanitized OSS candidate/export allowlist rather than copying the private development repository wholesale.
-
-## Stage 32 handoff — Leruchi Core Public Publication
-
-Stage 31 is now the completed release-readiness gate. The next build step is to prepare and validate the controlled public publication candidate for `Leruchii/Leruchi`.
-
-Required before publication:
-1. verify the public export allowlist and forbidden-path/secret audit;
-2. verify public repository contents and history policy;
-3. build the sanitized candidate from the validated Stage 31 code head;
-4. validate the candidate independently;
-5. publish only after the candidate passes; do not expose private control/build material.
-
-Do not merge PR #62 or publish the public repository automatically as part of this handoff; publication remains an explicit release action.
-
-
-## Stage 32 ASVS verification update
-
-- Stage 32 OSS publication PR remains draft and must not be merged yet.
-- Stage 32 candidate workflow run 37637551479 failed at the initial ASVS verifier because the verifier matched its own private-key detection regex; no application-security finding was established.
-- Corrected verifier commit: 2e6e176be94a855454e54ecbf9ab712c553257c7.
-- Corrected ASVS 5.0.0 chapter applicability/profile commit: edc238aa15069026e56e530721a32325c6bbf28d.
-- Corrected OSS export manifest identity text commit: e2edfbbba49ff215b538f8e63a5476b39ddaa48d.
-- Latest profile-test head: 70599507a74b39431c17d0c3cce99519ff8c4d73.
-- Latest Stage 32 candidate run for that exact head: 37638603708, currently queued; no pass claim yet.
-- Official OWASP ASVS stable baseline remains 5.0.0. Requirement-level verification is still in progress; full compliance is not claimed.
-
-
-## Superseding checkpoint — 2026-10-08, Stage 32 tenant/MCP security
-
-This section supersedes older candidate-matrix notes above when they conflict.
-
-- Stage 32 remains active. PR #63 is the primary Stage 32 PR and remains draft/open on branch `stage32-oss-publication-prep`; its live head must be resolved from GitHub before merge decisions.
-- PR #64 is an isolated validation PR targeting the Stage 32 branch: https://github.com/Leruchii/Leruchi-development/pull/64. Validation branch: `stage32-tenant-claim-hook-validation`.
-- Fully green security baseline: commit `d3b251ddee29e9d16a12a42fa0bbfc87d551962f`, 17 workflow successes and zero failures. Stage 03 proved actual self-hosted Supabase Auth-issued tenant claims and PostgREST tenant isolation.
-- The next candidate code commit `f552e568ba57561599b7b1d7737ac5d180797ca2` updates the Graph API to enforce `graph:read` on graph queries, `graph:write` on mutations, and `graph:delete` on destructive deletes. It updates the tenant isolation test to expect HTTP 403 `CAPABILITY_DENIED` before query validation and pins Node.js 24 in Stage 02, Stage 06, Stage 07 and Stage 08 workflows.
-- The previous candidate `6ed63d32f395ed30f1105bfa13d98cc7383ab575` had 26 successful workflow runs and one failure in Stage 02 due to the now-obsolete 400/validation assertion. Node.js 22 was observed in that workflow because it lacked explicit setup-node configuration.
-- The f552 candidate has not run CI yet. Resolve the live validation branch head and inspect Stage 02, Stage 14, Stage 25 and the full exact-head matrix after the next run. Update this handoff and the internal `Leruchii/Leruchi-internal/BUILD_STATE.md` after results.
-- Scoped capability grant issuance and revocation through a production control plane remain unimplemented. Do not claim that revocation is enforced without a live verifier.
-- Runtime policy: Node.js 24 only; Node.js 20 and unpinned Node.js 22 runtimes are prohibited.
-- Do not merge PR #63 or #64, and do not publish to the public repository, without release-gate completion and explicit approval.
-
-
-## Pre-run checkpoint — signed capability grant integration candidate (2026-10-08)
-
-Active Stage 32 validation branch prior to this candidate: d754c43aa666cf37cbfba8fe874411e5ff27add1. Its exact-head matrix completed with 30 successes and zero failures. Current next security gate is signed scoped capability grant validation with mandatory control-plane revocation.
-
-Candidate adds:
-- strict grant verification wired into Graph API authentication, including tenant/audience/expiry/canonical capability validation and mandatory jti revocation lookup;
-- route/graph scope enforcement before catalog/database access;
-- authenticated control-plane HTTP adapter with HTTPS enforcement off loopback and fail-closed handling;
-- production launcher strict-mode configuration and a test-only CI control-plane stub;
-- unit and Graph API tests for missing revocation service, revoked grants, unavailable control plane and scope denial.
-
-This candidate is not yet on the validation branch and has not run CI. Do not claim the production control plane exists. Next: record the candidate SHA in internal handoff, advance only the isolated validation branch, inspect the exact-head matrix and update the handoff after results. No merge or public publication.
-
-
-## Stage 13 workflow config fix candidate — 2026-10-08
-
-The first strict-grant matrix had 29 successes and one Stage 13 failure. Log confirmed the launcher exited because Stage 13 did not set the required capability issuer/control-plane configuration. This is now corrected in the workflow by starting the test-only control-plane stub, waiting for readiness, and passing the same strict grant configuration used by Stage 14. The fix candidate is `2ae9de766bc31a9542c4e782170b0834857d69cb`; it has not run CI yet. The test stub is only a CI fixture, not a production control plane.
-
-
-## Stage 13 browser grant fixture fix candidate — 2026-10-08
-
-Candidate fixes the Playwright live-composition JWT to use the strict signed-grant contract: configured secret, test-control-plane issuer, unique jti, tenant_id, aud=leruchi, expiry and graph:read. Prior exact head b806511f854b33b125e04d6c787351813acf1fd5 had 29 successes and one Stage 13 browser timeout because this test token lacked grant claims. Candidate is not on the validation branch and has not run CI. Production control-plane deployment remains a release blocker.
-
-
-## Pre-run checkpoint — asymmetric capability grant signatures, 2026-10-08
-
-The prior exact head 57dd4815d7137945945c234f5d7ca9970e637bef passed 30 workflows. This next candidate replaces the production strict-grant HS256/shared-secret path with EdDSA verification using a key-id-selected public-key ring. The OSS data plane receives public keys only; private signing keys remain in the separate control plane. Required grant claims now include actor sub, jti, tenant_id, canonical capabilities, aud=leruchi and exp, with optional nbf and route/graph scope. Test-only Ed25519 keys are isolated under tests/fixtures; Stage 13 and Stage 14 workflows will use the public test key and a test-only revocation service. Candidate has not run CI. Re-read the internal handoff and record the exact new SHA before advancing the validation branch. Production control-plane issuance, private-key custody/rotation and operational revocation remain release gates.
-
-
-## EdDSA CI key hygiene fix candidate — 2026-10-08
-
-The first EdDSA candidate failed the Stage 32 ASVS gate because a PEM-formatted test private key was committed in a test fixture. The fix removes that static key and generates an ephemeral Ed25519 keypair in Stage 13/14 CI. The Graph API receives only the public DER key; browser/MCP test helpers read the ephemeral private-key file from /tmp. Unit tests generate an in-memory pair. This candidate has not run CI. The previous exact-head Stage 32 workflow failure is documented in the internal handoff; no pass claim until the next full matrix completes.
-
-
-## Live revocation integration candidate — 2026-10-08
-
-The next candidate adds a live MCP-to-Graph API test using a grant jti configured as revoked in the test control-plane stub. The test asserts the Graph API denies the grant through the HTTP revocation adapter. The production control plane is still not implemented/deployed in OSS; the stub validates only the interface contract. Candidate has not run CI.
-
-
-## Self-hosted capability authority documentation candidate — 2026-10-08
-
-Adds a public guide describing the external EdDSA grant issuer and revocation endpoint contract, strict-mode environment, key rotation, fail-closed behavior, membership-aware issuance obligations and deployment checklist. It explicitly states that the OSS runtime contains a verifier/adapter, not a production issuer, and that self-hosted/third-party authority is supported without Leruchi Cloud. The guide is eligible for export under docs/**. Candidate has not run CI.
-
-## Stage 32 exact-head security and reproducible candidate validation — 2026-10-08
-
-Status remains: IN_PROGRESS. The public release has not been approved or published.
-
-Validated source head: `2bb4bad218a644748d50794da0b565a799b84166` on PR #64, based on Stage 32 branch head `07c76120856165c5a4dc98cb9aa223f20cbc8b06`.
-
-Exact-head evidence:
-- All 30 pull-request regression workflows completed successfully with zero failures.
-- Stage 03 Supabase compatibility passed, including real Auth-issued access-token checks: active membership issued the expected tenant claim; a revoked tenant selector emitted no tenant claim; PostgREST RLS did not return cross-tenant rows.
-- Architecture Regression Audit and Stage State Gate passed.
-- Stage 32 candidate workflow run `37787015818` passed Node.js 24 runtime policy, the OWASP ASVS 5.0.0 verification profile, public export manifest checks, source export audit, candidate audit, packaging, and upload.
-- Candidate contains 186 files and the candidate audit passed. The ASVS profile verification passed; do not claim full ASVS compliance.
-- Two independent sanitized candidate builds produced byte-identical normalized archives. The archive uses stable path ordering, fixed file timestamps and ownership, and gzip without timestamp/name metadata.
-- Candidate archive SHA-256: `b5c9979dbf85923a059f762f1abc6980ff378d10e5373d3c5b9ae5cfbabb175a`.
-- GitHub Actions uploaded artifact digest (outer artifact ZIP): `f8d6c175901debf544602660dec8f63436a998e1066ffe91a7fef887a564103b`.
-- The candidate builder preserves tracked file modes and rejects symlinks within the export boundary.
-- The development database, Auth and PostgREST published ports are bound to loopback only; README documents that compatibility credentials are local development/CI only and must never be reused in production.
-- Stage 32 candidate workflow uses `actions/upload-artifact@v6`; Node.js 24 remains the only supported project runtime.
-
-Security/architecture boundaries:
-- Tenant claims are resolved against private, active membership records; user metadata is only a selector, never authorization evidence.
-- Missing/revoked membership fails closed; trusted tenant identity remains enforced by Graph API and database RLS.
-- The OSS runtime provides signed capability-grant verification and a revocation adapter, not a production grant issuer or deployed production revocation control plane.
-- Candidate workflow only builds and uploads an artifact. It does not publish to `Leruchii/Leruchi`.
-
-Exact next actions:
-1. Re-run the exact-head regression matrix after this checkpoint documentation commit; fix any failure without weakening tests.
-2. If all required checks pass, integrate PR #64 into PR #63's Stage 32 branch (not into main and not into the public repository).
-3. Re-run the candidate and full required regression matrix on the resulting exact PR #63 head.
-4. Update this checkpoint with the final integrated head and evidence.
-5. Present the sanitized candidate, checksum, exact CI evidence, remaining production limitations, and public-repository diff for explicit publication approval. Do not publish or merge the release PR without that approval.
-
-## Stage 32 integrated candidate — exact-head handoff (2026-10-08)
-
-Latest validated code head: `2621cf06604f2994e2b8bcef7ffcfeca60026e0f` on PR #63. PR #63 remains draft/open; public publication has not occurred.
-
-Security and deployment boundaries verified:
-- The Supabase Auth custom access-token hook removes caller-supplied tenant claims and resolves tenant identity from private active membership records.
-- Exact-head Stage 03 workflow passed real Auth-issued token checks for active versus revoked membership and PostgREST RLS isolation.
-- Development database, Auth and PostgREST published ports bind to loopback only; README warns that compatibility credentials are local development/CI only.
-- Signed capability grants are verified by the data plane and revocation lookups fail closed. A production grant issuer and deployed production revocation control plane are not included; self-hosted deployments must provide a trusted authority.
-
-Exact next action before release:
-1. Resolve the live PR #63 head and rerun the Stage 32 candidate workflow plus every required regression check on that exact head before any merge to `main`.
-2. Review the actual candidate archive and public-repository diff, including license, README/product identity, public file list, history policy and secret/path hygiene.
-3. Keep PR #63 draft until explicit approval to release. Do not merge to `main`, push files to `Leruchii/Leruchi`, or create a public release/tag without that approval.
-4. If documentation changes advance the branch head, rerun candidate and required checks on the latest head before merging.
-
-## Stage 32 sanitized OSS candidate — latest exact-head review (2026-10-08)
-
-This section supersedes the earlier Stage 32 candidate hashes and the older `da81d76` checkpoint above. The publication PR remains draft/open and the public repository has not been changed.
-
-Latest validated code head before this handoff update: `d5afb5fb56870a71f72691dd92993af3db4cda7f` on PR #63.
-- Exact-head PR regression matrix: 34/34 workflows passed, zero failures.
-- Exact-head push-triggered Stage 32 candidate workflow passed as well (35 successful workflow runs total when counting the PR checks and the push candidate run).
-- Node.js 24 runtime policy passed; the OWASP ASVS 5.0.0 verification profile passed. This is a profile/verification gate only, not a claim of full ASVS compliance.
-- Export contract audit passed after fixing its exclusion-precedence bug. Two internal release-gate tests are explicitly excluded from the public artifact because their private control-plane manifest/evidence inputs are intentionally not exported.
-- Candidate contains 184 files, 100 directories, and zero symlinks. Candidate readiness audit passed twice and two independently built normalized archives compared byte-for-byte.
-- Candidate archive SHA-256: `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`.
-- GitHub Actions uploaded artifact ZIP SHA-256: `72dd95c006de1e0750db6abae9feab32209c65c8930cde51887302772fa93126`.
-- Independent local review confirmed the 184-file count, Node 24 baseline in `.nvmrc`, `>=24 <25` package engine, no forbidden internal/control paths, no symlinks, and no matches for GitHub PAT/private-key/AWS access-key patterns. Twelve focused tenant-claim and realtime/role-boundary tests passed against the extracted candidate. The local inspection runtime is Node 22, so only the Node 24 CI jobs certify the supported runtime policy.
-- Local compatibility database/service credentials remain present in Compose/role setup by design for local development and CI, are documented as non-production credentials, and published ports bind to loopback. They must never be reused in production.
-
-Corrections made while reviewing the actual packaged artifact:
-1. The first independent package test found two internal release-gate tests copied into the public candidate without the private inputs they require.
-2. Added explicit manifest exclusions for those two tests.
-3. Fixed `scripts/public-oss-export-audit.mjs` to honor exclusions overriding broad includes (for example `tests/**`) and to reject private control paths if they become export-eligible.
-4. Added a regression test that keeps the intentional include/exclude behavior explicit.
-5. Rebuilt and re-audited the candidate; the revised candidate passed packaging, reproducibility, and upload on the exact head above.
-
-Public-release boundary:
-- Public target: `Leruchii/Leruchi`; its main branch still contains only the existing README.
-- No public files, tag, release, or publication PR have been created.
-- PR #63 remains draft/open pending a final documentation-head regression run and explicit approval to publish.
-- PR #64's tenant-claim validation was merged into the Stage 32 preparation branch after its own 30/30 exact-head matrix passed.
-- PR #62's Stage 31 changes are ancestors of PR #63; do not merge the two independently and create duplicate integration work.
-
-Next actions:
-1. This handoff documentation commit advances the branch head. Re-run the full required regression matrix and Stage 32 candidate workflow on the new exact head; the archive checksum should remain stable because internal `BUILD_STATE.md` is excluded from the public candidate.
-2. Verify the resulting exact-head run set is all green and refresh this handoff with the new commit SHA/artifact evidence if any candidate output changes.
-3. Present the candidate archive, checksums, public-repository diff (README-only baseline to the 184-file candidate), and remaining production-authority limitation for explicit approval.
-4. Do not merge PR #63 into `main`, publish to `Leruchii/Leruchi`, or create a public tag/release without explicit approval.
-
-
-## Handoff — tenant-claim tamper/revocation evidence (branch `stage32-tenant-revocation-evidence`)
-
-Author: Claude (chat session, 2026-10-09). Branched from `stage32-oss-publication-prep` at `da390bb`. Pushed to origin by the author after Fikun supplied credentials.
-
-What changed:
-- `.github/workflows/stage-03-supabase.yml`: new step "Verify tenant claim resists tampering and drops on revocation", placed after the real Auth-issued claim/RLS isolation step. Against live GoTrue + PostgREST it proves: (1) a user who rewrites their own `user_metadata` (selecting revoked `tenant_b`, planting a fake `tenant_id`) gets **no** tenant claim on refresh; (2) after a valid selector is restored the claim returns, then revoking the membership in `vibe_auth.user_tenant_memberships` makes the **next refresh** issue no claim and PostgREST returns no tenant rows; (3) records the residual window: an access token issued before revocation stays valid until `GOTRUE_JWT_EXP` (3600s in the local compose).
-- No exported file changed: workflows, `knowledge/**` and `BUILD_STATE.md` are excluded by `OSS_EXPORT_MANIFEST.json`, so the public candidate (184 files) and its archive SHA-256 should stay `a37f46e0…17df8`. Verify this in CI rather than assuming it.
-
-Verification status (updated after the branch was pushed):
-- Pushed as branch `stage32-tenant-revocation-evidence`, draft PR #65 into `stage32-oss-publication-prep`, head `5d3d7ef`.
-- Stage 03 Supabase compatibility run https://github.com/Leruchii/Leruchi-development/actions/runs/37801292894 passed, and its step "Verify tenant claim resists tampering and drops on revocation" concluded success, so tamper, revocation-on-refresh and the documented window assertions all held against live GoTrue + PostgREST.
-- All 21 workflow runs on head `5d3d7ef` completed green, none pending (PR #63's head `da390bb` had 36/36 green; the smaller count here is probably path filtering, not verified).
-- The Stage 32 candidate workflow also passed on the push, so the public candidate was not disturbed.
-
-Still open (release blockers unchanged until these have evidence):
-1. Graph API with a real Auth-issued token: send a GoTrue token (`iss=http://localhost:9999`, `aud=authenticated`) through `createGraphApiServer({jwtSecret, jwtIssuer, jwtAudience})` and show wrong issuer/audience are rejected. Not written yet.
-2. Decide the revocation-window policy (see `Leruchii/Leruchi-internal` decision `stage-32-tenant-claim-issuance.md`, status PROPOSED).
-3. Once PR #65 is merged into the Stage 32 branch the head moves again: re-run the exact-head matrix and Stage 32 candidate workflow on the final head and record the count here. PR #63 head `da390bb` was 36/36 green before this branch.
-4. Production identity-provider issuance beyond the Supabase GoTrue reference path is documented as a contract, not certified.
-5. PR #64 is MERGED into `stage32-oss-publication-prep` (verified via GitHub API 2026-10-09); the internal checkpoint saying draft was stale.
-
-Rules unchanged: do not merge PR #63, publish to `Leruchii/Leruchi`, or tag/release without explicit approval from Fikun.
+Before any public release, finish the visibility/security review, resolve product naming clearance, review the final artifact and public diff, validate the exact final source head, and obtain explicit release approval. The Stage 32 workflow builds/uploads a candidate only; it does not publish the public repository.
