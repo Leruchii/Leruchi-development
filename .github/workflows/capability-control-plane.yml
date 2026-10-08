@@ -39,6 +39,8 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Validate Node.js runtime policy
+        run: node scripts/assert-runtime-policy.mjs
       - name: Capability policy and JWT tests
         run: node --test tests/capability-policy/capability-grants.test.mjs
       - name: Control-plane issuer and revocation service tests
