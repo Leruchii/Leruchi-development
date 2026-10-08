@@ -1,4 +1,4 @@
-# @vibeplatform/cli
+# @leruchi/cli
 
 The Vibe CLI is a thin developer tool over the JavaScript SDK and Schema Catalog.
 
