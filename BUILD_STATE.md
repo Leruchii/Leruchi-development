@@ -1014,3 +1014,23 @@ Next actions:
 3. Present the candidate archive, checksums, public-repository diff (README-only baseline to the 184-file candidate), and remaining production-authority limitation for explicit approval.
 4. Do not merge PR #63 into `main`, publish to `Leruchii/Leruchi`, or create a public tag/release without explicit approval.
 
+
+## Handoff — tenant-claim tamper/revocation evidence (branch `stage32-tenant-revocation-evidence`)
+
+Author: Claude (chat session, 2026-10-09). Branched from `stage32-oss-publication-prep` at `da390bb`. **Not pushed by the author** (no GitHub credentials in that session); delivered as a patch series. If this section is on `origin`, someone applied it.
+
+What changed:
+- `.github/workflows/stage-03-supabase.yml`: new step "Verify tenant claim resists tampering and drops on revocation", placed after the real Auth-issued claim/RLS isolation step. Against live GoTrue + PostgREST it proves: (1) a user who rewrites their own `user_metadata` (selecting revoked `tenant_b`, planting a fake `tenant_id`) gets **no** tenant claim on refresh; (2) after a valid selector is restored the claim returns, then revoking the membership in `vibe_auth.user_tenant_memberships` makes the **next refresh** issue no claim and PostgREST returns no tenant rows; (3) records the residual window: an access token issued before revocation stays valid until `GOTRUE_JWT_EXP` (3600s in the local compose).
+- No exported file changed: workflows, `knowledge/**` and `BUILD_STATE.md` are excluded by `OSS_EXPORT_MANIFEST.json`, so the public candidate (184 files) and its archive SHA-256 should stay `a37f46e0…17df8`. Verify this in CI rather than assuming it.
+
+Verification status — READ THIS:
+- The new step passed YAML parsing and `bash -n`. It has **not run in CI** (no Docker where it was written). If it fails, suspect first: GoTrue `PUT /user` behavior with the anon `apikey`, refresh-token rotation order, or email autoconfirm. Fix the step; do not weaken the assertions.
+
+Still open (release blockers unchanged until these have evidence):
+1. Graph API with a real Auth-issued token: send a GoTrue token (`iss=http://localhost:9999`, `aud=authenticated`) through `createGraphApiServer({jwtSecret, jwtIssuer, jwtAudience})` and show wrong issuer/audience are rejected. Not written yet.
+2. Decide the revocation-window policy (see `Leruchii/Leruchi-internal` decision `stage-32-tenant-claim-issuance.md`, status PROPOSED).
+3. Exact-head regression matrix must be re-run and be fully green after this branch lands; update this file with the final count and head SHA.
+4. Production identity-provider issuance beyond the Supabase GoTrue reference path is documented as a contract, not certified.
+5. PR #64 state is inconsistent between repos (dev says merged into #63; internal checkpoint says draft). Check with `gh pr view 64` and correct whichever is stale.
+
+Rules unchanged: do not merge PR #63, publish to `Leruchii/Leruchi`, or tag/release without explicit approval from Fikun.

@@ -142,6 +142,66 @@ jobs:
           echo "${RESPONSE_B}"
           if echo "${RESPONSE_B}" | grep -q 'tenant_a\|tenant_b'; then echo "Token without authorized tenant claim returned tenant rows"; exit 1; fi
 
+      - name: Verify tenant claim resists tampering and drops on revocation
+        run: |
+          ANON_TOKEN=$(python3 - <<'PY'
+          import base64, hashlib, hmac, json, time
+          secret=b"leruchi-local-jwt-secret-change-me-32"
+          b64=lambda v: base64.urlsafe_b64encode(v).rstrip(b"=").decode()
+          h=b64(json.dumps({"alg":"HS256","typ":"JWT"},separators=(",",":")).encode())
+          p=b64(json.dumps({"role":"anon","aud":"authenticated","iss":"http://localhost:9999","iat":int(time.time()),"exp":int(time.time())+600},separators=(",",":")).encode())
+          print(f"{h}.{p}.{b64(hmac.new(secret,f'{h}.{p}'.encode(),hashlib.sha256).digest())}")
+          PY
+          )
+          auth() { curl -fsS -H "apikey: ${ANON_TOKEN}" -H "Content-Type: application/json" "$@"; }
+          jget() { python3 -c "import json,sys; print(json.load(sys.stdin).get('$1',''))"; }
+          tenant_of() { python3 -c "
+          import base64,json,sys
+          t=sys.stdin.read().strip().split('.')[1]
+          print(json.loads(base64.urlsafe_b64decode(t+'='*(-len(t)%4))).get('tenant_id',''))"; }
+
+          LOGIN=$(auth -X POST "http://127.0.0.1:9999/token?grant_type=password" \
+            --data '{"email":"stage03-tenant-a@example.test","password":"Stage03-Password-24!"}')
+          ACCESS=$(printf '%s' "$LOGIN" | jget access_token)
+          REFRESH=$(printf '%s' "$LOGIN" | jget refresh_token)
+          USER_A_ID=$(printf '%s' "$LOGIN" | python3 -c 'import json,sys; print(json.load(sys.stdin)["user"]["id"])')
+          test -n "$USER_A_ID"
+
+          # 1. Tampering: the user rewrites their own metadata to select a revoked tenant and plants a fake tenant_id.
+          auth -X PUT "http://127.0.0.1:9999/user" -H "Authorization: Bearer ${ACCESS}" \
+            --data '{"data":{"active_tenant_id":"tenant_b","tenant_id":"tenant_b"}}' >/dev/null
+          R1=$(auth -X POST "http://127.0.0.1:9999/token?grant_type=refresh_token" --data "{\"refresh_token\":\"${REFRESH}\"}")
+          T1=$(printf '%s' "$R1" | jget access_token | tenant_of)
+          test "$T1" != "tenant_b" || { echo "Tampered metadata issued tenant_b"; exit 1; }
+          test -z "$T1" || { echo "Invalid tenant selector must issue no tenant claim, got: $T1"; exit 1; }
+          REFRESH=$(printf '%s' "$R1" | jget refresh_token)
+
+          # 2. Restore a valid selector, confirm the claim returns, then revoke the membership.
+          auth -X PUT "http://127.0.0.1:9999/user" -H "Authorization: Bearer $(printf '%s' "$R1" | jget access_token)" \
+            --data '{"data":{"active_tenant_id":"tenant_a"}}' >/dev/null
+          R2=$(auth -X POST "http://127.0.0.1:9999/token?grant_type=refresh_token" --data "{\"refresh_token\":\"${REFRESH}\"}")
+          test "$(printf '%s' "$R2" | jget access_token | tenant_of)" = "tenant_a"
+          REFRESH=$(printf '%s' "$R2" | jget refresh_token)
+          OLD_ACCESS=$(printf '%s' "$R2" | jget access_token)
+
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xc \
+            "UPDATE vibe_auth.user_tenant_memberships SET membership_status='revoked' WHERE user_id='${USER_A_ID}' AND tenant_id='tenant_a';"
+
+          R3=$(auth -X POST "http://127.0.0.1:9999/token?grant_type=refresh_token" --data "{\"refresh_token\":\"${REFRESH}\"}")
+          T3=$(printf '%s' "$R3" | jget access_token | tenant_of)
+          test -z "$T3" || { echo "Revoked membership still issued tenant claim: $T3"; exit 1; }
+          NEW_ACCESS=$(printf '%s' "$R3" | jget access_token)
+          BODY=$(curl -fsS -H "Authorization: Bearer ${NEW_ACCESS}" "http://127.0.0.1:3000/supabase_rls_probe?select=tenant_id")
+          if echo "$BODY" | grep -q 'tenant_'; then echo "Refreshed token without claim still read tenant rows"; exit 1; fi
+
+          # 3. Residual window: an access token issued before revocation stays valid until GOTRUE_JWT_EXP.
+          if curl -fsS -H "Authorization: Bearer ${OLD_ACCESS}" "http://127.0.0.1:3000/supabase_rls_probe?select=tenant_id" | grep -q 'tenant_a'; then
+            echo "Documented window: pre-revocation access token remains valid until GOTRUE_JWT_EXP (3600s)"
+          fi
+
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xc \
+            "UPDATE vibe_auth.user_tenant_memberships SET membership_status='active' WHERE user_id='${USER_A_ID}' AND tenant_id='tenant_a';"
+
       - name: Verify signed JWT reaches PostgREST RLS
         run: |
           TOKEN=$(python3 - <<'PY'
