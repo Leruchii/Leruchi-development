@@ -754,3 +754,21 @@ Sanitized export artifact `leruchi-oss-core-candidate`, ID `11573439350`, produc
 PR reconciliation: #14/#22/#26/#29/#60 closed unmerged; #64/#65 closed merged. Canonical CLI migration safety coverage passed Stage 11 CI. The compare is broad (359 commits ahead, 0 behind, 149 files, 5,848 additions, 574 deletions), so integration strategy review remains mandatory. Formal product-name clearance is still open; no public OSS release has been made. Repository visibility is user-owned and remains the user's action.
 
 This entry documents the verified source candidate, not a guarantee for a later tip. The live PR #63 description is authoritative for the current head and its exact-head CI/artifact evidence. Any subsequent candidate commit requires a fresh matrix and artifact verification.
+
+
+## Stage 32 follow-up — authorization, naming and integration review (2026-10-09)
+
+Work started against candidate `963a8643b508c27d922ff7751e5dbae686a37553`; the new commit created by this follow-up must be treated as unvalidated until fresh exact-head CI and artifact checks complete.
+
+Implemented in this follow-up:
+- Added a capability-control-plane service core with EdDSA grant issuance, trusted caller/policy callbacks, bounded grant TTL, a PostgreSQL persistence adapter/schema, internal-only revocation routes, fail-closed unknown-grant decisions and adversarial unit tests.
+- Added a Stage 32 workflow step/path triggers for the service tests.
+- Rewrote the naming decision as a hard release blocker: Leruchi is an internal provisional identifier, not a cleared public brand; a controlled rename should be prepared if counsel cannot clear it.
+- Added a risk-based review of the 149-file candidate and a phased, main-based integration strategy. It explicitly does not claim line-by-line semantic review of every changed file.
+
+Important limits:
+- The new service core is not deployed. The production identity-provider/gateway adapter, authoritative membership/policy implementation, secret-manager/KMS integration, private network/mTLS, production database credentials/migrations, monitoring and operational ownership remain required.
+- The issuer service is not part of the sanitized OSS Core export unless the export manifest is explicitly changed and reviewed. Keep signing authority separate from the public data plane.
+- Candidate compare at last check: 362 commits ahead of main, 0 behind, 149 files. Do not merge wholesale.
+- Repository privacy and GitHub token rotation are left to the owner as explicitly requested.
+- Node.js 24 remains the only supported runtime. No public release or merge is authorized by this work.

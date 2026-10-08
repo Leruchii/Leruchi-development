@@ -12,6 +12,10 @@ on:
       - "scripts/oss-core-readiness-audit.mjs"
       - "tests/oss-core-readiness/**"
       - "tests/security/realtime-role-boundary.test.mjs"
+      - "packages/capability-control-plane/**"
+      - "tests/capability-policy/control-plane-service.test.mjs"
+      - "knowledge/decisions/product-naming-review.md"
+      - "knowledge/decisions/integration-review-stage32.md"
       - "infra/docker/postgres/init/01-leruchi-bootstrap.sh"
       - "infra/migrations/0002-graph-realtime-outbox.sql"
       - "packages/realtime-outbox/index.mjs"
@@ -41,6 +45,8 @@ jobs:
         run: npm install --ignore-scripts
       - name: Enforce runtime policy
         run: node scripts/assert-runtime-policy.mjs
+      - name: Test capability issuer and revocation service core
+        run: node --test tests/capability-policy/control-plane-service.test.mjs
       - name: Run OWASP ASVS 5.0.0 verification gate
         run: node scripts/owasp-asvs-verification.mjs && node --test tests/security/owasp-asvs-profile.test.mjs
       - name: Verify tenant and realtime security boundary

@@ -1,85 +1,35 @@
 # Product Naming Review — Leruchi
 
-Status: REVIEW REQUIRED BEFORE PUBLIC OSS BRAND LOCK
+Status: **BLOCKED FOR PUBLIC BRAND LOCK — OWNER/COUNSEL DECISION REQUIRED**
+Review date: 2026-10-09
 
 ## Decision
 
-The product name is now finalized as **Leruchi**. The prior working name VibeDB is retained only where historical migration context is necessary.
+Keep `Leruchi` as an internal engineering identifier only while the naming decision is unresolved. Do not treat it as a cleared, defensible public product brand and do not publish the OSS release under that brand until formal clearance is documented.
 
-However, **Leruchi is not sufficiently unique to be treated as a clean long-term brand by default**. The current name should remain provisional until a formal trademark/domain/package/namespace clearance review is completed before Stage 32 public publication.
+The available engineering research records direct collision/discoverability concerns, including reported database-related uses of Leruchi/vibeDB, references to `leruchi.dev` and `leruchi.me`, and overlapping developer/database projects. These reports are signals of risk, not legal findings. Search-engine results and package-name checks cannot establish trademark rights or freedom to operate.
 
-## Why the current name is risky
+## Screening performed / limits
 
-Current web research found multiple independent uses of the Leruchi/vibeDB name in database-related products and projects, including:
+- Reviewed the existing engineering naming review and the candidate's references to database-related uses and overlapping package/project namespaces.
+- Public web search did not return authoritative, complete trademark clearance for the intended launch markets.
+- Search-engine results are not a substitute for official trademark-register searches. No claim is made that a trademark is available or unavailable.
+- Domain search snippets and third-party checkers are not a reservation or registrar confirmation. No domain purchase or registration has been performed.
+- npm package availability is separate from trademark rights and from availability on PyPI, GitHub, MCP directories, container registries and other ecosystems.
 
-- a managed multi-database service at leruchi.dev;
-- an AI database control-plane product at leruchi.me;
-- a public GitHub project describing vibeDB as a foundational memory database;
-- a separate SQLite/document-database project with the same name;
-- an existing npm CLI namespace associated with vibeDB;
-- additional public projects using Leruchi for schema generation, desktop database management, and SQLite-as-a-service.
+## Required resolution before public release
 
-These are not legal determinations. They demonstrate naming collision and discoverability risk and justify formal clearance before public brand lock.
+1. Search official trademark registers for the intended launch markets, including confusingly similar marks in software, database, developer-tool and infrastructure classes; have qualified counsel assess relevant goods/services and risk.
+2. Confirm the intended domains at an accredited registrar and evaluate confusingly similar domains/handles.
+3. Check exact and similar names in npm (including scoped names), PyPI, GitHub organizations/repositories, MCP directories, Docker/OCI registries and relevant package indexes.
+4. Record source URLs, date, search terms, jurisdiction/classes and counsel's disposition in this decision.
+5. If counsel cannot clear Leruchi, choose a more distinctive candidate and complete a controlled migration before public publication. Do not do blind global replacement: map command names, package IDs, URLs, environment variables, container/image names, telemetry, API metadata, docs, examples, migrations and legacy aliases.
+6. Rebuild and audit the exact release artifact after any rename.
 
-## Product-fit assessment
+## Engineering recommendation
 
-Leruchi remains a strong descriptive/product-fit name for the current vision:
+Given the recorded direct-name collision signals, the safer recommendation is **prepare to rename before public OSS publication rather than assuming Leruchi is clear**. Do not select a replacement solely from a quick web search. A shortlist must undergo the same trademark/domain/package/namespace checks and be approved before it becomes canonical.
 
-- memorable;
-- clearly database-adjacent;
-- compatible with developer and AI-agent positioning;
-- broad enough to describe a database/data platform rather than a single storage engine.
+## Gate
 
-The weakness is not product fit. The weakness is **distinctiveness and long-term brand defensibility**.
-
-## Rename timing
-
-If the name is changed, Stage 31 / pre-Stage-32 is the correct window.
-
-A rename after public OSS publication would affect substantially more external surfaces:
-
-- GitHub organization/repository references;
-- package and SDK names;
-- CLI command and executable names;
-- MCP server identity;
-- documentation and URLs;
-- Docker/container/image names;
-- API metadata and user-agent identifiers;
-- telemetry and observability identifiers;
-- examples and integrations;
-- public links, forks, stars and downstream references.
-
-The underlying architecture does not depend on the Leruchi name. Canonical IR, Query/Mutation/Retrieval IR, planner, validation/auth/capability boundaries, MCP safety, evaluation, observability, trace/replay, and PostgreSQL/AGE/pgvector architecture can remain unchanged through a rename.
-
-## Required clearance gate before Stage 32
-
-Before public publication, perform:
-
-1. Trademark clearance in the intended launch jurisdictions.
-2. Domain availability and defensibility review.
-3. GitHub organization/repository/namespace review.
-4. npm package and CLI namespace review.
-5. PyPI and other relevant package-index review.
-6. MCP ecosystem naming review.
-7. Search-engine discoverability/confusion review.
-8. Enterprise/developer credibility review.
-9. Candidate-name collision review against database, AI, developer-tool and infrastructure products.
-10. Decision record documenting keep/rename and the migration plan if renamed.
-
-A legal trademark search or legal opinion must not be inferred from ordinary web-search results.
-
-## Current release recommendation
-
-**Keep Leruchi provisionally for engineering continuity. Do not publish the public OSS brand until the naming clearance gate is complete.**
-
-If clearance is unfavorable, rename before Stage 32 and perform a controlled repository-wide migration rather than a blind global text replacement.
-
-## Relationship to Stage 31
-
-This review does not change the Stage 31 technical readiness gate or declare it validated.
-
-Stage 31 remains IN_PROGRESS until the exact release candidate passes its readiness and regression requirements.
-
-## Evidence date
-
-Research performed: 2026-10-07.
+Public brand lock and release remain blocked until a documented keep/rename decision is supported by authoritative register searches, namespace checks and appropriate legal review. This record is an engineering risk assessment, not legal advice or a trademark opinion.

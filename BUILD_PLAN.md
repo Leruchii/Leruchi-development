@@ -1351,3 +1351,13 @@ The live PR #63 description and the current candidate's exact-head CI/artifact e
 4. For every new candidate tip, require all exact-head CI to pass and regenerate/reinspect the sanitized artifact from that exact SHA.
 5. Integrate Stage 32 into development `main` only after all blockers are closed. This is separate from public publication.
 6. Publish/tag only after explicit approval and record the resulting public commit, artifact, tag, and release evidence.
+
+
+## Immediate follow-up — release blockers (2026-10-09)
+
+1. **Product name:** `Leruchi` remains provisional and is not cleared for public brand lock. Perform authoritative trademark-register searches in intended markets, domain/namespace checks and legal review. If unfavorable, rename before OSS publication using a controlled migration; do not make a replacement canonical based only on web search.
+2. **Integration:** `knowledge/decisions/integration-review-stage32.md` records the change groups, risks and phased porting plan. Review/port slices from a clean `main` branch; do not merge the 362-commit candidate as one unit.
+3. **Production authorization:** capability-control-plane service core and tests have been added, but deployment readiness is still blocked until trusted identity/policy adapters, secrets/key management, production Postgres, network controls, monitoring and staging end-to-end evidence exist.
+4. **Owner actions:** repository visibility and GitHub token revocation/rotation are intentionally left to the owner.
+5. **Exact-head rule:** rerun the Stage 32 workflow, relevant regressions, Architecture Regression Audit, Stage State Gate, sanitized export and independent artifact inspection after this commit. Historical green checks do not validate the new tip.
+6. **Release:** no merge, public export, tag or release without a separate explicit approval.

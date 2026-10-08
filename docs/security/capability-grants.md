@@ -69,3 +69,10 @@ The corresponding private signing keys must stay in the authority's secret-manag
 - Test active, revoked, expired, wrong-issuer, wrong-audience, unknown-key, wrong-tenant and unavailable-authority cases before production use.
 
 The repository's CI uses ephemeral Ed25519 test keys and a test-only control-plane stub. That proves the verifier/adapter contract; it is not a production issuer, durable revocation service, or managed-service SLA.
+
+
+## Control-plane implementation status
+
+The candidate now contains an issuer/revocation service core under `packages/capability-control-plane/` and a PostgreSQL store adapter/schema. It requires injected trusted caller authentication and authoritative grant policy callbacks, and signs short-lived EdDSA grants. The service core is tested with fake identity/store adapters; those tests do not prove the production adapters or service have been deployed.
+
+Do not deploy with test callbacks or sample keys. Before production, wire a real identity provider/gateway, membership-aware policy, secret-manager-held private key, least-privilege PostgreSQL role, private networking/mTLS, audit/alerting, key rotation and staging end-to-end tests. Keep the private signing authority out of the OSS data-plane export. See [the service README](../../packages/capability-control-plane/README.md) and [the integration review](../../knowledge/decisions/integration-review-stage32.md).
