@@ -2,7 +2,7 @@
 
 > **Canonical architecture/build plan:** see the root `BUILD_PLAN.md`. This file records durable architecture evidence and validated execution facts; it does not replace the canonical plan.
 
-Status: DECIDED design / Stage 25 VALIDATED
+Status: Architecture baseline validated through Stage 30; Stage 31 technical readiness and Stage 32 candidate gates validated. Public release remains blocked.
 
 ## Validated execution path
 
@@ -53,11 +53,11 @@ The engine is read-only in v1. Mutations are Stage 09.
 - Storage: NOT IMPLEMENTED/VALIDATED
 - Pooling: NOT IMPLEMENTED/VALIDATED
 - SDK: VALIDATED
-- CLI: IMPLEMENTED — NOT YET VALIDATED
-- Graph Studio: NOT IMPLEMENTED/VALIDATED
-- MCP: NOT IMPLEMENTED/VALIDATED
-- GraphRAG: NOT IMPLEMENTED/VALIDATED
-- Cloud: DEFERRED
+- CLI: VALIDATED (Stage 11; exact-head Node.js 24 CI)
+- Graph Studio: VALIDATED (Stage 13 CI and browser tenant/responsive evidence)
+- MCP: VALIDATED (Stage 14 MCP Agent Gateway and Stage 25 input-safety contract)
+- GraphRAG: VALIDATED (Stage 15 exact-head regression workflow)
+- Observability: VALIDATED (Stage 16)\n- Backup and recovery: VALIDATED (Stage 17; reference CI evidence only, not hosted SLA)\n- Production readiness: VALIDATED (Stage 20; no commercial/hosted SLA claims)\n- PostgreSQL recursive compiler: VALIDATED (Stage 21)\n- Retrieval planner: VALIDATED (Stage 22)\n- Unified retrieval surface: VALIDATED (Stage 23)\n- Retrieval explainability and agent safety: VALIDATED (Stage 24)\n- Agent intent boundary: VALIDATED (Stage 27)\n- Cross-modal planning: VALIDATED (Stage 28)\n- Agent evaluation/observability: VALIDATED (Stage 29)\n- Agent trace/replay: VALIDATED (Stage 30; non-executing)\n- Agent Governance foundation: VALIDATED on exact Stage 31 head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`; governance records are not authentication proof\n- OSS Core readiness: VALIDATED technically; sanitized candidate audit passed 184 files on Stage 32 candidate\n- Public OSS publication: BLOCKED pending repository-visibility remediation, naming clearance, final candidate review, and explicit release approval\n- Cloud: DEFERRED
 
 Current implementation target: Stage 24 — Retrieval Explainability, Evaluation & Agent-Safety Boundary.
 

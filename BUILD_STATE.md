@@ -6,33 +6,22 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-- Current stage: 30 — Agent Trace & Replay
-- Current status: VALIDATED
-- Last validated stage: 30 — Agent Trace & Replay
-- Last validated main commit: 2bf62dc138667d834728d0dbddbdd8c29dd1fda9
-- Stage 30 validated candidate head: d6105f32338d9d4461fc2099cc0485061c763aa2
-- Stage 30 PR: #59 (merged)
-- Active branch: main
-- Internal control repository: Fikunmii/Leruchi-internal (PRIVATE)
-- Development repository: Fikunmii/Leruchi-development (PRIVATE)
-- Public OSS release repository: Fikunmii/Leruchi (PUBLIC)
+**Main and candidate state are intentionally distinguished here. This is the authoritative main-branch handoff as of 2026-10-09.**
 
-Stage 30 validation evidence:
-- exact candidate head d6105f32338d9d4461fc2099cc0485061c763aa2 passed 30/30 repository workflows;
-- Stage 30 focused workflow passed;
-- Architecture Regression Audit passed;
-- Stage State Gate passed;
-- all historical/product workflows on the exact candidate head completed successfully;
-- PR #59 merged only after the exact candidate head was green.
+- Main branch code checkpoint: **Stage 30 — Agent Trace & Replay, VALIDATED**.
+- Current main HEAD before this documentation synchronization: `48ef18d376e69686e5e5950dd508d4534da187b3`; Stage 30 validated code commit: `2bf62dc138667d834728d0dbddbdd8c29dd1fda9`.
+- Active release candidate: Stage 32 on [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63), draft/open, branch `stage32-oss-publication-prep`.
+- Validated candidate code head: `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`; its post-fast-forward matrix completed 57/57 workflow runs successfully.
+- Latest documentation-only candidate head before this main checkpoint: `bb1bbfd87813fcbc6898857e3b5437de707d4f44`; its 36/36 workflow runs passed, including Stage 32 candidate run [37806528083](https://github.com/Leruchii/Leruchi-development/actions/runs/37806528083).
+- Candidate archive contains 184 files. Normalized archive SHA-256: `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`. Uploaded artifact ZIP digest for run 37806528083: `e64a5171b23ff210b02d1803a0e518a64a7634baae748a23637eaa27f005ffed`. Node.js 24 is the only supported runtime; ASVS 5.0.0 profile verification passed, not full ASVS compliance.
+- **Main has not been integrated with the Stage 32 code candidate.** At the time of this checkpoint, PR #63's branch is 337 commits ahead of main and 0 behind. Do not describe main as code-synchronized until approved integration is complete.
+- PR #64 and PR #65 changes are included in the Stage 32 branch only, not main. PR #60 is closed as superseded. PR #62 is closed without a merge; Stage 31 readiness work is represented in the Stage 32 candidate.
+- Legacy PRs #14, #22, #26 and #29 remain open. Their heads have branch-side commits not reachable from the Stage 32 candidate (compare reports 2, 29, 12 and 3 commits respectively). Review unique functionality/tests and port what remains needed; do not merge old branches wholesale because they contain VibeDB-era paths.
+- GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as **public**, although the architecture intends both to be private. This is a security-boundary blocker; the available GitHub connection cannot change repository visibility. Do not merge PR #63 or publish a public release until an authorized administrator changes and verifies visibility.
+- Product naming clearance remains open. The public OSS target `Leruchii/Leruchi` is public and currently contains only its README; no public candidate, tag, or release has been published.
+- The OSS runtime includes a signed capability-grant verifier and fail-closed revocation adapter, not a deployed production issuer/revocation control plane. Production deployments must supply a trusted authority.
 
-Stage 30 implementation checkpoint:
-- bounded Agent Trace v1;
-- sanitized canonical Agent Intent/Cross-Modal Plan artifacts;
-- deterministic artifact hashing;
-- bounded expected/observed outcomes;
-- non-executing replay and regression diff;
-- REST, SDK, CLI and MCP convergence;
-- no new execution authority.
+Exact next action: remediate and verify repository visibility, then reconcile the remaining legacy PRs against the candidate. Re-read the live PR #63 head and rerun required exact-head checks before development-main integration. Public publication remains a separate gated action requiring product-name clearance, final artifact/diff review, and explicit release approval.
 
 ## Verified state
 

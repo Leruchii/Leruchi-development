@@ -1311,3 +1311,27 @@ Do not add autonomous execution, model-provider orchestration, capability grants
 ## OSS Core Readiness Gate — after Stage 30
 
 The first public Core release is a readiness gate, not an arbitrary stage number. It must verify architecture stability, security boundaries, developer UX, complete required CI, and the public OSS export allowlist/history audit. Private Cloud/Enterprise concerns remain outside the OSS runtime contract.
+
+
+## Stage 31 — OSS Core Readiness Gate
+
+**Status:** VALIDATED technically on the Stage 32 candidate branch, not yet integrated into main. Exact candidate code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff` passed the sanitized OSS readiness audit (184 files) and the 57/57 exact-head workflow matrix. Node.js 24 is the only supported runtime; Apache-2.0 is the selected license.
+
+Public publication remains separately gated on repository visibility remediation, formal product-name clearance, final artifact review and explicit release approval.
+
+## Stage 31A — Agent Governance Foundation
+
+**Status:** VALIDATED on exact Stage 31 code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`. Focused Agent Governance coverage and the Stage 31 readiness/regression matrix passed. Governance records are not authentication proof; authorization decisions are non-executing and revocation/expiry fail closed.
+
+
+## Stage 32 — OSS Core Publication Preparation
+
+**Status:** IN PROGRESS — technical candidate gates passed; development-main integration and public publication remain blocked pending security-boundary remediation and legacy-PR reconciliation.
+
+Latest validated candidate code head: `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff` with 57/57 workflow runs successful. Latest documentation-only candidate head before this synchronization: `bb1bbfd87813fcbc6898857e3b5437de707d4f44`, with 36/36 workflow runs successful; Stage 32 candidate run [37806528083](https://github.com/Leruchii/Leruchi-development/actions/runs/37806528083) passed. The sanitized candidate contains 184 files and its normalized archive SHA-256 is `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`; uploaded artifact ZIP digest is `e64a5171b23ff210b02d1803a0e518a64a7634baae748a23637eaa27f005ffed`. ASVS 5.0.0 profile verification passed, without claiming full ASVS compliance.
+
+GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as public despite the intended private topology. Formal product-name clearance remains open. The OSS runtime does not include a deployed production capability-grant issuer/revocation control plane. Do not integrate the candidate into main or publish publicly until repository visibility and outstanding branch reconciliation are resolved.
+
+Legacy PRs #14, #22, #26 and #29 remain open and have branch-side commits not reachable from the Stage 32 candidate. Review their unique changes and port any still-needed tests/features; do not merge their old branches wholesale because some contain superseded VibeDB-era paths.
+
+The public destination `Leruchii/Leruchi` remains unchanged (README only); no public release/tag has been created.

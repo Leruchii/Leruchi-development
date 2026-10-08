@@ -293,3 +293,10 @@ Agents must continue the first unfinished canonical stage rather than restarting
 Before ending a work session, update `BUILD_STATE.md` with the current stage and status, last validated commit, branch or pull request when applicable, completed work, remaining work, tests and CI status, blockers, decisions, changed packages/files, and the exact next action. Another agent must be able to continue without asking the user what happened.
 
 Use the checkpoint status vocabulary defined in `BUILD_STATE.md`. Code that exists without the required executable evidence is `IMPLEMENTED — NOT YET VALIDATED`, not `VALIDATED`.
+
+
+## 9. Repository visibility and release synchronization
+
+Before integrating a large staged candidate into `main`, or publishing any sanitized OSS artifact, verify actual GitHub repository visibility through the repository API/settings. Names such as `*-development` and `*-internal` do not prove a repository is private. If either development or internal control repositories are public when intended to be private, stop merge/publication actions, alert the authorized administrator, and verify the visibility change before continuing.
+
+A green candidate workflow is not approval to merge or publish. Reconcile stacked/legacy pull requests and document any remaining branch-side commits before claiming the repository is synchronized. Keep public brand clearance, sanitized artifact review, and explicit release approval as separate gates.
