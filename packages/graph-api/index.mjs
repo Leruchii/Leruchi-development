@@ -244,7 +244,7 @@ export function createGraphApiServer({pool,jwtSecret,catalogProvider,auditSink,v
     }finally{
       const statusClass=Math.floor((res.statusCode||500)/100)+"xx";
       observability.increment("vibe_http_requests_total",1,{method:req.method,route:req.url?.split("?")[0]??"",status_class:statusClass});
-      if((res.statusCode||500)>=400)observability.increment("vibe_security_events_total",1,{method:req.method,route:req.url?.split("?")[0]??"",outcome:"error"});
+      if((res.statusCode||500)>=400)observability.increment("leruchi_security_events_total",1,{method:req.method,route:req.url?.split("?")[0]??"",outcome:"error"});
       span.end({status:(res.statusCode||500)>=400?"error":"ok",attributes:{status_class:statusClass}});
     }
   });
