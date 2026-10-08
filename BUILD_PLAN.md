@@ -1126,7 +1126,7 @@ Implemented:
 - `packages/context-ir/v1.schema.json`
 - `packages/context-ir/index.mjs`
 - `packages/context-ir/explain.mjs`
-- `packages/vibe-sdk/context.mjs`
+- `packages/leruchi-sdk/context.mjs`
 - SDK `client.context().purpose(...).source(...).explain()`
 - authenticated `POST /v1/context/explain`
 - MCP `context.explain`
