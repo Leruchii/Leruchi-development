@@ -18,7 +18,7 @@ jobs:
         run: node --test tests/cli/cli.test.mjs
       - name: Run Schema Catalog API unit tests
         run: node --test tests/schema-catalog-api/api.test.mjs
-      - name: Build VibeDB database image
+      - name: Build Leruchi database image
         run: docker compose build db
       - name: Start database
         run: docker compose up -d db

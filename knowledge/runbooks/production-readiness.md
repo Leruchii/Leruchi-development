@@ -27,9 +27,9 @@ The Stage 20 upgrade drill proves the supported prior baseline survives the curr
 
 ## 3. Backup and recovery
 
-- Produce PostgreSQL custom-format backups through `scripts/vibedb-backup.sh`.
+- Produce PostgreSQL custom-format backups through the established backup script (`scripts/vibedb-backup.sh`; legacy path retained for compatibility).
 - Verify the manifest checksum and byte size before restore.
-- Prefer `VIBEDB_RESTORE_MODE=fresh` for disaster recovery.
+- Prefer `VIBEDB_RESTORE_MODE=fresh` for disaster recovery until the canonical `LERUCHI_RESTORE_MODE` alias is introduced and tested.
 - Use `replace` only for deliberate in-place replacement.
 - Run the production-image AGE/pgvector recovery drill after restore tooling changes.
 - Treat measured CI restore time as reference evidence, not a customer SLA.

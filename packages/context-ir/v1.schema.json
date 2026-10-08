@@ -1,7 +1,7 @@
 {
   "$schema":"https://json-schema.org/draft/2020-12/schema",
   "$id":"https://vibedb.dev/context-ir/v1.schema.json",
-  "title":"VibeDB Context IR v1",
+  "title":"Leruchi Context IR v1",
   "type":"object",
   "additionalProperties":false,
   "required":["version","kind","purpose","sources","budget","freshness"],
