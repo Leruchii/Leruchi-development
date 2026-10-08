@@ -10,29 +10,31 @@ This file is the canonical handoff checkpoint for coding agents. Verify it again
 - Public OSS destination: [`Leruchii/Leruchi`](https://github.com/Leruchii/Leruchi).
 - Development `main` HEAD observed: `2e3997a75c709b58da14c454b356ae9778d1e1be`.
 - Stage 32 candidate branch: `stage32-oss-publication-prep`.
-- Last fully validated source candidate SHA: `82b206481d91d6ace403e20aa9b1228450b2b6b3`.
+- Pre-reconciliation candidate SHA: `bf650537f90650f96ddca0fac33281ee545d46e1`. This documentation update will create a new head and requires fresh validation.
 - [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains OPEN and DRAFT. Stage 32 is not merged into `main`; public OSS publication has NOT occurred.
-- Live GitHub compare reports candidate is 0 commits behind but 355 commits ahead of `main`; PR diff is 148 files (5,784 additions / 557 deletions). This is a broad integration diff, not a small Stage 32-only change. Review the full diff and agree on integration strategy before merge.
-- This checkpoint is a metadata synchronization. Always query the live PR head and its own CI before integration; never transfer a parent commit's status to a newer SHA.
+- Live compare before this documentation update: **361 commits ahead, 0 behind** `main`; PR diff **149 files (5,852 additions / 576 deletions)**. This is a broad integration diff, not a small Stage 32-only change. Review the full diff and agree on integration strategy before merge.
 
-### Exact-head CI evidence
-- On source candidate SHA `82b206481d91d6ace403e20aa9b1228450b2b6b3`, **36/36 workflow runs completed successfully; 0 failures**.
-- Exact-head Stage 32 candidate workflow: [run 37831173631](https://github.com/Leruchii/Leruchi-development/actions/runs/37831173631) — success.
-- Exact-head Stage 31 OSS Core Readiness: [run 37831184537](https://github.com/Leruchii/Leruchi-development/actions/runs/37831184537) — success.
-- Exact-head Stage 11 CLI: [run 37831184562](https://github.com/Leruchii/Leruchi-development/actions/runs/37831184562) — success.
-- Exact-head Stage 13 Graph Studio: [run 37831184654](https://github.com/Leruchii/Leruchi-development/actions/runs/37831184654) — success.
-- Exact-head Architecture Regression Audit: [run 37831185041](https://github.com/Leruchii/Leruchi-development/actions/runs/37831185041) — success.
-- Exact-head PR check: [run 37831175615](https://github.com/Leruchii/Leruchi-development/actions/runs/37831175615) — success.
+### Exact-head CI evidence — prior candidate only
+- Current candidate HEAD: `bf650537f90650f96ddca0fac33281ee545d46e1`.
+- Development `main` HEAD: `2e3997a75c709b58da14c454b356ae9778d1e1be`.
+- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains OPEN and DRAFT. Nothing has been merged to development `main`; public publication has not occurred.
+- Exact-head matrix on candidate HEAD: **36/36 workflow runs completed successfully; zero failures** before this documentation reconciliation. The new documentation commit must be revalidated at its own SHA; prior results are not inherited.
+- Stage 32 candidate workflow: [run 37833835499](https://github.com/Leruchii/Leruchi-development/actions/runs/37833835499) — success on the pre-reconciliation candidate.
+- Stage 31 readiness: [run 37833835429](https://github.com/Leruchii/Leruchi-development/actions/runs/37833835429) — success on the pre-reconciliation candidate.
+- Stage 11 CLI: [run 37833835738](https://github.com/Leruchii/Leruchi-development/actions/runs/37833835738) — success on the pre-reconciliation candidate.
+- Stage 13 Graph Studio: [run 37833835394](https://github.com/Leruchii/Leruchi-development/actions/runs/37833835394) — success on the pre-reconciliation candidate.
+- Architecture regression audit: [run 37833835437](https://github.com/Leruchii/Leruchi-development/actions/runs/37833835437) — success on the pre-reconciliation candidate.
+- Stage State Gate: [run 37833835600](https://github.com/Leruchii/Leruchi-development/actions/runs/37833835600); PR check: [run 37833833283](https://github.com/Leruchii/Leruchi-development/actions/runs/37833833283) — success on the pre-reconciliation candidate.
 - Node.js 24 only (`.nvmrc = 24`; package engine `>=24 <25`). Node.js 20 is prohibited.
 - OWASP ASVS 5.0.0 is a verification profile, not a claim of full ASVS compliance.
 
-### Sanitized export artifact — exact source candidate
-- Artifact `leruchi-oss-core-candidate`, ID `11574191297`, from Stage 32 run `37831173631`, source SHA `82b206481d91d6ace403e20aa9b1228450b2b6b3`.
+### Sanitized export artifact — prior exact source candidate
+- Artifact name: `leruchi-oss-core-candidate`; artifact ID: `11573439776`; source run: `37833835499`; source SHA: `bf650537f90650f96ddca0fac33281ee545d46e1`.
 - Packaged tar.gz SHA-256: `436efd61f12dbc084fd881ef97ce8596629c1f7c4c1f372ee18d37f78f806ca6`.
-- Downloaded artifact ZIP SHA-256: `4ac007427b25c7cbc5f5128e40fbb457604180715033dba7fea31a8ac3f42114`.
-- Independent inspection found 184 files, `.nvmrc = 24`, package engine `>=24 <25`, and no retired VibeDB-name or GitHub PAT-pattern matches in the export.
-- Manifest validation, source export audit, sanitized candidate readiness audit, and reproducible rebuild/package comparison passed.
-- Docker image metadata and OSS readiness/backup test fixtures were aligned to the current Leruchi identity before artifact generation.
+- Downloaded artifact ZIP SHA-256: `f4895023e7e3f82f4504cca8f18552eccf18be999386d499eace8bbd92174a7d`.
+- Independent archive inspection found 184 files, `.nvmrc = 24`, package engine `>=24 <25`, and no retired VibeDB-name or GitHub PAT-pattern matches in the exported files.
+- Manifest validation, source export audit, sanitized candidate readiness audit, and reproducible rebuild/package comparison passed for that earlier exact source SHA. These results do not validate a newly built artifact until rerun on the new candidate SHA.
+- Docker image metadata and OSS readiness/backup test fixtures were aligned with the current Leruchi identity before artifact generation.
 
 ### Legacy pull request reconciliation
 Closed as superseded with explanatory comments; none was merged:
@@ -42,13 +44,13 @@ Closed as superseded with explanatory comments; none was merged:
 - [PR #29](https://github.com/Leruchii/Leruchi-development/pull/29) — superseded renderer benchmark branch; maintained benchmark is `apps/studio/tests/browser/renderer-benchmark.spec.ts`.
 - [PR #60](https://github.com/Leruchii/Leruchi-development/pull/60) remains closed and unmerged.
 - [PR #64](https://github.com/Leruchii/Leruchi-development/pull/64) and [PR #65](https://github.com/Leruchii/Leruchi-development/pull/65) are closed as merged in their respective histories.
-- Old branches remain available for reference. Do not merge heavily diverged branches wholesale; port any uncovered safety gaps into canonical code and test them.
+- Do not wholesale-merge stale branches; port uncovered safety gaps into canonical code and test them.
 
 ### Remaining blockers and next actions
-1. **Repository visibility is user-owned.** The user will handle remediation. Before integration, re-query and verify the required private settings for both development and internal repositories; do not assume the change has happened.
+1. **Repository visibility is user-owned.** Verify the required private settings for both development and internal repositories before integration.
 2. Product-name clearance remains pending. Keep the public brand provisional until clearance is documented.
-3. Review the full 355-commit / 148-file PR diff and agree on the integration strategy before merge.
-4. Re-query the live PR #63 head and verify the exact-head matrix and artifact if the branch changes.
+3. Review the full 361-commit / 149-file PR diff and agree on the integration strategy before merge.
+4. The new documentation commit must receive its own exact-head CI validation and sanitized artifact rebuild/reinspection.
 5. Integrate Stage 32 only after all blockers are closed. Integration into development `main` is not public publication.
 6. Copy/export to `Leruchii/Leruchi` or create a public release only after separate explicit user approval and the controlled export gate.
 7. Production deployments must provide a trusted capability-grant issuer and revocation authority; test-only fixtures do not prove production deployment readiness.
@@ -58,36 +60,6 @@ Closed as superseded with explanatory comments; none was merged:
 - Branches may intentionally differ while a PR is open. State exact SHAs, ancestry, and checks; never imply candidate and `main` are identical.
 - After every repository-changing commit, inspect the live head and CI status again. Never claim a change was tested, merged, or published unless GitHub confirms it.
 
-
-## Verified state
-
-
-Stages 00 through 08 are validated by repository/CI evidence.
-
-Stage 03 is the Supabase Compatibility Core:
-- VALIDATED: Auth initialization, JWT verification, request-claim propagation, PostgREST access, RLS enforcement through PostgREST, tenant isolation.
-- DEFERRED: Realtime to Stage 12, Storage until a concrete product requirement, Supavisor/pooling to infrastructure/cloud work when topology and connection requirements are known.
-
-Stage 09 implementation passed unit, adversarial, and database-backed RLS mutation CI on the Stage 09 branch.
-
-Stage 10 implementation passed focused JavaScript SDK CI:
-- query builder tests passed;
-- typed parameter binding tests passed;
-- mutation builder tests passed;
-- unsafe identifier/depth/result guardrail tests passed;
-- engine-fragment rejection tests passed;
-- HTTP transport bearer-token/path test passed;
-- SDK module import passed.
-- Stage 10 PR #12 was merged to main as `62366581a44183ed500a121ec3c9890d72ef21c5`.
-
-Stage 11 implementation passed focused CLI CI:
-- CLI parser tests passed;
-- deterministic Schema Catalog type-generation tests passed;
-- project configuration tests passed with token non-persistence;
-- graph query delegation tests passed;
-- unsafe identifier tests passed;
-- CLI import passed.
-Stage 11 PR #13 was merged as `278fef3679afc4d71834cfe0cb9bada5191bf81b`. The later catalog-tenancy hardening was merged in PR #15 as `b296635451e6bc24b4bb37ecbe9867ecaf920e98`. Stage 11 now has executable evidence for migrations, remote Schema Catalog inspection, tenant-private metadata isolation and architecture regression auditing.
 
 ## Stage 09 objective
 

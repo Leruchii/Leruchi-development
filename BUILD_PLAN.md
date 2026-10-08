@@ -1315,7 +1315,7 @@ The first public Core release is a readiness gate, not an arbitrary stage number
 
 ## Stage 31 — OSS Core Readiness Gate
 
-**Status:** VALIDATED technically on the Stage 32 candidate branch, not yet integrated into main. Exact candidate code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff` passed the sanitized OSS readiness audit (184 files) and the 57/57 exact-head workflow matrix. Node.js 24 is the only supported runtime; Apache-2.0 is the selected license.
+**Status:** The readiness gate passed in an earlier candidate snapshot. The current Stage 32 candidate is tracked in the live checkpoint below; earlier SHA/matrix evidence is historical and must not be reused for a newer head. Node.js 24 is the only supported runtime; Apache-2.0 is the selected license.
 
 Public publication remains separately gated on repository visibility remediation, formal product-name clearance, final artifact review and explicit release approval.
 
@@ -1326,23 +1326,23 @@ Public publication remains separately gated on repository visibility remediation
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS — technical checks are green on the verified candidate snapshot; integration and public publication remain blocked.**
+**Status: IN PROGRESS — technical checks were green on the pre-reconciliation candidate; the documentation reconciliation creates a new tip that must be revalidated. Integration and public publication remain blocked.**
 
 Verified checkpoint (2026-10-09):
 - Development `main`: `2e3997a75c709b58da14c454b356ae9778d1e1be`.
-- Candidate PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63), draft/open, branch `stage32-oss-publication-prep`. The live PR description is the authoritative pointer to the current branch tip and latest exact-head CI.
-- Verified source candidate SHA: `c40da1f25a3d2d372310f28bfadbecc5708d13cb`. Its exact-head matrix completed **36/36 successfully with 0 failures**, including Stage 31 readiness, Stage 32 candidate, Stage 11 CLI, Stage 13 Graph Studio, Stage State Gate, PR #63 checks and Architecture Regression Audit.
-- Exact-head Stage 32 run: [37833464361](https://github.com/Leruchii/Leruchi-development/actions/runs/37833464361). Exact-head PR check: [37833464172](https://github.com/Leruchii/Leruchi-development/actions/runs/37833464172).
-- Sanitized export artifact `leruchi-oss-core-candidate`, ID `11573439350`, produced by run `37833464361` from that exact source candidate SHA. ZIP SHA-256: `ac60d3fe0346804478508c6b45399be8773e7fb04d622233271777b793e5626a`; packaged tar.gz SHA-256: `436efd61f12dbc084fd881ef97ce8596629c1f7c4c1f372ee18d37f78f806ca6`.
-- Independent inspection of that artifact: 184 files; `.nvmrc = 24`; package engine `>=24 <25`; no GitHub PAT-pattern matches and no retired `Fikunmii/vibeDB` repository-name matches. Product-name clearance remains a separate open gate. Node.js 20 is prohibited.
-- OWASP ASVS 5.0.0 is used as a verification profile; this is not a claim of full ASVS compliance.
-- PR reconciliation: #14, #22, #26, #29 and #60 are closed and unmerged; #64 and #65 are closed and merged in their respective histories. Migration safety coverage from #14 is present in the canonical CLI migration path and tests, and Stage 11 exact-head CI passed. Do not wholesale-merge stale branches.
-- Live compare is broad: **359 commits ahead, 0 behind, 149 changed files, 5,848 additions, 574 deletions**. This needs deliberate diff-level integration review; it is not a Stage-32-only change.
+- Candidate PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63), draft/open, branch `stage32-oss-publication-prep`.
+- Pre-reconciliation source candidate SHA: `bf650537f90650f96ddca0fac33281ee545d46e1`. The documentation commit creates a new candidate SHA and requires fresh exact-head CI.
+- The prior exact-head matrix completed **36/36 successfully with 0 failures**, including Stage 31 readiness, Stage 32 candidate, Stage 11 CLI, Stage 13 Graph Studio, Stage State Gate, PR #63 checks and Architecture Regression Audit. This is historical evidence for the prior SHA only.
+- Exact-head Stage 32 run: [37833835499](https://github.com/Leruchii/Leruchi-development/actions/runs/37833835499). Exact-head PR check: [37833833283](https://github.com/Leruchii/Leruchi-development/actions/runs/37833833283).
+- Sanitized export artifact `leruchi-oss-core-candidate`, ID `11573439776`, from run `37833835499`, source SHA `bf650537f90650f96ddca0fac33281ee545d46e1`. ZIP SHA-256: `f4895023e7e3f82f4504cca8f18552eccf18be999386d499eace8bbd92174a7d`; packaged tar.gz SHA-256: `436efd61f12dbc084fd881ef97ce8596629c1f7c4c1f372ee18d37f78f806ca6`.
+- Prior artifact inspection: 184 files; `.nvmrc = 24`; package engine `>=24 <25`; no GitHub PAT-pattern matches and no retired `Fikunmii/vibeDB` repository-name matches. These results are not a substitute for rebuilding and inspecting an artifact from the new SHA.
+- Node.js 24 is the only supported runtime; Node.js 20 is prohibited. OWASP ASVS 5.0.0 is a verification profile, not a claim of full ASVS compliance.
+- PR reconciliation: #14, #22, #26, #29 and #60 are closed and unmerged; #64 and #65 are closed and merged in their respective histories. Do not wholesale-merge stale branches.
+- Live compare before documentation reconciliation: **361 commits ahead, 0 behind, 149 changed files, 5,852 additions, 576 deletions**. This needs deliberate diff-level integration review; it is not a Stage-32-only change.
 - Formal product-name clearance remains open. No public tag/release has been created. Public export/copy/release requires separate explicit approval.
 - The OSS runtime provides signed-grant verification and a fail-closed revocation adapter, not a deployed production grant issuer/revocation control plane. Deployments must provide a trusted authority.
 
-This checkpoint records the verified source candidate above. Because synchronizing checkpoint documentation itself creates a new branch tip, the live PR #63 description and exact-head CI runs must be checked again for the resulting tip; do not reuse an earlier green matrix or artifact as proof for a different SHA.
-
+The live PR #63 description and the current candidate's exact-head CI/artifact evidence must be refreshed after this documentation commit. Do not claim the new tip is validated until GitHub confirms it.
 ### Stage 32 exit gate
 
 1. Repository visibility is user-owned and will be handled by the user; verify the result before integration.
