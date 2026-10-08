@@ -16,7 +16,7 @@ assert.match(catalog, /request\.jwt\.claims/, "catalog policy must derive privat
 if (!catalog.includes("GRANT SELECT ON vibe_meta.schema_catalog_entries, vibe_meta.graph_catalog_registry TO vibe_runtime;")) fail("catalog grants must remain runtime-scoped");
 if (/GRANT SELECT.*TO PUBLIC/.test(catalog)) fail("catalog data grants must not be PUBLIC");
 
-const roles = read("infra/docker/postgres/init/01-vibe-bootstrap.sh");
+const roles = read("infra/docker/postgres/init/01-leruchi-bootstrap.sh");
 assert.match(roles, /CREATE ROLE vibe_runtime[\s\S]*NOBYPASSRLS/, "runtime role must not bypass RLS");
 assert.match(roles, /CREATE ROLE vibe_migrator[\s\S]*NOBYPASSRLS/, "migrator role must not bypass RLS");
 if (roles.includes("CREATE ROLE vibe_realtime")) assert.match(roles, /CREATE ROLE vibe_realtime[\s\S]*NOBYPASSRLS/, "realtime role must not bypass RLS");
