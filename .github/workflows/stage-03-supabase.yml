@@ -49,6 +49,26 @@ jobs:
           curl -fsS http://127.0.0.1:9999/health
           curl -fsS http://127.0.0.1:3000/
 
+      - name: Prove unbound tenant claims fail closed
+        run: |
+          docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -X <<'SQL'
+          SET ROLE supabase_auth_admin;
+          DO $check$
+          DECLARE
+            claims jsonb;
+          BEGIN
+            claims := vibe_auth.custom_access_token_hook(jsonb_build_object(
+              'user_id', '00000000-0000-0000-0000-000000000199',
+              'claims', jsonb_build_object('tenant_id', 'tenant_b')
+            ))->'claims';
+            IF claims ? 'tenant_id' THEN
+              RAISE EXCEPTION 'Unbound caller-supplied tenant_id must be removed';
+            END IF;
+          END
+          $check$;
+          RESET ROLE;
+          SQL
+
       - name: Verify signed JWT reaches PostgREST RLS
         run: |
           TOKEN=$(python3 - <<'PY'

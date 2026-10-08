@@ -16,6 +16,8 @@ services:
       GOTRUE_JWT_EXP: "3600"
       GOTRUE_JWT_SECRET: leruchi-local-jwt-secret-change-me-32
       GOTRUE_JWT_ISSUER: http://localhost:9999
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: pg-functions://postgres/vibe_auth/custom_access_token_hook
       GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
       GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: "false"
       GOTRUE_MAILER_AUTOCONFIRM: "false"
