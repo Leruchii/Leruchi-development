@@ -1,46 +1,60 @@
 # Leruchi Build State
 
-This file is the canonical handoff checkpoint for coding agents. It must be reconciled against live Git history, implementation, tests, CI, and `BUILD_PLAN.md` before work continues. Executable evidence wins over stale documentation.
+This file is the canonical handoff checkpoint for coding agents. Verify it against live Git history, implementation, tests, CI, and `BUILD_PLAN.md` before continuing. Executable evidence wins over stale documentation.
 
-## Current checkpoint — verified 2026-10-09
+## Current checkpoint — synchronized 2026-10-09
 
-### Repository and branch state
+### Repository and integration state
 - Development repository: [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development), default branch `main`.
-- Public OSS destination: [`Leruchii/Leruchi`](https://github.com/Leruchii/Leruchi); public repository currently contains only its VibeDB README.
 - Internal control repository: [`Leruchii/Leruchi-internal`](https://github.com/Leruchii/Leruchi-internal).
-- Live `main` HEAD at this verification: `2e3997a75c709b58da14c454b356ae9778d1e1be`.
-- Active Stage 32 candidate branch: `stage32-oss-publication-prep`; live HEAD observed before this checkpoint-only edit: `03964419000390569969c8c76ebc945777df28e6`.
-- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) is OPEN and DRAFT. Stage 32 is not merged into `main`; public OSS publication has NOT occurred.
-- The last validated product-code baseline remains Stage 30 — Agent Trace & Replay at `2bf62dc138667d834728d0dbddbdd8c29dd1fda9`. Stage 32 candidate work is publication preparation, not a claim that product integration or release is complete.
+- Public OSS destination: [`Leruchii/Leruchi`](https://github.com/Leruchii/Leruchi).
+- Development `main` HEAD observed: `2e3997a75c709b58da14c454b356ae9778d1e1be`.
+- Stage 32 candidate branch: `stage32-oss-publication-prep`.
+- Source candidate SHA validated in this checkpoint: `fc5c679d365aea5bbc11c64749aec4d4340a519e`.
+- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains OPEN and DRAFT. Stage 32 is not merged into `main`; public publication has NOT occurred.
+- This checkpoint is a metadata synchronization after the verified source candidate. The live branch/PR head and its own CI must always be re-queried before integration; do not assume a parent commit's results transfer to a later SHA.
+- The product-code baseline remains Stage 30 — Agent Trace & Replay at `2bf62dc138667d834728d0dbddbdd8c29dd1fda9`. Stage 32 is controlled publication preparation, not a claim that product integration or release is complete.
 
-### Exact-head CI snapshot
-- On candidate HEAD `03964419000390569969c8c76ebc945777df28e6`, the latest queried matrix contained **36 runs: 26 succeeded, 10 in progress, 0 failures observed**. This is an incomplete matrix, not a green-matrix claim.
-- The Stage 32 publication-candidate workflow succeeded on that SHA: [run 37828447434](https://github.com/Leruchii/Leruchi-development/actions/runs/37828447434).
-- Other successful runs included Stage 31 OSS Core Readiness, Stage 03 Supabase compatibility, Stage State Gate, and Architecture Regression Audit. The Stage 09, 08, 15, 20, 13, 11, 17, 30, and 12 runs were still in progress at the snapshot; re-query all required checks against the live PR head before any review/integration.
-- This checkpoint edit itself creates a new commit and triggers CI. The new head's CI is pending until GitHub reports its results. Never transfer the previous head's status to the new head.
+### Exact-head CI evidence
+- On source candidate SHA `fc5c679d365aea5bbc11c64749aec4d4340a519e`, all **36/36 workflow runs completed successfully**, with **0 failures**. Matrix query was made after all runs completed.
+- Exact-head Stage 32 sanitized candidate workflow: [run 37830273857](https://github.com/Leruchii/Leruchi-development/actions/runs/37830273857) — success.
+- Exact-head Stage 31 OSS Core Readiness: [run 37830273847](https://github.com/Leruchii/Leruchi-development/actions/runs/37830273847) — success.
+- Exact-head Stage 11 CLI: [run 37830273814](https://github.com/Leruchii/Leruchi-development/actions/runs/37830273814) — all test, migration, Schema Catalog integration, and architecture-audit steps succeeded; the workflow ultimately completed successfully.
+- Exact-head Stage 13 Graph Studio: [run 37830273912](https://github.com/Leruchii/Leruchi-development/actions/runs/37830273912) — success.
+- Exact-head Architecture Regression Audit: [run 37830273951](https://github.com/Leruchii/Leruchi-development/actions/runs/37830273951) — success.
+- Node.js policy is Node.js 24 only (`.nvmrc` = `24`; package engine `>=24 <25`). Node.js 20 must not be introduced.
+- OWASP ASVS 5.0.0 is a verification profile; this is not a claim of full ASVS compliance.
 
-### Release and security blockers
-- **Critical repository visibility blocker:** GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as PUBLIC (`private: false`). The intended architecture requires both to be private. An authorized organization/repository administrator must change visibility and verify the resulting settings. Do not export/copy internal-control material or integrate Stage 32 while this blocker remains.
-- **Legacy PR reconciliation remains open:** PRs [#14](https://github.com/Leruchii/Leruchi-development/pull/14), [#22](https://github.com/Leruchii/Leruchi-development/pull/22), [#26](https://github.com/Leruchii/Leruchi-development/pull/26), and [#29](https://github.com/Leruchii/Leruchi-development/pulls) require individual review. Do not merge old branches wholesale. Specifically port and validate still-relevant migration-runner safety behavior/tests from #14 against current `packages/leruchi-cli`.
-- **Product-name clearance remains open.** Keep the public brand provisional until clearance is documented.
-- **Production authorization remains a deployment gate:** signed capability grants and fail-closed revocation checks are implemented, but a deployed trusted production grant issuer/revocation authority is not included. The deployment must provide one.
-- **Node.js policy:** Node.js 24 only (`.nvmrc` = `24`; package engine `>=24 <25`). Do not introduce Node.js 20 into packages, CI, Docker, scripts, docs, or build environments.
-- The previously recorded candidate archive digests apply only to their exact originating commits/artifacts. Do not claim a prior digest describes a newly built artifact without verifying the artifact from the exact run.
-- OWASP ASVS 5.0.0 verification profile is used; this is **not** a claim of full ASVS compliance.
+### Sanitized export artifact — exact source candidate
+- Artifact was produced by the Stage 32 workflow for exact SHA `fc5c679d365aea5bbc11c64749aec4d4340a519e`, not inferred from a prior run.
+- Artifact: `leruchi-oss-core-candidate`, ID `11573041980`, from run `37830273857`.
+- Packaged `leruchi-oss-core-candidate.tar.gz` SHA-256: `436efd61f12dbc084fd881ef97ce8596629c1f7c4c1f372ee18d37f78f806ca6`.
+- Downloaded outer ZIP SHA-256: `642b1e46ac646c6a5ccb5b8659874da0468137c2305ba8661b51c2222ea0d5ca`.
+- Independently inspected the extracted archive: 184 files; `.nvmrc` is `24`; root package engine is `>=24 <25`; no matches for retired product-name strings or GitHub PAT-pattern strings were found.
+- The candidate workflow's allowlist validation, sanitized export audit, readiness audit, and reproducible rebuild/package comparison all passed.
+- The Docker image title and OSS readiness/backup test fixtures were updated to use the current Leruchi identity before this artifact was built.
 
-### Required next actions — in order
-1. Have an authorized administrator set the development and internal-control repositories to private, then verify both report `private: true`.
-2. Reconcile PRs #14, #22, #26, and #29 individually; port relevant migration-runner safeguards/tests from #14 and run focused Stage 11 plus full regression checks.
-3. Wait for all required workflows on the current PR #63 head to finish. Inspect any failure logs, fix root causes, and rerun the matrix on the resulting exact SHA.
-4. Refresh this checkpoint and PR #63 description using live branch/PR SHAs and exact-head CI results. A doc-only commit also needs its own CI observation.
-5. Review the artifact built from the exact candidate SHA, export allowlist, sanitized file list, license, provenance, and diff.
-6. Only after visibility, legacy-PR, exact-head CI, artifact, and naming blockers are resolved, request review and integrate Stage 32 into development `main`. This is not public publication.
-7. Copy to `Leruchii/Leruchi` or create a public release only after explicit user approval and the controlled export gate.
+### Legacy pull request reconciliation
+- Closed as superseded after reviewing the current canonical implementation and documenting the reason on each PR:
+  - [PR #14](https://github.com/Leruchii/Leruchi-development/pull/14) — stale retired `packages/vibe-cli` implementation; canonical CLI/migration code is under `packages/leruchi-cli`, with current Stage 11 integration tests.
+  - [PR #22](https://github.com/Leruchii/Leruchi-development/pull/22) — superseded Graph API implementation; current canonical runtime is present and regression-tested.
+  - [PR #26](https://github.com/Leruchii/Leruchi-development/pull/26) — superseded browser-validation branch; maintained Studio browser suite is under `apps/studio/tests/browser/`.
+  - [PR #29](https://github.com/Leruchii/Leruchi-development/pull/29) — superseded benchmark branch; maintained renderer benchmark is under `apps/studio/tests/browser/renderer-benchmark.spec.ts`.
+- Do not merge the old, heavily diverged branches wholesale. Their commit histories remain available for reference; any newly discovered safety gap must be ported to the canonical implementation and tested as a focused change.
+
+### Remaining blockers and next actions
+- **Repository visibility is user-owned.** GitHub previously reported both development and internal repositories as public. The user will remediate this. Before integration, re-query and verify the required private settings; do not infer that the setting has changed.
+- Product-name clearance remains pending. Keep the public brand provisional until clearance is recorded.
+- Production deployments must provide a trusted capability-grant issuer and revocation authority. Test-only control-plane fixtures do not prove production deployment readiness.
+- Re-query the live PR #63 head and full required CI matrix after this checkpoint synchronization; inspect and repair any failure on the exact new SHA.
+- Verify the Stage 32 artifact from that exact new SHA and refresh the PR #63 description with its observed result.
+- Only after CI, artifact/provenance/license review, user-owned visibility remediation, naming clearance, and explicit approval are closed may Stage 32 be integrated into development `main`. Integration is not public publication.
+- Copy to `Leruchii/Leruchi` or create a public release only after a separate explicit user approval and the controlled export gate.
 
 ### Synchronization rules
 - `BUILD_PLAN.md` is the canonical architecture/stage plan; `AGENTS.md` is the engineering process; this file is the handoff checkpoint; `knowledge/` stores durable decisions/evidence.
-- Branches may intentionally differ while a PR is open. State the exact SHA, ancestry, and checks; never imply the feature branch and `main` are identical.
-- After every repository-changing commit, inspect the new live SHA, refresh the PR description/checkpoint, and verify checks on that exact SHA. Never claim a change was pushed, tested, merged, or published unless GitHub confirms it.
+- Branches may intentionally differ while a PR is open. State exact SHAs, ancestry, and checks; never imply the candidate branch and `main` are identical.
+- After every repository-changing commit, inspect the live head and run status again. Never transfer a previous SHA's status to a new SHA.
 
 ## Verified state
 
