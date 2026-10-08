@@ -43,11 +43,29 @@ jobs:
       - name: Seed live Studio tenant data
         working-directory: .
         run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
+      - name: Start test capability control plane
+        working-directory: .
+        env:
+          LERUCHI_CONTROL_PLANE_TOKEN: stage-13-control-plane-secret
+          LERUCHI_CONTROL_PLANE_PORT: 4101
+        run: node scripts/start-test-capability-control-plane.mjs > /tmp/leruchi-stage13-control-plane.log 2>&1 &
+      - name: Wait for test capability control plane
+        working-directory: .
+        run: |
+          for i in {1..30}; do
+            if grep -q test-control-plane-ready /tmp/leruchi-stage13-control-plane.log 2>/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/leruchi-stage13-control-plane.log || true
+          exit 1
       - name: Start live Graph API
         working-directory: .
         env:
           LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi
           LERUCHI_JWT_SECRET: stage-13-e2e-secret
+          LERUCHI_CAPABILITY_ISSUER: leruchi-test-control-plane
+          LERUCHI_CAPABILITY_CONTROL_PLANE_URL: http://127.0.0.1:4101
+          LERUCHI_CAPABILITY_CONTROL_PLANE_TOKEN: stage-13-control-plane-secret
           LERUCHI_GRAPH_API_PORT: 4100
         run: node scripts/start-stage13-graph-api.mjs > /tmp/leruchi-stage13-api.log 2>&1 &
       - name: Configure live Studio endpoint
@@ -76,7 +94,7 @@ jobs:
         run: npm run build
       - name: Show live Graph API logs on failure
         if: failure()
-        run: cat /tmp/leruchi-stage13-api.log || true
+        run: cat /tmp/leruchi-stage13-api.log /tmp/leruchi-stage13-control-plane.log || true
       - name: Cleanup live database
         if: always()
         working-directory: .
