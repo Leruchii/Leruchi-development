@@ -16,7 +16,8 @@ test("runtime and realtime database identities are separated",()=>{
 test("realtime outbox is fail-closed for runtime tenant access",()=>{
   assert.match(migration,/ENABLE ROW LEVEL SECURITY/);
   assert.match(migration,/FORCE ROW LEVEL SECURITY/);
-  assert.match(migration,/tenant_id = COALESCE\(NULLIF\(current_setting\("request\.jwt\.claims", true\)/);
+  // PostgreSQL accepts either single- or double-quoted source text in this static policy check.
+  assert.match(migration,/tenant_id = COALESCE\(NULLIF\(current_setting\(['"]request\.jwt\.claims['"], true\)/);
   assert.match(migration,/TO vibe_runtime[\s\S]*WITH CHECK/);
   assert.match(migration,/TO vibe_realtime[\s\S]*USING \(true\)/);
   assert.match(realtime,/role!==\"realtime_relay\"/);
