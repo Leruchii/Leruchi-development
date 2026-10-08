@@ -27,3 +27,14 @@ test("public export manifest does not allow the private control directories", ()
     assert.equal(includeText.includes(privateName), false, `private path appears in include: ${privateName}`);
   }
 });
+
+test("private release-gate tests are excluded despite the broad tests/** include", () => {
+  const manifest = JSON.parse(fs.readFileSync("OSS_EXPORT_MANIFEST.json", "utf8"));
+  assert.ok(manifest.include.includes("tests/**"));
+  for (const privateTest of [
+    "tests/oss-core-readiness/public-export-manifest.test.mjs",
+    "tests/security/owasp-asvs-profile.test.mjs",
+  ]) {
+    assert.ok(manifest.exclude.includes(privateTest), "missing explicit exclusion: " + privateTest);
+  }
+});
