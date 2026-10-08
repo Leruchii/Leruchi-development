@@ -1326,26 +1326,26 @@ Public publication remains separately gated on repository visibility remediation
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS — technical candidate gates green; integration/publication blocked.**
+**Status: IN PROGRESS — candidate CI and artifact checks pass; integration and public publication remain blocked.**
 
 Live checkpoint verified 2026-10-09:
-- Development main at verification: `aa574ec0f3a1e5c28a34d15892730605b5aecbd7`; product-code baseline remains Stage 30 at `2bf62dc138667d834728d0dbddbdd8c29dd1fda9`.
-- Candidate PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63), draft/open, branch `stage32-oss-publication-prep`.
-- Last fully validated candidate code HEAD: `229efd856123ff21335d106138e774d569e2798a`; 35/35 workflow runs passed on that exact SHA, including Stage 31 readiness, Stage 32 candidate, Stage 03 compatibility, Stage State Gate and Architecture Regression Audit. [Stage 32 candidate run](https://github.com/Leruchii/Leruchi-development/actions/runs/37808685995).
-- Documentation-only synchronization commits and a merge parent have since been added to align checkpoint/plan/agent instructions with main. The SHA above is the last validated code SHA, not the current branch tip. Resolve the live head and verify checks on it before review or integration; do not treat old green checks as validation for a newer SHA.
-- PR #63 body has been refreshed for the synchronization commit; always verify the named SHA against the live PR head before review. Every new commit requires fresh exact-head checks.
-- Last recorded normalized archive has 184 files and SHA-256 `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`. This is historical artifact evidence; it must not be attributed to a later HEAD unless that exact run reproduces it. Node.js 24 only. ASVS 5.0.0 profile verification passed; full ASVS compliance is not claimed.
-- Legacy PRs [#14](https://github.com/Leruchii/Leruchi-development/pull/14), [#22](https://github.com/Leruchii/Leruchi-development/pull/22), [#26](https://github.com/Leruchii/Leruchi-development/pull/26), and [#29](https://github.com/Leruchii/Leruchi-development/pull/29) remain open and require diff-level reconciliation. Port still-relevant migration safety guarantees/tests from #14; do not wholesale-merge stale VibeDB-era branches.
-- GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as public, despite the intended private topology. An authorized administrator must change and verify visibility; do not merge Stage 32 or publish while this remains unresolved.
-- Product-name clearance remains open. Public destination `Leruchii/Leruchi` remains unchanged (README only); no public tag/release exists. Explicit release approval is required.
-- The OSS runtime provides signed grant verification and a fail-closed revocation adapter, not a deployed production grant issuer/revocation control plane. Deployments must provide a trusted authority.
+- Development `main`: `2e3997a75c709b58da14c454b356ae9778d1e1be`.
+- Candidate branch: `stage32-oss-publication-prep`; PR [#63](https://github.com/Leruchii/Leruchi-development/pull/63) is open and draft.
+- Exact candidate HEAD verified: `d39c49aeb2c9a1aae62cf44279494a235361da56`.
+- Exact-HEAD matrix: **36/36 workflow runs succeeded, 0 failures**, all reporting the candidate SHA. This includes Stage 31 readiness, Stage 32 candidate, Stage 11 CLI, Stage 13 Graph Studio, Stage 30 trace checks, Stage State Gate, PR #63 checks, and Architecture Regression Audit.
+- Stage 32 run: [37831617690](https://github.com/Leruchii/Leruchi-development/actions/runs/37831617690); PR check: [37831621640](https://github.com/Leruchii/Leruchi-development/actions/runs/37831621640).
+- Artifact ID `11573287694`, name `leruchi-oss-core-candidate`, produced by run `37831617690` on that exact HEAD. Downloaded ZIP SHA-256: `c125e8810ec788cbd6eec72dc51b33c5ff531c8047860f3962f6d89debec099a`. Packaged tar.gz SHA-256: `436efd61f12dbc084fd881ef97ce8596629c1f7c4c1f372ee18d37f78f806ca6`.
+- Independent artifact inspection: 184 files; `.nvmrc = 24`; execution-engine package engine `>=24 <25`; no GitHub PAT-pattern matches and no retired `Fikunmii/vibeDB` repository-name matches. Archive is sanitized for those checks; package names/product-name clearance still require separate review.
+- Node.js 24 only. OWASP ASVS 5.0.0 is a verification profile; full ASVS compliance is not claimed.
+- PR reconciliation observed live: #14, #22, #26, #29 and #60 are closed and unmerged; #64 and #65 are closed and merged in their respective histories. Do not wholesale-merge stale branches. Migration runner safety coverage from #14 is represented in the canonical CLI migration path and tests; Stage 11 exact-HEAD CI passed.
+- Product-name clearance remains open. Public destination `Leruchii/Leruchi` is unchanged; no public tag/release has been created. Public export/copy/release requires separate explicit approval.
+- The OSS runtime provides signed-grant verification and a fail-closed revocation adapter, not a deployed production grant issuer/revocation control plane. Deployments must provide a trusted authority.
 
 ### Stage 32 exit gate
 
-1. An authorized administrator changes development/internal repository visibility to private and verifies `private: true`.
-2. Reconcile legacy PRs by reviewing unique diffs and porting only required, relevant changes. Validate migration runner safety and tests after any port.
-3. Synchronize PR #63 description, BUILD_STATE, BUILD_PLAN, candidate SHA, artifact provenance, and exact-head workflow evidence.
-4. All required exact-head CI passes after the final candidate commit.
-5. Review Apache-2.0 licensing, formal product-name clearance, export manifest, sanitized artifact file list, provenance, and public diff.
-6. Integrate Stage 32 into development main only after the security and reconciliation gates are closed. This is separate from public publication.
-7. Publish/tag only after explicit approval and record the resulting public commit, artifact, tag and release evidence.
+1. User-owned repository visibility remediation is handled separately by the user; verify the result before integration.
+2. Product-name clearance must be resolved.
+3. Review the full candidate diff and agree on integration strategy: live compare reports **357 commits ahead, 0 behind, 148 changed files**. This is broader than a Stage 32-only change.
+4. Any candidate commit invalidates prior exact-HEAD evidence; rerun the required matrix and regenerate/reinspect the sanitized artifact for the new SHA.
+5. Integrate Stage 32 into development `main` only after the blockers above are closed. This is separate from public publication.
+6. Publish/tag only after explicit approval and record the resulting public commit, artifact, tag, and release evidence.
