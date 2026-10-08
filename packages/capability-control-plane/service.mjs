@@ -131,7 +131,7 @@ export function createCapabilityControlPlane({
       }
       const lookupMatch = url.pathname.match(/^\/v1\/capability-grants\/([^/]+)\/revocation$/);
       if (req.method === "GET" && lookupMatch) {
-        if (req.headers.authorization !== "Bearer " + internalBearerToken) throw problem(401, "UNAUTHENTICATED", "Internal control-plane authentication required");
+        if (!hasInternalAuthorization(req, internalBearerToken)) throw problem(401, "UNAUTHENTICATED", "Internal control-plane authentication required");
         const jti = decodeURIComponent(lookupMatch[1]);
         const grant = await store.getGrant(jti);
         if (!grant) return send(200, { active: false, revoked: true });
