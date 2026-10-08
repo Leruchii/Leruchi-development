@@ -87,7 +87,7 @@ export function createGraphApiServer({pool,jwtSecret,jwtIssuer=null,jwtAudience=
       const claims=requireCapabilityGrant
         ?verifyEdDsaCapabilityGrant(auth.slice(7),{publicKeys:capabilityPublicKeys,issuer:jwtIssuer,audience:jwtAudience??"leruchi"})
         :verifyHs256Jwt(auth.slice(7),jwtSecret,Math.floor(Date.now()/1000),{issuer:jwtIssuer,audience:jwtAudience});
-      if(!requireCapabilityGrant&&(claims.jti!==undefined||claims.aud==="leruchi")){
+      if(!requireCapabilityGrant&&(claims.jti!==undefined||claims.aud==="leruchi"||(Array.isArray(claims.aud)&&claims.aud.includes("leruchi")))){
         const error=new Error("Capability grants must be verified with the configured EdDSA public keys");
         error.code="UNAUTHORIZED";
         throw error;

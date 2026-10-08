@@ -325,9 +325,11 @@ test("Graph API rejects HS256 tokens that claim to be EdDSA capability grants",a
   const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
   const address=await api.listen();
   try{
-    const forged=token({sub:"u",tenant_id:"tenant_a",jti:"jti-forged",aud:"leruchi",capabilities:["graph:read"],exp:Math.floor(Date.now()/1000)+60},"secret");
-    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+forged}});
-    assert.equal(res.status,401);
+    for(const aud of ["leruchi",["leruchi"]]){
+      const forged=token({sub:"u",tenant_id:"tenant_a",jti:"jti-forged",aud,capabilities:["graph:read"],exp:Math.floor(Date.now()/1000)+60},"secret");
+      const res=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+forged}});
+      assert.equal(res.status,401);
+    }
     assert.equal(catalogCalls,0);
   }finally{await api.close();}
 });
