@@ -63,3 +63,5 @@ A second review pass found two Graph API boundary defects in the candidate and a
 - Route/graph scope is checked against the actual request. The Schema Catalog scope check now runs only for Schema Catalog requests; previously it ran unconditionally and could deny a valid grant scoped to a graph query.
 
 Added regression coverage for rejecting HS256 grant-shaped tokens and allowing an active EdDSA grant scoped to its requested graph route. These fixes are pending exact-head CI and must not be treated as validated until the workflow passes.
+
+- The revocation adapter now treats `active: false` as denial even when a response reports `revoked: false`; a regression test prevents inactive control-plane decisions from being treated as authorized. This remains pending exact-head CI.
