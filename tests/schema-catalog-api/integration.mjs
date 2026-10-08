@@ -4,8 +4,8 @@ import {createHmac} from "node:crypto";
 import {createPool, createSchemaCatalogServer} from "../../packages/schema-catalog-api/index.mjs";
 
 const secret = "stage-11-test-secret";
-const adminUrl = process.env.VIBE_ADMIN_DATABASE_URL ?? "postgresql://postgres:postgres@127.0.0.1:5432/vibedb";
-const runtimeUrl = process.env.VIBE_RUNTIME_DATABASE_URL ?? "postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb";
+const adminUrl = process.env.VIBE_ADMIN_DATABASE_URL ?? "postgresql://postgres:postgres@127.0.0.1:5432/leruchi";
+const runtimeUrl = process.env.VIBE_RUNTIME_DATABASE_URL ?? "postgresql://vibe_runtime:runtime@127.0.0.1:5432/leruchi";
 
 function token(tenant_id) {
   const enc=v=>Buffer.from(JSON.stringify(v)).toString("base64url");
