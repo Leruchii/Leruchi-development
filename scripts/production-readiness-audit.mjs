@@ -64,8 +64,8 @@ export function runReadinessAudit(root=process.cwd()){
     "package.json",
     "packages/graph-api/package.json",
     "packages/schema-catalog-api/package.json",
-    "packages/vibe-cli/package.json",
-    "packages/vibe-sdk/package.json",
+    "packages/leruchi-cli/package.json",
+    "packages/leruchi-sdk/package.json",
     "apps/studio/package.json"
   ];
   for(const rel of packageFiles){
