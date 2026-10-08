@@ -927,3 +927,36 @@ The next candidate adds a live MCP-to-Graph API test using a grant jti configure
 ## Self-hosted capability authority documentation candidate — 2026-10-08
 
 Adds a public guide describing the external EdDSA grant issuer and revocation endpoint contract, strict-mode environment, key rotation, fail-closed behavior, membership-aware issuance obligations and deployment checklist. It explicitly states that the OSS runtime contains a verifier/adapter, not a production issuer, and that self-hosted/third-party authority is supported without Leruchi Cloud. The guide is eligible for export under docs/**. Candidate has not run CI.
+
+## Stage 32 exact-head security and reproducible candidate validation — 2026-10-08
+
+Status remains: IN_PROGRESS. The public release has not been approved or published.
+
+Validated source head: `2bb4bad218a644748d50794da0b565a799b84166` on PR #64, based on Stage 32 branch head `07c76120856165c5a4dc98cb9aa223f20cbc8b06`.
+
+Exact-head evidence:
+- All 30 pull-request regression workflows completed successfully with zero failures.
+- Stage 03 Supabase compatibility passed, including real Auth-issued access-token checks: active membership issued the expected tenant claim; a revoked tenant selector emitted no tenant claim; PostgREST RLS did not return cross-tenant rows.
+- Architecture Regression Audit and Stage State Gate passed.
+- Stage 32 candidate workflow run `37787015818` passed Node.js 24 runtime policy, the OWASP ASVS 5.0.0 verification profile, public export manifest checks, source export audit, candidate audit, packaging, and upload.
+- Candidate contains 186 files and the candidate audit passed. The ASVS profile verification passed; do not claim full ASVS compliance.
+- Two independent sanitized candidate builds produced byte-identical normalized archives. The archive uses stable path ordering, fixed file timestamps and ownership, and gzip without timestamp/name metadata.
+- Candidate archive SHA-256: `b5c9979dbf85923a059f762f1abc6980ff378d10e5373d3c5b9ae5cfbabb175a`.
+- GitHub Actions uploaded artifact digest (outer artifact ZIP): `f8d6c175901debf544602660dec8f63436a998e1066ffe91a7fef887a564103b`.
+- The candidate builder preserves tracked file modes and rejects symlinks within the export boundary.
+- The development database, Auth and PostgREST published ports are bound to loopback only; README documents that compatibility credentials are local development/CI only and must never be reused in production.
+- Stage 32 candidate workflow uses `actions/upload-artifact@v6`; Node.js 24 remains the only supported project runtime.
+
+Security/architecture boundaries:
+- Tenant claims are resolved against private, active membership records; user metadata is only a selector, never authorization evidence.
+- Missing/revoked membership fails closed; trusted tenant identity remains enforced by Graph API and database RLS.
+- The OSS runtime provides signed capability-grant verification and a revocation adapter, not a production grant issuer or deployed production revocation control plane.
+- Candidate workflow only builds and uploads an artifact. It does not publish to `Leruchii/Leruchi`.
+
+Exact next actions:
+1. Re-run the exact-head regression matrix after this checkpoint documentation commit; fix any failure without weakening tests.
+2. If all required checks pass, integrate PR #64 into PR #63's Stage 32 branch (not into main and not into the public repository).
+3. Re-run the candidate and full required regression matrix on the resulting exact PR #63 head.
+4. Update this checkpoint with the final integrated head and evidence.
+5. Present the sanitized candidate, checksum, exact CI evidence, remaining production limitations, and public-repository diff for explicit publication approval. Do not publish or merge the release PR without that approval.
+
