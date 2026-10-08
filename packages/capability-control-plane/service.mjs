@@ -118,7 +118,7 @@ export function createCapabilityControlPlane({
         const jti = decodeURIComponent(revokeMatch[1]);
         const updated = await store.revokeGrant(jti, clock());
         if (!updated) throw problem(404, "GRANT_NOT_FOUND", "Capability grant not found");
-        return send(200, { jti, active: true, revoked: true });
+        return send(200, { jti, active: false, revoked: true });
       }
       const lookupMatch = url.pathname.match(/^\/v1\/capability-grants\/([^/]+)\/revocation$/);
       if (req.method === "GET" && lookupMatch) {
@@ -127,7 +127,8 @@ export function createCapabilityControlPlane({
         const grant = await store.getGrant(jti);
         if (!grant) return send(200, { active: false, revoked: true });
         const expired = grant.expiresAt <= clock();
-        return send(200, { active: !expired, revoked: Boolean(grant.revokedAt) });
+        const revoked = Boolean(grant.revokedAt);
+        return send(200, { active: !expired && !revoked, revoked });
       }
       return send(404, { error: "NOT_FOUND" });
     } catch (error) {
