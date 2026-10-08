@@ -4,20 +4,20 @@ The Leruchi CLI is a thin developer tool over the JavaScript SDK and Schema Cata
 
 ## Configuration
 
-`vibe config set --base-url https://api.example` stores only the base URL in `.vibe/config.json`.
+`leruchi config set --base-url https://api.example` stores only the base URL in `.leruchi/config.json`.
 
-Authentication is supplied through `VIBE_TOKEN`; tokens are never written to project configuration.
+Authentication is supplied through `LERUCHI_TOKEN`; tokens are never written to project configuration.
 
 ## Graph query
 
 ```bash
-vibe graph query --graph vibe_security --label Account --select name --eq name=Alice --limit 25
+vibe graph query --graph leruchi_security --label Account --select name --eq name=Alice --limit 25
 ```
 
 ## Graph mutation
 
 ```bash
-vibe graph create-vertex --graph vibe_security --label Account --property name=Alice
+vibe graph create-vertex --graph leruchi_security --label Account --property name=Alice
 ```
 
 ## Schema types
@@ -28,7 +28,10 @@ vibe schema types --file catalog.json --out vibe.d.ts
 
 ## Diagnostics/local development
 
-- `vibe diagnostics` checks the configured `/health` endpoint.
-- `vibe local status` delegates to `docker compose ps`.
+- `leruchi diagnostics` checks the configured `/health` endpoint.
+- `leruchi local status` delegates to `docker compose ps`.
 
-The CLI does not compile Vibe IR, authorize tenants, bypass RLS, or accept raw SQL/Cypher. Server-side validation remains authoritative.
+The CLI does not compile Leruchi IR, authorize tenants, bypass RLS, or accept raw SQL/Cypher. Server-side validation remains authoritative.
+
+
+For compatibility, the CLI temporarily accepts the legacy `vibe` command, `.vibe/config.json`, and `VIBE_*` environment variables. New projects should use `leruchi`, `.leruchi/config.json`, and `LERUCHI_*` settings.
