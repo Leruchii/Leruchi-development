@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { generateKeyPairSync, createPublicKey, verify } from "node:crypto";
+import { generateKeyPairSync, verify } from "node:crypto";
 import { createCapabilityControlPlane } from "../../packages/capability-control-plane/service.mjs";
 
 function fixture() {
@@ -40,7 +40,7 @@ test("issuer derives subject from trusted identity, enforces tenant/policy and s
   assert.equal((await store.getGrant(res.body.grant.jti)).expiresAt, 1060);
   const [header, payload, signature] = res.body.token.split(".");
   assert.equal(JSON.parse(Buffer.from(header, "base64url")).kid, "test-key");
-  assert.equal(verify(null, Buffer.from(header + "." + payload), createPublicKey(publicKey), Buffer.from(signature, "base64url")), true);
+  assert.equal(verify(null, Buffer.from(header + "." + payload), publicKey, Buffer.from(signature, "base64url")), true);
 });
 
 test("issuer denies unauthenticated, cross-tenant, disallowed capabilities and excessive TTL", async () => {
