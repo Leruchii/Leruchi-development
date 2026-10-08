@@ -300,3 +300,14 @@ Use the checkpoint status vocabulary defined in `BUILD_STATE.md`. Code that exis
 Before integrating a large staged candidate into `main`, or publishing any sanitized OSS artifact, verify actual GitHub repository visibility through the repository API/settings. Names such as `*-development` and `*-internal` do not prove a repository is private. If either development or internal control repositories are public when intended to be private, stop merge/publication actions, alert the authorized administrator, and verify the visibility change before continuing.
 
 A green candidate workflow is not approval to merge or publish. Reconcile stacked/legacy pull requests and document any remaining branch-side commits before claiming the repository is synchronized. Keep public brand clearance, sanitized artifact review, and explicit release approval as separate gates.
+
+
+### Required live Git/CI synchronization (mandatory)
+
+Before continuing an existing stage or pull request, inspect the live default-branch SHA, all relevant branch heads, PR base/head SHAs, compare ahead/behind counts, and workflow conclusions attached to the exact current head. Conversation history and a stale BUILD_STATE/PR description are not substitutes for GitHub evidence.
+
+After every candidate-branch change, synchronize the checkpoint and PR body so they name the same current SHA and cite its current exact-head CI. A green result on an older SHA does not validate a newer commit. Feature branches may be ahead of main while a PR is open; do not merge a large candidate merely to make branch counts look synchronized. Keep checkpoint/plan content aligned across main and the active candidate while preserving the intentional code-integration boundary.
+
+Never merge or publish an OSS candidate while repository visibility, licensing/naming clearance, legacy-change reconciliation, export audit, artifact provenance, or exact-head CI gates remain unresolved. If the GitHub connection cannot change repository settings, record the blocker and request an authorized administrator; do not imply it was fixed.
+
+Node.js 24 is the only supported runtime. Do not introduce Node.js 20 in code, workflows, Docker, scripts, package metadata, or docs.
