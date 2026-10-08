@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Run CLI tests
@@ -34,7 +34,7 @@ jobs:
         run: docker compose exec -T db psql -U postgres -d leruchi -v ON_ERROR_STOP=1 -Xf /dev/stdin < infra/catalog/04-schema-catalog.sql
       - name: Run migrations through approved migrator role
         env:
-          VIBE_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/leruchi
+          LERUCHI_MIGRATOR_DATABASE_URL: postgresql://vibe_migrator:migrator@127.0.0.1:5432/leruchi
         run: node -e "import('./packages/leruchi-cli/migrate.mjs').then(async ({runMigrations}) => console.log(await runMigrations({cwd:process.cwd()})))"
       - name: Prove migration ledger and role
         run: |
