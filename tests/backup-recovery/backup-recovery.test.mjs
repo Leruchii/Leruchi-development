@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {createBackupManifest,verifyBackupManifest,sha256FileBytes} from "../../packages/backup-recovery/index.mjs";
 
 test("backup manifest is deterministic and records measured timing metadata",()=>{
-  const bytes=Buffer.from("vibeDB-backup-fixture");
+  const bytes=Buffer.from("leruchi-backup-fixture");
   const sha256=sha256FileBytes(bytes);
   const manifest=createBackupManifest({
     artifact:"fixture.dump",
