@@ -318,3 +318,31 @@ test("Graph API strict capability grants enforce revocation and route scope befo
     assert.equal(catalogCalls,1);
   }finally{await api.close();}
 });
+
+
+test("Graph API rejects HS256 tokens that claim to be EdDSA capability grants",async()=>{
+  let catalogCalls=0;
+  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const forged=token({sub:"u",tenant_id:"tenant_a",jti:"jti-forged",aud:"leruchi",capabilities:["graph:read"],exp:Math.floor(Date.now()/1000)+60},"secret");
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+forged}});
+    assert.equal(res.status,401);
+    assert.equal(catalogCalls,0);
+  }finally{await api.close();}
+});
+
+test("Graph API permits an active EdDSA grant scoped to its requested route and graph",async()=>{
+  const api=createGraphApiServer({
+    pool:fakePool(),jwtIssuer:TEST_CAPABILITY_ISSUER,jwtAudience:"leruchi",capabilityPublicKeys:TEST_CAPABILITY_PUBLIC_KEYS,
+    requireCapabilityGrant:true,isGrantRevoked:async()=>false,
+    catalogProvider:async()=>({graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[]}}}),port:0
+  });
+  const address=await api.listen();
+  try{
+    const grant=signTestCapabilityGrant({sub:"u",tenant_id:"tenant_a",jti:"jti-scoped",capabilities:["graph:read"],scope:{routes:["/v1/graph/query"],graphs:["g"]}});
+    const ir={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:1,offset:0,depth:0,parameters:[]};
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/query",{method:"POST",headers:{authorization:"Bearer "+grant,"content-type":"application/json"},body:JSON.stringify({ir,parameters:{}})});
+    assert.equal(res.status,200);
+  }finally{await api.close();}
+});
