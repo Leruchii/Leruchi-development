@@ -5,13 +5,13 @@ on:
     paths:
       - "packages/agent-intent/**"
       - "packages/graph-api/**"
-      - "packages/vibe-sdk/**"
+      - "packages/leruchi-sdk/**"
       - "packages/mcp-server/**"
       - "tests/agent-intent/**"
-      - "tests/vibe-sdk/agent-intent.test.mjs"
+      - "tests/leruchi-sdk/agent-intent.test.mjs"
       - "tests/mcp/mcp-server.test.mjs"
       - "tests/graph-api/api.test.mjs"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-cli/**"
       - "tests/cli/cli.test.mjs"
   push:
     branches:
@@ -31,7 +31,7 @@ jobs:
       - name: Agent Intent contract tests
         run: node --test tests/agent-intent/*.test.mjs
       - name: SDK Agent Intent tests
-        run: node --test tests/vibe-sdk/agent-intent.test.mjs
+        run: node --test tests/leruchi-sdk/agent-intent.test.mjs
       - name: MCP contract tests
         run: node --test tests/mcp/mcp-server.test.mjs
       - name: Graph API Agent Intent tests
