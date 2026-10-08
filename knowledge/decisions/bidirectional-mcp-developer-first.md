@@ -6,7 +6,7 @@ DECIDED — durable product and architecture priority.
 
 ## Decision
 
-VibeDB has two first-class audiences:
+Leruchi has two first-class audiences:
 
 - developers using SDK, REST/Graph API, SQL/PostgreSQL compatibility, CLI and Studio;
 - AI agents operating through MCP on behalf of an authenticated human or trusted application.
