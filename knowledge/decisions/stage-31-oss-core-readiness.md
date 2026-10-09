@@ -1,6 +1,6 @@
 # Stage 31 — OSS Core Readiness Gate
 
-Status: VALIDATED — technical readiness gate passed on exact candidate code head `43b8f0eac4fcbadc3789883c7c18e2bb02a1e6ff`.
+Status: IN PROGRESS — historical candidate evidence is retained for context, but the readiness gate is being rerun on the current clean-main integration branch. Candidate results do not validate this branch or a future release artifact.
 
 ## Purpose
 
