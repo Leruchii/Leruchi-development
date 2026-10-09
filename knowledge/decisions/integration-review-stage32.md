@@ -8,7 +8,7 @@ Candidate: `stage32-oss-publication-prep`
 
 ## Current comparison
 
-The live compare is the source of truth. At the last exact-head review, candidate `0de25d9d3c9694cd6711fd57286c934ef926290f` was 377 commits ahead and 0 behind, with 155 changed files, 6,303 additions and 606 deletions. The changed-file inventory spans CI, runtime configuration, tenant/security boundaries, package renames, product capabilities, export tooling, security evidence, and release documentation. This is a cross-cutting integration, not a single-stage release change.
+The live compare is the source of truth. Current candidate head `8c99e49b773b6af806ef1781788408be94871061` is 378 commits ahead and 0 behind, with 155 changed files, 6,317 additions and 606 deletions. The changed-file inventory spans CI, runtime configuration, tenant/security boundaries, package renames, product capabilities, export tooling, security evidence, and release documentation. This is a cross-cutting integration, not a single-stage release change. The older `0de25d9d3c9694cd6711fd57286c934ef926290f` snapshot below is historical only.
 
 A passing workflow matrix establishes that checked workflows passed for a particular SHA; it does not prove the entire diff is semantically safe, that every changed path was reviewed, or that the whole branch is an appropriate merge unit.
 
@@ -27,7 +27,7 @@ A passing workflow matrix establishes that checked workflows passed for a partic
 
 ## Integration strategy
 
-Do not merge the 362-commit branch as one indivisible PR. Use the candidate as a source of changes and port reviewed, dependency-ordered slices onto a clean branch from current `main`:
+Do not merge the 378-commit branch as one indivisible PR. Use the candidate as a source of changes and port reviewed, dependency-ordered slices onto a clean branch from current `main`:
 
 1. **Baseline and runtime foundation:** reconcile current main vs candidate, preserve Node.js 24-only policy, update CI action/runtime changes, and validate all existing main workflows.
 2. **Tenant and security boundary:** port database role/RLS/tenant-claim changes and capability verification as one reviewable security slice. Require negative tests for forged claims, cross-tenant reads/writes, missing capabilities, revoked/expired grants and control-plane outage.
@@ -51,22 +51,39 @@ For each slice: record the exact base/head SHAs; review every changed file; run 
 **No wholesale merge.** Use a clean main-based integration branch and port reviewed slices in the order above. This document is a risk-based grouping and integration plan; it is not a claim that every line in the 155-file diff has already received semantic review.
 
 
-## Follow-up security review — revocation response semantics
+## Security follow-up status — candidate vs clean-main PR
 
-On 2026-10-09, code review found a contradictory response in the candidate control plane: a revoked grant could be returned with `active: true`. The issuer/revocation adapter now returns `active: false` when revocation succeeds and computes lookup activity as `not expired AND not revoked`. The service test now asserts both responses. This fix must pass the exact-head Stage 32 workflow before the control-plane slice is considered validated.
+A security review identified revocation-response semantics that must not be accepted merely because a workflow matrix is green:
 
+- The candidate branch's older control-plane implementation returned `active: true` after revocation and defined activity only as `not expired`. That is semantically incorrect for an effective authorization decision.
+- Clean-main PR [#68](https://github.com/Leruchii/Leruchi-development/pull/68), head `9d79f25a4b84afe82a1a96d50785d22524e9757f`, corrects the contract: a revoked or expired grant returns `active: false`; unknown grants fail closed; the internal bearer check is timing-safe; and the regression test asserts the post-revocation response.
+- PR #68 also adds strict EdDSA grant verification, rejects grant-shaped tokens on the legacy HS256 path, checks route/graph scope, and makes unavailable or malformed revocation decisions fail closed.
+- PR #68 has **35/35 commit checks successful** on that exact SHA. These results validate PR #68's head only; they do not automatically validate the older implementation on PR #63. Port/reconcile the reviewed security slice after the Node.js 24 baseline, then rerun all dependent checks on the resulting integrated SHA.
 
-## Follow-up security review — data-plane grant verification and scope
+## Current dependency-ordered integration checkpoint — 2026-10-09
 
-A second review pass found two Graph API boundary defects in the candidate and added fixes/tests:
+All three clean-main implementation PRs are open drafts and independently green on their recorded heads:
 
-- Capability grants must be verified with the configured EdDSA public keys. The legacy HS256 path now rejects grant-shaped tokens carrying a JTI or the `leruchi` grant audience instead of passing them into grant-claim validation without EdDSA signature verification.
-- Route/graph scope is checked against the actual request. The Schema Catalog scope check now runs only for Schema Catalog requests; previously it ran unconditionally and could deny a valid grant scoped to a graph query.
+- **Runtime baseline first:** PR [#69 — Enforce Node.js 24 across CI workflows](https://github.com/Leruchii/Leruchi-development/pull/69), head `7cc5104f07719e82131018a38513b303f79f10a0`, **31/31 commit checks successful**.
+- **Canonical product identity second:** PR [#67 — Make Leruchi canonical across active product surfaces](https://github.com/Leruchii/Leruchi-development/pull/67), head `646ee91fd09fe81e2d5187dc2476a42ada7f1c77`, **32/32 workflow runs and 37/37 commit checks successful**. Its Leruchi brand audit passed. Compatibility-sensitive `VIBE_*`, `.vibe/`, database identifiers and `aud=vibedb` remain intentionally tracked for tested migration rather than blind replacement.
+- **Strict authorization third:** PR [#68 — Integrate strict capability grants and control-plane service](https://github.com/Leruchii/Leruchi-development/pull/68), head `9d79f25a4b84afe82a1a96d50785d22524e9757f`, **35/35 commit checks successful**.
 
-Added regression coverage for rejecting HS256 grant-shaped tokens and allowing an active EdDSA grant scoped to its requested graph route. These fixes are pending exact-head CI and must not be treated as validated until the workflow passes.
+These PRs are not merged. Before integrating #67 or #68, reconcile their workflow diffs with #69 so no old Node.js runtime/action baseline is reintroduced. After each integration/rebase, rerun checks on the exact new SHA. Then port the reviewed slices from #63 to a clean main-based integration branch; never merge #63 wholesale.
 
-- The revocation adapter now treats `active: false` as denial even when a response reports `revoked: false`; a regression test prevents inactive control-plane decisions from being treated as authorized. This remains pending exact-head CI.
+## Production authorization — implementation vs deployment
 
+The strict EdDSA issuer/revocation service core, PostgreSQL adapter/schema, and Graph API enforcement path exist in PR #68, but **production authorization is not deployed or production-ready yet**. Required external work remains:
+
+1. A real identity-provider/trusted-gateway adapter and authoritative tenant-membership/grant policy.
+2. Secret-manager/KMS custody, rotation and compromise response for signing keys; the data plane receives public keys only.
+3. A dedicated PostgreSQL migration/runtime role with explicit least-privilege grants, backups and tested restore.
+4. Private networking or mTLS for internal revocation endpoints, rate limits and production transport controls.
+5. Audit logging, metrics, alerts, operational ownership and an incident/runbook procedure.
+6. Staging end-to-end evidence covering issue, signature verification, tenant/capability/scope denial, revocation, expiry, key rotation and control-plane outage.
+
+Test-only adapters and ephemeral keys are not production credentials. No production deployment can be completed without the actual identity, secret-management, database and network configuration.
+
+The owner-confirmed product name is **Leruchi**. The GitHub repository description still contains the former name and requires an authorized repository metadata update; the available connection can read but not write that setting. Public brand/trademark clearance remains a separate release gate.
 
 ## Exact-head validation snapshot — 2026-10-09
 
