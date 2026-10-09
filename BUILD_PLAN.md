@@ -1332,7 +1332,7 @@ Public publication remains separately gated on repository visibility remediation
 - PR #69 — Node.js 24-only workflow baseline: merged as `621a1790c42ce5f8023a369a94a47c23dc652997`.
 - PR #67 — canonical Leruchi identity across active product surfaces: merged as `dacd1cdb7522f8e1a59727bc6f82824cbbd55b62`.
 - PR #68 — strict EdDSA capability grants, revocation boundary and control-plane service core: merged as `acc82d8669779537edc5fe4467630bd87d09b15b`.
-- The post-merge main matrix must finish green on exact HEAD `acc82d8669779537edc5fe4467630bd87d09b15b` before further integration. The latest observation was 21/24 successful with 3 still running and no failures observed.
+- The post-merge main matrix completed successfully: 24/24 workflow runs passed on exact HEAD `acc82d8669779537edc5fe4467630bd87d09b15b`, with zero failures. This is the baseline before further integration.
 
 ### Product identity decision
 Leruchi is the canonical product name across active product-facing surfaces. The CLI command, config directory, environment variables and package namespace are Leruchi-first. Compatibility aliases for Vibe-era environment/config values and exported SDK symbols remain deliberate. Do not perform a blind replacement of persisted database identifiers, JWT audience/protocol values, import paths or externally consumed schema IDs; handle those as versioned migrations with rollout/rollback tests. Node.js 24 only.
