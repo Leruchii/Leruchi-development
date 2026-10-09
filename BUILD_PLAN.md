@@ -1330,27 +1330,34 @@ The pre-merge candidate artifact is validation evidence only. Rebuild and inspec
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS.** The readiness/export tooling and Node.js 24 dependency baseline are integrated, and Stage 31/32 pass on the validated PR heads below. Publication is not authorized: the final integrated main SHA must pass its post-merge matrix and the explicit release gates remain open.
+**Status: TECHNICAL CANDIDATE BUILT AND CI-VALIDATED; PUBLICATION BLOCKED ON OWNER/LEGAL REVIEW GATES.**
 
-### Current verified integration checkpoint (2026-10-09)
+### Verified release candidate (2026-10-09)
 
-- Current `main` after the latest build-state documentation update: `cdd0ba248ed4edde5b85d6fa52a4105308861efc`.
-- PR #81 — DB bootstrap environment compatibility and product naming decision — merged. `LERUCHI_*` variables are canonical with documented/tested `VIBE_*` fallbacks; database name `vibedb` and existing role/schema/migration identifiers remain unchanged.
-- PR #82 — lock Node.js 24 dependencies for repeatable OSS candidates — merged as `c8cb75f98cac543539b31a5fc899e4e0e791df70`. Exact PR head passed 19/19 workflows, including Stage 31 readiness, Stage 32 candidate, Architecture Regression Audit and Stage State Gate. The merge SHA passed 26/26 checks.
-- PR #79 — strict capability grants in Studio integration — merged as `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4`. Exact PR head `b418711bf4c23d47c35d9af14d8cf80ee037adcf` passed 29/29 checks, including Stage 13 Studio, Stage 14 MCP, Stage 15 GraphRAG, Stage 04 Schema Catalog, Architecture Regression Audit, Stage 31 and Stage 32. Its post-merge matrix subsequently passed 26/26 checks with zero failures. The latest docs-only main commit `9bdbc4788ae5362ac21ca423ea5faefb2b7cd358` had 8/26 checks complete successfully and 18 still running at the last poll; wait for the complete matrix before marking that latest SHA green.
-- Node.js 24 is the only supported runtime across product, workflows, containers, CI and release tooling. Do not introduce Node.js 20.
-- The merged security slice uses strict EdDSA capability grants and revocation integration, canonical `leruchi_access_token` handling, canonical `LERUCHI_*` integration variables and schema-catalog JWT issuer/audience tests. This does not prove production authorization is deployed; identity/gateway integration, signing-key custody/rotation, least-privilege roles, private networking/mTLS, monitoring/alerts and staging/recovery evidence remain deployment gates.
-- Stage 31/32 tooling includes the Apache-2.0 license file, `OSS_EXPORT_MANIFEST.json`, export contract audit, sanitized candidate builder, readiness/secret/runtime audit and OWASP ASVS 5.0.0 profile/evidence ledger. The ASVS ledger is not a compliance claim; unmapped, scoping-required and deferred items remain open.
-- Leruchi is the owner-selected product name; this is not trademark/legal clearance.
-- Development repository visibility is public. Internal control repository visibility was not independently verified in this checkpoint; the owner must verify both intended settings. Automation must not change repository visibility.
-- PR #63 remains draft/open, 380 commits and 155 changed files against a stale base. Do not merge the branch wholesale; selectively review and port only still-required changes against current `main`.
-- No tag, release or public export is authorized.
+- Final integrated `main` at this checkpoint: `4374e44ef4ee9214553d9863390eebe6cb430f53`.
+- PR #83 exact head passed 23/23 checks, including Stage 31 readiness, Stage 32 candidate build, public export contract, Architecture Regression Audit and Stage State Gate.
+- Post-merge main matrix for `4374e44ef4ee9214553d9863390eebe6cb430f53`: 26/26 checks passed.
+- Stage 32 run [37931206154](https://github.com/Leruchii/Leruchi-development/actions/runs/37931206154) produced artifact ID `11616112656`, named `leruchi-oss-core-candidate`. GitHub artifact archive digest: `sha256:fd8438c94bcfaa2a38372dd63765413c3477dfa45e504e1b74c50c70870c16d3`. Contained `.tar.gz` SHA-256: `64db56ee25b31e5ef1157648ea5c6f0b5341c8aba59d390b17b317a68a2a6f01`.
+- The synthetic merge tree used by Stage 32 was checked against the squash-merged main commit; both use tree `2850f24b85369cfcadf979db6de36348ed78507a`. This establishes that the candidate workflow validated the same repository tree now on main.
+- Candidate contains 200 files. Automated scans found no forbidden control paths, common credential-token formats or Node.js 20 runtime configuration. Manual review remains mandatory.
+- `THIRD_PARTY_NOTICES.md` records 138 lockfile dependency entries and 11 license expressions. LGPL/MPL/CC-BY components require explicit distribution and attribution review; the inventory is not legal clearance.
+- Public export boundary uses `OSS_EXPORT_MANIFEST.json`, `scripts/build-oss-core-candidate.mjs`, `scripts/public-oss-export-audit.mjs` and `scripts/oss-core-readiness-audit.mjs`. The workflow runs a second build and byte-compares normalized tarballs for reproducibility.
+- Node.js 24 is the only supported runtime. `README.md` now documents the architecture, local-development-only credentials, and the production-authorization limitations.
+- PR #63 remains draft/open as a tracking-only PR. Do not merge its stale 380-commit/155-file branch wholesale. PR #66 was closed as superseded.
 
-### Next actions
+### Owner-controlled release blockers
 
-1. Poll the post-merge matrix on `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` and the current docs-updated `main` SHA. Fix failures before further integration.
-2. Review PR #63 selectively; never use its stale candidate branch as a merge source.
-3. Rebuild the OSS candidate from the final integrated SHA and inspect every allowlisted file, dependency/license inventory, secret/runtime scan, provenance and reproducibility evidence.
-4. Confirm intended visibility of development and internal repositories; record legal/trademark review if required.
-5. Publish only after final artifact review and explicit owner approval.
+1. Revoke/rotate the GitHub credential exposed in project context.
+2. Confirm intended visibility of both the public development repository and the internal/control repository. The latter could not be independently verified by the current connection.
+3. Configure `main` branch protection/ruleset and required checks; current branch metadata reports `protected: false`.
+4. Manually review all 200 export files and complete license/attribution compatibility review, especially LGPL-3.0-or-later, MPL-2.0 and CC-BY-4.0 dependencies.
+5. Record any required trademark/legal review and explicit owner approval.
+
+### Production deployment gates (separate from OSS source publication)
+
+Production authorization is not deployed. Before production tenant use, complete a real identity-provider/trusted-gateway adapter, authoritative tenant policy, signing-key custody and rotation, least-privilege DB roles, private networking/mTLS, monitoring/alerts, and staging end-to-end plus recovery evidence. Do not imply these are satisfied by passing CI.
+
+### Decision
+
+The technical candidate exists and its exact repository tree passed CI. **Do not create a release tag, publish a release, or perform a public export until all owner-controlled release blockers above are cleared.** If any allowlisted file changes, rebuild the candidate and record new exact-SHA evidence.
 
