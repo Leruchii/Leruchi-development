@@ -1315,13 +1315,13 @@ The first public Core release is a readiness gate, not an arbitrary stage number
 
 ## Stage 31 — OSS Core Readiness Gate
 
-**Status: INTEGRATED AND VALIDATED technically; security-compliance and publication gates remain open.** PR #75 was merged as `9c07be419d842002502262b2c00a306d6d3c4c54`. Exact PR head `736555ba2e28072b66697731f8c175c41f5906c1` passed 24/24 workflow runs, including the Stage 31 readiness gate and Stage 32 candidate build.
+**Status: INTEGRATED AND VALIDATED technically; publication gates remain open.** PR #75 is merged. Its exact head `736555ba2e28072b66697731f8c175c41f5906c1` passed 24/24 workflows, including Stage 31 readiness and the Stage 32 candidate build.
 
-Integrated controls include the Apache-2.0 license file, explicit export allowlist, export-contract audit, sanitized candidate builder, secret/runtime readiness audit, OWASP ASVS 5.0.0 profile and evidence ledger, and Stage 31/32 workflows. The builder rejects symlinked/unsupported file modes, removes stale output before rebuilding, includes the manifest in the candidate and applies the explicit allowlist/exclusions.
+Integrated controls include the Apache-2.0 license file, explicit export allowlist, export-contract audit, sanitized candidate builder, secret/runtime readiness audit, OWASP ASVS 5.0.0 profile and evidence ledger, and Stage 31/32 workflows. The builder rejects symlinked/unsupported file modes, applies the allowlist/exclusions, and is tested through reproducible archive comparison.
 
-The ASVS ledger records 345 requirements and explicitly does **not** claim compliance. Many requirements remain unmapped, require scoping, or are deferred. This is a conservative evidence/planning gate, not certification or proof that all controls are implemented.
+The ASVS ledger records 345 requirements and explicitly does **not** claim compliance. Many requirements remain unmapped, require scoping, or are deferred. This is an evidence/planning gate, not certification or proof that every control is implemented.
 
-The candidate artifact from the PR workflow is validation evidence only. Rebuild and inspect an artifact from the final integrated SHA before any release. Publication remains gated on repository visibility, formal product-name clearance, final dependency/license inventory, complete export review, provenance/reproducibility review and explicit release approval.
+The pre-merge candidate artifact is validation evidence only. Rebuild and inspect an artifact from the final integrated SHA before any release. Publication remains gated on repository visibility, formal product-name clearance, final dependency/license inventory, complete export review, provenance/reproducibility review and explicit release approval.
 
 ## Stage 31A — Agent Governance Foundation
 
@@ -1330,28 +1330,27 @@ The candidate artifact from the PR workflow is validation evidence only. Rebuild
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS.** Readiness tooling is integrated, but release gates and final candidate reconciliation remain open. Never merge the broad 380-commit candidate branch wholesale.
+**Status: IN PROGRESS.** SDK/CLI migration and OSS readiness tooling are integrated; final candidate reconciliation and release gates remain open. Never merge the broad candidate branch wholesale.
 
 ### Live integration baseline (2026-10-09)
-- Current development `main` HEAD at this checkpoint: `9c07be419d842002502262b2c00a306d6d3c4c54`.
-- PR #69 — Node.js 24-only workflow baseline: merged.
-- PR #67 — canonical Leruchi identity across active product surfaces: merged.
-- PR #68 — strict EdDSA capability grants and control-plane service core: merged.
-- PR #71 — trusted Supabase tenant claims: merged.
+- Last verified development `main` SHA before this checkpoint PR: `8dcdeaf4d18135a9448c2dbf5d01469c87737058`; exact-main matrix 24/24 passed.
+- PR #74 — SDK/CLI source-directory migration: merged.
+- PR #75 — OSS readiness/export gates: merged; exact-head matrix 24/24 passed.
+- PR #76 — Graph Studio/legacy reconciliation decision: merged after review of legacy PRs #22, #26 and #29. Their unique intent was assessed as superseded by the evolved current implementation; see `knowledge/decisions/legacy-pr-reconciliation-graph-studio.md`.
+- PR #77 — build-state synchronization: merged.
+- PR #78 — canonical operations and SDK test paths: merged.
 - PR #72 — Agent Governance foundation: merged; exact-head matrix 18/18 passed.
 - PR #73 — hardened migration runner: merged; exact-head matrix 23/23 passed.
-- PR #74 — SDK/CLI source-directory migration: merged as `2fe5b99ccabebadded348675b1c0335aceac9974`.
-- PR #75 — OSS readiness/export gates: merged as `9c07be419d842002502262b2c00a306d6d3c4c54`; exact-head matrix 24/24 passed.
 - Node.js 24 is the only supported runtime.
 - GitHub currently reports development and internal-control repositories as public. Owner must verify/change visibility before public export; no settings were changed by automation.
-- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open. Historical candidate checks do not validate current main or newly ported changes.
+- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open and stale. Historical candidate checks do not validate current main or any newly ported changes.
 
 ### Product identity and source-path decision
 Leruchi is canonical on product-facing surfaces. Prefer `leruchi`, `.leruchi/`, `LERUCHI_*` and `@leruchi/*`; retain deliberate Vibe-era CLI/environment/config and exported-symbol aliases where documented. SDK and CLI source directories now live at `packages/leruchi-sdk` and `packages/leruchi-cli`. Persisted database identifiers, JWT audience/protocol values, and external schema IDs remain unchanged unless a separate versioned compatibility and rollback plan authorizes a change.
 
 ### Dependency-ordered remaining integration
-1. **Legacy reconciliation:** review the current tree against PR #63 and port only still-relevant unique behavior and tests. PRs #22, #26 and #29 were reviewed and are superseded by current Graph API/browser/renderer tests; see the legacy reconciliation record. PR #14 migration safety is integrated in PR #73.
-2. **Final candidate review:** rebuild the export from current main, review the full selected file list and license/dependency inventory, scan secrets/runtime declarations, and record exact source SHA plus reproducible archive digest.
+1. **Candidate reconciliation:** compare PR #63's current live tree with main; port only reviewed, still-relevant features and tests in dependency order. Do not merge its stale branch wholesale.
+2. **Final candidate review:** rebuild the export from the final integrated SHA, review the complete selected file list and dependency/license inventory, scan secrets/runtime declarations, and record the exact source SHA plus reproducible archive digest.
 3. **Release gate:** confirm repository visibility, obtain formal product-name clearance, review provenance and exported contents, and require explicit release approval. No tag, release or public export is authorized yet.
 
 ### Evidence discipline
