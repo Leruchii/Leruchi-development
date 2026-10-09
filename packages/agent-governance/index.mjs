@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 const MAX_CAPABILITIES = 64;
 const MAX_DELEGATIONS = 32;
 const MAX_MANDATES = 64;
+const MAX_METADATA_KEYS = 32;
+const METADATA_KEY = /^[A-Za-z][A-Za-z0-9_.:-]{0,63}$/;
 const NAME = /^[A-Za-z][A-Za-z0-9_.:-]{0,127}$/;
 
 export class AgentGovernanceError extends Error {
@@ -35,6 +37,25 @@ function uniqueStrings(values, name, max) {
   return [...new Set(values)];
 }
 
+function validateMetadata(metadata) {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)
+    || (Object.getPrototypeOf(metadata) !== Object.prototype && Object.getPrototypeOf(metadata) !== null)) {
+    fail("INVALID_AGENT_METADATA", "metadata must be a plain object");
+  }
+  const entries = Object.entries(metadata);
+  if (entries.length > MAX_METADATA_KEYS) fail("INVALID_AGENT_METADATA", "metadata contains too many fields");
+  const normalized = Object.create(null);
+  for (const [key, value] of entries) {
+    if (!METADATA_KEY.test(key)) fail("INVALID_AGENT_METADATA", "metadata contains an invalid key");
+    if (typeof value === "string") {
+      if (value.length > 256) fail("INVALID_AGENT_METADATA", "metadata string values must be bounded");
+    } else if (value !== null && typeof value !== "boolean" && !(typeof value === "number" && Number.isFinite(value))) {
+      fail("INVALID_AGENT_METADATA", "metadata values must be scalar JSON values");
+    }
+    normalized[key] = value;
+  }
+  return Object.freeze(normalized);
+}
 function canonical(value) {
   if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
   if (value && typeof value === "object") return "{" + Object.keys(value).sort().map(key => JSON.stringify(key) + ":" + canonical(value[key])).join(",") + "}";
@@ -57,6 +78,7 @@ export function validateAgentIdentity(identity) {
   requiredId(identity.owner_id, "owner_id");
   if (identity.status !== "active" && identity.status !== "revoked") fail("INVALID_AGENT_IDENTITY", "Agent identity status must be active or revoked");
   uniqueStrings(identity.capabilities ?? [], "capabilities", MAX_CAPABILITIES);
+  validateMetadata(identity.metadata ?? {});
   return identity;
 }
 
@@ -68,7 +90,7 @@ export function createAgentIdentity({ agentId, ownerId, capabilities = [], statu
     owner_id: requiredId(ownerId, "ownerId"),
     status,
     capabilities: Object.freeze(uniqueStrings(capabilities, "capabilities", MAX_CAPABILITIES)),
-    metadata: Object.freeze({ ...metadata })
+    metadata: validateMetadata(metadata)
   });
   validateAgentIdentity(identity);
   return identity;
