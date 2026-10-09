@@ -26,7 +26,12 @@ const productFacingFiles = [
 
 for (const file of productFacingFiles) {
   const content = readFileSync(file, "utf8");
-  if (/\bVibeDB\b/i.test(content)) {
+  if (file.endsWith(".schema.json")) {
+    const schema = JSON.parse(content);
+    if (/\bVibeDB\b/i.test(String(schema.title ?? ""))) {
+      failures.push(file + ": schema title contains legacy product branding");
+    }
+  } else if (/\bVibeDB\b/.test(content)) {
     failures.push(file + ": legacy product branding remains in an active product-facing surface");
   }
 }
