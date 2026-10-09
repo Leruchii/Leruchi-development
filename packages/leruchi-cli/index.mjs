@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFile} from "node:child_process";
 import {promisify} from "node:util";
-import {createClient} from "../vibe-sdk/index.mjs";
+import {createClient} from "../leruchi-sdk/index.mjs";
 import {runMigrations} from "./migrate.mjs";
 import {validateAgentIntent} from "../agent-intent/index.mjs";
 

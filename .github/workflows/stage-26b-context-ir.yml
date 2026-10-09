@@ -4,8 +4,8 @@ on:
   pull_request:
     paths:
       - "packages/context-ir/**"
-      - "packages/vibe-sdk/context.mjs"
-      - "packages/vibe-sdk/index.mjs"
+      - "packages/leruchi-sdk/context.mjs"
+      - "packages/leruchi-sdk/index.mjs"
       - "packages/mcp-server/index.mjs"
       - "packages/graph-api/index.mjs"
       - "tests/context-ir/**"

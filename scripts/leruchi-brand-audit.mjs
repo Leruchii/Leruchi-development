@@ -10,8 +10,8 @@ const productFacingFiles = [
   "README.md",
   "apps/studio/app/layout.tsx",
   "apps/studio/app/page.tsx",
-  "packages/vibe-cli/README.md",
-  "packages/vibe-sdk/README.md",
+  "packages/leruchi-cli/README.md",
+  "packages/leruchi-sdk/README.md",
   "packages/mcp-server/README.md",
   "packages/agent-intent/README.md",
   "packages/context-ir/README.md",
@@ -37,10 +37,10 @@ for (const file of productFacingFiles) {
 }
 
 const legacyUserCopy = [
-  ["packages/vibe-sdk/index.mjs", "Field must be a valid Vibe field"],
-  ["packages/vibe-sdk/index.mjs", "Unsupported Vibe request kind"],
-  ["packages/vibe-sdk/index.mjs", "Vibe request failed with HTTP"],
-  ["packages/vibe-sdk/README.md", "Vibe graph intent"],
+  ["packages/leruchi-sdk/index.mjs", "Field must be a valid Vibe field"],
+  ["packages/leruchi-sdk/index.mjs", "Unsupported Vibe request kind"],
+  ["packages/leruchi-sdk/index.mjs", "Vibe request failed with HTTP"],
+  ["packages/leruchi-sdk/README.md", "Vibe graph intent"],
 ];
 for (const [file, phrase] of legacyUserCopy) {
   if (readFileSync(file, "utf8").includes(phrase)) failures.push(file + ": legacy Vibe product wording remains in user-facing copy");

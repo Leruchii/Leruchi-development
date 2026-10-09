@@ -6,7 +6,7 @@ on:
       - "packages/context-ir/**"
       - "packages/context-resolution/**"
       - "packages/graph-api/**"
-      - "packages/vibe-sdk/**"
+      - "packages/leruchi-sdk/**"
       - "packages/mcp-server/**"
       - "tests/context-ir/**"
       - "tests/context-resolution/**"

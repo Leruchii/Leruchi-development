@@ -1126,7 +1126,7 @@ Implemented:
 - `packages/context-ir/v1.schema.json`
 - `packages/context-ir/index.mjs`
 - `packages/context-ir/explain.mjs`
-- `packages/vibe-sdk/context.mjs`
+- `packages/leruchi-sdk/context.mjs`
 - SDK `client.context().purpose(...).source(...).explain()`
 - authenticated `POST /v1/context/explain`
 - MCP `context.explain`
@@ -1321,30 +1321,34 @@ Public publication remains separately gated on repository visibility remediation
 
 ## Stage 31A — Agent Governance Foundation
 
-**Status:** VALIDATED on exact Stage 31 code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`. Focused Agent Governance coverage and the Stage 31 readiness/regression matrix passed. Governance records are not authentication proof; authorization decisions are non-executing and revocation/expiry fail closed.
+**Status:** INTEGRATED AND VALIDATED on main through PR #72. The exact PR head `78eb3dafec757ca658ff2fe8e274184fadd9a33f` passed 18/18 workflow runs; merge commit `4d951f50d28433e5c66d8af28bef7897ed689533`. Focused Agent Governance coverage and Architecture Regression Audit passed. Governance records are not authentication proof; authorization decisions are non-executing and revocation/expiry fail closed.
 
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS.** Three clean-main prerequisites have been integrated; do not merge the broad 380-commit Stage 32 candidate wholesale.
+**Status: IN PROGRESS.** The broad candidate remains unmerged. Integrate reviewed slices on clean main; never merge the 380-commit candidate wholesale.
 
-### Integrated prerequisites (2026-10-09)
+### Live integration baseline (2026-10-09)
+- Current development `main` HEAD: `41349caf44a23ae72192c7292487ac7248bf2413`.
 - PR #69 — Node.js 24-only workflow baseline: merged as `621a1790c42ce5f8023a369a94a47c23dc652997`.
 - PR #67 — canonical Leruchi identity across active product surfaces: merged as `dacd1cdb7522f8e1a59727bc6f82824cbbd55b62`.
-- PR #68 — strict EdDSA capability grants, revocation boundary and control-plane service core: merged as `acc82d8669779537edc5fe4467630bd87d09b15b`.
-- The post-merge main matrix completed successfully: 24/24 workflow runs passed on exact HEAD `acc82d8669779537edc5fe4467630bd87d09b15b`, with zero failures. This is the baseline before further integration.
+- PR #68 — strict EdDSA capability grants and control-plane service core: merged as `acc82d8669779537edc5fe4467630bd87d09b15b`.
+- PR #71 — trusted Supabase tenant claims: merged as `4a3bb3b557dee68824174aea13aa4fef2865b30c`.
+- PR #72 — Agent Governance foundation: merged as `4d951f50d28433e5c66d8af28bef7897ed689533`; exact-head matrix 18/18 passed.
+- PR #73 — migration runner safety: merged as `41349caf44a23ae72192c7292487ac7248bf2413`; exact-head matrix 23/23 passed.
+- Node.js 24 is the only supported runtime.
+- Repository visibility remains a hard release blocker: GitHub currently reports development and internal-control repositories as public. The owner must change/verify visibility before Stage 32 integration/export; no visibility settings were changed by automation.
+- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open; its branch is 380 commits ahead, 7 behind, with 155 changed files. Its candidate artifacts/checks do not validate current main or newly ported slices.
 
-### Product identity decision
-Leruchi is the canonical product name across active product-facing surfaces. The CLI command, config directory, environment variables and package namespace are Leruchi-first. Compatibility aliases for Vibe-era environment/config values and exported SDK symbols remain deliberate. Do not perform a blind replacement of persisted database identifiers, JWT audience/protocol values, import paths or externally consumed schema IDs; handle those as versioned migrations with rollout/rollback tests. Node.js 24 only.
+### Product identity and source-path decision
+Leruchi is canonical on product-facing surfaces. Prefer `leruchi`, `.leruchi/`, `LERUCHI_*` and `@leruchi/*`; retain deliberate Vibe-era CLI/environment/config and exported-symbol aliases where documented. The SDK and CLI source directories are being migrated together from `packages/vibe-sdk` and `packages/vibe-cli` to `packages/leruchi-sdk` and `packages/leruchi-cli`. Every source import, package dependency, CLI shim, audit allowlist, workflow path filter, migration script, test and document must move together. This internal directory migration does not authorize changes to persisted database identifiers, JWT audience/protocol values, or external schema IDs; those require versioned compatibility and rollback plans.
 
-### Remaining dependency-ordered integration
-1. **Post-merge baseline:** complete and inspect the exact-main workflow matrix; fix any failures.
-2. **Tenant/security boundary:** review and port the Supabase tenant-claim hook, role/privilege and related test/workflow changes as a dedicated slice. Require cross-tenant negative tests and verify tenant claims derive from trusted identity.
-3. **Developer surfaces:** reconcile the internal SDK/CLI source-directory renames, package exports, imports, CLI command shims, docs, prompts, tests and workflow references together.
-4. **Agent Governance:** port the package and adversarial tests; preserve the non-executing authorization boundary.
-5. **OSS readiness/export:** port the Apache-2.0 license, allowlist, sanitizer/audit/build scripts, security verification profile and Stage 31/32 workflows. Review the actual generated file list and provenance from the final integrated SHA.
-6. **Legacy reconciliation:** review the unique diffs from closed, unmerged PRs #14, #22, #26 and #29. Port only still-relevant changes; never merge stale branches wholesale.
-7. **Release gate:** repository visibility remains owner-managed as requested and must be verified by the owner before export. Obtain formal product-name clearance, review license/provenance/export contents, and require explicit release approval. No tag, release or public export is authorized yet.
+### Dependency-ordered remaining integration
+1. **SDK/CLI directory migration:** complete the active branch, verify no references remain to deleted source paths, and require focused SDK/CLI tests plus the full exact-head matrix, Architecture Regression Audit and Stage State Gate before merge.
+2. **Legacy reconciliation:** review unique changes from PRs #22, #26 and #29 against current main; port only still-relevant fixes/tests and never merge stale branches wholesale. PR #14 migration safety is now integrated in PR #73.
+3. **OSS readiness/export:** port the Apache-2.0 license, export allowlist, sanitizer/audit/build scripts, security verification profile and Stage 31/32 workflows as a dedicated slice. Review the generated file list, license inventory and provenance from the final integrated SHA.
+4. **Final candidate reconciliation:** refresh PR #63 and compare its live tree to main. Port only reviewed, dependency-ordered differences. Rebuild all artifact evidence after the final code change; historical hashes do not carry forward.
+5. **Release gate:** confirm repository visibility, obtain formal product-name clearance, review license/provenance/export contents, and require explicit release approval. No tag, release or public export is authorized yet.
 
 ### Evidence discipline
-The Stage 32 candidate PR [#63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open. Its candidate SHA and historical green checks/artifact are not evidence for the current main SHA. Every ported slice requires exact base/head recording, focused tests, affected historical regressions, Architecture Regression Audit, Stage State Gate and all required exact-head workflows. Keep Stage 32 IN PROGRESS until the entire integration and release gate is complete.
+Every slice must record exact base/head SHAs and pass focused tests, affected historical regressions, Architecture Regression Audit, Stage State Gate and the required exact-head workflows. A green result from another SHA is not validation. Keep Stage 32 IN PROGRESS until integration and release gates are all closed.
