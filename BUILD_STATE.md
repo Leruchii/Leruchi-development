@@ -6,30 +6,30 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-**Live repository checkpoint verified 2026-10-09.** Re-check GitHub before continuing; the next steps remain integration/release work, not public launch.
+**Live repository checkpoint verified 2026-10-09.** Last verified `main` baseline: `8dcdeaf4d18135a9448c2dbf5d01469c87737058`. Refresh the exact SHA after this checkpoint-reconciliation PR merges.
 
 - **Development repository:** [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development), default branch `main`.
-- **Current main HEAD:** `9c07be419d842002502262b2c00a306d6d3c4c54`.
-- **PR #74 — SDK/CLI source-directory migration:** merged as `2fe5b99ccabebadded348675b1c0335aceac9974`. Canonical source paths are `packages/leruchi-sdk` and `packages/leruchi-cli`; legacy `vibe` command and documented compatibility aliases remain.
-- **PR #75 — OSS Core readiness/export gates:** merged as `9c07be419d842002502262b2c00a306d6d3c4c54`. Exact PR head `736555ba2e28072b66697731f8c175c41f5906c1` passed 24/24 workflow runs with zero failures. Stage 31 readiness and Stage 32 candidate workflows passed, including a sanitized build, readiness audit, reproducible archive comparison and artifact upload.
-- **Candidate artifact evidence (not a release artifact):** workflow [37916125672](https://github.com/Leruchii/Leruchi-development/actions/runs/37916125672), artifact `leruchi-oss-core-candidate`, SHA-256 digest `b94cecd14eab686a54f4eb1127114d26dc16db2c14301fc5ee614899900c256e`. Rebuild from the final integrated SHA before any release; this pre-merge artifact is evidence only.
+- **Exact-main CI:** 24/24 workflows passed on `8dcdeaf4d18135a9448c2dbf5d01469c87737058`, with zero failures. This includes Stage 31 readiness, Stage 32 candidate, Graph Studio, CLI/SDK, Architecture Regression Audit and Stage State Gate. [Workflow run list](https://github.com/Leruchii/Leruchi-development/actions).
+- **PR #74 — SDK/CLI source-directory migration:** merged as `2fe5b99ccabebadded348675b1c0335aceac9974`. Canonical source paths are `packages/leruchi-sdk` and `packages/leruchi-cli`; the legacy `vibe` executable and documented compatibility aliases remain.
+- **PR #75 — OSS Core readiness/export gates:** merged as `9c07be419d842002502262b2c00a306d6d3c4c54`. Exact PR head `736555ba2e28072b66697731f8c175c41f5906c1` passed 24/24 workflows, including sanitized candidate build, readiness audit, reproducible archive comparison and artifact upload. The pre-merge artifact is validation evidence only, not a release artifact.
+- **PR #76 — Graph Studio/legacy reconciliation decision:** merged as `ae6291f3998ae938d66618dbdbb6920ba2fdbcb5`. Legacy PRs #22, #26 and #29 were reviewed; their relevant Graph API/browser/renderer intent is superseded by the evolved current implementation. The review record is `knowledge/decisions/legacy-pr-reconciliation-graph-studio.md`. No stale branch was merged wholesale.
+- **PR #77 — build-state synchronization:** merged as `ef2a007db84463d69e6d642b9107cc15604dfe30`.
+- **PR #78 — canonical operations and SDK test paths:** merged as `8dcdeaf4d18135a9448c2dbf5d01469c87737058`. Backup/restore script aliases, SDK tests and CI/audit paths were reconciled.
 - **PR #72 — Agent Governance foundation:** merged as `4d951f50d28433e5c66d8af28bef7897ed689533`; exact-head matrix 18/18 passed.
 - **PR #73 — hardened migration runner:** merged as `41349caf44a23ae72192c7292487ac7248bf2413`; exact-head matrix 23/23 passed.
-- **Node.js:** 24 is the only supported runtime; all runtime declarations and documentation must keep this single supported major version.
-- **OSS scope now integrated:** Apache-2.0 license file, explicit `OSS_EXPORT_MANIFEST.json`, export contract audit, sanitized candidate builder, readiness/secret/runtime audit, OWASP ASVS 5.0.0 profile and conservative evidence ledger, and Stage 31/32 CI gates. The ASVS ledger does not claim compliance; unmapped/scoping/deferred requirements remain open.
-- **Repository visibility blocker:** GitHub currently reports both [development](https://github.com/Leruchii/Leruchi-development) and [internal control](https://github.com/Leruchii/Leruchi-internal) repositories as public (`private: false`). Owner must verify/change visibility as intended before public OSS export. No visibility settings were changed by automation.
+- **Node.js:** 24 is the only supported runtime.
+- **OSS scope integrated:** Apache-2.0 license file, explicit `OSS_EXPORT_MANIFEST.json`, export contract audit, sanitized candidate builder, readiness/secret/runtime audit, OWASP ASVS 5.0.0 profile/evidence ledger and Stage 31/32 CI gates. The ASVS ledger is not a compliance claim; unmapped, scoping-required and deferred items remain open.
+- **Repository visibility blocker:** GitHub currently reports both [development](https://github.com/Leruchii/Leruchi-development) and [internal control](https://github.com/Leruchii/Leruchi-internal) as public (`private: false`). Owner must verify/change visibility as intended before any public export. No visibility settings were changed by automation.
 - **Product/release blockers:** formal product-name clearance, final integrated dependency/license inventory, complete export-file review, provenance/reproducibility review from the final SHA and explicit release approval remain required. No tag, release or public export is authorized.
-- **Stage 32 candidate:** [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open. Do not merge its broad candidate branch wholesale; port only reviewed dependency-ordered changes.
-- **Legacy reconciliation:** PR #14 migration safety is integrated in PR #73. PRs #22, #26 and #29 were reviewed: their current Graph API/browser/renderer intent is superseded by the evolved current implementation; see the legacy reconciliation decision record and Stage 13 follow-up PR #76.
+- **Stage 32 candidate:** [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open and is substantially stale relative to main. Do not merge its broad candidate branch wholesale; compare and port only reviewed, still-relevant changes.
 - **Canonical documents:** `BUILD_STATE.md` is the handoff checkpoint, `BUILD_PLAN.md` is the architecture/stage plan, and `AGENTS.md` is the agent process contract. Exact Git/CI evidence overrides stale prose.
 
 ### Required next actions
 
-1. Finish exact-head validation and merge the documentation-only Graph Studio reconciliation PR #76 if green.
-2. Reconcile any remaining unique, still-relevant changes from PR #63; do not merge its large branch wholesale.
-3. Run a final dependency/license inventory, review every file selected by `OSS_EXPORT_MANIFEST.json`, and inspect secret/runtime audit results.
-4. Rebuild the sanitized archive from the final integrated SHA and record its SHA-256, exact commit, file list and workflow evidence.
-5. Stop before publication until repository visibility is remediated, formal product-name clearance is recorded, and final artifact review plus explicit release approval are complete.
+1. Finish this checkpoint reconciliation and verify exact-head CI on the resulting main.
+2. Reconcile PR #63 against current main by dependency-ordered slices; do not merge the stale branch wholesale.
+3. Build a fresh OSS candidate from the final integrated SHA, review every selected file, complete dependency/license inventory, secret/runtime scan, provenance and reproducibility checks.
+4. Stop before publication until repository visibility is confirmed/remediated, formal product-name clearance is recorded, and the final artifact review plus explicit release approval are complete.
 
 ## Verified state
 
