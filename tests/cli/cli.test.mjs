@@ -69,12 +69,47 @@ test("migration command refuses non-migrator connection URLs",async()=>{
   } finally { delete process.env.VIBE_MIGRATOR_DATABASE_URL; }
 });
 
-test("discovers numbered migrations deterministically",()=>{
+test("discovers and validates numbered migrations deterministically",()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
-  for(const name of ["0001-z.sql","0000-migration-ledger.sql","README.md","9999_BAD.sql","0002-next.sql"]) fs.writeFileSync(path.join(dir,name),"");
+  for(const name of ["0001-z.sql","0000-migration-ledger.sql","0002-next.sql"]) fs.writeFileSync(path.join(dir,name),"SELECT 1;\n");
+  fs.writeFileSync(path.join(dir,"README.md"),"ignored");
   assert.deepEqual(listMigrationFiles(dir).map(x=>x.id),["0000-migration-ledger","0001-z","0002-next"]);
 });
 
+test("migration discovery rejects symlinks, malformed SQL filenames and transaction control",()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
+  fs.writeFileSync(path.join(dir,"0001-good.sql"),"SELECT 1;");
+  const outside=path.join(fs.mkdtempSync(path.join(os.tmpdir(),"vibe-outside-")),"outside.sql");
+  fs.writeFileSync(outside,"SELECT 1;");
+  fs.symlinkSync(outside,path.join(dir,"0002-linked.sql"));
+  assert.throws(()=>listMigrationFiles(dir),/regular file/);
+  const malformed=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
+  fs.writeFileSync(path.join(malformed,"0001_BAD.sql"),"SELECT 1;");
+  assert.throws(()=>listMigrationFiles(malformed),/Invalid migration filename/);
+  for(const sql of ["BEGIN; SELECT 1; COMMIT;","SELECT 1;\nCOMMIT;","ROLLBACK;","START TRANSACTION;"]) {
+    const transaction=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
+    fs.writeFileSync(path.join(transaction,"0001-bad.sql"),sql);
+    assert.throws(()=>listMigrationFiles(transaction),/transaction-control/);
+  }
+});
+
+test("migration validation permits transaction keywords inside dollar-quoted PL/pgSQL bodies and comments",()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
+  fs.writeFileSync(path.join(dir,"0001-safe.sql"),"DO $$\nBEGIN\n PERFORM 1;\nEND;\n$$;\n-- COMMIT;\nSELECT 1;");
+  assert.equal(listMigrationFiles(dir).length,1);
+});
+
+test("migration discovery rejects empty, NUL-containing and oversized SQL files",()=>{
+  const empty=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
+  fs.writeFileSync(path.join(empty,"0001-empty.sql"),"");
+  assert.throws(()=>listMigrationFiles(empty),/between 1 byte/);
+  const nul=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
+  fs.writeFileSync(path.join(nul,"0001-nul.sql"),Buffer.from([83,69,76,69,67,84,0,49]));
+  assert.throws(()=>listMigrationFiles(nul),/NUL byte/);
+  const huge=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
+  fs.writeFileSync(path.join(huge,"0001-huge.sql"),"x".repeat(1024*1024+1));
+  assert.throws(()=>listMigrationFiles(huge),/between 1 byte/);
+});
 
 test("retrieval command uses the SDK unified retrieval endpoint",async()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-cli-retrieval-"));
