@@ -5,7 +5,7 @@ on:
     branches: [lockfile-seed]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate-lockfiles:
@@ -20,6 +20,17 @@ jobs:
         run: npm install --package-lock-only --ignore-scripts
       - name: Generate Studio lockfile
         run: npm install --package-lock-only --ignore-scripts --prefix apps/studio
+      - name: Commit generated lockfiles to temporary branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json apps/studio/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfiles are already committed."
+          else
+            git commit -m "chore: generate Node 24 npm lockfiles"
+            git push
+          fi
       - name: Upload lockfiles for reviewed integration
         uses: actions/upload-artifact@v6
         with:
