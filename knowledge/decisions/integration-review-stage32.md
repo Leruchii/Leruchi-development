@@ -56,17 +56,17 @@ For each slice: record the exact base/head SHAs; review every changed file; run 
 A security review identified revocation-response semantics that must not be accepted merely because a workflow matrix is green:
 
 - The candidate branch's older control-plane implementation returned `active: true` after revocation and defined activity only as `not expired`. That is semantically incorrect for an effective authorization decision.
-- Clean-main PR [#68](https://github.com/Leruchii/Leruchi-development/pull/68), head `9d79f25a4b84afe82a1a96d50785d22524e9757f`, corrects the contract: a revoked or expired grant returns `active: false`; unknown grants fail closed; the internal bearer check is timing-safe; and the regression test asserts the post-revocation response.
+- Clean-main PR [#68](https://github.com/Leruchii/Leruchi-development/pull/68), current head `d47a6e81a0b7a74c64775bc7078df42e19b2d552`, corrects the contract: a revoked or expired grant returns `active: false`; unknown grants fail closed; the internal bearer check is timing-safe; and the regression test asserts the post-revocation response. The same head adds a 32-byte minimum internal token and startup/readiness checks for database access.
 - PR #68 also adds strict EdDSA grant verification, rejects grant-shaped tokens on the legacy HS256 path, checks route/graph scope, and makes unavailable or malformed revocation decisions fail closed.
-- PR #68 has **35/35 commit checks successful** on that exact SHA. These results validate PR #68's head only; they do not automatically validate the older implementation on PR #63. Port/reconcile the reviewed security slice after the Node.js 24 baseline, then rerun all dependent checks on the resulting integrated SHA.
+- PR #68 has **35/35 commit checks successful** on current head `d47a6e81a0b7a74c64775bc7078df42e19b2d552`. These results validate PR #68's head only; they do not automatically validate the older implementation on PR #63. Port/reconcile the reviewed security slice after the Node.js 24 baseline, then rerun all dependent checks on the resulting integrated SHA.
 
 ## Current dependency-ordered integration checkpoint — 2026-10-09
 
 All three clean-main implementation PRs are open drafts and independently green on their recorded heads:
 
 - **Runtime baseline first:** PR [#69 — Enforce Node.js 24 across CI workflows](https://github.com/Leruchii/Leruchi-development/pull/69), head `7cc5104f07719e82131018a38513b303f79f10a0`, **31/31 commit checks successful**.
-- **Canonical product identity second:** PR [#67 — Make Leruchi canonical across active product surfaces](https://github.com/Leruchii/Leruchi-development/pull/67), head `646ee91fd09fe81e2d5187dc2476a42ada7f1c77`, **32/32 workflow runs and 37/37 commit checks successful**. Its Leruchi brand audit passed. Compatibility-sensitive `VIBE_*`, `.vibe/`, database identifiers and `aud=vibedb` remain intentionally tracked for tested migration rather than blind replacement.
-- **Strict authorization third:** PR [#68 — Integrate strict capability grants and control-plane service](https://github.com/Leruchii/Leruchi-development/pull/68), head `9d79f25a4b84afe82a1a96d50785d22524e9757f`, **35/35 commit checks successful**.
+- **Canonical product identity second:** PR [#67 — Make Leruchi canonical across active product surfaces](https://github.com/Leruchii/Leruchi-development/pull/67), head `37e7b014f211312b8aedc788b44285a78e1aa913`, **32/32 workflow runs and 37/37 commit checks successful**. Its Leruchi brand audit passed. `.leruchi/` and `LERUCHI_*` are preferred with tested `.vibe/` and `VIBE_*` fallbacks; old SDK symbols/types remain explicit compatibility aliases.
+- **Strict authorization third:** PR [#68 — Integrate strict capability grants and control-plane service](https://github.com/Leruchii/Leruchi-development/pull/68), head `d47a6e81a0b7a74c64775bc7078df42e19b2d552`, **35/35 commit checks successful**.
 
 These PRs are not merged. Before integrating #67 or #68, reconcile their workflow diffs with #69 so no old Node.js runtime/action baseline is reintroduced. After each integration/rebase, rerun checks on the exact new SHA. Then port the reviewed slices from #63 to a clean main-based integration branch; never merge #63 wholesale.
 
