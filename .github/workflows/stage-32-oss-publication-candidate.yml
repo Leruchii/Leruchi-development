@@ -29,7 +29,6 @@ on:
       - "package.json"
       - "package-lock.json"
       - "apps/studio/package-lock.json"
-      - "apps/studio/package-lock.json"
       - ".github/workflows/stage-32-oss-publication-candidate.yml"
   workflow_dispatch:
 
