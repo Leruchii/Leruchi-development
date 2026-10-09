@@ -16,8 +16,8 @@ Before publishing a candidate, review the licenses and notices for the exact dep
 | Apache-2.0 | 19 |
 | Apache-2.0 AND LGPL-3.0-or-later | 3 |
 | Apache-2.0 AND LGPL-3.0-or-later AND MIT | 1 |
-| BlueOak-1.0.0 | 4 |
 | BSD-3-Clause | 1 |
+| BlueOak-1.0.0 | 4 |
 | CC-BY-4.0 | 1 |
 | ISC | 6 |
 | LGPL-3.0-or-later | 10 |
