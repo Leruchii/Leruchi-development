@@ -79,3 +79,16 @@ test("does not expose credentials or tenant authority in the decision", () => {
   const serialized = JSON.stringify(decision);
   assert.equal(/token|password|tenant_id|tenantId|credential|api[_-]?key|private[_-]?key/i.test(serialized), false);
 });
+
+test("rejects structured metadata", () => {
+  assert.throws(() => createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", metadata: [] }));
+  assert.throws(() => createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", metadata: { nested: { value: true } } }));
+});
+
+test("metadata is immutable after identity creation", () => {
+  const metadata = { team: "research" };
+  const identity = createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", metadata });
+  metadata.team = "changed";
+  assert.equal(identity.metadata.team, "research");
+  assert.equal(Object.isFrozen(identity.metadata), true);
+});
