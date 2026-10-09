@@ -34,6 +34,8 @@ if (packageJson?.engines?.node !== REQUIRED_ENGINE) {
 const violations = [];
 for (const file of walk(root)) {
   const rel = path.relative(root, file).replaceAll(path.sep, "/");
+  // This test file intentionally embeds invalid Node versions as negative fixtures, not configuration.
+  if (rel === "tests/architecture/runtime-policy.test.mjs") continue;
   let source;
   try { source = fs.readFileSync(file, "utf8"); } catch { continue; }
 
