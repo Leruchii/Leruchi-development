@@ -749,3 +749,34 @@ Implementation is in progress. Added bounded non-executing agent evaluation for 
 ## Stage 29 validation
 
 Stage 29 merged as PR #58 at `93022678b151b1945640967ecc09642271c23e62`. Focused evaluation/observability CI, Stage State Gate, Architecture Regression Audit, and the historical regression workflows completed successfully on the candidate head. Evaluation remains non-executing and emits bounded metadata plus deterministic artifact hashes only.
+
+
+## Stage 32 — OSS Core Publication Preparation
+
+**Status: IN PROGRESS — three prerequisite integration slices are merged; remaining Stage 31/32 integration and release gates are open.**
+
+Live integration checkpoint verified 2026-10-09:
+- Current development `main` HEAD: `acc82d8669779537edc5fe4467630bd87d09b15b`.
+- PR #69 — Node.js 24 CI baseline merged as `621a1790c42ce5f8023a369a94a47c23dc652997`.
+- PR #67 — canonical Leruchi identity across active product surfaces merged as `dacd1cdb7522f8e1a59727bc6f82824cbbd55b62`.
+- PR #68 — strict EdDSA capability grants and control-plane service core merged as `acc82d8669779537edc5fe4467630bd87d09b15b`.
+- The post-merge exact-main matrix completed successfully: 24/24 workflow runs passed on `acc82d8669779537edc5fe4467630bd87d09b15b`, with zero failures. This establishes a clean post-merge baseline before the next product integration slice.
+- Node.js 24 is the only supported runtime.
+- Leruchi is the canonical product name across active product-facing surfaces. `leruchi`, `.leruchi/`, `LERUCHI_*`, and the `@leruchi/*` package namespace are preferred; documented `vibe`/`.vibe/`/`VIBE_*` and legacy SDK symbols remain compatibility aliases during migration. Internal source directory renames and versioned protocol identifier migrations are not complete.
+- The capability-control-plane service core, PostgreSQL store adapter/schema, strict EdDSA verifier, route/graph scopes, and fail-closed revocation integration are merged. **Production authorization is not deployed.** A real identity/gateway adapter, authoritative tenant policy, managed signing-key custody/rotation, least-privilege production DB roles, private networking/mTLS, monitoring/audit/alerts and staging/recovery evidence remain deployment gates.
+- Stage 32 candidate PR [#63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open and must not be merged wholesale. Its candidate branch `stage32-oss-publication-prep` is 380 commits ahead and 3 behind current main with 155 changed files. Candidate workflow/artifact evidence is specific to its own SHA and does not validate the current main or any newly ported slice.
+- Repository visibility is owner-managed, as explicitly requested. Do not change repository visibility through automation. GitHub last reported the development and internal repositories public; the owner must decide and verify intended visibility before any public OSS export/release.
+- Legacy PRs #14, #22, #26 and #29 are closed without merge. Review their unique diffs individually and port only still-relevant guarantees/tests; never merge the stale branches wholesale.
+- The Stage 31/32 OSS readiness/export tooling, agent-governance package, Supabase tenant-claim hook/related role changes, internal package-directory renames, and exact-final-SHA public artifact review remain to be integrated/revalidated.
+- Apache-2.0 is selected for the intended OSS Core artifact, but the final integrated artifact and license inventory must be rebuilt/reviewed. Formal product-name clearance remains a separate release blocker. No public release/tag or export is authorized; require explicit approval.
+
+### Next actions
+
+1. Confirm all 24 post-merge workflows complete successfully on `acc82d8669779537edc5fe4467630bd87d09b15b`; fix any regression before adding another integration slice.
+2. Reconcile tenant-claim/role-boundary changes as a dedicated security slice with adversarial cross-tenant and fail-closed tests.
+3. Port and validate the remaining Leruchi SDK/CLI directory rename only with all imports, package metadata, workflows, prompts, tests and compatibility shims together.
+4. Integrate Agent Governance and its focused tests as a separate slice.
+5. Integrate the OSS readiness/export allowlist, license, verification tooling and Stage 31/32 workflows after the source set stabilizes. Rebuild and inspect the artifact from the final integrated SHA.
+6. Reconcile the four closed, unmerged legacy PR diffs without wholesale merges.
+7. Update this checkpoint with exact base/head SHAs and exact-head CI after each slice. Keep Stage 32 IN PROGRESS until all gates are closed.
+8. Public publication requires owner-managed repository-visibility confirmation, formal product-name clearance, final artifact/provenance review, and explicit release approval.

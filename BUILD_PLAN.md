@@ -1326,26 +1326,25 @@ Public publication remains separately gated on repository visibility remediation
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS — technical candidate gates green; integration/publication blocked.**
+**Status: IN PROGRESS.** Three clean-main prerequisites have been integrated; do not merge the broad 380-commit Stage 32 candidate wholesale.
 
-Live checkpoint verified 2026-10-09:
-- Development main at verification: `aa574ec0f3a1e5c28a34d15892730605b5aecbd7`; product-code baseline remains Stage 30 at `2bf62dc138667d834728d0dbddbdd8c29dd1fda9`.
-- Candidate PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63), draft/open, branch `stage32-oss-publication-prep`.
-- Last fully validated candidate code HEAD: `229efd856123ff21335d106138e774d569e2798a`; 35/35 workflow runs passed on that exact SHA, including Stage 31 readiness, Stage 32 candidate, Stage 03 compatibility, Stage State Gate and Architecture Regression Audit. [Stage 32 candidate run](https://github.com/Leruchii/Leruchi-development/actions/runs/37808685995).
-- Documentation-only synchronization commits and a merge parent have since been added to align checkpoint/plan/agent instructions with main. The SHA above is the last validated code SHA, not the current branch tip. Resolve the live head and verify checks on it before review or integration; do not treat old green checks as validation for a newer SHA.
-- PR #63 body has been refreshed for the synchronization commit; always verify the named SHA against the live PR head before review. Every new commit requires fresh exact-head checks.
-- Last recorded normalized archive has 184 files and SHA-256 `a37f46e019f4bfb7867be5706288bed943fa9231b79b50c7d0a788f3d5917df8`. This is historical artifact evidence; it must not be attributed to a later HEAD unless that exact run reproduces it. Node.js 24 only. ASVS 5.0.0 profile verification passed; full ASVS compliance is not claimed.
-- Legacy PRs [#14](https://github.com/Leruchii/Leruchi-development/pull/14), [#22](https://github.com/Leruchii/Leruchi-development/pull/22), [#26](https://github.com/Leruchii/Leruchi-development/pull/26), and [#29](https://github.com/Leruchii/Leruchi-development/pull/29) remain open and require diff-level reconciliation. Port still-relevant migration safety guarantees/tests from #14; do not wholesale-merge stale VibeDB-era branches.
-- GitHub reports both `Leruchii/Leruchi-development` and `Leruchii/Leruchi-internal` as public, despite the intended private topology. An authorized administrator must change and verify visibility; do not merge Stage 32 or publish while this remains unresolved.
-- Product-name clearance remains open. Public destination `Leruchii/Leruchi` remains unchanged (README only); no public tag/release exists. Explicit release approval is required.
-- The OSS runtime provides signed grant verification and a fail-closed revocation adapter, not a deployed production grant issuer/revocation control plane. Deployments must provide a trusted authority.
+### Integrated prerequisites (2026-10-09)
+- PR #69 — Node.js 24-only workflow baseline: merged as `621a1790c42ce5f8023a369a94a47c23dc652997`.
+- PR #67 — canonical Leruchi identity across active product surfaces: merged as `dacd1cdb7522f8e1a59727bc6f82824cbbd55b62`.
+- PR #68 — strict EdDSA capability grants, revocation boundary and control-plane service core: merged as `acc82d8669779537edc5fe4467630bd87d09b15b`.
+- The post-merge main matrix completed successfully: 24/24 workflow runs passed on exact HEAD `acc82d8669779537edc5fe4467630bd87d09b15b`, with zero failures. This is the baseline before further integration.
 
-### Stage 32 exit gate
+### Product identity decision
+Leruchi is the canonical product name across active product-facing surfaces. The CLI command, config directory, environment variables and package namespace are Leruchi-first. Compatibility aliases for Vibe-era environment/config values and exported SDK symbols remain deliberate. Do not perform a blind replacement of persisted database identifiers, JWT audience/protocol values, import paths or externally consumed schema IDs; handle those as versioned migrations with rollout/rollback tests. Node.js 24 only.
 
-1. An authorized administrator changes development/internal repository visibility to private and verifies `private: true`.
-2. Reconcile legacy PRs by reviewing unique diffs and porting only required, relevant changes. Validate migration runner safety and tests after any port.
-3. Synchronize PR #63 description, BUILD_STATE, BUILD_PLAN, candidate SHA, artifact provenance, and exact-head workflow evidence.
-4. All required exact-head CI passes after the final candidate commit.
-5. Review Apache-2.0 licensing, formal product-name clearance, export manifest, sanitized artifact file list, provenance, and public diff.
-6. Integrate Stage 32 into development main only after the security and reconciliation gates are closed. This is separate from public publication.
-7. Publish/tag only after explicit approval and record the resulting public commit, artifact, tag and release evidence.
+### Remaining dependency-ordered integration
+1. **Post-merge baseline:** complete and inspect the exact-main workflow matrix; fix any failures.
+2. **Tenant/security boundary:** review and port the Supabase tenant-claim hook, role/privilege and related test/workflow changes as a dedicated slice. Require cross-tenant negative tests and verify tenant claims derive from trusted identity.
+3. **Developer surfaces:** reconcile the internal SDK/CLI source-directory renames, package exports, imports, CLI command shims, docs, prompts, tests and workflow references together.
+4. **Agent Governance:** port the package and adversarial tests; preserve the non-executing authorization boundary.
+5. **OSS readiness/export:** port the Apache-2.0 license, allowlist, sanitizer/audit/build scripts, security verification profile and Stage 31/32 workflows. Review the actual generated file list and provenance from the final integrated SHA.
+6. **Legacy reconciliation:** review the unique diffs from closed, unmerged PRs #14, #22, #26 and #29. Port only still-relevant changes; never merge stale branches wholesale.
+7. **Release gate:** repository visibility remains owner-managed as requested and must be verified by the owner before export. Obtain formal product-name clearance, review license/provenance/export contents, and require explicit release approval. No tag, release or public export is authorized yet.
+
+### Evidence discipline
+The Stage 32 candidate PR [#63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open. Its candidate SHA and historical green checks/artifact are not evidence for the current main SHA. Every ported slice requires exact base/head recording, focused tests, affected historical regressions, Architecture Regression Audit, Stage State Gate and all required exact-head workflows. Keep Stage 32 IN PROGRESS until the entire integration and release gate is complete.

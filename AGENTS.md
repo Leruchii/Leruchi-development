@@ -14,7 +14,7 @@ Leruchi is organised into five planes:
 4. **Platform Services Plane** — Auth, PostgREST, Realtime, Storage and connection pooling, reusing Supabase services where appropriate.
 5. **Cloud Control Plane** — project lifecycle, provisioning, metering, billing, backups, observability, regions and hosted operations.
 
-The public product contract must not depend directly on Apache AGE. AGE is an implementation detail behind Vibe abstractions.
+The public Leruchi product contract must not depend directly on Apache AGE. AGE is an implementation detail behind Leruchi's engine-neutral contracts.
 
 ## 2. Core database rules
 
@@ -28,7 +28,7 @@ The public product contract must not depend directly on Apache AGE. AGE is an im
 
 ## 3. Query boundary
 
-All graph-capable client surfaces converge on Vibe Query IR.
+All graph-capable client surfaces converge on Leruchi Query IR.
 
 Canonical flow:
 
@@ -61,7 +61,7 @@ Rules:
 
 ## 3A. Intermediate Representation (IR) is a first-class product contract
 
-Vibe's Intermediate Representation is not an implementation detail and must be recognized by every coding agent before adding API, SDK, CLI, Studio, MCP, or compiler behavior.
+Leruchi's Intermediate Representation is not an implementation detail and must be recognized by every coding agent before adding API, SDK, CLI, Studio, MCP, or compiler behavior.
 
 - **Query IR** is the engine-neutral read contract. Client surfaces describe intent through Query IR; the backend validates it against the Schema Catalog, applies security/cost/depth/result guardrails, plans/compiles it, and executes it through the Secure Execution Engine.
 - **Mutation IR** is the explicit engine-neutral write contract. It remains separate from Query IR unless an explicit architecture decision proves a safe unified model.
@@ -76,7 +76,7 @@ Vibe's Intermediate Representation is not an implementation detail and must be r
 Leruchi is explicitly a two-way platform for AI agents and a first-class developer database.
 
 - MCP must support both **read/retrieval** and **authorized write/action** workflows.
-- An agent may act on behalf of a human only through the same trusted identity, tenant, capability, validation, RLS, mutation-approval and audit boundaries used by other Vibe clients.
+- An agent may act on behalf of a human only through the same trusted identity, tenant, capability, validation, RLS, mutation-approval and audit boundaries used by other Leruchi clients.
 - MCP is an interface, not a privileged execution path. It must never receive unrestricted `service_role` authority.
 - Destructive or high-impact agent actions require explicit policy such as preview/dry-run, impact/diff review, approval and audit before execution.
 - MCP tools must converge on Query IR / Mutation IR; do not create an agent-only query or mutation language.
