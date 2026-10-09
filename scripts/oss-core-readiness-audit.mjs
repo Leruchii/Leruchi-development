@@ -54,13 +54,25 @@ for (const rel of files) {
   }
 }
 
-for (const rel of ["README.md", ".nvmrc"]) {
+for (const rel of ["README.md", ".nvmrc", "package-lock.json", "apps/studio/package-lock.json"]) {
   if (!files.includes(rel)) failures.push(`required public file missing: ${rel}`);
 }
 const nvmrc = files.includes(".nvmrc")
   ? fs.readFileSync(path.join(root, ".nvmrc"), "utf8").trim()
   : "";
 if (nvmrc !== "24") failures.push(`public runtime baseline must be Node 24; found: ${nvmrc || "<missing>"}`);
+for (const rel of ["package-lock.json", "apps/studio/package-lock.json"]) {
+  if (!files.includes(rel)) continue;
+  try {
+    const lock = JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
+    if (lock.lockfileVersion !== 3 || !lock.packages || !Object.hasOwn(lock.packages, "")) {
+      failures.push("public lockfile must be npm lockfile v3 with a root package entry: " + rel);
+    }
+  } catch {
+    failures.push("public lockfile is invalid JSON: " + rel);
+  }
+}
+
 if (files.includes("package.json")) {
   try {
     const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
