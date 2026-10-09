@@ -27,7 +27,7 @@ export function listMigrationFiles(root) {
 export function migrationChecksum(file) {
   const filename = typeof file === "string" ? file : file?.file;
   if (!filename) throw new TypeError("migration file path is required");
-  return createHash("sha256").update(fs.readFileSync(filename)).digest("hex");
+  return validateMigrationFile(filename).checksum;
 }
 
 function requireMigratorUrl() {
