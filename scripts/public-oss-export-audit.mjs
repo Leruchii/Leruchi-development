@@ -20,6 +20,11 @@ const matchesExclude = (file) => excludes.some((pattern) => pattern.test(file));
 // deliberate include/exclude overlap was incorrectly reported as a leak.
 const publicFiles = files.filter((file) => matchesInclude(file) && !matchesExclude(file));
 const excludedIncludeMatches = files.filter((file) => matchesInclude(file) && matchesExclude(file));
+if (!files.includes("THIRD_PARTY_NOTICES.md") || !matchesInclude("THIRD_PARTY_NOTICES.md") || matchesExclude("THIRD_PARTY_NOTICES.md")) {
+  console.error("OSS export contract violation: THIRD_PARTY_NOTICES.md must be included in the public export.");
+  process.exit(1);
+}
+
 const forbiddenPublicPath = /^(?:AGENTS\.md|BUILD_(?:STATE|PLAN)\.md|NORTH_STAR\.md|OSS_BOUNDARY\.md|\.agents(?:\/|$)|\.claude(?:\/|$)|knowledge\/|prompts\/|\.github\/workflows\/|scripts\/audit-oss-boundary\.mjs$)/;
 const leaked = publicFiles.filter((file) => forbiddenPublicPath.test(file));
 
