@@ -1334,11 +1334,11 @@ The pre-merge candidate artifact is validation evidence only. Rebuild and inspec
 
 ### Verified release candidate (2026-10-09)
 
-- Candidate source commit: `4374e44ef4ee9214553d9863390eebe6cb430f53`; later documentation-only commits are excluded from the public candidate.
-- PR #83 exact head passed 23/23 checks, including Stage 31 readiness, Stage 32 candidate build, public export contract, Architecture Regression Audit and Stage State Gate.
-- Post-merge main matrix for `4374e44ef4ee9214553d9863390eebe6cb430f53`: 26/26 checks passed.
-- Stage 32 run [37931206154](https://github.com/Leruchii/Leruchi-development/actions/runs/37931206154) produced artifact ID `11616112656`, named `leruchi-oss-core-candidate`. GitHub artifact archive digest: `sha256:fd8438c94bcfaa2a38372dd63765413c3477dfa45e504e1b74c50c70870c16d3`. Contained `.tar.gz` SHA-256: `64db56ee25b31e5ef1157648ea5c6f0b5341c8aba59d390b17b317a68a2a6f01`.
-- The synthetic merge tree used by Stage 32 was checked against the squash-merged main commit; both use tree `2850f24b85369cfcadf979db6de36348ed78507a`. This establishes that the candidate workflow validated the same repository tree now on main.
+- Candidate source commit: `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`; later documentation-only commits are excluded from the public candidate.
+- PR #84 exact head passed 22/22 checks, including Stage 31 readiness, Stage 32 candidate build, public export contract, Architecture Regression Audit and Stage State Gate.
+- Post-merge main matrix for `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`: 26/26 checks passed.
+- Stage 32 run [37932619969](https://github.com/Leruchii/Leruchi-development/actions/runs/37932619969) produced artifact ID `11617171934`, named `leruchi-oss-core-candidate`. GitHub artifact archive digest: `sha256:de51a538f153cbce2e9e3cf11cee60616f040662fde434565cf40bbab6c15aa9`. Contained `.tar.gz` SHA-256: `57d22c00e03c3d141580330551eb57824c15ed08968860ca3b93a5d957a77bab`.
+- The synthetic merge tree used by Stage 32 was checked against the squash-merged main commit; both use tree `bf1d114aac1bab60b5f704f471d7b42d244e3c71`. This establishes that the candidate workflow validated the same repository tree now on main.
 - Candidate contains 200 files. Automated scans found no forbidden control paths, common credential-token formats or Node.js 20 runtime configuration. Manual review remains mandatory.
 - `THIRD_PARTY_NOTICES.md` records 138 lockfile dependency entries and 11 license expressions. LGPL/MPL/CC-BY components require explicit distribution and attribution review; the inventory is not legal clearance.
 - Public export boundary uses `OSS_EXPORT_MANIFEST.json`, `scripts/build-oss-core-candidate.mjs`, `scripts/public-oss-export-audit.mjs` and `scripts/oss-core-readiness-audit.mjs`. The workflow runs a second build and byte-compares normalized tarballs for reproducibility.
