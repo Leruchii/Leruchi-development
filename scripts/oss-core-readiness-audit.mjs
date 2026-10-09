@@ -10,6 +10,10 @@ const forbiddenPathFragments = [
 ];
 const forbiddenContent = [
   /github_pat_[A-Za-z0-9_]+/i,
+  /\bgh[pousr]_[A-Za-z0-9]{20,}\b/i,
+  /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/i,
+  /\bAIza[0-9A-Za-z_-]{30,}\b/,
+  /\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b/,
   /BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/,
   new RegExp("-----" + "BEGIN PRIVATE KEY-----"),
   /AKIA[0-9A-Z]{16}/,
@@ -54,7 +58,7 @@ for (const rel of files) {
   }
 }
 
-for (const rel of ["README.md", ".nvmrc", "package-lock.json", "apps/studio/package-lock.json"]) {
+for (const rel of ["README.md", "THIRD_PARTY_NOTICES.md", ".nvmrc", "package-lock.json", "apps/studio/package-lock.json"]) {
   if (!files.includes(rel)) failures.push(`required public file missing: ${rel}`);
 }
 const nvmrc = files.includes(".nvmrc")

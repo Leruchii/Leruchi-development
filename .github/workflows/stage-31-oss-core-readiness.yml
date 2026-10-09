@@ -6,6 +6,8 @@ on:
       - "scripts/assert-runtime-policy.mjs"
       - "tests/architecture/runtime-policy.test.mjs"
       - "scripts/oss-core-readiness-audit.mjs"
+      - "scripts/verify-third-party-notices.mjs"
+      - "THIRD_PARTY_NOTICES.md"
       - "scripts/owasp-asvs-verification.mjs"
       - "scripts/public-oss-export-audit.mjs"
       - "OSS_EXPORT_MANIFEST.json"
@@ -51,6 +53,8 @@ jobs:
         run: node --test tests/agent-governance/agent-governance.test.mjs
       - name: Run OWASP ASVS 5.0.0 verification gate
         run: node scripts/owasp-asvs-verification.mjs && node --test tests/security/owasp-asvs-profile.test.mjs
+      - name: Verify third-party dependency license inventory
+        run: node scripts/verify-third-party-notices.mjs
       - name: Validate public export manifest
         run: node tests/oss-core-readiness/public-export-manifest.test.mjs && node scripts/public-oss-export-audit.mjs
       - name: Build sanitized OSS candidate

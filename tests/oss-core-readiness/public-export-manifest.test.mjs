@@ -20,6 +20,8 @@ test("public export manifest excludes private control material", () => {
     assert.ok(exclusions.has(required), `missing exclusion: ${required}`);
   }
   assert.ok(manifest.include.includes("OSS_EXPORT_MANIFEST.json"));
+  assert.ok(manifest.include.includes("THIRD_PARTY_NOTICES.md"));
+  assert.ok(fs.existsSync("THIRD_PARTY_NOTICES.md"), "third-party dependency license inventory must be committed");
   assert.ok(manifest.include.includes("scripts/public-*.mjs"));
   assert.ok(!manifest.include.includes("scripts/assert-runtime-policy.mjs"));
   assert.ok(manifest.exclude.includes("scripts/assert-runtime-policy.mjs"));
