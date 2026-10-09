@@ -1,9 +1,9 @@
 # Stage 32 Integration Review
 
-Status: **TECHNICAL CANDIDATE BUILT; PUBLICATION GATES OPEN**
-Review date: 2026-10-09
-Candidate source SHA at review: `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5` (later handoff-document commits are excluded from the public export)
-Candidate tracking PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63) (draft/tracking only; do not merge its stale branch)
+Status: **TECHNICAL CANDIDATE BUILT, CI-VALIDATED, AND EXPORT-REVIEWED**
+Review date: 2026-10-10
+Candidate source SHA: `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5` (later handoff-document commits are excluded from the public export)
+Candidate tracking PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63) (tracking only; do not merge its stale branch)
 
 ## Integrated and validated slices
 
@@ -19,35 +19,31 @@ Candidate tracking PR: [#63](https://github.com/Leruchii/Leruchi-development/pul
 - [PR #77 — build-state synchronization](https://github.com/Leruchii/Leruchi-development/pull/77) — merged.
 - [PR #78 — canonical operations and SDK test paths](https://github.com/Leruchii/Leruchi-development/pull/78) — merged.
 - [PR #79 — strict capability grants and Studio integration](https://github.com/Leruchii/Leruchi-development/pull/79) — merged; post-merge matrix 26/26.
-- [PR #81 — canonical bootstrap variables with compatibility fallbacks](https://github.com/Leruchii/Leruchi-development/pull/81) — merged; `vibedb` and established database identifiers preserved.
+- [PR #81 — canonical bootstrap variables with compatibility fallbacks](https://github.com/Leruchii/Leruchi-development/pull/81) — merged.
 - [PR #82 — Node.js 24 dependency locking](https://github.com/Leruchii/Leruchi-development/pull/82) — merged.
 - [PR #83 — dependency license inventory and export audit hardening](https://github.com/Leruchii/Leruchi-development/pull/83) — merged; exact head 23/23 and post-merge matrix 26/26.
 - [PR #84 — trigger Stage 31/32 for every exportable path](https://github.com/Leruchii/Leruchi-development/pull/84) — merged; exact head 22/22 and post-merge matrix 26/26.
 - PR #66 was closed as superseded by the integrated identity/runtime/bootstrap slices.
 
-## Current candidate evidence
+## Candidate and export review evidence
 
-- Stage 32 run: [37932619969](https://github.com/Leruchii/Leruchi-development/actions/runs/37932619969).
+- Stage 32 run: [37932619969](https://github.com/Leruchii/Leruchi-development/actions/runs/37932619969); candidate job and all its steps passed.
 - Artifact ID: `11617171934`, name `leruchi-oss-core-candidate`.
 - GitHub archive digest: `sha256:de51a538f153cbce2e9e3cf11cee60616f040662fde434565cf40bbab6c15aa9`.
 - Contained tarball SHA-256: `57d22c00e03c3d141580330551eb57824c15ed08968860ca3b93a5d957a77bab`.
-- Candidate: 200 files. Initial automated path/token/runtime scan found no matches for the configured forbidden patterns.
-- Synthetic merge tree and merged-main tree both equal `bf1d114aac1bab60b5f704f471d7b42d244e3c71`.
-- Dependency inventory covers 138 entries across the root and Studio lockfiles. LGPL/MPL/CC-BY entries need explicit license/attribution compatibility review.
+- Candidate contains 200 files. The inspected path inventory contained no excluded control paths. Targeted scans returned zero matches for configured common credential/private-key patterns or Node.js 20 runtime settings; these bounded scans are not a guarantee that every possible secret is absent.
+- The synthetic merge tree and merged-main tree both equal `bf1d114aac1bab60b5f704f471d7b42d244e3c71`.
+- `THIRD_PARTY_NOTICES.md` inventories 138 dependency entries across root and Studio lockfiles, with 11 license expressions. LGPL/MPL/CC-BY entries remain flagged for any required distribution/attribution review.
 - The ASVS 5.0.0 profile is a verification profile, not a claim of full compliance.
 
-## Owner-controlled blockers
+## Owner-managed security follow-ups
 
-1. Rotate the GitHub credential exposed in project context; never reuse it.
-2. Confirm intended visibility of both development and internal/control repositories. Development is public; internal/control visibility could not be independently verified by the current connection.
-3. Configure main branch protection/ruleset with required checks. Current branch metadata reports `protected: false`.
-4. Manually review the exact 200-file export and all third-party license/notice obligations.
-5. Complete any required legal/trademark review and obtain explicit owner release approval.
+Per owner direction on 2026-10-10, token rotation, branch protection and repository-visibility settings remain owner-operated. Do not change them through automation, and do not treat them as blockers to completing or publishing the OSS source export. They remain important security/admin follow-ups. The current connection cannot verify internal/control repository visibility or read main's branch-protection settings.
 
 ## Production authorization is separate
 
-Production grant issuance/revocation is not deployed. Real identity-provider/trusted-gateway integration, authoritative tenant policy, signing-key custody/rotation, least-privilege production DB roles, private networking/mTLS, monitoring/alerts, and staging end-to-end/recovery evidence remain deployment requirements.
+Production grant issuance/revocation is not deployed. Real identity-provider/trusted-gateway integration, authoritative tenant policy, signing-key custody/rotation, least-privilege production DB roles, private networking/mTLS, monitoring/alerts, and staging end-to-end/recovery evidence remain production requirements.
 
 ## Decision
 
-Keep Stage 32 in progress until owner-controlled release gates are recorded as complete. Do not merge PR #63 wholesale. Any change to an allowlisted source file requires a fresh candidate build and exact-SHA evidence. No release tag, release publication, or public export is authorized yet.
+The technical candidate is built, CI-validated, reproducibly packaged and reviewed for export paths and high-risk configuration. Any formal release must describe Leruchi as an engineering preview and must not imply production readiness or full ASVS compliance. Any change to an allowlisted source file requires a fresh Stage 32 build and exact-SHA evidence. License/attribution and product-name/trademark review remain separate legal/owner considerations, not work for an automation agent to certify.
