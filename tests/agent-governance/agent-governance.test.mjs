@@ -92,3 +92,18 @@ test("metadata is immutable after identity creation", () => {
   assert.equal(identity.metadata.team, "research");
   assert.equal(Object.isFrozen(identity.metadata), true);
 });
+
+test("rejects sensitive metadata keys and plain-object violations", () => {
+  assert.throws(() => createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", metadata: { tenant_id: "tenant-a" } }));
+  assert.throws(() => createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", metadata: { api_key: "value" } }));
+  const custom = Object.create({ inherited: true });
+  custom.team = "research";
+  assert.throws(() => createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", metadata: custom }));
+});
+
+test("authorization decisions never echo resource identifiers", () => {
+  const identity = createAgentIdentity({ agentId: "agent-1", ownerId: "principal-1", capabilities: ["graph:read"] });
+  const decision = authorizeAgentAction({ identity, requiredCapabilities: ["graph:read"], resource: "tenant_id=private-tenant" });
+  assert.equal(decision.status, "allowed");
+  assert.equal(JSON.stringify(decision).includes("private-tenant"), false);
+});
