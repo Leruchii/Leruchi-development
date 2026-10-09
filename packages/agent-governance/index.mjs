@@ -5,6 +5,7 @@ const MAX_DELEGATIONS = 32;
 const MAX_MANDATES = 64;
 const MAX_METADATA_KEYS = 32;
 const METADATA_KEY = /^[A-Za-z][A-Za-z0-9_.:-]{0,63}$/;
+const SENSITIVE_METADATA_KEY = /tenant|token|password|credential|secret|api[_-]?key|private[_-]?key/i;
 const NAME = /^[A-Za-z][A-Za-z0-9_.:-]{0,127}$/;
 
 export class AgentGovernanceError extends Error {
@@ -46,7 +47,7 @@ function validateMetadata(metadata) {
   if (entries.length > MAX_METADATA_KEYS) fail("INVALID_AGENT_METADATA", "metadata contains too many fields");
   const normalized = Object.create(null);
   for (const [key, value] of entries) {
-    if (!METADATA_KEY.test(key)) fail("INVALID_AGENT_METADATA", "metadata contains an invalid key");
+    if (!METADATA_KEY.test(key) || SENSITIVE_METADATA_KEY.test(key)) fail("INVALID_AGENT_METADATA", "metadata contains a disallowed key");
     if (typeof value === "string") {
       if (value.length > 256) fail("INVALID_AGENT_METADATA", "metadata string values must be bounded");
     } else if (value !== null && typeof value !== "boolean" && !(typeof value === "number" && Number.isFinite(value))) {
@@ -72,7 +73,7 @@ export function hashAgentIdentity(identity) {
 }
 
 export function validateAgentIdentity(identity) {
-  if (!identity || typeof identity !== "object" || Array.isArray(identity)) fail("INVALID_AGENT_IDENTITY", "Agent identity must be an object");
+  if (!identity || typeof identity !== "object" || Array.isArray(identity)\n    || (Object.getPrototypeOf(identity) !== Object.prototype && Object.getPrototypeOf(identity) !== null)) fail("INVALID_AGENT_IDENTITY", "Agent identity must be a plain object");
   if (identity.version !== "v1" || identity.kind !== "agent_identity") fail("INVALID_AGENT_IDENTITY", "Unsupported agent identity version or kind");
   requiredId(identity.agent_id, "agent_id");
   requiredId(identity.owner_id, "owner_id");
