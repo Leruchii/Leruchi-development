@@ -10,7 +10,7 @@ Candidate PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63)
 - [PR #69 — Node.js 24 CI baseline](https://github.com/Leruchii/Leruchi-development/pull/69) merged as `621a1790c42ce5f8023a369a94a47c23dc652997`.
 - [PR #67 — Leruchi canonical product identity](https://github.com/Leruchii/Leruchi-development/pull/67) merged as `dacd1cdb7522f8e1a59727bc6f82824cbbd55b62`.
 - [PR #68 — strict capability grants/control-plane service core](https://github.com/Leruchii/Leruchi-development/pull/68) merged as `acc82d8669779537edc5fe4467630bd87d09b15b`.
-- Post-merge CI is running on the exact main HEAD above; at last check 21/24 workflows passed, 3 remained in progress and no failures had appeared. Do not claim the matrix complete until all required checks finish.
+- Post-merge CI completed successfully on the exact main HEAD above: 24/24 workflow runs passed, zero failures. This is the baseline before the next integration slice.
 
 ## Identity decision
 Leruchi is the canonical product identity across active product-facing surfaces. CLI/config/environment/package namespace changes are Leruchi-first with explicit compatibility aliases. The internal SDK/CLI directory rename and versioned migration of protocol/persisted identifiers remain separate work; do not use blind global replacement.
