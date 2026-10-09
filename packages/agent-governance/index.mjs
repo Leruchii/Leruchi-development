@@ -73,7 +73,8 @@ export function hashAgentIdentity(identity) {
 }
 
 export function validateAgentIdentity(identity) {
-  if (!identity || typeof identity !== "object" || Array.isArray(identity)\n    || (Object.getPrototypeOf(identity) !== Object.prototype && Object.getPrototypeOf(identity) !== null)) fail("INVALID_AGENT_IDENTITY", "Agent identity must be a plain object");
+  if (!identity || typeof identity !== "object" || Array.isArray(identity)
+    || (Object.getPrototypeOf(identity) !== Object.prototype && Object.getPrototypeOf(identity) !== null)) fail("INVALID_AGENT_IDENTITY", "Agent identity must be a plain object");
   if (identity.version !== "v1" || identity.kind !== "agent_identity") fail("INVALID_AGENT_IDENTITY", "Unsupported agent identity version or kind");
   requiredId(identity.agent_id, "agent_id");
   requiredId(identity.owner_id, "owner_id");
