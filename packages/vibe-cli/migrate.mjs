@@ -92,8 +92,8 @@ async function recordChecksum(url, migrationId, checksum) {
 }
 
 async function assertMigratorIdentity(url) {
-  const { stdout } = await psql(url, ["-At", "-F", "\\t", "-c", "SELECT current_user, session_user, rolsuper::text, rolbypassrls::text, rolcreaterole::text, rolcreatedb::text, rolreplication::text FROM pg_catalog.pg_roles WHERE rolname = current_user"]);
-  const fields = stdout.trim().split("\\t");
+  const { stdout } = await psql(url, ["-At", "-F", "\t", "-c", "SELECT current_user, session_user, rolsuper::text, rolbypassrls::text, rolcreaterole::text, rolcreatedb::text, rolreplication::text FROM pg_catalog.pg_roles WHERE rolname = current_user"]);
+  const fields = stdout.trim().split("\t");
   const safe = fields.length === 7 && fields[0] === "vibe_migrator" && fields[1] === "vibe_migrator" && fields.slice(2).every(value => value === "false" || value === "f");
   if (!safe) throw new Error("Migrations require current_user and session_user to be vibe_migrator without superuser, BYPASSRLS, CREATEROLE, CREATEDB or REPLICATION privileges");
 }
