@@ -39,18 +39,19 @@ for (const lockfile of lockfiles) {
   }
 }
 
+const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 entries.sort((a, b) =>
-  a.source.localeCompare(b.source) ||
-  a.name.localeCompare(b.name) ||
-  a.version.localeCompare(b.version) ||
-  a.license.localeCompare(b.license)
+  compare(a.source, b.source) ||
+  compare(a.name, b.name) ||
+  compare(a.version, b.version) ||
+  compare(a.license, b.license)
 );
 
 const licenseCounts = new Map();
 for (const entry of entries) {
   licenseCounts.set(entry.license, (licenseCounts.get(entry.license) ?? 0) + 1);
 }
-const summary = [...licenseCounts.entries()].sort(([a], [b]) => a.localeCompare(b));
+const summary = [...licenseCounts.entries()].sort(([a], [b]) => compare(a, b));
 
 const lines = [
   "# Third-party dependency license inventory",
