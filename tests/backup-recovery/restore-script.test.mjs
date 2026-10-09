@@ -6,7 +6,8 @@ import {join,resolve} from "node:path";
 import {createHash} from "node:crypto";
 import {spawnSync} from "node:child_process";
 
-const restoreScript=resolve("scripts/vibedb-restore.sh");
+const legacyRestoreScript=resolve("scripts/vibedb-restore.sh");
+const canonicalRestoreScript=resolve("scripts/leruchi-restore.sh");
 
 function fixture({declaredSize}={}){
   const root=mkdtempSync(join(tmpdir(),"vibedb-restore-mode-"));
@@ -29,15 +30,16 @@ function fixture({declaredSize}={}){
   return {root,bin,dump,manifest,log};
 }
 
-function run(mode,fx){
-  return spawnSync("bash",[restoreScript,fx.dump,fx.manifest],{
+function run(mode,fx,{script=legacyRestoreScript,modeEnv="VIBEDB_RESTORE_MODE",extraEnv={}}={}){
+  return spawnSync("bash",[script,fx.dump,fx.manifest],{
     encoding:"utf8",
     env:{
       ...process.env,
       PATH:`${fx.bin}:${process.env.PATH}`,
       DATABASE_URL:"postgresql://example.invalid/vibedb",
-      VIBEDB_RESTORE_MODE:mode,
-      PG_RESTORE_LOG:fx.log
+      [modeEnv]:mode,
+      PG_RESTORE_LOG:fx.log,
+      ...extraEnv
     }
   });
 }
@@ -67,4 +69,17 @@ test("shell restore rejects manifest size mismatch before pg_restore",()=>{
   const result=run("fresh",fx);
   assert.equal(result.status,5);
   assert.match(result.stderr,/size mismatch/);
+});
+
+test("canonical LERUCHI restore mode takes precedence over the legacy alias",()=>{
+  const fx=fixture();
+  const result=run("fresh",fx,{
+    script:canonicalRestoreScript,
+    modeEnv:"LERUCHI_RESTORE_MODE",
+    extraEnv:{VIBEDB_RESTORE_MODE:"replace"}
+  });
+  assert.equal(result.status,0,result.stderr);
+  const args=readFileSync(fx.log,"utf8");
+  assert.doesNotMatch(args,/--clean|--if-exists/);
+  assert.match(result.stdout,/"mode":"fresh"/);
 });

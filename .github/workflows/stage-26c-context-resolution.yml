@@ -10,7 +10,7 @@ on:
       - "packages/mcp-server/**"
       - "tests/context-ir/**"
       - "tests/context-resolution/**"
-      - "tests/vibe-sdk/context.test.mjs"
+      - "tests/leruchi-sdk/context.test.mjs"
       - "tests/mcp/mcp-server.test.mjs"
       - "tests/graph-api/api.test.mjs"
   push:
@@ -31,7 +31,7 @@ jobs:
       - name: Context IR and resolution tests
         run: node --test tests/context-ir/*.test.mjs tests/context-resolution/*.test.mjs
       - name: SDK Context tests
-        run: node --test tests/vibe-sdk/context.test.mjs
+        run: node --test tests/leruchi-sdk/context.test.mjs
       - name: MCP contract tests
         run: node --test tests/mcp/mcp-server.test.mjs
       - name: Graph API Context convergence tests

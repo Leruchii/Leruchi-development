@@ -16,7 +16,11 @@
     "package.json",
     "package-lock.json",
     "docker-compose.yml",
-    "scripts/public-*.mjs"
+    "scripts/public-*.mjs",
+    "scripts/leruchi-backup.sh",
+    "scripts/leruchi-restore.sh",
+    "scripts/vibedb-backup.sh",
+    "scripts/vibedb-restore.sh"
   ],
   "exclude": [
     ".agents/**",

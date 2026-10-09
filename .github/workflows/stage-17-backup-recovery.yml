@@ -3,7 +3,9 @@ on:
   pull_request:
     paths:
       - "scripts/vibedb-backup.sh"
+      - "scripts/leruchi-backup.sh"
       - "scripts/vibedb-restore.sh"
+      - "scripts/leruchi-restore.sh"
       - "packages/backup-recovery/**"
       - "tests/backup-recovery/**"
       - "infra/docker/postgres/**"

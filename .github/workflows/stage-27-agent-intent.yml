@@ -8,7 +8,7 @@ on:
       - "packages/leruchi-sdk/**"
       - "packages/mcp-server/**"
       - "tests/agent-intent/**"
-      - "tests/vibe-sdk/agent-intent.test.mjs"
+      - "tests/leruchi-sdk/agent-intent.test.mjs"
       - "tests/mcp/mcp-server.test.mjs"
       - "tests/graph-api/api.test.mjs"
       - "packages/leruchi-cli/**"
@@ -31,7 +31,7 @@ jobs:
       - name: Agent Intent contract tests
         run: node --test tests/agent-intent/*.test.mjs
       - name: SDK Agent Intent tests
-        run: node --test tests/vibe-sdk/agent-intent.test.mjs
+        run: node --test tests/leruchi-sdk/agent-intent.test.mjs
       - name: MCP contract tests
         run: node --test tests/mcp/mcp-server.test.mjs
       - name: Graph API Agent Intent tests
