@@ -22,7 +22,7 @@ on:
       - "tests/capability-policy/control-plane-service.test.mjs"
       - "knowledge/decisions/product-naming-review.md"
       - "knowledge/decisions/integration-review-stage32.md"
-      - "infra/docker/postgres/init/01-leruchi-bootstrap.sh"
+      - "infra/docker/postgres/init/01-vibe-bootstrap.sh"
       - "infra/migrations/0002-graph-realtime-outbox.sql"
       - "packages/realtime-outbox/index.mjs"
       - ".nvmrc"
