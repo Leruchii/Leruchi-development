@@ -1,9 +1,13 @@
 import { execFileSync } from "node:child_process";
-import { chmodSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const sourceRoot = path.resolve(process.argv[2] ?? ".");
 const outputRoot = path.resolve(process.argv[3] ?? ".oss-core-candidate");
+if (sourceRoot === outputRoot || sourceRoot.startsWith(outputRoot + path.sep)) {
+  throw new Error("OSS candidate output must not equal or contain the source repository");
+}
+rmSync(outputRoot, { recursive: true, force: true });
 const manifest = JSON.parse(readFileSync(path.join(sourceRoot, "OSS_EXPORT_MANIFEST.json"), "utf8"));
 
 function globToRegExp(glob) {
