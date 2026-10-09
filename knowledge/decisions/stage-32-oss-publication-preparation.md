@@ -13,7 +13,7 @@ Status: IN PROGRESS — release tooling is being integrated on clean development
 - Node.js 24 is the only supported publication runtime.
 - Internal build/control documents, private strategy, internal workflows, Cloud/Enterprise implementation and secrets must not enter the public candidate.
 - Candidate build workflows create review artifacts only; they do not publish to the public repository.
-- Publication requires exact-head CI, final diff/artifact/license/provenance review, repository-visibility remediation, product-name clearance and explicit release approval.
+- The owner has resolved the engineering naming choice in favor of Leruchi; see `knowledge/decisions/product-naming-review.md`. This is not trademark/legal clearance. Publication requires exact-head CI, final diff/artifact/license/provenance review, repository-visibility remediation, any needed formal legal review and explicit release approval.
 
 ## Current integration baseline
 
@@ -24,6 +24,7 @@ Status: IN PROGRESS — release tooling is being integrated on clean development
 - The current OSS readiness branch is a port of individually reviewed candidate files, not a wholesale merge of PR #63's 380-commit branch.
 - GitHub last reported both development and internal-control repositories as public. An authorized owner must change and verify intended visibility before any Stage 32 integration/export. No visibility settings were changed here.
 - The Apache-2.0 license is selected for the intended OSS Core. Final license inventory, sanitized file list and provenance must be rebuilt from the final integrated SHA.
+- The owner naming decision is recorded as Leruchi; trademark/domain/package namespace screening remains a separate pre-commercialization consideration, not an engineering rename task.
 - OWASP ASVS 5.0.0 is used as a conservative verification profile. Unmapped/partial/blocked items remain visible; this is not a claim of full ASVS compliance.
 
 ## Manifest boundaries
@@ -39,6 +40,6 @@ The export manifest intentionally excludes internal control documents and readin
 5. License and provenance review is complete.
 6. All required workflows pass on the exact final SHA.
 7. Repository visibility is remediated and verified by the owner.
-8. Product-name clearance is recorded and explicit release approval is obtained.
+8. The owner naming decision is recorded; any required formal trademark/legal clearance is reviewed, and explicit release approval is obtained.
 
 Until every item is closed, Stage 32 remains IN PROGRESS and no public tag, release or export is authorized.
