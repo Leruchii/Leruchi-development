@@ -8,20 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Capability tests
         run: node --test tests/capability-policy/capability-policy.test.mjs
       - name: Graph API catalog capability tests
         run: node --test tests/graph-api/graph-api-catalog.test.mjs
+      - name: Graph API authorization boundary tests
+        run: node --test tests/graph-api/api.test.mjs
       - name: MCP contract tests
         run: node --test tests/mcp/mcp-server.test.mjs
       - name: Capability grant contract tests
         run: node --test tests/capability-policy/capability-grants.test.mjs
+      - name: Capability control-plane service tests
+        run: node --test tests/capability-policy/control-plane-service.test.mjs
       - name: Mutation approval and audit tests
         run: node --test tests/mutation-approval/mutation-approval.test.mjs tests/audit/audit.test.mjs
       - name: Build database image
@@ -38,28 +42,50 @@ jobs:
           exit 1
       - name: Seed MCP tenant fixture
         run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
-      - name: Start live Graph API
+      - name: Generate ephemeral capability test key and internal token
+        run: |
+          openssl genpkey -algorithm ED25519 -out /tmp/leruchi-capability-test-private.pem
+          openssl pkey -in /tmp/leruchi-capability-test-private.pem -pubout -outform DER | base64 -w0 > /tmp/leruchi-capability-test-public.b64
+          echo "LERUCHI_CONTROL_PLANE_TOKEN=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - name: Start test capability revocation endpoint
         env:
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
-          VIBE_JWT_SECRET: stage-14-e2e-secret
-          VIBE_GRAPH_API_PORT: 4100
-        run: node scripts/start-stage13-graph-api.mjs > /tmp/vibedb-stage14-api.log 2>&1 &
+          LERUCHI_CONTROL_PLANE_PORT: 4101
+          LERUCHI_TEST_REVOKED_JTIS: stage-14-grant-revoked
+        run: node scripts/start-test-capability-control-plane.mjs > /tmp/leruchi-stage14-control-plane.log 2>&1 &
+      - name: Wait for test capability revocation endpoint
+        run: |
+          for i in {1..30}; do
+            if grep -q test-control-plane-ready /tmp/leruchi-stage14-control-plane.log 2>/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/leruchi-stage14-control-plane.log || true
+          exit 1
+      - name: Start strict-grant Graph API
+        env:
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+          LERUCHI_CAPABILITY_ISSUER: leruchi-test-control-plane
+          LERUCHI_CAPABILITY_CONTROL_PLANE_URL: http://127.0.0.1:4101
+          LERUCHI_GRAPH_API_PORT: 4100
+        run: |
+          export LERUCHI_CAPABILITY_CONTROL_PLANE_TOKEN="$LERUCHI_CONTROL_PLANE_TOKEN"
+          export LERUCHI_CAPABILITY_PUBLIC_KEYS="{\"stage-test-2026\":\"$(cat /tmp/leruchi-capability-test-public.b64)\"}"
+          node scripts/start-test-capability-graph-api.mjs > /tmp/leruchi-stage14-api.log 2>&1 &
       - name: Wait for live Graph API
         run: |
           for i in {1..30}; do
             if curl --fail --silent http://127.0.0.1:4100/health >/dev/null; then exit 0; fi
             sleep 1
           done
-          cat /tmp/vibedb-stage14-api.log || true
+          cat /tmp/leruchi-stage14-api.log || true
           exit 1
       - name: Live MCP integration
         env:
           VIBE_API_URL: http://127.0.0.1:4100
-          VIBE_JWT_SECRET: stage-14-e2e-secret
+          LERUCHI_CAPABILITY_TEST_PRIVATE_KEY_PATH: /tmp/leruchi-capability-test-private.pem
         run: node --test tests/mcp/live-mcp-graph-api.test.mjs
-      - name: Show live Graph API logs on failure
+      - name: Show live API and revocation logs on failure
         if: failure()
-        run: cat /tmp/vibedb-stage14-api.log || true
+        run: cat /tmp/leruchi-stage14-api.log /tmp/leruchi-stage14-control-plane.log || true
       - name: Cleanup live database
         if: always()
         run: docker compose down -v

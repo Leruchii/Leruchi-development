@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {createGraphApiServer,resolveQueryCompiler} from "../../packages/graph-api/index.mjs";
 import {engineCapabilities} from "../../packages/planner/index.mjs";
 import {createHmac} from "node:crypto";
+import {signTestCapabilityGrant,TEST_CAPABILITY_ISSUER,TEST_CAPABILITY_PUBLIC_KEYS} from "../fixtures/capability-grant-test-key.mjs";
 
 function fakePool(){
   return {connect:async()=>({query:async()=>({rows:[]}),release(){}})};
@@ -230,5 +231,120 @@ test("Graph API Agent Intent capability denial occurs before catalog/database ac
     assert.equal(body.code,"AGENT_INTENT_CAPABILITY_DENIED");
     assert.equal(catalogCalls,0);
     assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});
+
+
+test("Graph API denies graph queries without graph:read before catalog or database access",async()=>{
+  let catalogCalls=0,dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return{query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/query",{
+      method:"POST",headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["vector:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir:{version:"v1",kind:"graph_query"}})
+    });
+    assert.equal(res.status,403);
+    assert.equal((await res.json()).code,"CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});
+
+test("Graph API denies graph mutations without graph:write before catalog or database access",async()=>{
+  let catalogCalls=0,dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return{query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/mutations",{
+      method:"POST",headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:read"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir:{version:"v1",kind:"graph_mutation",operation:"create_vertex"}})
+    });
+    assert.equal(res.status,403);
+    assert.equal((await res.json()).code,"CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});
+
+test("Graph API requires graph:delete in addition to graph:write for destructive mutations",async()=>{
+  let catalogCalls=0,dbConnects=0;
+  const pool={connect:async()=>{dbConnects++;return{query:async()=>({rows:[]}),release(){}};}};
+  const api=createGraphApiServer({pool,jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/mutations",{
+      method:"POST",headers:{authorization:"Bearer "+token({sub:"u",tenant_id:"tenant_a",capabilities:["graph:write"]},"secret"),"content-type":"application/json"},
+      body:JSON.stringify({ir:{version:"v1",kind:"graph_mutation",operation:"delete_vertex"}})
+    });
+    assert.equal(res.status,403);
+    assert.equal((await res.json()).code,"CAPABILITY_DENIED");
+    assert.equal(catalogCalls,0);
+    assert.equal(dbConnects,0);
+  }finally{await api.close();}
+});
+
+
+test("Graph API strict capability grants fail closed when revocation is unavailable",async()=>{
+  let catalogCalls=0;
+  const api=createGraphApiServer({pool:fakePool(),jwtIssuer:TEST_CAPABILITY_ISSUER,jwtAudience:"leruchi",capabilityPublicKeys:TEST_CAPABILITY_PUBLIC_KEYS,requireCapabilityGrant:true,catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    const grant=signTestCapabilityGrant({sub:"u",tenant_id:"tenant_a",jti:"jti-1",capabilities:["graph:read"]});
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+grant}});
+    assert.equal(res.status,503);
+    assert.equal((await res.json()).code,"CAPABILITY_REVOCATION_UNAVAILABLE");
+    assert.equal(catalogCalls,0);
+  }finally{await api.close();}
+});
+
+test("Graph API strict capability grants enforce revocation and route scope before catalog access",async()=>{
+  let catalogCalls=0;
+  const api=createGraphApiServer({pool:fakePool(),jwtIssuer:TEST_CAPABILITY_ISSUER,jwtAudience:"leruchi",capabilityPublicKeys:TEST_CAPABILITY_PUBLIC_KEYS,requireCapabilityGrant:true,isGrantRevoked:async jti=>jti==="revoked",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  const makeGrant=(jti,scope)=>signTestCapabilityGrant({sub:"u",tenant_id:"tenant_a",jti,capabilities:["graph:read"],scope});
+  try{
+    const revoked=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+makeGrant("revoked")}});
+    assert.equal(revoked.status,401);
+    assert.equal((await revoked.json()).code,"CAPABILITY_GRANT_REVOKED");
+    const scoped=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+makeGrant("active",{routes:["/v1/graph/query"]})}});
+    assert.equal(scoped.status,403);
+    assert.equal((await scoped.json()).code,"CAPABILITY_SCOPE_DENIED");
+    assert.equal(catalogCalls,0);
+    const allowed=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+makeGrant("active",{routes:["/v1/schema/catalog"]})}});
+    assert.equal(allowed.status,200);
+    assert.equal(catalogCalls,1);
+  }finally{await api.close();}
+});
+
+
+test("Graph API rejects HS256 tokens that claim to be EdDSA capability grants",async()=>{
+  let catalogCalls=0;
+  const api=createGraphApiServer({pool:fakePool(),jwtSecret:"secret",catalogProvider:async()=>{catalogCalls++;return{graphs:{}};},port:0});
+  const address=await api.listen();
+  try{
+    for(const aud of ["leruchi",["leruchi"]]){
+      const forged=token({sub:"u",tenant_id:"tenant_a",jti:"jti-forged",aud,capabilities:["graph:read"],exp:Math.floor(Date.now()/1000)+60},"secret");
+      const res=await fetch("http://127.0.0.1:"+address.port+"/v1/schema/catalog",{headers:{authorization:"Bearer "+forged}});
+      assert.equal(res.status,401);
+    }
+    assert.equal(catalogCalls,0);
+  }finally{await api.close();}
+});
+
+test("Graph API permits an active EdDSA grant scoped to its requested route and graph",async()=>{
+  const api=createGraphApiServer({
+    pool:fakePool(),jwtIssuer:TEST_CAPABILITY_ISSUER,jwtAudience:"leruchi",capabilityPublicKeys:TEST_CAPABILITY_PUBLIC_KEYS,
+    requireCapabilityGrant:true,isGrantRevoked:async()=>false,
+    catalogProvider:async()=>({graphs:{g:{visibility:"shared",tenantId:null,labels:["Person"],edges:[]}}}),port:0
+  });
+  const address=await api.listen();
+  try{
+    const grant=signTestCapabilityGrant({sub:"u",tenant_id:"tenant_a",jti:"jti-scoped",capabilities:["graph:read"],scope:{routes:["/v1/graph/query"],graphs:["g"]}});
+    const ir={version:"v1",kind:"graph_query",graph:"g",root:{label:"Person",alias:"root"},steps:[],filters:[],projection:[{field:"root.name",alias:"name"}],orderBy:[],limit:1,offset:0,depth:0,parameters:[]};
+    const res=await fetch("http://127.0.0.1:"+address.port+"/v1/graph/query",{method:"POST",headers:{authorization:"Bearer "+grant,"content-type":"application/json"},body:JSON.stringify({ir,parameters:{}})});
+    assert.equal(res.status,200);
   }finally{await api.close();}
 });
