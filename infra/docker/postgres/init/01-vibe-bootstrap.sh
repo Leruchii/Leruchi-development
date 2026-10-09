@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${VIBE_MIGRATOR_PASSWORD:?VIBE_MIGRATOR_PASSWORD is required}"
-: "${VIBE_RUNTIME_PASSWORD:?VIBE_RUNTIME_PASSWORD is required}"
+LERUCHI_MIGRATOR_PASSWORD="${LERUCHI_MIGRATOR_PASSWORD:-${VIBE_MIGRATOR_PASSWORD:-}}"
+LERUCHI_RUNTIME_PASSWORD="${LERUCHI_RUNTIME_PASSWORD:-${VIBE_RUNTIME_PASSWORD:-}}"
+LERUCHI_REALTIME_PASSWORD="${LERUCHI_REALTIME_PASSWORD:-${VIBE_REALTIME_PASSWORD:-}}"
+
+: "${LERUCHI_MIGRATOR_PASSWORD:?LERUCHI_MIGRATOR_PASSWORD (or legacy VIBE_MIGRATOR_PASSWORD) is required}"
+: "${LERUCHI_RUNTIME_PASSWORD:?LERUCHI_RUNTIME_PASSWORD (or legacy VIBE_RUNTIME_PASSWORD) is required}"
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
-  --set=vibe_migrator_password="$VIBE_MIGRATOR_PASSWORD" \
-  --set=vibe_runtime_password="$VIBE_RUNTIME_PASSWORD" <<'SQL'
+  --set=vibe_migrator_password="$LERUCHI_MIGRATOR_PASSWORD" \
+  --set=vibe_runtime_password="$LERUCHI_RUNTIME_PASSWORD" <<'SQL'
 CREATE ROLE vibe_migrator
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
   PASSWORD :'vibe_migrator_password';
@@ -29,9 +33,9 @@ GRANT USAGE ON SCHEMA ag_catalog TO vibe_migrator, vibe_runtime;
 GRANT EXECUTE ON FUNCTION ag_catalog.cypher(name, cstring, ag_catalog.agtype) TO vibe_migrator, vibe_runtime;
 SQL
 
-if [[ -n "${VIBE_REALTIME_PASSWORD:-}" ]]; then
+if [[ -n "$LERUCHI_REALTIME_PASSWORD" ]]; then
   psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
-    --set=vibe_realtime_password="$VIBE_REALTIME_PASSWORD" <<'SQL'
+    --set=vibe_realtime_password="$LERUCHI_REALTIME_PASSWORD" <<'SQL'
 CREATE ROLE vibe_realtime
   LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS
   PASSWORD :'vibe_realtime_password';

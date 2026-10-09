@@ -1330,28 +1330,33 @@ The pre-merge candidate artifact is validation evidence only. Rebuild and inspec
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS.** SDK/CLI migration and OSS readiness tooling are integrated; final candidate reconciliation and release gates remain open. Never merge the broad candidate branch wholesale.
+**Status: IN PROGRESS.** SDK/CLI migration and OSS readiness tooling are integrated. Final candidate reconciliation and release gates remain open. Never merge the broad candidate branch wholesale.
 
 ### Live integration baseline (2026-10-09)
-- Last verified development `main` SHA before this checkpoint PR: `8dcdeaf4d18135a9448c2dbf5d01469c87737058`; exact-main matrix 24/24 passed.
+- Last verified development `main` SHA before PR #81: `8ebfe49253fedc6e26e7f42d67312118493cd6d1`; exact-main matrix 22/22 passed.
 - PR #74 — SDK/CLI source-directory migration: merged.
 - PR #75 — OSS readiness/export gates: merged; exact-head matrix 24/24 passed.
-- PR #76 — Graph Studio/legacy reconciliation decision: merged after review of legacy PRs #22, #26 and #29. Their unique intent was assessed as superseded by the evolved current implementation; see `knowledge/decisions/legacy-pr-reconciliation-graph-studio.md`.
+- PR #76 — Graph Studio/legacy reconciliation: merged; legacy PRs #22, #26 and #29 reviewed. Old Graph API/browser/renderer changes are superseded; the dense-edge stress benchmark remains open.
 - PR #77 — build-state synchronization: merged.
 - PR #78 — canonical operations and SDK test paths: merged.
+- PR #80 — current checkpoint reconciliation: merged; exact-head matrix 22/22 passed.
+- PR #81 — DB bootstrap environment compatibility and product naming decision: under review; exact-head checks must pass before merge.
 - PR #72 — Agent Governance foundation: merged; exact-head matrix 18/18 passed.
 - PR #73 — hardened migration runner: merged; exact-head matrix 23/23 passed.
 - Node.js 24 is the only supported runtime.
 - GitHub currently reports development and internal-control repositories as public. Owner must verify/change visibility before public export; no settings were changed by automation.
-- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open and stale. Historical candidate checks do not validate current main or any newly ported changes.
+- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open, 380 commits ahead and 12 behind with 155 changed files. Historical candidate checks do not validate current main or newly ported changes.
 
-### Product identity and source-path decision
-Leruchi is canonical on product-facing surfaces. Prefer `leruchi`, `.leruchi/`, `LERUCHI_*` and `@leruchi/*`; retain deliberate Vibe-era CLI/environment/config and exported-symbol aliases where documented. SDK and CLI source directories now live at `packages/leruchi-sdk` and `packages/leruchi-cli`. Persisted database identifiers, JWT audience/protocol values, and external schema IDs remain unchanged unless a separate versioned compatibility and rollback plan authorizes a change.
+### Product identity and compatibility boundary
+Leruchi is canonical on product-facing surfaces. Prefer `leruchi`, `.leruchi/`, `LERUCHI_*` and `@leruchi/*`; retain deliberate Vibe-era CLI/environment/config and exported-symbol aliases where documented. The database bootstrap now prefers `LERUCHI_*` variables and retains `VIBE_*` fallbacks on PR #81. This does not rename the `vibedb` database, `vibe_*` roles/schemas, JWT audience/protocol values, or external schema IDs. Those require separate versioned compatibility and rollback plans.
+
+The owner decision to retain Leruchi is recorded in `knowledge/decisions/product-naming-review.md`. It is not a legal/trademark opinion; any required legal review remains a release gate.
 
 ### Dependency-ordered remaining integration
-1. **Candidate reconciliation:** compare PR #63's current live tree with main; port only reviewed, still-relevant features and tests in dependency order. Do not merge its stale branch wholesale.
-2. **Final candidate review:** rebuild the export from the final integrated SHA, review the complete selected file list and dependency/license inventory, scan secrets/runtime declarations, and record the exact source SHA plus reproducible archive digest.
-3. **Release gate:** confirm repository visibility, obtain formal product-name clearance, review provenance and exported contents, and require explicit release approval. No tag, release or public export is authorized yet.
+1. **Bootstrap compatibility:** validate and merge PR #81 only after focused tests, Stage 01 database initialization, Stage 32 candidate, Architecture Regression Audit, Stage State Gate and the full exact-head matrix pass.
+2. **Candidate reconciliation:** compare PR #63's live tree with main and port only reviewed, still-relevant changes. Its renamed bootstrap file is intentionally not copied wholesale because the current change preserves database identifiers while adding environment-variable compatibility.
+3. **Final candidate review:** rebuild the export from the final integrated SHA, review the complete selected file list and dependency/license inventory, scan secrets/runtime declarations, and record the exact source SHA plus reproducible archive digest.
+4. **Release gate:** confirm repository visibility, complete any required formal legal review, review provenance and exported contents, and require explicit release approval. No tag, release or public export is authorized yet.
 
 ### Evidence discipline
 Every slice must record exact base/head SHAs and pass focused tests, affected regressions, Architecture Regression Audit, Stage State Gate and required exact-head workflows. A green result from another SHA is not validation. Keep Stage 32 IN PROGRESS until integration and release gates are closed.
