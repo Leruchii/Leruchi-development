@@ -12,7 +12,7 @@ services:
       VIBE_RUNTIME_PASSWORD: runtime
       VIBE_REALTIME_PASSWORD: realtime
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d vibedb"]
       interval: 2s
