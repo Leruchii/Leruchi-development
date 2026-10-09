@@ -62,6 +62,8 @@ jobs:
         run: node scripts/owasp-asvs-verification.mjs && node --test tests/security/owasp-asvs-profile.test.mjs
       - name: Verify tenant and realtime security boundary
         run: node --test tests/security/realtime-role-boundary.test.mjs
+      - name: Verify third-party dependency license inventory
+        run: node scripts/verify-third-party-notices.mjs
       - name: Validate public export manifest
         run: node tests/oss-core-readiness/public-export-manifest.test.mjs
       - name: Audit source export contract
