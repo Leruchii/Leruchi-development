@@ -13,7 +13,7 @@ function fixture() {
   };
   const service = createCapabilityControlPlane({
     issuer: "test-issuer", keyId: "test-key", privateKey: privateKey.export({ type: "pkcs8", format: "pem" }),
-    internalBearerToken: "internal-test-token", store, clock: () => 1000,
+    internalBearerToken: "internal-test-token-0123456789abcdef", store, clock: () => 1000,
     authenticateCaller: async (req) => req.headers["x-test-auth"] === "valid" ? { subject: "trusted-subject", tenantIds: ["tenant-a"] } : null,
     authorizeGrant: async (_principal, request) => request.tenant_id === "tenant-a" && request.capabilities.every((c) => c !== "graph:delete"),
   });
@@ -70,18 +70,34 @@ test("revocation endpoints are internal-only, persistent and fail closed for unk
   await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer incorrect-token" } }), wrongToken);
   assert.equal(wrongToken.status, 401);
   const lookup = response();
-  await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer internal-test-token" } }), lookup);
+  await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer internal-test-token-0123456789abcdef" } }), lookup);
   assert.deepEqual(lookup.body, { active: true, revoked: false });
   const revoked = response();
-  await service.handle(request("POST", `/v1/capability-grants/${jti}/revoke`, { headers: { authorization: "Bearer internal-test-token" } }), revoked);
+  await service.handle(request("POST", `/v1/capability-grants/${jti}/revoke`, { headers: { authorization: "Bearer internal-test-token-0123456789abcdef" } }), revoked);
   assert.equal(revoked.status, 200);
   assert.deepEqual(revoked.body, { jti, active: false, revoked: true });
   const after = response();
-  await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer internal-test-token" } }), after);
+  await service.handle(request("GET", `/v1/capability-grants/${jti}/revocation`, { headers: { authorization: "Bearer internal-test-token-0123456789abcdef" } }), after);
   assert.deepEqual(after.body, { active: false, revoked: true });
   const unknown = response();
-  await service.handle(request("GET", "/v1/capability-grants/unknown/revocation", { headers: { authorization: "Bearer internal-test-token" } }), unknown);
+  await service.handle(request("GET", "/v1/capability-grants/unknown/revocation", { headers: { authorization: "Bearer internal-test-token-0123456789abcdef" } }), unknown);
   assert.deepEqual(unknown.body, { active: false, revoked: true });
+});
+
+test("control plane rejects weak internal bearer credentials and empty identity settings", () => {
+  const { privateKey } = generateKeyPairSync("ed25519");
+  const store = { async createGrant() {}, async getGrant() { return null; }, async revokeGrant() { return false; } };
+  const base = {
+    issuer: "test-issuer",
+    keyId: "test-key",
+    privateKey: privateKey.export({ type: "pkcs8", format: "pem" }),
+    internalBearerToken: "short",
+    store,
+    authenticateCaller: async () => null,
+    authorizeGrant: async () => false,
+  };
+  assert.throws(() => createCapabilityControlPlane(base), /at least 32 bytes/);
+  assert.throws(() => createCapabilityControlPlane({ ...base, internalBearerToken: "internal-test-token-0123456789abcdef", audience: "" }), /audience/);
 });
 
 test("issuer rejects oversized request bodies", async () => {

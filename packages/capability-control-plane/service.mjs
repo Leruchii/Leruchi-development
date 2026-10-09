@@ -55,7 +55,8 @@ export function createCapabilityControlPlane({
   authorizeGrant,
   clock = () => Math.floor(Date.now() / 1000),
 }) {
-  if (!issuer || !keyId || !privateKey || !internalBearerToken) throw new Error("Issuer, key ID, private key and internal token are required");
+  if (typeof issuer !== "string" || !issuer.trim() || typeof audience !== "string" || !audience.trim() || typeof keyId !== "string" || !keyId.trim() || !privateKey) throw new Error("Non-empty issuer, audience, key ID and private key are required");
+  if (typeof internalBearerToken !== "string" || Buffer.byteLength(internalBearerToken, "utf8") < 32) throw new Error("Internal control-plane token must be at least 32 bytes");
   if (!store || typeof store.createGrant !== "function" || typeof store.getGrant !== "function" || typeof store.revokeGrant !== "function") throw new Error("Durable capability store adapter is required");
   if (typeof authenticateCaller !== "function" || typeof authorizeGrant !== "function") throw new Error("Trusted caller authentication and grant policy callbacks are required");
   createPrivateKey(privateKey);
