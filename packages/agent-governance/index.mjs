@@ -173,7 +173,6 @@ export function authorizeAgentAction({ identity, mandate, delegation = null, req
       reason_code: "AGENT_AUTHORIZED",
       agent_id: identity.agent_id,
       required_capabilities: Object.freeze(required),
-      resource: resource ?? null,
       execution: "not_executed"
     });
   } catch (error) {
