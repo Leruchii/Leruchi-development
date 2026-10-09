@@ -1,0 +1,33 @@
+name: Stage 31A Agent Governance
+on:
+  pull_request:
+    paths:
+      - "packages/agent-governance/**"
+      - "tests/agent-governance/**"
+      - ".github/workflows/stage-31-agent-governance.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/agent-governance/**"
+      - "tests/agent-governance/**"
+      - ".github/workflows/stage-31-agent-governance.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Test agent governance
+        run: node --test tests/agent-governance/agent-governance.test.mjs
+      - name: Run architecture contract audit
+        run: node tests/architecture/contract-audit.mjs
