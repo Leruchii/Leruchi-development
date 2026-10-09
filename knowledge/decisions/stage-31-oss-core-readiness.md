@@ -52,7 +52,7 @@ Stage 31 is VALIDATED only when:
 - the release manifest and audit are executable;
 - the candidate contains only explicitly allowed paths;
 - forbidden private/security content is rejected;
-- Node.js 20 is rejected and Node.js 24 remains the project baseline;
+- the Node.js 24-only runtime policy is enforced;
 - public package metadata is coherent;
 - the exact candidate passes the relevant product and architecture regression matrix;
 - the public repository publication procedure is documented and tested without publishing;
@@ -71,5 +71,5 @@ Do not publish the public Leruchi repository during Stage 31. Publication is a s
 
 Apache-2.0 is the approved license for Leruchi Core's public OSS release. The repository root includes the standard Apache-2.0 LICENSE file, and the root package metadata declares the SPDX identifier `Apache-2.0`. This decision applies to the Leruchi Core OSS release boundary; private Cloud/Enterprise code remains outside that public release.
 
-The license decision resolves the license-selection blocker. The technical Stage 31 readiness gate is validated: the candidate readiness audit passed on the exact candidate and the post-fast-forward regression matrix completed 57/57 successfully. Formal product-name clearance remains a separate blocker to public publication; this decision does not authorize publication.
+The license decision resolves the license-selection blocker. Historical candidate readiness evidence does not validate the current clean-main integration branch. The Stage 31 readiness gate remains IN PROGRESS until the new manifest, audit, sanitizer, ASVS profile verifier and exact-head workflow matrix pass. Formal product-name clearance remains a separate blocker to public publication; this decision does not authorize publication.
 
