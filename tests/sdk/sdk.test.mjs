@@ -1,11 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createClient, createFetchTransport, VibeClientError } from "../../packages/vibe-sdk/index.mjs";
+import { createClient, createFetchTransport, LeruchiClientError, VibeClientError } from "../../packages/vibe-sdk/index.mjs";
 
 function transportRecorder() {
   const calls = [];
   return { calls, request: async (kind, body) => { calls.push({ kind, body }); return { ok: true, kind }; } };
 }
+
+test("canonical Leruchi error class retains the Vibe compatibility export", () => {
+  assert.equal(VibeClientError, LeruchiClientError);
+  const error = new LeruchiClientError("EXAMPLE", "example");
+  assert.ok(error instanceof VibeClientError);
+  assert.equal(error.name, "LeruchiClientError");
+});
 
 test("builds engine-neutral Query IR without Cypher or SQL", async () => {
   const transport = transportRecorder();
@@ -42,7 +49,7 @@ test("supports explicit parameter binding without putting values into IR", async
   assert.deepEqual(body.parameters, { name: "Alice" });
 });
 
-test("builds graph mutations through the same Vibe surface", async () => {
+test("builds graph mutations through the same Leruchi surface", async () => {
   const transport = transportRecorder();
   const vibe = createClient({ transport });
   await vibe.graph("vibe_security").createEdge(
@@ -74,7 +81,7 @@ test("does not accept engine fragments through query builders", () => {
   assert.equal(transport.calls.length, 0);
 });
 
-test("HTTP transport sends bearer token and Vibe endpoint", async () => {
+test("HTTP transport sends bearer token and Leruchi endpoint", async () => {
   const calls = [];
   const fetchImpl = async (url, init) => {
     calls.push({ url, init });

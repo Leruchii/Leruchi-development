@@ -36,6 +36,16 @@ for (const file of productFacingFiles) {
   }
 }
 
+const legacyUserCopy = [
+  ["packages/vibe-sdk/index.mjs", "Field must be a valid Vibe field"],
+  ["packages/vibe-sdk/index.mjs", "Unsupported Vibe request kind"],
+  ["packages/vibe-sdk/index.mjs", "Vibe request failed with HTTP"],
+  ["packages/vibe-sdk/README.md", "Vibe graph intent"],
+];
+for (const [file, phrase] of legacyUserCopy) {
+  if (readFileSync(file, "utf8").includes(phrase)) failures.push(file + ": legacy Vibe product wording remains in user-facing copy");
+}
+
 for (const file of tracked.filter((path) => path.endsWith("package.json"))) {
   const pkg = JSON.parse(readFileSync(file, "utf8"));
   if (typeof pkg.name === "string" && pkg.name.startsWith("@vibeplatform/")) {

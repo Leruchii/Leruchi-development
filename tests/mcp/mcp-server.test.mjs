@@ -174,12 +174,18 @@ test("MCP agent trace and replay are diagnostic and non-executing", async () => 
   globalThis.fetch = async (url, options) => {
     calls += 1;
     assert.match(String(url), /\/v1\/agent\/(trace|replay)$/);
+    assert.equal(new URL(String(url)).origin, "https://canonical.example");
+    assert.equal(options.headers.authorization, "Bearer canonical-token");
     return new Response(JSON.stringify({version:"v1",status:"pass"}), {status:200});
   };
-  const previousBase = process.env.VIBE_API_URL;
-  const previousToken = process.env.VIBE_MCP_ACCESS_TOKEN;
-  process.env.VIBE_API_URL = "https://example.test";
-  process.env.VIBE_MCP_ACCESS_TOKEN = "test-token";
+  const previousBase = process.env.LERUCHI_API_URL;
+  const previousToken = process.env.LERUCHI_MCP_ACCESS_TOKEN;
+  const previousLegacyBase = process.env.VIBE_API_URL;
+  const previousLegacyToken = process.env.VIBE_MCP_ACCESS_TOKEN;
+  process.env.LERUCHI_API_URL = "https://canonical.example";
+  process.env.LERUCHI_MCP_ACCESS_TOKEN = "canonical-token";
+  process.env.VIBE_API_URL = "https://legacy.example";
+  process.env.VIBE_MCP_ACCESS_TOKEN = "legacy-token";
   try {
     const traceResponse = await handleMcpMessage({
       jsonrpc:"2.0", id:"trace", method:"tools/call",
@@ -202,8 +208,10 @@ test("MCP agent trace and replay are diagnostic and non-executing", async () => 
     assert.equal(calls, 2);
   } finally {
     globalThis.fetch = originalFetch;
-    if(previousBase===undefined)delete process.env.VIBE_API_URL;else process.env.VIBE_API_URL=previousBase;
-    if(previousToken===undefined)delete process.env.VIBE_MCP_ACCESS_TOKEN;else process.env.VIBE_MCP_ACCESS_TOKEN=previousToken;
+    if(previousBase===undefined)delete process.env.LERUCHI_API_URL;else process.env.LERUCHI_API_URL=previousBase;
+    if(previousToken===undefined)delete process.env.LERUCHI_MCP_ACCESS_TOKEN;else process.env.LERUCHI_MCP_ACCESS_TOKEN=previousToken;
+    if(previousLegacyBase===undefined)delete process.env.VIBE_API_URL;else process.env.VIBE_API_URL=previousLegacyBase;
+    if(previousLegacyToken===undefined)delete process.env.VIBE_MCP_ACCESS_TOKEN;else process.env.VIBE_MCP_ACCESS_TOKEN=previousLegacyToken;
   }
 });
 

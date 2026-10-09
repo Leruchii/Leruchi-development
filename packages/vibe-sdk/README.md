@@ -1,6 +1,6 @@
 # @leruchi/sdk
 
-The Leruchi JavaScript SDK exposes Vibe graph intent without exposing Apache AGE, Cypher, SQL, database credentials, or tenant identifiers.
+The Leruchi JavaScript SDK exposes Leruchi graph intent without exposing Apache AGE, Cypher, SQL, database credentials, or tenant identifiers.
 
 ## Contract
 
@@ -19,7 +19,7 @@ The server remains authoritative for Schema Catalog validation, capabilities, RL
 ```js
 import { createClient } from "@leruchi/sdk";
 
-const vibe = createClient({ baseUrl: "https://api.example" });
+const client = createClient({ baseUrl: "https://api.example", token: process.env.LERUCHI_TOKEN });
 
 const result = await vibe
   .graph("vibe_security")
@@ -38,7 +38,7 @@ const created = await vibe
 For explicit typed parameter binding:
 
 ```js
-const query = vibe.graph("vibe_security").query("Account")
+const query = client.graph("vibe_security").query("Account")
   .select(["name"])
   .eq("name", { param: "name" });
 
@@ -54,7 +54,7 @@ The default HTTP transport uses `POST /v1/graph/query` and `POST /v1/graph/mutat
 The SDK exposes the same engine-neutral Retrieval IR used by the Graph API and MCP:
 
 ```js
-const result = await vibe.retrieval()
+const result = await client.retrieval()
   .graph(query.build().ir, { identityField: "id", candidateLimit: 50 })
   .vector({
     catalogRef: "documents.embedding",

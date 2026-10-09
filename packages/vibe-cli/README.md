@@ -4,9 +4,9 @@ The Leruchi CLI is a thin developer tool over the JavaScript SDK and Schema Cata
 
 ## Configuration
 
-`leruchi config set --base-url https://api.example` stores only the base URL in `.vibe/config.json`.
+`leruchi config set --base-url https://api.example` stores only the base URL in `.leruchi/config.json`; existing `.vibe/config.json` files are read as a compatibility fallback.
 
-Authentication is supplied through the existing `VIBE_TOKEN` environment variable during the compatibility phase; tokens are never written to project configuration.
+Authentication uses `LERUCHI_TOKEN` (legacy fallback: `VIBE_TOKEN`); tokens are never written to project configuration. `LERUCHI_BASE_URL` is the canonical environment override, with `VIBE_BASE_URL` retained as a fallback.
 
 ## Graph query
 

@@ -7,7 +7,8 @@ import {runMigrations} from "./migrate.mjs";
 import {validateAgentIntent} from "../agent-intent/index.mjs";
 
 const execFileAsync=promisify(execFile);
-const CONFIG_DIR=".vibe";
+const CONFIG_DIR=".leruchi";
+const LEGACY_CONFIG_DIR=".vibe";
 const CONFIG_FILE="config.json";
 
 export function parseArgs(argv) {
@@ -35,10 +36,12 @@ function parseProperties(values){
   return out;
 }
 function loadConfig(cwd){
-  const file=path.join(cwd,CONFIG_DIR,CONFIG_FILE);
+  const canonical=path.join(cwd,CONFIG_DIR,CONFIG_FILE);
+  const legacy=path.join(cwd,LEGACY_CONFIG_DIR,CONFIG_FILE);
+  const file=fs.existsSync(canonical)?canonical:legacy;
   if(!fs.existsSync(file))return {};
   const parsed=JSON.parse(fs.readFileSync(file,"utf8"));
-  if(!parsed||typeof parsed!=="object")throw new Error("Invalid .vibe/config.json");
+  if(!parsed||typeof parsed!=="object")throw new Error("Invalid .leruchi/config.json or legacy .vibe/config.json");
   return parsed;
 }
 function saveConfig(cwd,config){
@@ -48,9 +51,9 @@ function saveConfig(cwd,config){
 }
 function clientOptions(cwd,args,fetchImpl){
   const config=loadConfig(cwd);
-  const baseUrl=args["base-url"]||process.env.VIBE_BASE_URL||config.baseUrl;
-  const token=process.env.VIBE_TOKEN;
-  if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
+  const baseUrl=args["base-url"]||(process.env.LERUCHI_BASE_URL??process.env.VIBE_BASE_URL)||config.baseUrl;
+  const token=(process.env.LERUCHI_TOKEN??process.env.VIBE_TOKEN);
+  if(!baseUrl)throw new Error("LERUCHI_BASE_URL or .leruchi/config.json baseUrl is required (legacy fallback: VIBE_BASE_URL or .vibe/config.json)");
   return {baseUrl,token,fetchImpl};
 }
 function print(value,pretty=false){return JSON.stringify(value,null,pretty?2:0);}
@@ -80,7 +83,7 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     }
     if(subcommand==="show"){
       const config=loadConfig(cwd);
-      stdout(print({baseUrl:process.env.VIBE_BASE_URL||config.baseUrl||null,token:process.env.VIBE_TOKEN?"configured":"not configured"},true));return 0;
+      stdout(print({baseUrl:(process.env.LERUCHI_BASE_URL??process.env.VIBE_BASE_URL)||config.baseUrl||null,token:(process.env.LERUCHI_TOKEN??process.env.VIBE_TOKEN)?"configured":"not configured"},true));return 0;
     }
     throw new Error("Usage: leruchi config set|show");
   }
@@ -89,12 +92,12 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     stdout(print(result,Boolean(args.pretty)));return 0;
   }
   if(command==="schema"&&(subcommand==="inspect"||subcommand==="types")){
-    const baseUrl=(args["base-url"]||process.env.VIBE_BASE_URL||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
-    if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
+    const baseUrl=(args["base-url"]||(process.env.LERUCHI_BASE_URL??process.env.VIBE_BASE_URL)||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
+    if(!baseUrl)throw new Error("LERUCHI_BASE_URL or .leruchi/config.json baseUrl is required (legacy fallback: VIBE_BASE_URL or .vibe/config.json)");
     let catalog;
     if(args.remote||subcommand==="inspect"){
-      if(!process.env.VIBE_TOKEN)throw new Error("VIBE_TOKEN is required for remote Schema Catalog inspection");
-      const response=await fetchImpl(baseUrl+"/v1/schema/catalog",{headers:{authorization:`Bearer ${process.env.VIBE_TOKEN}`}});
+      if(!(process.env.LERUCHI_TOKEN??process.env.VIBE_TOKEN))throw new Error("LERUCHI_TOKEN is required for remote Schema Catalog inspection (legacy VIBE_TOKEN is supported)");
+      const response=await fetchImpl(baseUrl+"/v1/schema/catalog",{headers:{authorization:`Bearer ${(process.env.LERUCHI_TOKEN??process.env.VIBE_TOKEN)}`}});
       const payload=await response.json();
       if(!response.ok)throw new Error(payload?.error?.message||`Schema Catalog failed with HTTP ${response.status}`);
       catalog=payload;
@@ -112,9 +115,9 @@ export async function run(argv,{cwd=process.cwd(),fetchImpl=globalThis.fetch,std
     stdout(out.trim());return 0;
   }
   if(command==="diagnostics"){
-    const baseUrl=(args["base-url"]||process.env.VIBE_BASE_URL||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
-    if(!baseUrl)throw new Error("VIBE_BASE_URL or .vibe/config.json baseUrl is required");
-    const response=await fetchImpl(baseUrl+"/health",{headers:process.env.VIBE_TOKEN?{authorization:`Bearer ${process.env.VIBE_TOKEN}`}:{}});
+    const baseUrl=(args["base-url"]||(process.env.LERUCHI_BASE_URL??process.env.VIBE_BASE_URL)||loadConfig(cwd).baseUrl||"").replace(/\/$/,"");
+    if(!baseUrl)throw new Error("LERUCHI_BASE_URL or .leruchi/config.json baseUrl is required (legacy fallback: VIBE_BASE_URL or .vibe/config.json)");
+    const response=await fetchImpl(baseUrl+"/health",{headers:(process.env.LERUCHI_TOKEN??process.env.VIBE_TOKEN)?{authorization:`Bearer ${(process.env.LERUCHI_TOKEN??process.env.VIBE_TOKEN)}`}:{}});
     const payload=await response.text();
     if(!response.ok)throw new Error(`Diagnostics failed with HTTP ${response.status}`);
     stdout(payload);return 0;
