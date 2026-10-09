@@ -23,7 +23,7 @@ In particular, the capability-grant and revocation service core is implemented a
 ## Local development
 
 1. Install Node.js 24 and Docker Compose.
-2. Review `docker-compose.yml` before starting local services. Its default credentials are for local development only and must never be reused in a shared or production environment.
+2. Review `docker-compose.yml` and `infra/supabase/docker-compose.yml` before starting local services. Their default passwords and JWT/service secrets are public test/development placeholders only; they must never be reused in a shared or production environment. The Supabase compatibility stack is an integration-test harness.
 3. Start the local database with `docker compose up -d db`.
 4. Install root dependencies with `npm ci --ignore-scripts`.
 5. Run the focused test files for the package or stage being changed. CI workflows under `.github/workflows/` define the authoritative stage-specific validation commands.
