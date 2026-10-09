@@ -1,0 +1,30 @@
+name: Temporary Node 24 lockfile seed
+
+on:
+  push:
+    branches: [lockfile-seed]
+
+permissions:
+  contents: read
+
+jobs:
+  generate-lockfiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Generate root lockfile
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Generate Studio lockfile
+        run: npm install --package-lock-only --ignore-scripts --prefix apps/studio
+      - name: Upload lockfiles for reviewed integration
+        uses: actions/upload-artifact@v6
+        with:
+          name: generated-node24-lockfiles
+          path: |
+            package-lock.json
+            apps/studio/package-lock.json
+          if-no-files-found: error
