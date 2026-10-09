@@ -1315,9 +1315,11 @@ The first public Core release is a readiness gate, not an arbitrary stage number
 
 ## Stage 31 — OSS Core Readiness Gate
 
-**Status:** Historical candidate evidence exists, but clean-main revalidation is IN PROGRESS. The prior candidate passed its readiness checks; that evidence does not validate the current main or current OSS readiness branch. Node.js 24 is the only supported runtime; Apache-2.0 is the selected license.
+**Status: INTEGRATION REVIEW.** PR #75 (`stage31-oss-readiness-integration`) ports the Apache-2.0 license file, explicit export allowlist, export-contract audit, sanitized candidate builder, secret/runtime readiness audit, OWASP ASVS 5.0.0 profile and conservative 345-requirement evidence ledger, plus Stage 31/32 workflows. The exact code head before the BUILD_STATE/BUILD_PLAN checkpoint edits passed 24/24 workflow runs; all affected checks must be rerun on the updated exact head before merge.
 
-Public publication remains separately gated on repository visibility remediation, formal product-name clearance, final artifact review and explicit release approval.
+The ASVS ledger explicitly does **not** claim compliance: most requirements remain unmapped, require scoping, or are deferred. The profile is an evidence and planning gate, not certification or proof that all security controls are implemented.
+
+Public publication remains separately gated on repository visibility remediation, formal product-name clearance, final dependency/license inventory, complete export-file review, artifact provenance/reproducibility review and explicit release approval.
 
 ## Stage 31A — Agent Governance Foundation
 
@@ -1326,29 +1328,30 @@ Public publication remains separately gated on repository visibility remediation
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS.** The reviewed slices below are integrated on clean main; OSS readiness/export validation and the final release gates remain open.
+**Status: IN PROGRESS.** Integrate reviewed slices on clean main; never merge the broad 380-commit candidate wholesale.
 
 ### Live integration baseline (2026-10-09)
-- Current development `main` HEAD: `2fe5b99ccabebadded348675b1c0335aceac9974`; post-merge matrix passed 23/23.
-- PR #69 — Node.js 24-only workflow baseline: `621a1790c42ce5f8023a369a94a47c23dc652997`.
-- PR #67 — canonical Leruchi identity: `dacd1cdb7522f8e1a59727bc6f82824cbbd55b62`.
-- PR #68 — strict EdDSA capability grants and control-plane service core: `acc82d8669779537edc5fe4467630bd87d09b15b`.
-- PR #71 — trusted Supabase tenant claims: `4a3bb3b557dee68824174aea13aa4fef2865b30c`.
-- PR #72 — Agent Governance foundation: `4d951f50d28433e5c66d8af28bef7897ed689533`; exact-head matrix 18/18 passed.
-- PR #73 — migration runner safety: `41349caf44a23ae72192c7292487ac7248bf2413`; exact-head matrix 23/23 passed.
-- PR #74 — SDK/CLI source-directory migration: `2fe5b99ccabebadded348675b1c0335aceac9974`; exact-head matrix 30/30 passed.
+- Current development `main` HEAD before PR #75 is `2fe5b99ccabebadded348675b1c0335aceac9974`.
+- PR #69 — Node.js 24-only workflow baseline: merged.
+- PR #67 — canonical Leruchi identity across active product surfaces: merged.
+- PR #68 — strict EdDSA capability grants and control-plane service core: merged.
+- PR #71 — trusted Supabase tenant claims: merged.
+- PR #72 — Agent Governance foundation: merged; exact-head matrix 18/18 passed.
+- PR #73 — hardened migration runner: merged; exact-head matrix 23/23 passed.
+- PR #74 — SDK/CLI source-directory migration: merged as `2fe5b99ccabebadded348675b1c0335aceac9974`.
+- PR #75 — OSS readiness/export gates: under review; exact code head before checkpoint edits passed 24/24 workflows, but new exact-head checks are required after docs changes.
 - Node.js 24 is the only supported runtime.
-- Repository visibility is a hard release blocker: GitHub currently reports development and internal-control repositories as public. The owner must change/verify visibility before Stage 32 integration/export; automation has not changed these settings.
-- Candidate PR [#63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open and must not be merged wholesale. Historical candidate checks/artifacts do not validate current main or any new slice.
+- GitHub currently reports development and internal-control repositories as public. Owner must verify/change visibility before public export; no settings were changed by automation.
+- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open. Its historical candidate checks do not validate current main or newly ported slices.
 
 ### Product identity and source-path decision
-Leruchi is canonical on product-facing surfaces. Prefer `leruchi`, `.leruchi/`, `LERUCHI_*` and `@leruchi/*`; documented Vibe-era CLI/environment/config and exported-symbol aliases remain deliberate compatibility behavior. SDK/CLI source directories are now `packages/leruchi-sdk` and `packages/leruchi-cli`; imports, package metadata, audit scripts, CI filters and tests have been migrated. Persisted database identifiers, JWT audience/protocol values and external schema IDs are not renamed by text replacement and require versioned compatibility plans.
+Leruchi is canonical on product-facing surfaces. Prefer `leruchi`, `.leruchi/`, `LERUCHI_*` and `@leruchi/*`; retain deliberate Vibe-era CLI/environment/config and exported-symbol aliases where documented. The SDK and CLI source directories now live at `packages/leruchi-sdk` and `packages/leruchi-cli`. Persisted database identifiers, JWT audience/protocol values, and external schema IDs remain unchanged unless a separate versioned compatibility and rollback plan authorizes a change.
 
-### Remaining dependency-ordered integration
-1. **OSS readiness/export:** validate the current clean-main allowlist, Apache-2.0 license, sanitizer, readiness audit, OWASP ASVS 5.0.0 verification profile and Stage 31/32 workflows. Build the candidate twice from the exact source tree and compare normalized archive hashes.
-2. **Legacy reconciliation:** review unique changes from PRs #22, #26 and #29. The old client API helper is superseded by current server-side proxy routes; mocked browser tests are superseded by live tenant/browser coverage. The browser benchmark covers up to 1,000 nodes but currently renders zero edges; Stage 13's 1,000-node/3,000-edge production renderer decision remains open and must be resolved before claiming the graph visualization is complete.
-3. **Final candidate reconciliation:** refresh PR #63 from its live head and port only reviewed, dependency-ordered differences. Rebuild and inspect the artifact after the final code change; historical hashes do not carry forward.
-4. **Release gate:** confirm repository visibility, obtain formal product-name clearance, review license/provenance/export contents, and require explicit release approval. No tag, release or public export is authorized.
+### Dependency-ordered remaining integration
+1. **OSS readiness/export:** finish review of PR #75 and merge only after exact-head focused tests, export manifest audit, secret/runtime audit, reproducible candidate build, Architecture Regression Audit, Stage State Gate and all required workflows pass.
+2. **Legacy reconciliation:** review unique changes from PRs #22, #26 and #29 against current main; port only still-relevant fixes/tests and never merge stale branches wholesale. PR #14 migration safety is integrated in PR #73.
+3. **Candidate reconciliation:** refresh PR #63 and compare its live tree to current main. Port only reviewed, dependency-ordered differences; rebuild all artifact evidence after final code changes.
+4. **Release gate:** confirm repository visibility, obtain formal product-name clearance, review full license/dependency inventory and exported file list, verify provenance/reproducibility, and require explicit release approval. No tag, release or public export is authorized yet.
 
 ### Evidence discipline
-Every slice must record exact base/head SHAs and pass focused tests, affected historical regressions, Architecture Regression Audit, Stage State Gate and all required exact-head workflows. A green result from another SHA is not validation. Keep Stage 32 IN PROGRESS until all integration and release gates are closed.
+Every slice must record exact base/head SHAs and pass focused tests, affected regressions, Architecture Regression Audit, Stage State Gate and required exact-head workflows. A green result from another SHA is not validation. Keep Stage 32 IN PROGRESS until integration and release gates are closed.
