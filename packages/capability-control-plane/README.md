@@ -22,6 +22,15 @@ This package implements the issuer/revocation HTTP contract and a PostgreSQL per
 
 Apply `schema.sql` using a migration identity. Construct `createPostgresCapabilityStore(pool)` using a configured `pg.Pool`; keep application credentials separate from migration credentials. Restrict access to the schema and table to the service role, and retain revocation records at least until all related grants have expired and the retention policy allows cleanup.
 
+After creating a dedicated runtime role, grant only the privileges the store needs (run as a migration/admin identity; replace the role name with your deployment role):
+
+```sql
+GRANT USAGE ON SCHEMA capability_control TO leruchi_control_plane_runtime;
+GRANT SELECT, INSERT, UPDATE ON TABLE capability_control.grants TO leruchi_control_plane_runtime;
+```
+
+Do not grant schema ownership, `CREATE`, `DELETE`, or broad database-admin privileges to the runtime role. Startup verifies schema usage plus SELECT/INSERT/UPDATE; `GET /health` is liveness and `GET /ready` checks the grant table is reachable.
+
 ## Required before production
 
 1. Implement and review the identity-provider/gateway adapter for `authenticateCaller`; prove identity signature, issuer, audience, expiry and tenant membership are authoritative.

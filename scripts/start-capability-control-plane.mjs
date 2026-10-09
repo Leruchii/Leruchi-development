@@ -23,6 +23,18 @@ if (typeof adapter.authenticateCaller !== "function" || typeof adapter.authorize
 }
 const pool = new Pool({ connectionString: databaseUrl });
 await pool.query("SELECT 1");
+const permissions = await pool.query(`
+  SELECT
+    has_schema_privilege(current_user, 'capability_control', 'USAGE') AS schema_usage,
+    has_table_privilege(current_user, 'capability_control.grants', 'SELECT') AS can_select,
+    has_table_privilege(current_user, 'capability_control.grants', 'INSERT') AS can_insert,
+    has_table_privilege(current_user, 'capability_control.grants', 'UPDATE') AS can_update
+`);
+const dbAccess = permissions.rows[0];
+if (!dbAccess?.schema_usage || !dbAccess.can_select || !dbAccess.can_insert || !dbAccess.can_update) {
+  await pool.end();
+  throw new Error("Control-plane database role requires schema USAGE and table SELECT/INSERT/UPDATE privileges");
+}
 const service = createCapabilityControlPlane({
   issuer, audience: process.env.LERUCHI_CAPABILITY_AUDIENCE ?? "leruchi", keyId, privateKey,
   internalBearerToken: internalToken, store: createPostgresCapabilityStore(pool),
@@ -35,6 +47,19 @@ const server = createServer((req, res) => {
   if (req.method === "GET" && req.url === "/health") {
     res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
     res.end(JSON.stringify({ status: "ok" }));
+    return;
+  }
+  if (req.method === "GET" && req.url === "/ready") {
+    void (async () => {
+      try {
+        await pool.query("SELECT jti FROM capability_control.grants LIMIT 0");
+        res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
+        res.end(JSON.stringify({ status: "ready" }));
+      } catch {
+        res.writeHead(503, { "content-type": "application/json", "cache-control": "no-store" });
+        res.end(JSON.stringify({ status: "not_ready" }));
+      }
+    })();
     return;
   }
   void service.handle(req, res);
