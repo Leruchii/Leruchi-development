@@ -12,6 +12,8 @@ on:
       - "SECURITY.md"
       - "security/**"
       - "scripts/owasp-asvs-verification.mjs"
+      - "scripts/assert-runtime-policy.mjs"
+      - "tests/architecture/runtime-policy.test.mjs"
       - ".github/workflows/stage-31-oss-core-readiness.yml"
       - "scripts/build-oss-core-candidate.mjs"
       - "scripts/public-oss-export-audit.mjs"
@@ -52,6 +54,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Enforce runtime policy
         run: node scripts/assert-runtime-policy.mjs
+      - name: Run runtime policy regression tests
+        run: node --test tests/architecture/runtime-policy.test.mjs
       - name: Test capability issuer and revocation service core
         run: node --test tests/capability-policy/control-plane-service.test.mjs
       - name: Run OWASP ASVS 5.0.0 verification gate

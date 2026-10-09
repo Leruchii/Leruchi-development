@@ -1,16 +1,12 @@
 import {test,expect} from "@playwright/test";
-import {createHmac} from "node:crypto";
+import {signTestCapabilityGrant} from "../../../../tests/fixtures/capability-grant-test-key.mjs";
 
 function token(tenant_id:string){
-  const secret=process.env.VIBE_JWT_SECRET??"stage-13-e2e-secret";
-  const enc=(value:unknown)=>Buffer.from(JSON.stringify(value)).toString("base64url");
-  const h=enc({alg:"HS256",typ:"JWT"});
-  const p=enc({sub:"stage-13-studio",tenant_id,exp:Math.floor(Date.now()/1000)+300,capabilities:["graph:read"]});
-  return h+"."+p+"."+createHmac("sha256",secret).update(h+"."+p).digest("base64url");
+  return signTestCapabilityGrant({sub:"stage-13-studio",jti:"stage-13-studio-"+tenant_id,tenant_id,capabilities:["graph:read"]});
 }
 
 test("Studio proxy composes authenticated Graph API results from PostgreSQL/AGE/RLS",async({page,context})=>{
-  await context.addCookies([{name:"vibe_access_token",value:token("vibe_tenant_a"),url:"http://127.0.0.1:3100"}]);
+  await context.addCookies([{name:"leruchi_access_token",value:token("vibe_tenant_a"),url:"http://127.0.0.1:3100"}]);
   const catalog=page.waitForResponse(response=>response.url().endsWith("/api/studio/catalog")&&response.status()===200);
   await page.goto("/");
   await catalog;

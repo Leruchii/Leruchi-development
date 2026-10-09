@@ -3,6 +3,8 @@ name: Stage 31 - OSS Core Readiness
 on:
   pull_request:
     paths:
+      - "scripts/assert-runtime-policy.mjs"
+      - "tests/architecture/runtime-policy.test.mjs"
       - "scripts/oss-core-readiness-audit.mjs"
       - "scripts/owasp-asvs-verification.mjs"
       - "scripts/public-oss-export-audit.mjs"
@@ -41,6 +43,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Enforce runtime policy
         run: node scripts/assert-runtime-policy.mjs
+      - name: Run runtime policy regression tests
+        run: node --test tests/architecture/runtime-policy.test.mjs
       - name: Run OSS readiness tests
         run: node --test tests/oss-core-readiness/*.test.mjs
       - name: Run Agent Governance tests

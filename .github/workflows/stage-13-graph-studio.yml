@@ -45,22 +45,47 @@ jobs:
       - name: Seed live Studio tenant data
         working-directory: .
         run: docker compose exec -T db bash -lc 'bash -s' < tests/security/stage-02-setup.sh
+      - name: Generate ephemeral EdDSA test keypair
+        working-directory: .
+        run: |
+          openssl genpkey -algorithm ED25519 -out /tmp/leruchi-capability-test-private.pem
+          openssl pkey -in /tmp/leruchi-capability-test-private.pem -pubout -outform DER | base64 -w0 > /tmp/leruchi-capability-test-public.b64
+          control_plane_token="$(openssl rand -hex 32)"
+          echo "LERUCHI_CONTROL_PLANE_TOKEN=$control_plane_token" >> "$GITHUB_ENV"
+          echo "LERUCHI_CAPABILITY_CONTROL_PLANE_TOKEN=$control_plane_token" >> "$GITHUB_ENV"
+      - name: Start test capability control plane
+        working-directory: .
+        env:
+          LERUCHI_CONTROL_PLANE_PORT: 4101
+        run: node scripts/start-test-capability-control-plane.mjs > /tmp/leruchi-stage13-control-plane.log 2>&1 &
+      - name: Wait for test capability control plane
+        working-directory: .
+        run: |
+          for i in {1..30}; do
+            if grep -q test-control-plane-ready /tmp/leruchi-stage13-control-plane.log 2>/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/leruchi-stage13-control-plane.log || true
+          exit 1
       - name: Start live Graph API
         working-directory: .
         env:
-          VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
-          VIBE_JWT_SECRET: stage-13-e2e-secret
-          VIBE_GRAPH_API_PORT: 4100
-        run: node scripts/start-stage13-graph-api.mjs > /tmp/vibedb-stage13-api.log 2>&1 &
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
+          LERUCHI_CAPABILITY_ISSUER: leruchi-test-control-plane
+          LERUCHI_CAPABILITY_CONTROL_PLANE_URL: http://127.0.0.1:4101
+          LERUCHI_GRAPH_API_PORT: 4100
+        run: |
+          export LERUCHI_CAPABILITY_PUBLIC_KEYS="{\"stage-test-2026\":\"$(cat /tmp/leruchi-capability-test-public.b64)\"}"
+          node scripts/start-stage13-graph-api.mjs > /tmp/leruchi-stage13-api.log 2>&1 &
       - name: Configure live Studio endpoint
-        run: echo 'VIBE_API_URL=http://127.0.0.1:4100' >> "$GITHUB_ENV"
+        run: echo 'LERUCHI_API_URL=http://127.0.0.1:4100' >> "$GITHUB_ENV"
       - name: Wait for live Graph API
         run: |
           for i in {1..30}; do
             if curl --fail --silent http://127.0.0.1:4100/health >/dev/null; then exit 0; fi
             sleep 1
           done
-          cat /tmp/vibedb-stage13-api.log || true
+          cat /tmp/leruchi-stage13-api.log || true
           exit 1
       - name: Renderer benchmark
         working-directory: .
@@ -71,6 +96,8 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Browser tenant/responsive evidence
+        env:
+          LERUCHI_CAPABILITY_TEST_PRIVATE_KEY_PATH: /tmp/leruchi-capability-test-private.pem
         run: npm run test:browser
       - name: Typecheck
         run: npm run typecheck
@@ -78,7 +105,7 @@ jobs:
         run: npm run build
       - name: Show live Graph API logs on failure
         if: failure()
-        run: cat /tmp/vibedb-stage13-api.log || true
+        run: cat /tmp/leruchi-stage13-api.log /tmp/leruchi-stage13-control-plane.log || true
       - name: Cleanup live database
         if: always()
         working-directory: .

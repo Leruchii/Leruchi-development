@@ -80,7 +80,7 @@ jobs:
           exit 1
       - name: Live MCP integration
         env:
-          VIBE_API_URL: http://127.0.0.1:4100
+          LERUCHI_API_URL: http://127.0.0.1:4100
           LERUCHI_CAPABILITY_TEST_PRIVATE_KEY_PATH: /tmp/leruchi-capability-test-private.pem
         run: node --test tests/mcp/live-mcp-graph-api.test.mjs
       - name: Show live API and revocation logs on failure

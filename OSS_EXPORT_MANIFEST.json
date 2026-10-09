@@ -35,7 +35,9 @@
     "prompts/**",
     "scripts/audit-oss-boundary.mjs",
     "tests/security/owasp-asvs-profile.test.mjs",
-    "tests/oss-core-readiness/**"
+    "tests/oss-core-readiness/**",
+    "scripts/assert-runtime-policy.mjs",
+    "tests/architecture/runtime-policy.test.mjs"
   ],
   "rule": "Only paths matched by include may be exported. Exclusions are defense-in-depth, not the primary boundary."
 }
