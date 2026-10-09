@@ -1,8 +1,9 @@
 {
   "version": 1,
-  "purpose": "Explicit public OSS export allowlist for Leruchii/Leruchi",
+  "purpose": "Explicit public OSS export allowlist for Leruchi",
   "include": [
     "README.md",
+    ".nvmrc",
     "LICENSE",
     "CONTRIBUTING.md",
     "SECURITY.md",
@@ -27,7 +28,9 @@
     "OSS_BOUNDARY.md",
     "knowledge/**",
     "prompts/**",
-    "scripts/audit-oss-boundary.mjs"
+    "scripts/audit-oss-boundary.mjs",
+    "tests/security/owasp-asvs-profile.test.mjs",
+    "tests/oss-core-readiness/**"
   ],
   "rule": "Only paths matched by include may be exported. Exclusions are defense-in-depth, not the primary boundary."
 }
