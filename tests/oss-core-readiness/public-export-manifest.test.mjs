@@ -23,6 +23,10 @@ test("public export manifest excludes private control material", () => {
   assert.ok(manifest.include.includes("scripts/public-*.mjs"));
   assert.ok(manifest.include.includes("packages/**"));
   assert.ok(manifest.include.includes("tests/**"));
+  assert.ok(manifest.include.includes("package-lock.json"));
+  assert.ok(manifest.include.includes("apps/studio/**"));
+  assert.ok(fs.existsSync("package-lock.json"), "root npm lockfile must be committed");
+  assert.ok(fs.existsSync("apps/studio/package-lock.json"), "Studio npm lockfile must be committed");
   for (const script of [
     "scripts/leruchi-backup.sh",
     "scripts/leruchi-restore.sh",

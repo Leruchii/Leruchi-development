@@ -13,7 +13,14 @@ function runAudit(root) {
 
 function makeFixture(files) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "leruchi-oss-"));
-  for (const [rel, content] of Object.entries(files)) {
+  const defaults = {
+    "README.md": "# Leruchi\\n",
+    ".nvmrc": "24\\n",
+    "package.json": JSON.stringify({ engines: { node: ">=24 <25" } }),
+    "package-lock.json": JSON.stringify({ lockfileVersion: 3, packages: { "": {} } }),
+    "apps/studio/package-lock.json": JSON.stringify({ lockfileVersion: 3, packages: { "": {} } }),
+  };
+  for (const [rel, content] of Object.entries({ ...defaults, ...files })) {
     const file = path.join(root, rel);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, content);
