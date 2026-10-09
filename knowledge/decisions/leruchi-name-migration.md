@@ -18,7 +18,7 @@ The product owner's canonical name is **Leruchi**. Product-facing names in UI, d
 ## Deliberately not changed in Phase 1
 
 - The signed capability-grant audience `aud=vibedb` is a protocol compatibility value, not UI branding. Changing it requires coordinated issuer, verifier, fixtures, token-version policy and rollout/rollback tests.
-- Internal source directories and import paths such as `packages/vibe-sdk` and `packages/vibe-cli` remain temporarily stable until references and CI have been inventoried.
+- Phase 2 completes the internal source-directory migration to `packages/leruchi-sdk` and `packages/leruchi-cli`; all imports, workflow path filters, scripts and documentation must move together. Persisted protocol identifiers remain unchanged.
 - `VibeClientError` remains an exported compatibility alias for `LeruchiClientError`; generated `VibeGraph`/`VibeLabel` types remain aliases while canonical `LeruchiGraph`/`LeruchiLabel` are primary.
 - Database schema identifiers, migration history, existing `vibedb.dev` schema `$id` values and persisted values are not renamed by text replacement; any public identifier change requires a versioned compatibility plan.
 

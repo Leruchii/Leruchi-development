@@ -7,7 +7,7 @@ import {
   auditDatabaseImage,
   runReadinessAudit
 } from "../../scripts/production-readiness-audit.mjs";
-import {migrationChecksum as computeMigrationChecksum} from "../../packages/vibe-cli/migrate.mjs";
+import {migrationChecksum as computeMigrationChecksum} from "../../packages/leruchi-cli/migrate.mjs";
 import {mkdtempSync,writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";

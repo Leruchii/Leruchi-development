@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import {run} from "../../packages/vibe-cli/index.mjs";
+import {run} from "../../packages/leruchi-cli/index.mjs";
 
 test("CLI agent evaluate sends the canonical cases file without inventing a second contract",async()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-agent-eval-"));

@@ -5,8 +5,8 @@ on:
     paths:
       - "packages/cross-modal-planner/**"
       - "packages/graph-api/**"
-      - "packages/vibe-sdk/**"
-      - "packages/vibe-cli/**"
+      - "packages/leruchi-sdk/**"
+      - "packages/leruchi-cli/**"
       - "packages/mcp-server/**"
       - "tests/cross-modal-planner/**"
       - "tests/vibe-sdk/cross-modal-plan.test.mjs"

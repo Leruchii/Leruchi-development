@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createClient, createFetchTransport, LeruchiClientError, VibeClientError } from "../../packages/vibe-sdk/index.mjs";
+import { createClient, createFetchTransport, LeruchiClientError, VibeClientError } from "../../packages/leruchi-sdk/index.mjs";
 
 function transportRecorder() {
   const calls = [];
