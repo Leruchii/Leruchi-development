@@ -1330,34 +1330,29 @@ The pre-merge candidate artifact is validation evidence only. Rebuild and inspec
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: TECHNICAL CANDIDATE BUILT AND CI-VALIDATED; PUBLICATION BLOCKED ON OWNER/LEGAL REVIEW GATES.**
+**Status: TECHNICAL CANDIDATE BUILT, CI-VALIDATED, AND EXPORT-REVIEWED.**
 
-### Verified release candidate (2026-10-09)
+### Verified release candidate (2026-10-10)
 
-- Candidate source commit: `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`; later documentation-only commits are excluded from the public candidate.
-- PR #84 exact head passed 22/22 checks, including Stage 31 readiness, Stage 32 candidate build, public export contract, Architecture Regression Audit and Stage State Gate.
-- Post-merge main matrix for `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`: 26/26 checks passed.
-- Stage 32 run [37932619969](https://github.com/Leruchii/Leruchi-development/actions/runs/37932619969) produced artifact ID `11617171934`, named `leruchi-oss-core-candidate`. GitHub artifact archive digest: `sha256:de51a538f153cbce2e9e3cf11cee60616f040662fde434565cf40bbab6c15aa9`. Contained `.tar.gz` SHA-256: `57d22c00e03c3d141580330551eb57824c15ed08968860ca3b93a5d957a77bab`.
-- The synthetic merge tree used by Stage 32 was checked against the squash-merged main commit; both use tree `bf1d114aac1bab60b5f704f471d7b42d244e3c71`. This establishes that the candidate workflow validated the same repository tree now on main.
-- Candidate contains 200 files. Automated scans found no forbidden control paths, common credential-token formats or Node.js 20 runtime configuration. Manual review remains mandatory.
-- `THIRD_PARTY_NOTICES.md` records 138 lockfile dependency entries and 11 license expressions. LGPL/MPL/CC-BY components require explicit distribution and attribution review; the inventory is not legal clearance.
-- Public export boundary uses `OSS_EXPORT_MANIFEST.json`, `scripts/build-oss-core-candidate.mjs`, `scripts/public-oss-export-audit.mjs` and `scripts/oss-core-readiness-audit.mjs`. The workflow runs a second build and byte-compares normalized tarballs for reproducibility.
-- Node.js 24 is the only supported runtime. `README.md` now documents the architecture, local-development-only credentials, and the production-authorization limitations.
-- PR #63 remains draft/open as a tracking-only PR. Do not merge its stale 380-commit/155-file branch wholesale. PR #66 was closed as superseded.
+- Candidate source commit: `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`; tree: `bf1d114aac1bab60b5f704f471d7b42d244e3c71`. Later handoff-document commits are excluded from the public candidate.
+- PR #84 exact head passed 22/22 checks; post-merge matrix passed 26/26. Stage 32 run [37932619969](https://github.com/Leruchii/Leruchi-development/actions/runs/37932619969) completed successfully.
+- Artifact [11617171934](https://github.com/Leruchii/Leruchi-development/actions/runs/37932619969), named `leruchi-oss-core-candidate`, has GitHub archive digest `sha256:de51a538f153cbce2e9e3cf11cee60616f040662fde434565cf40bbab6c15aa9`. Contained `.tar.gz` SHA-256: `57d22c00e03c3d141580330551eb57824c15ed08968860ca3b93a5d957a77bab`.
+- The candidate archive was inspected directly and contains 200 files. Path scans found no excluded control paths; targeted scans found zero matches for configured common credential/private-key patterns and Node.js 20 runtime settings. These are bounded scans, not a guarantee that every possible secret or defect is absent.
+- Reviewed the manifest, README, LICENSE, THIRD_PARTY_NOTICES, contributing/security guidance, Node.js 24 declarations, package metadata, export audit, Stage 31/32 workflows, Compose defaults and database bootstrap. Local/test credentials in Compose are documented as placeholders and must not be reused in shared or production environments.
+- `THIRD_PARTY_NOTICES.md` records 138 dependency entries across the root and Studio lockfiles, with 11 license expressions. LGPL-3.0-or-later, MPL-2.0 and CC-BY-4.0 metadata remain flagged for any distribution/attribution review required by the owner; the inventory is not legal clearance.
+- Node.js 24 is the only supported runtime. Production authorization is not deployed; README describes the remaining production deployment gates.
+- PR #63 remains a tracking-only draft/open PR with a stale 380-commit/155-file branch. Do not merge it wholesale.
 
-### Owner-controlled release blockers
+### Owner-managed security follow-ups — not publication blockers per owner direction
 
-1. Revoke/rotate the GitHub credential exposed in project context.
-2. Confirm intended visibility of both the public development repository and the internal/control repository. The latter could not be independently verified by the current connection.
-3. Configure `main` branch protection/ruleset and required checks; current branch metadata reports `protected: false`.
-4. Manually review all 200 export files and complete license/attribution compatibility review, especially LGPL-3.0-or-later, MPL-2.0 and CC-BY-4.0 dependencies.
-5. Record any required trademark/legal review and explicit owner approval.
+On 2026-10-10, the owner directed that exposed-token rotation, branch protection and repository visibility settings remain owner-operated and not block OSS source publication. Do not change those settings through automation. Keep them documented as important security/admin follow-ups for the owner to handle separately. The current connection cannot verify internal/control repository visibility or read main's branch-protection settings.
 
-### Production deployment gates (separate from OSS source publication)
+### Remaining release considerations
 
-Production authorization is not deployed. Before production tenant use, complete a real identity-provider/trusted-gateway adapter, authoritative tenant policy, signing-key custody and rotation, least-privilege DB roles, private networking/mTLS, monitoring/alerts, and staging end-to-end plus recovery evidence. Do not imply these are satisfied by passing CI.
+1. Complete any license/attribution or product-name/trademark review the owner determines is necessary for the intended distribution. This technical record is not legal advice or legal clearance.
+2. Rebuild Stage 32 if any allowlisted source file changes, and retain fresh exact-SHA, tree and artifact-digest evidence.
+3. Treat production authorization readiness as a separate deployment track: identity-provider/trusted-gateway integration, authoritative tenant policy, signing-key custody/rotation, least-privilege DB roles, private networking/mTLS, monitoring/alerts and staging recovery evidence remain outstanding.
 
 ### Decision
 
-The technical candidate exists and its exact repository tree passed CI. **Do not create a release tag, publish a release, or perform a public export until all owner-controlled release blockers above are cleared.** If any allowlisted file changes, rebuild the candidate and record new exact-SHA evidence.
-
+The technical source candidate is built, CI-validated, reproducibly packaged and reviewed for export paths and high-risk configuration. Owner-managed repository settings are explicitly not publication blockers. Any formal release must accurately describe the project as an engineering preview and must not imply production readiness or full ASVS compliance.
