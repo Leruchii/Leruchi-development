@@ -6,7 +6,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-**Verified 2026-10-09.** Current `main` is `4374e44ef4ee9214553d9863390eebe6cb430f53`. The exact PR #83 head passed 23/23 checks; the squash-merged commit passed 26/26 post-merge checks.
+**Verified 2026-10-09.** Candidate source commit: `4374e44ef4ee9214553d9863390eebe6cb430f53`. Later handoff-document commits advance `main` but are excluded from the public export; resolve the live `main` HEAD from Git before starting work. PR #83 passed 23/23 exact-head checks and the candidate source commit passed 26/26 post-merge checks.
 
 - **Development repository:** [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development), default branch `main`, currently public.
 - **PR #83 — OSS export hardening:** merged as `4374e44ef4ee9214553d9863390eebe6cb430f53`. Added deterministic third-party dependency license inventory, export-contract enforcement, broader common credential-token pattern checks, Stage 31/32 verification and a fuller public README.
