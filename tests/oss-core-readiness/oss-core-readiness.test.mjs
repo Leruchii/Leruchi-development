@@ -18,6 +18,7 @@ function makeFixture(files) {
     ".nvmrc": "24\\n",
     "package.json": JSON.stringify({ engines: { node: ">=24 <25" } }),
     "package-lock.json": JSON.stringify({ lockfileVersion: 3, packages: { "": {} } }),
+    "THIRD_PARTY_NOTICES.md": "# Dependency license inventory\\n",
     "apps/studio/package-lock.json": JSON.stringify({ lockfileVersion: 3, packages: { "": {} } }),
   };
   for (const [rel, content] of Object.entries({ ...defaults, ...files })) {
@@ -54,6 +55,17 @@ test("rejects credentials", () => {
     "README.md": "# Leruchi\n",
     ".nvmrc": "24\n",
     "config.txt": ["github", "_pat_", "not-a-real-token\n"].join(""),
+  });
+  const result = runAudit(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /forbidden secret pattern/);
+});
+
+test("rejects common GitHub, Slack, and cloud API token formats", () => {
+  const root = makeFixture({
+    "README.md": "# Leruchi\\n",
+    ".nvmrc": "24\\n",
+    "credentials.txt": ["ghp_", "A".repeat(36)].join(""),
   });
   const result = runAudit(root);
   assert.notEqual(result.status, 0);
