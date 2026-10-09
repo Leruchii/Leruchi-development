@@ -16,12 +16,14 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: apps/studio/package.json
+          cache-dependency-path: |
+            apps/studio/package-lock.json
+            package-lock.json
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Install runtime dependencies
         working-directory: .
-        run: npm install --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Graph API boundary tests
         working-directory: .
         run: node --test tests/graph-api/api.test.mjs
