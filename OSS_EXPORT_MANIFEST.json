@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "purpose": "Explicit public OSS export allowlist for Fikunmii/vibeDB",
+  "purpose": "Explicit public OSS export allowlist for Leruchii/Leruchi",
   "include": [
     "README.md",
     "LICENSE",

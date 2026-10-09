@@ -1,4 +1,4 @@
-# VibeDB Context IR v1
+# Leruchi Context IR v1
 
 Context IR is an engine-neutral, authorization-neutral declaration of the context an agent or application needs.
 

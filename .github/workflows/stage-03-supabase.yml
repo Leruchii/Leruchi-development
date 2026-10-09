@@ -12,10 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Build VibeDB database image
+      - name: Build Leruchi database image
         run: docker compose build db
 
-      - name: Start VibeDB database
+      - name: Start Leruchi database
         run: docker compose up -d db
 
       - name: Wait for database

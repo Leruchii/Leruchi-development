@@ -1,5 +1,5 @@
 {
-  "name": "@vibeplatform/execution-engine",
+  "name": "@leruchi/execution-engine",
   "private": true,
   "type": "module",
   "dependencies": {

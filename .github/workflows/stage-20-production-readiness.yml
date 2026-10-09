@@ -37,7 +37,7 @@ jobs:
         run: node scripts/production-readiness-audit.mjs
       - name: Production readiness policy tests
         run: node --test tests/production-readiness/*.test.mjs
-      - name: Build production VibeDB database image
+      - name: Build production Leruchi database image
         run: docker build -t vibedb-stage20 -f infra/docker/postgres/Dockerfile .
       - name: Start upgrade source database
         run: |

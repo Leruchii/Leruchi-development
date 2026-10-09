@@ -62,7 +62,7 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Build VibeDB database image
+      - name: Build Leruchi database image
         run: docker compose build db
       - name: Start database
         run: docker compose up -d db

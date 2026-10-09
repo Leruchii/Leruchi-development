@@ -1,34 +1,34 @@
-# @vibeplatform/cli
+# @leruchi/cli
 
-The Vibe CLI is a thin developer tool over the JavaScript SDK and Schema Catalog.
+The Leruchi CLI is a thin developer tool over the JavaScript SDK and Schema Catalog.
 
 ## Configuration
 
-`vibe config set --base-url https://api.example` stores only the base URL in `.vibe/config.json`.
+`leruchi config set --base-url https://api.example` stores only the base URL in `.leruchi/config.json`; existing `.vibe/config.json` files are read as a compatibility fallback.
 
-Authentication is supplied through `VIBE_TOKEN`; tokens are never written to project configuration.
+Authentication uses `LERUCHI_TOKEN` (legacy fallback: `VIBE_TOKEN`); tokens are never written to project configuration. `LERUCHI_BASE_URL` is the canonical environment override, with `VIBE_BASE_URL` retained as a fallback.
 
 ## Graph query
 
 ```bash
-vibe graph query --graph vibe_security --label Account --select name --eq name=Alice --limit 25
+leruchi graph query --graph vibe_security --label Account --select name --eq name=Alice --limit 25
 ```
 
 ## Graph mutation
 
 ```bash
-vibe graph create-vertex --graph vibe_security --label Account --property name=Alice
+leruchi graph create-vertex --graph vibe_security --label Account --property name=Alice
 ```
 
 ## Schema types
 
 ```bash
-vibe schema types --file catalog.json --out vibe.d.ts
+leruchi schema types --file catalog.json --out leruchi.d.ts
 ```
 
 ## Diagnostics/local development
 
-- `vibe diagnostics` checks the configured `/health` endpoint.
-- `vibe local status` delegates to `docker compose ps`.
+- `leruchi diagnostics` checks the configured `/health` endpoint.
+- `leruchi local status` delegates to `docker compose ps`.
 
-The CLI does not compile Vibe IR, authorize tenants, bypass RLS, or accept raw SQL/Cypher. Server-side validation remains authoritative.
+The CLI does not compile Leruchi IR, authorize tenants, bypass RLS, or accept raw SQL/Cypher. Server-side validation remains authoritative.

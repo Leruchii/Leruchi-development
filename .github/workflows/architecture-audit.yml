@@ -16,5 +16,7 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Run architecture audit
         run: node tests/architecture/contract-audit.mjs
+      - name: Enforce canonical Leruchi product identity
+        run: node scripts/leruchi-brand-audit.mjs
       - name: Run SDK and CLI contract tests
         run: node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs tests/schema-catalog-api/api.test.mjs

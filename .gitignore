@@ -1,0 +1,3 @@
+# Local Leruchi CLI configuration and the legacy config directory.
+.leruchi/
+.vibe/

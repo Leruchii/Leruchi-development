@@ -1,7 +1,7 @@
 {
   "$schema":"https://json-schema.org/draft/2020-12/schema",
   "$id":"https://vibedb.dev/retrieval-ir/v1.schema.json",
-  "title":"VibeDB Retrieval IR v1",
+  "title":"Leruchi Retrieval IR v1",
   "type":"object",
   "additionalProperties":false,
   "required":["version","kind","sources","fusion","limits"],

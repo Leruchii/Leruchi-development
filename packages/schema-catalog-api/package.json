@@ -1,5 +1,5 @@
 {
-  "name": "@vibeplatform/schema-catalog-api",
+  "name": "@leruchi/schema-catalog-api",
   "private": true,
   "type": "module",
   "dependencies": {

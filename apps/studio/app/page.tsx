@@ -31,7 +31,7 @@ export default function GraphStudio(){
   return <main className={themeClass}>
     <a className="skip" href="#workspace">Skip to workspace</a>
     <header className="topbar">
-      <div className="brand"><span className="brand-mark">V</span><span>VibeDB</span></div>
+      <div className="brand"><span className="brand-mark">L</span><span>Leruchi</span></div>
       <button className="project" aria-label="Project switcher">acme-prod <span>⌄</span></button>
       <nav aria-label="Breadcrumb"><span>Projects</span><span>/</span><strong>Graph Studio</strong></nav>
       <div className="top-actions">

@@ -1,8 +1,8 @@
-# VibeDB Agent Intent v1
+# Leruchi Agent Intent v1
 
-Agent Intent is a closed, provider-neutral admission and routing envelope around one canonical VibeDB IR.
+Agent Intent is a closed, provider-neutral admission and routing envelope around one canonical Leruchi IR.
 
-It does not replace Query IR, Retrieval IR, Context IR or Mutation IR. It gives agents and future LLM adapters one machine-readable contract for declaring which canonical VibeDB operation they intend to perform.
+It does not replace Query IR, Retrieval IR, Context IR or Mutation IR. It gives agents and future LLM adapters one machine-readable contract for declaring which canonical Leruchi operation they intend to perform.
 
 Stage 27 is **non-executing**. Intent explanation deterministically returns required capabilities, read/write/destructive/idempotent semantics, approval requirements and a canonical intent hash.
 
