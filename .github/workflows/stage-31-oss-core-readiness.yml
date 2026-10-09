@@ -1,0 +1,55 @@
+name: Stage 31 - OSS Core Readiness
+
+on:
+  pull_request:
+    paths:
+      - "scripts/oss-core-readiness-audit.mjs"
+      - "scripts/owasp-asvs-verification.mjs"
+      - "scripts/public-oss-export-audit.mjs"
+      - "OSS_EXPORT_MANIFEST.json"
+      - "LICENSE"
+      - "security/**"
+      - "tests/oss-core-readiness/**"
+      - "tests/agent-governance/**"
+      - "packages/agent-governance/**"
+      - "knowledge/decisions/stage-31-oss-core-readiness.md"
+      - ".nvmrc"
+      - "package.json"
+  push:
+    branches:
+      - "stage31-*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  oss-core-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Enforce runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Run OSS readiness tests
+        run: node --test tests/oss-core-readiness/*.test.mjs
+      - name: Run Agent Governance tests
+        run: node --test tests/agent-governance/agent-governance.test.mjs
+      - name: Run OWASP ASVS 5.0.0 verification gate
+        run: node scripts/owasp-asvs-verification.mjs && node --test tests/security/owasp-asvs-profile.test.mjs
+      - name: Validate public export manifest
+        run: node tests/oss-core-readiness/public-export-manifest.test.mjs && node scripts/public-oss-export-audit.mjs
+      - name: Build sanitized OSS candidate
+        run: |
+          candidate="$RUNNER_TEMP/leruchi-oss-candidate"
+          mkdir -p "$candidate"
+          node scripts/build-oss-core-candidate.mjs "$GITHUB_WORKSPACE" "$candidate"
+          node scripts/oss-core-readiness-audit.mjs "$candidate"

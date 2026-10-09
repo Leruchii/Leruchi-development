@@ -6,27 +6,29 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-**Live repository checkpoint verified 2026-10-09.** Always re-check GitHub before continuing because this checkpoint is updated within an active integration branch.
+**Live repository checkpoint verified 2026-10-09.** Re-check GitHub before continuing because integration remains active.
 
 - **Development repository:** [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development), default branch `main`.
-- **Current main HEAD:** `41349caf44a23ae72192c7292487ac7248bf2413`.
-- **PR #72 — Agent Governance foundation:** merged as `4d951f50d28433e5c66d8af28bef7897ed689533`. All 18 workflow runs passed on exact PR head `78eb3dafec757ca658ff2fe8e274184fadd9a33f`, with zero failures.
-- **PR #73 — migration runner safety:** merged as `41349caf44a23ae72192c7292487ac7248bf2413`. All 23 workflow runs passed on exact PR head `bd088db34a924b08f4ed22681f68af1a8cb430ae`, with zero failures. This includes Stage 11 CLI database-backed migration execution, Architecture Regression Audit, Stage State Gate and Graph Studio browser/tenant evidence.
-- **Active integration branch:** `stage32-sdk-cli-directory-migration`, implementation commit before checkpoint synchronization `68d3d6be34cc092462efb02518eb98c9a9c216c5`. SDK/CLI source files have been moved to `packages/leruchi-sdk` and `packages/leruchi-cli`; import paths, package metadata, workflows, audit scripts, tests and documentation have been updated on this branch. **IMPLEMENTED — NOT YET VALIDATED.** The PR has not yet been opened; do not merge until exact-head focused tests and the full required matrix pass.
-- **SDK/CLI migration safety:** preserve the current hardened migration runner when renaming paths. It rejects symlinked/malformed migration files, empty/oversized/NUL-containing SQL, top-level transaction control, unsafe migration roles and out-of-order pending migrations. Keep Node.js 24 as the only supported runtime.
-- **Stage 32 candidate:** [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open. Its branch `stage32-oss-publication-prep` is 380 commits ahead, 7 behind, with 155 changed files. Do not merge it wholesale; historical candidate CI/artifacts do not validate current main or any newly ported code.
-- **Repository visibility blocker:** GitHub currently reports both [development](https://github.com/Leruchii/Leruchi-development) and [internal control](https://github.com/Leruchii/Leruchi-internal) repositories as public (`private: false`). The owner must change/verify visibility as intended before any Stage 32 integration/export. I have not changed these settings.
-- **Release gates remain open:** Apache-2.0 is selected for the intended OSS Core, but final integrated license inventory, export allowlist/sanitizer/provenance and artifact review are outstanding. Formal product-name clearance and explicit release approval are also required. No public release, tag or export is authorized.
-- **Legacy PR reconciliation:** review unique changes from #14, #22, #26 and #29 individually. The migration safety slice from #14 is now ported and validated; do not merge stale branches wholesale.
-- **Canonical documents:** `BUILD_STATE.md` is the handoff checkpoint, `BUILD_PLAN.md` is the architecture/stage plan, and `AGENTS.md` is the agent process contract. Evidence from exact Git/CI state overrides stale prose.
+- **Current main HEAD:** `2fe5b99ccabebadded348675b1c0335aceac9974`.
+- **PR #74 — SDK/CLI source-directory migration:** merged as `2fe5b99ccabebadded348675b1c0335aceac9974`. It moves source files to `packages/leruchi-sdk` and `packages/leruchi-cli`, updates import/package/CI/audit paths, and keeps the legacy `vibe` executable alias. The hardened migration runner from PR #73 is preserved.
+- **PR #75 — OSS Core readiness and sanitized export gates:** open on `stage31-oss-readiness-integration`, current head `6b276951f5576159c2e26a37dd52ae68cba5c774`. The exact head before this checkpoint update passed 24/24 workflow runs with zero failures. Because this checkpoint edit changes the PR head, rerun required checks and verify the new exact SHA before merge.
+- **PR #72 — Agent Governance foundation:** merged as `4d951f50d28433e5c66d8af28bef7897ed689533`; exact-head matrix 18/18 passed.
+- **PR #73 — migration runner safety:** merged as `41349caf44a23ae72192c7292487ac7248bf2413`; exact-head matrix 23/23 passed.
+- **Node.js:** 24 is the only supported runtime; all runtime declarations and documentation must keep this single supported major version.
+- **OSS work now under review:** Apache-2.0 license file, explicit `OSS_EXPORT_MANIFEST.json`, public export allowlist audit, sanitized candidate builder, readiness audit, OWASP ASVS 5.0.0 profile/evidence ledger and Stage 31/32 CI gates. This is an integration slice, not publication approval.
+- **Repository visibility blocker:** GitHub currently reports both [development](https://github.com/Leruchii/Leruchi-development) and [internal control](https://github.com/Leruchii/Leruchi-internal) repositories as public (`private: false`). Owner must verify/change visibility as intended before public OSS export. No visibility settings were changed by automation.
+- **Product/release blockers:** formal product-name clearance, final integrated license/dependency inventory, generated export file review, artifact provenance/reproducibility review and explicit release approval remain required. No tag, release or public export is authorized.
+- **Stage 32 candidate:** [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open. Do not merge its 380-commit candidate branch wholesale; port only reviewed dependency-ordered slices.
+- **Legacy reconciliation:** PR #14 migration safety is integrated in PR #73. Review unique changes from PRs #22, #26 and #29 against current main; do not merge stale branches wholesale.
+- **Canonical documents:** `BUILD_STATE.md` is the handoff checkpoint, `BUILD_PLAN.md` is the architecture/stage plan, and `AGENTS.md` is the agent process contract. Exact Git/CI evidence overrides stale prose.
 
 ### Required next actions
 
-1. Finish and validate the SDK/CLI directory migration on `stage32-sdk-cli-directory-migration`; ensure no source imports, scripts, workflow path filters or audit allowlists still reference the removed source directories.
-2. Open a PR, run focused SDK/CLI tests plus the full regression matrix, Architecture Regression Audit and Stage State Gate on the exact PR head; fix failures and merge only when green.
-3. Reconcile unique changes from legacy PRs #22, #26 and #29 with the current implementation.
-4. Port the reviewed OSS readiness/export manifest, license and sanitizer/provenance tools and Stage 31/32 workflows as a separate, reviewable slice. Rebuild and inspect the artifact from the final integrated SHA.
-5. Stop before export or publication until repository visibility is remediated, product-name clearance is recorded, and final artifact/license/provenance review plus explicit release approval are complete.
+1. Revalidate PR #75 on the updated exact head, inspect the sanitized candidate contents, and merge only if the full required matrix is green.
+2. Reconcile unique changes from legacy PRs #22, #26 and #29 with current main.
+3. Refresh PR #63 against the updated main and port only reviewed remaining functionality and evidence.
+4. Rebuild the candidate from the final integrated SHA; inspect the complete export list, license inventory, secret scan, deterministic archive hash and provenance.
+5. Stop before publication until repository visibility is remediated, formal product-name clearance is recorded, and the final artifact review and explicit release approval are complete.
 
 ## Verified state
 
