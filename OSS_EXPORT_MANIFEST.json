@@ -2,6 +2,7 @@
   "version": 1,
   "purpose": "Explicit public OSS export allowlist for Leruchi",
   "include": [
+    "OSS_EXPORT_MANIFEST.json",
     "README.md",
     ".nvmrc",
     "LICENSE",
