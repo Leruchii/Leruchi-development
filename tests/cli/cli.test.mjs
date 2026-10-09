@@ -71,7 +71,7 @@ test("migration command refuses non-migrator connection URLs",async()=>{
 
 test("discovers and validates numbered migrations deterministically",()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
-  for(const name of ["0001-z.sql","0000-migration-ledger.sql","0002-next.sql"]) fs.writeFileSync(path.join(dir,name),"SELECT 1;\\n");
+  for(const name of ["0001-z.sql","0000-migration-ledger.sql","0002-next.sql"]) fs.writeFileSync(path.join(dir,name),"SELECT 1;\n");
   fs.writeFileSync(path.join(dir,"README.md"),"ignored");
   assert.deepEqual(listMigrationFiles(dir).map(x=>x.id),["0000-migration-ledger","0001-z","0002-next"]);
 });
@@ -86,7 +86,7 @@ test("migration discovery rejects symlinks, malformed SQL filenames and transact
   const malformed=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
   fs.writeFileSync(path.join(malformed,"0001_BAD.sql"),"SELECT 1;");
   assert.throws(()=>listMigrationFiles(malformed),/Invalid migration filename/);
-  for(const sql of ["BEGIN; SELECT 1; COMMIT;","SELECT 1;\\nCOMMIT;","ROLLBACK;","START TRANSACTION;"]) {
+  for(const sql of ["BEGIN; SELECT 1; COMMIT;","SELECT 1;\nCOMMIT;","ROLLBACK;","START TRANSACTION;"]) {
     const transaction=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
     fs.writeFileSync(path.join(transaction,"0001-bad.sql"),sql);
     assert.throws(()=>listMigrationFiles(transaction),/transaction-control/);
@@ -95,7 +95,7 @@ test("migration discovery rejects symlinks, malformed SQL filenames and transact
 
 test("migration validation permits transaction keywords inside dollar-quoted PL/pgSQL bodies and comments",()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"vibe-migrations-"));
-  fs.writeFileSync(path.join(dir,"0001-safe.sql"),"DO $$\\nBEGIN\\n PERFORM 1;\\nEND;\\n$$;\\n-- COMMIT;\\nSELECT 1;");
+  fs.writeFileSync(path.join(dir,"0001-safe.sql"),"DO $$\nBEGIN\n PERFORM 1;\nEND;\n$$;\n-- COMMIT;\nSELECT 1;");
   assert.equal(listMigrationFiles(dir).length,1);
 });
 
