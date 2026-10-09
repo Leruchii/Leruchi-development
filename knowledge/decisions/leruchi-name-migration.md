@@ -1,6 +1,6 @@
 # Leruchi Canonical Name Migration
 
-Status: **IN PROGRESS — CANONICAL BRAND AND ENVIRONMENT ALIASES IMPLEMENTED ON BRANCH**
+Status: **CANONICAL BRAND AND SDK/CLI SOURCE PATHS INTEGRATED; EXTERNAL PROTOCOL MIGRATIONS REMAIN SEPARATE**
 
 ## Decision
 
@@ -18,15 +18,15 @@ The product owner's canonical name is **Leruchi**. Product-facing names in UI, d
 ## Deliberately not changed in Phase 1
 
 - The signed capability-grant audience `aud=vibedb` is a protocol compatibility value, not UI branding. Changing it requires coordinated issuer, verifier, fixtures, token-version policy and rollout/rollback tests.
-- Phase 2 completes the internal source-directory migration to `packages/leruchi-sdk` and `packages/leruchi-cli`; all imports, workflow path filters, scripts and documentation must move together. Persisted protocol identifiers remain unchanged.
+- Phase 2 source-directory migration is integrated: SDK and CLI now live at `packages/leruchi-sdk` and `packages/leruchi-cli`, with imports, workflow filters, scripts and documentation updated. Persisted protocol identifiers remain unchanged.
 - `VibeClientError` remains an exported compatibility alias for `LeruchiClientError`; generated `VibeGraph`/`VibeLabel` types remain aliases while canonical `LeruchiGraph`/`LeruchiLabel` are primary.
 - Database schema identifiers, migration history, existing `vibedb.dev` schema `$id` values and persisted values are not renamed by text replacement; any public identifier change requires a versioned compatibility plan.
 
 ## Required follow-up phases
 
 1. Complete the versioned migration for the JWT audience and any externally consumed MCP identity; do not accept a broader audience without a threat-model review.
-2. Rename internal source directories and executable paths only after all imports, workflows, build scripts, prompts and developer documentation have been enumerated; retain old entry-point shims if downstream imports need them.
-3. Extend the naming audit to cover new public examples and compatibility-alias policy as the path migration proceeds.
+2. Continue auditing public examples and compatibility aliases; canonical `LERUCHI_*` environment settings should take precedence while documented `VIBE_*` fallbacks remain tested where compatibility is required.
+3. Keep the signed capability-grant audience `aud=vibedb` and other externally consumed protocol/schema identifiers unchanged until a versioned migration and rollback plan is approved.
 4. Run relevant Node.js 24 tests, type/build checks, architecture audit, Stage State Gate and repository-wide workflows on the exact PR head.
 
 ## Release gate
