@@ -44,6 +44,14 @@ Per owner direction on 2026-10-10, token rotation, branch protection and reposit
 
 Production grant issuance/revocation is not deployed. Real identity-provider/trusted-gateway integration, authoritative tenant policy, signing-key custody/rotation, least-privilege production DB roles, private networking/mTLS, monitoring/alerts, and staging end-to-end/recovery evidence remain production requirements.
 
+## Public repository boundary
+
+- Official public destination: [`Leruchii/Leruchi`](https://github.com/Leruchii/Leruchi).
+- Engineering and candidate validation repository: [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development).
+- The public destination README has been updated to explain the project and clearly state that the reviewed source export and versioned release are not yet published there.
+- Promotion must copy only the allowlisted Stage 32 export after the applicable license/attribution and owner approval gates. Do not mirror the whole development repository or any internal/control-plane repository.
+- The README-only change in the public repository is not a source release and does not change the candidate SHA or its artifact digests.
+
 ## Decision
 
 The technical candidate is built, CI-validated, reproducibly packaged and reviewed for export paths and high-risk configuration. Any formal release must describe Leruchi as an engineering preview and must not imply production readiness or full ASVS compliance. Any change to an allowlisted source file requires a fresh Stage 32 build and exact-SHA evidence. License/attribution and product-name/trademark review remain separate legal/owner considerations, not work for an automation agent to certify.
