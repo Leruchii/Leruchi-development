@@ -22,6 +22,7 @@ Candidate tracking PR: [#63](https://github.com/Leruchii/Leruchi-development/pul
 - [PR #81 — canonical bootstrap variables with compatibility fallbacks](https://github.com/Leruchii/Leruchi-development/pull/81) — merged; `vibedb` and established database identifiers preserved.
 - [PR #82 — Node.js 24 dependency locking](https://github.com/Leruchii/Leruchi-development/pull/82) — merged.
 - [PR #83 — dependency license inventory and export audit hardening](https://github.com/Leruchii/Leruchi-development/pull/83) — merged; exact head 23/23 and post-merge matrix 26/26.
+- [PR #84 — trigger Stage 31/32 for every exportable path](https://github.com/Leruchii/Leruchi-development/pull/84) — merged; exact head 22/22 and post-merge matrix 26/26.
 - PR #66 was closed as superseded by the integrated identity/runtime/bootstrap slices.
 
 ## Current candidate evidence
