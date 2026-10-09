@@ -1334,7 +1334,7 @@ The pre-merge candidate artifact is validation evidence only. Rebuild and inspec
 
 ### Verified release candidate (2026-10-09)
 
-- Final integrated `main` at this checkpoint: `4374e44ef4ee9214553d9863390eebe6cb430f53`.
+- Candidate source commit: `4374e44ef4ee9214553d9863390eebe6cb430f53`; later documentation-only commits are excluded from the public candidate.
 - PR #83 exact head passed 23/23 checks, including Stage 31 readiness, Stage 32 candidate build, public export contract, Architecture Regression Audit and Stage State Gate.
 - Post-merge main matrix for `4374e44ef4ee9214553d9863390eebe6cb430f53`: 26/26 checks passed.
 - Stage 32 run [37931206154](https://github.com/Leruchii/Leruchi-development/actions/runs/37931206154) produced artifact ID `11616112656`, named `leruchi-oss-core-candidate`. GitHub artifact archive digest: `sha256:fd8438c94bcfaa2a38372dd63765413c3477dfa45e504e1b74c50c70870c16d3`. Contained `.tar.gz` SHA-256: `64db56ee25b31e5ef1157648ea5c6f0b5341c8aba59d390b17b317a68a2a6f01`.
