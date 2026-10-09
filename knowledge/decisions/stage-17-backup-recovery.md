@@ -65,7 +65,7 @@ The production-like drill:
 5. captures a custom-format backup;
 6. commits a distinct post-backup write;
 7. creates a fresh empty recovery database;
-8. restores with `VIBEDB_RESTORE_MODE=fresh`;
+8. restores with `LERUCHI_RESTORE_MODE=fresh`;
 9. verifies AGE and pgvector extensions are present;
 10. verifies the AGE vertex, vector object/data and migration ledger are equal to the source snapshot;
 11. verifies pre-backup data is present and the post-backup write is absent.
@@ -103,3 +103,8 @@ The shell restore path also regained an explicit manifest byte-size verification
 - Contract tests cover manifest integrity, tampering, size mismatch and restore-mode behavior.
 
 Stage 17 is VALIDATED for the OSS backup/recovery contract. Hosted backup scheduling, retention, storage replication, regional recovery and commercial RPO/RTO commitments remain Stage 18 control-plane concerns.
+
+
+## Canonical operational naming
+
+`scripts/leruchi-backup.sh` and `scripts/leruchi-restore.sh` are the canonical entry points. The historical `scripts/vibedb-backup.sh` and `scripts/vibedb-restore.sh` paths remain compatibility wrappers. The restore implementation prefers `LERUCHI_RESTORE_MODE`, accepts `VIBEDB_RESTORE_MODE` as a fallback, and preserves the existing `replace` default. Database name `vibedb`, role names, and `vibe_meta` schema identifiers are intentionally unchanged in this slice; changing those requires a separate versioned migration and rollback plan.

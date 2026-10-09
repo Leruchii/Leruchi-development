@@ -3,7 +3,9 @@ on:
   pull_request:
     paths:
       - "scripts/vibedb-backup.sh"
+      - "scripts/leruchi-backup.sh"
       - "scripts/vibedb-restore.sh"
+      - "scripts/leruchi-restore.sh"
       - "packages/backup-recovery/**"
       - "tests/backup-recovery/**"
       - "infra/docker/postgres/**"
@@ -34,7 +36,7 @@ jobs:
         with:
           node-version: 24
       - name: Backup contract tests
-        run: node --test tests/backup-recovery/backup-recovery.test.mjs
+        run: node --test tests/backup-recovery/*.test.mjs
       - name: PostgreSQL 17 recovery drill
         run: docker run --rm --network host -v "$GITHUB_WORKSPACE:/workspace" -w /workspace -e DATABASE_URL="$DATABASE_URL" postgres:17 bash tests/backup-recovery/backup-recovery-drill.sh
       - name: Build production Leruchi database image

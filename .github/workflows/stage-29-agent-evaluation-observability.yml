@@ -35,4 +35,4 @@ jobs:
       - name: Observability regression tests
         run: node --test tests/observability/*.test.mjs
       - name: SDK/CLI/MCP regression
-        run: node --test tests/vibe-sdk/*.test.mjs tests/cli/*.test.mjs && for file in tests/mcp/*.test.mjs; do case "$file" in tests/mcp/live-*) continue ;; esac; node --test "$file"; done
+        run: node --test tests/leruchi-sdk/*.test.mjs tests/cli/*.test.mjs && for file in tests/mcp/*.test.mjs; do case "$file" in tests/mcp/live-*) continue ;; esac; node --test "$file"; done

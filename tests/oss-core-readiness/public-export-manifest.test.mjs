@@ -23,6 +23,14 @@ test("public export manifest excludes private control material", () => {
   assert.ok(manifest.include.includes("scripts/public-*.mjs"));
   assert.ok(manifest.include.includes("packages/**"));
   assert.ok(manifest.include.includes("tests/**"));
+  for (const script of [
+    "scripts/leruchi-backup.sh",
+    "scripts/leruchi-restore.sh",
+    "scripts/vibedb-backup.sh",
+    "scripts/vibedb-restore.sh",
+  ]) {
+    assert.ok(manifest.include.includes(script), `backup/recovery test dependency missing from export: ${script}`);
+  }
 });
 
 test("public export manifest does not allow the private control directories", () => {
