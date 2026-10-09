@@ -17,8 +17,6 @@ on:
       - "package.json"
       - "package-lock.json"
       - "apps/studio/package-lock.json"
-      - "package-lock.json"
-      - "apps/studio/package-lock.json"
   push:
     branches:
       - "stage31-*"
