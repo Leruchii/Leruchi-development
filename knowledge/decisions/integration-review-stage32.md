@@ -2,7 +2,7 @@
 
 Status: **TECHNICAL CANDIDATE BUILT; PUBLICATION GATES OPEN**
 Review date: 2026-10-09
-Candidate source SHA at review: `4374e44ef4ee9214553d9863390eebe6cb430f53` (later handoff-document commits are excluded from the public export)
+Candidate source SHA at review: `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5` (later handoff-document commits are excluded from the public export)
 Candidate tracking PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63) (draft/tracking only; do not merge its stale branch)
 
 ## Integrated and validated slices
@@ -26,12 +26,12 @@ Candidate tracking PR: [#63](https://github.com/Leruchii/Leruchi-development/pul
 
 ## Current candidate evidence
 
-- Stage 32 run: [37931206154](https://github.com/Leruchii/Leruchi-development/actions/runs/37931206154).
-- Artifact ID: `11616112656`, name `leruchi-oss-core-candidate`.
-- GitHub archive digest: `sha256:fd8438c94bcfaa2a38372dd63765413c3477dfa45e504e1b74c50c70870c16d3`.
-- Contained tarball SHA-256: `64db56ee25b31e5ef1157648ea5c6f0b5341c8aba59d390b17b317a68a2a6f01`.
+- Stage 32 run: [37932619969](https://github.com/Leruchii/Leruchi-development/actions/runs/37932619969).
+- Artifact ID: `11617171934`, name `leruchi-oss-core-candidate`.
+- GitHub archive digest: `sha256:de51a538f153cbce2e9e3cf11cee60616f040662fde434565cf40bbab6c15aa9`.
+- Contained tarball SHA-256: `57d22c00e03c3d141580330551eb57824c15ed08968860ca3b93a5d957a77bab`.
 - Candidate: 200 files. Initial automated path/token/runtime scan found no matches for the configured forbidden patterns.
-- Synthetic merge tree and merged-main tree both equal `2850f24b85369cfcadf979db6de36348ed78507a`.
+- Synthetic merge tree and merged-main tree both equal `bf1d114aac1bab60b5f704f471d7b42d244e3c71`.
 - Dependency inventory covers 138 entries across the root and Studio lockfiles. LGPL/MPL/CC-BY entries need explicit license/attribution compatibility review.
 - The ASVS 5.0.0 profile is a verification profile, not a claim of full compliance.
 
