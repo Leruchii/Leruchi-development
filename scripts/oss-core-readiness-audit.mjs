@@ -10,10 +10,10 @@ const forbiddenPathFragments = [
 ];
 const forbiddenContent = [
   /github_pat_[A-Za-z0-9_]{20,}/i,
-  /\\bgh[pousr]_[A-Za-z0-9]{20,}\\b/i,
-  /\\bxox[baprs]-[A-Za-z0-9-]{10,}\\b/i,
-  /\\bAIza[0-9A-Za-z_-]{30,}\\b/,
-  /\\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\\b/,
+  /\bgh[pousr]_[A-Za-z0-9]{20,}\b/i,
+  /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/i,
+  /\bAIza[0-9A-Za-z_-]{30,}\b/,
+  /\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b/,
   /BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/,
   new RegExp("-----" + "BEGIN PRIVATE KEY-----"),
   /AKIA[0-9A-Z]{16}/,
