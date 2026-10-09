@@ -6,12 +6,12 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-**Live repository checkpoint verified 2026-10-09.** Current `main` HEAD is `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` (PR #79 squash merge). The post-merge CI matrix has started but was still running at the time of this update; do not call the merge SHA green until all required checks finish successfully.
+**Live repository checkpoint verified 2026-10-09.** Current `main` HEAD is `e6041869970841ba444aaaf47d0df428678e8f19` (latest OSS plan documentation update). PR #79's merge SHA `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` has since passed 26/26 post-merge checks. The latest documentation commit has its own new CI matrix; do not call that latest SHA green until all required checks finish successfully.
 
 - **Development repository:** [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development), default branch `main`.
 - **PR #81 — bootstrap environment compatibility and naming record:** merged at `d0d7e8c0d43ec24924e5ce8950da092baeeaad2c`. `LERUCHI_*` DB bootstrap variables are canonical with tested `VIBE_*` fallbacks; the `vibedb` database and existing role/schema/migration identifiers remain unchanged.
 - **PR #82 — Node.js 24 repeatable OSS candidate dependencies:** merged at `c8cb75f98cac543539b31a5fc899e4e0e791df70`. Its exact PR head passed 19/19 workflow runs, including Stage 31 readiness, Stage 32 candidate, Architecture Regression Audit and Stage State Gate. The merged main commit then passed its 26/26 check runs.
-- **PR #79 — strict capability grants and Studio integration:** merged at `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4`. Exact head `b418711bf4c23d47c35d9af14d8cf80ee037adcf` passed 29/29 checks, including Stage 13 Studio, Stage 14 MCP, Stage 15 GraphRAG, Stage 04 Schema Catalog, Architecture Regression Audit, Stage 31 readiness and Stage 32 candidate. This validates the PR head; the new merge SHA still needs its own post-merge matrix to finish.
+- **PR #79 — strict capability grants and Studio integration:** merged at `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4`. Exact head `b418711bf4c23d47c35d9af14d8cf80ee037adcf` passed 29/29 checks, including Stage 13 Studio, Stage 14 MCP, Stage 15 GraphRAG, Stage 04 Schema Catalog, Architecture Regression Audit, Stage 31 readiness and Stage 32 candidate. Its post-merge matrix then passed 26/26 checks with zero failures.
 - **Earlier integrated checkpoints:** PR #74 SDK/CLI source-directory migration, #75 OSS readiness/export gates, #76 Graph Studio/legacy reconciliation, #77 build-state synchronization, #78 canonical operations/SDK test paths and #80 checkpoint reconciliation are merged. PRs #72 and #73 (Agent Governance foundation and hardened migration runner) are also merged.
 - **Node.js:** 24 is the only supported runtime. Do not introduce Node.js 20 into product, build, workflow, container or release configuration.
 - **OSS scope:** Apache-2.0 license file, explicit `OSS_EXPORT_MANIFEST.json`, export contract audit, sanitized candidate builder, readiness/secret/runtime audit, OWASP ASVS 5.0.0 profile/evidence ledger and Stage 31/32 gates are integrated. The ASVS ledger is not a compliance claim; unmapped, scoping-required and deferred items remain open.
@@ -747,7 +747,7 @@ Stage 29 merged as PR #58 at `93022678b151b1945640967ecc09642271c23e62`. Focused
 **Status: IN PROGRESS — candidate gates are passing on validated PR heads, but the final integrated main SHA and release gates are not yet cleared.**
 
 Current integration checkpoint verified 2026-10-09:
-- Current `main` HEAD: `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` (PR #79 strict capability grants/Studio integration).
+- Current `main` HEAD at this checkpoint: `e6041869970841ba444aaaf47d0df428678e8f19` (OSS plan documentation update; CI is running on this docs commit). PR #79 merge SHA `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` passed 26/26 post-merge checks.
 - PR #81 bootstrap compatibility/naming slice is merged; `LERUCHI_*` is canonical with `VIBE_*` compatibility fallbacks. Database name `vibedb` and existing schema/role/migration identifiers remain unchanged.
 - PR #82 Node.js 24 dependency lock is merged. Its exact-head matrix passed 19/19 workflows, including Stage 31/32; the merge SHA passed 26/26 checks.
 - PR #79 strict capability grants and Studio integration is merged. Exact head passed 29/29 checks, including Stage 13 Studio, MCP, GraphRAG, Schema Catalog, architecture/state gates, Stage 31 and Stage 32. Its post-merge matrix is currently pending; check results on the PR head are not a substitute for checking the merge SHA.
