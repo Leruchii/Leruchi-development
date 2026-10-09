@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Test canonical and legacy bootstrap environment contract
+        run: node --test tests/security/bootstrap-env-compatibility.test.mjs
+
       - name: Build Leruchi database image
         run: docker compose build db
 
