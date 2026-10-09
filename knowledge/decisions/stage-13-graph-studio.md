@@ -15,22 +15,21 @@ Status: VALIDATED.
 
 ## Current implementation
 
-- restored missing Vibe UI token/layout/screen/accessibility references;
-- created a Next.js/React/Tailwind v4 Graph Studio application shell;
-- implemented a first Graph Explorer interaction spike with bounded depth/result controls and keyboard-selectable nodes;
-- added reproducible Base UI/style audit;
-- added Stage 13 typecheck/build CI.
+- Next.js/React/Tailwind v4 Graph Studio shell with Schema Catalog-driven graph metadata.
+- Authenticated server-side proxy routes connect the browser to Graph API; service credentials are not exposed to browser code.
+- Graph API composes Query IR, Mutation IR, validation, PostgreSQL recursive/AGE compilers, Secure Execution Engine, retrieval and agent-oriented query surfaces.
+- Bounded exploration controls and keyboard-selectable SVG graph nodes.
+- Explicit loading, empty and error states; rendered graph nodes are derived from authenticated query results, never static demo data.
+- Tenant-scoped catalog access uses verified JWT claims and transaction-local database claims; RLS remains authoritative.
+- Browser checks cover tenant-visible results, mobile-width behavior, keyboard access, theme switching and live PostgreSQL/AGE-backed composition.
+- Playwright renderer regression benchmark covers 100, 500 and 1,000 SVG nodes and visible-node interaction latency.
+- TypeScript build, Base UI architecture audit and Stage 13 CI are in place.
 
 ## Remaining
 
-- real authenticated Graph API integration;
-- live Schema Catalog integration;
-- Graph Schema screen;
-- Traversal Builder;
-- loading/empty/error states wired to real requests;
-- responsive/browser accessibility evidence;
-- 1,000-node/3,000-edge benchmark and production renderer decision.
-
+- Add a representative 1,000-node / 3,000-edge benchmark and measure mobile interaction behavior under edge density.
+- Keep the long-term production renderer decision open until that benchmark is reviewed; current CI timing is a regression guard, not a production performance SLA.
+- Continue collecting real deployment telemetry before asserting production-scale performance.
 
 ## Stage 13 continuation decisions
 
