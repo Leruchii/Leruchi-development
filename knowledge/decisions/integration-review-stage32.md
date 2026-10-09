@@ -2,7 +2,7 @@
 
 Status: **TECHNICAL CANDIDATE BUILT; PUBLICATION GATES OPEN**
 Review date: 2026-10-09
-Current main SHA at review: `4374e44ef4ee9214553d9863390eebe6cb430f53`
+Candidate source SHA at review: `4374e44ef4ee9214553d9863390eebe6cb430f53` (later handoff-document commits are excluded from the public export)
 Candidate tracking PR: [#63](https://github.com/Leruchii/Leruchi-development/pull/63) (draft/tracking only; do not merge its stale branch)
 
 ## Integrated and validated slices
