@@ -1330,33 +1330,27 @@ The pre-merge candidate artifact is validation evidence only. Rebuild and inspec
 
 ## Stage 32 — OSS Core Publication Preparation
 
-**Status: IN PROGRESS.** SDK/CLI migration and OSS readiness tooling are integrated. Final candidate reconciliation and release gates remain open. Never merge the broad candidate branch wholesale.
+**Status: IN PROGRESS.** The readiness/export tooling and Node.js 24 dependency baseline are integrated, and Stage 31/32 pass on the validated PR heads below. Publication is not authorized: the final integrated main SHA must pass its post-merge matrix and the explicit release gates remain open.
 
-### Live integration baseline (2026-10-09)
-- Last verified development `main` SHA before PR #81: `8ebfe49253fedc6e26e7f42d67312118493cd6d1`; exact-main matrix 22/22 passed.
-- PR #74 — SDK/CLI source-directory migration: merged.
-- PR #75 — OSS readiness/export gates: merged; exact-head matrix 24/24 passed.
-- PR #76 — Graph Studio/legacy reconciliation: merged; legacy PRs #22, #26 and #29 reviewed. Old Graph API/browser/renderer changes are superseded; the dense-edge stress benchmark remains open.
-- PR #77 — build-state synchronization: merged.
-- PR #78 — canonical operations and SDK test paths: merged.
-- PR #80 — current checkpoint reconciliation: merged; exact-head matrix 22/22 passed.
-- PR #81 — DB bootstrap environment compatibility and product naming decision: under review; exact-head checks must pass before merge.
-- PR #72 — Agent Governance foundation: merged; exact-head matrix 18/18 passed.
-- PR #73 — hardened migration runner: merged; exact-head matrix 23/23 passed.
-- Node.js 24 is the only supported runtime.
-- GitHub currently reports development and internal-control repositories as public. Owner must verify/change visibility before public export; no settings were changed by automation.
-- [PR #63](https://github.com/Leruchii/Leruchi-development/pull/63) remains draft/open, 380 commits ahead and 12 behind with 155 changed files. Historical candidate checks do not validate current main or newly ported changes.
+### Current verified integration checkpoint (2026-10-09)
 
-### Product identity and compatibility boundary
-Leruchi is canonical on product-facing surfaces. Prefer `leruchi`, `.leruchi/`, `LERUCHI_*` and `@leruchi/*`; retain deliberate Vibe-era CLI/environment/config and exported-symbol aliases where documented. The database bootstrap now prefers `LERUCHI_*` variables and retains `VIBE_*` fallbacks on PR #81. This does not rename the `vibedb` database, `vibe_*` roles/schemas, JWT audience/protocol values, or external schema IDs. Those require separate versioned compatibility and rollback plans.
+- Current `main` after the latest build-state documentation update: `cdd0ba248ed4edde5b85d6fa52a4105308861efc`.
+- PR #81 — DB bootstrap environment compatibility and product naming decision — merged. `LERUCHI_*` variables are canonical with documented/tested `VIBE_*` fallbacks; database name `vibedb` and existing role/schema/migration identifiers remain unchanged.
+- PR #82 — lock Node.js 24 dependencies for repeatable OSS candidates — merged as `c8cb75f98cac543539b31a5fc899e4e0e791df70`. Exact PR head passed 19/19 workflows, including Stage 31 readiness, Stage 32 candidate, Architecture Regression Audit and Stage State Gate. The merge SHA passed 26/26 checks.
+- PR #79 — strict capability grants in Studio integration — merged as `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4`. Exact PR head `b418711bf4c23d47c35d9af14d8cf80ee037adcf` passed 29/29 checks, including Stage 13 Studio, Stage 14 MCP, Stage 15 GraphRAG, Stage 04 Schema Catalog, Architecture Regression Audit, Stage 31 and Stage 32. On the merge SHA, 24/26 checks had passed and the remaining Studio and JavaScript/TypeScript code-scanning checks were still running at the last poll. The latest docs-only main commit also has a new CI matrix in progress; do not mark either SHA green until its required checks finish.
+- Node.js 24 is the only supported runtime across product, workflows, containers, CI and release tooling. Do not introduce Node.js 20.
+- The merged security slice uses strict EdDSA capability grants and revocation integration, canonical `leruchi_access_token` handling, canonical `LERUCHI_*` integration variables and schema-catalog JWT issuer/audience tests. This does not prove production authorization is deployed; identity/gateway integration, signing-key custody/rotation, least-privilege roles, private networking/mTLS, monitoring/alerts and staging/recovery evidence remain deployment gates.
+- Stage 31/32 tooling includes the Apache-2.0 license file, `OSS_EXPORT_MANIFEST.json`, export contract audit, sanitized candidate builder, readiness/secret/runtime audit and OWASP ASVS 5.0.0 profile/evidence ledger. The ASVS ledger is not a compliance claim; unmapped, scoping-required and deferred items remain open.
+- Leruchi is the owner-selected product name; this is not trademark/legal clearance.
+- Development repository visibility is public. Internal control repository visibility was not independently verified in this checkpoint; the owner must verify both intended settings. Automation must not change repository visibility.
+- PR #63 remains draft/open, 380 commits and 155 changed files against a stale base. Do not merge the branch wholesale; selectively review and port only still-required changes against current `main`.
+- No tag, release or public export is authorized.
 
-The owner decision to retain Leruchi is recorded in `knowledge/decisions/product-naming-review.md`. It is not a legal/trademark opinion; any required legal review remains a release gate.
+### Next actions
 
-### Dependency-ordered remaining integration
-1. **Bootstrap compatibility:** validate and merge PR #81 only after focused tests, Stage 01 database initialization, Stage 32 candidate, Architecture Regression Audit, Stage State Gate and the full exact-head matrix pass.
-2. **Candidate reconciliation:** compare PR #63's live tree with main and port only reviewed, still-relevant changes. Its renamed bootstrap file is intentionally not copied wholesale because the current change preserves database identifiers while adding environment-variable compatibility.
-3. **Final candidate review:** rebuild the export from the final integrated SHA, review the complete selected file list and dependency/license inventory, scan secrets/runtime declarations, and record the exact source SHA plus reproducible archive digest.
-4. **Release gate:** confirm repository visibility, complete any required formal legal review, review provenance and exported contents, and require explicit release approval. No tag, release or public export is authorized yet.
+1. Poll the post-merge matrix on `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` and the current docs-updated `main` SHA. Fix failures before further integration.
+2. Review PR #63 selectively; never use its stale candidate branch as a merge source.
+3. Rebuild the OSS candidate from the final integrated SHA and inspect every allowlisted file, dependency/license inventory, secret/runtime scan, provenance and reproducibility evidence.
+4. Confirm intended visibility of development and internal repositories; record legal/trademark review if required.
+5. Publish only after final artifact review and explicit owner approval.
 
-### Evidence discipline
-Every slice must record exact base/head SHAs and pass focused tests, affected regressions, Architecture Regression Audit, Stage State Gate and required exact-head workflows. A green result from another SHA is not validation. Keep Stage 32 IN PROGRESS until integration and release gates are closed.
