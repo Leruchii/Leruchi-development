@@ -9,7 +9,7 @@ const forbiddenPathFragments = [
   "knowledge", "prompts", "internal", "enterprise", "cloud"
 ];
 const forbiddenContent = [
-  /github_pat_[A-Za-z0-9_]{20,}/i,
+  /github_pat_[A-Za-z0-9_]+/i,
   /\bgh[pousr]_[A-Za-z0-9]{20,}\b/i,
   /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/i,
   /\bAIza[0-9A-Za-z_-]{30,}\b/,
