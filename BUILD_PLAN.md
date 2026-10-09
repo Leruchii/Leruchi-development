@@ -1321,7 +1321,7 @@ Public publication remains separately gated on repository visibility remediation
 
 ## Stage 31A — Agent Governance Foundation
 
-**Status:** VALIDATED on exact Stage 31 code head `69cca2565486d13ddd9d3ab029bdef6e0029d3ed`. Focused Agent Governance coverage and the Stage 31 readiness/regression matrix passed. Governance records are not authentication proof; authorization decisions are non-executing and revocation/expiry fail closed.
+**Status:** INTEGRATED AND VALIDATED on main through PR #72. The exact PR head `78eb3dafec757ca658ff2fe8e274184fadd9a33f` passed 18/18 workflow runs; merge commit `4d951f50d28433e5c66d8af28bef7897ed689533`. Focused Agent Governance coverage and Architecture Regression Audit passed. Governance records are not authentication proof; authorization decisions are non-executing and revocation/expiry fail closed.
 
 
 ## Stage 32 — OSS Core Publication Preparation
