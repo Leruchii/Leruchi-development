@@ -6,7 +6,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-**Live repository checkpoint verified 2026-10-09.** Current `main` HEAD is `e6041869970841ba444aaaf47d0df428678e8f19` (latest OSS plan documentation update). PR #79's merge SHA `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` has since passed 26/26 post-merge checks. The latest documentation commit has its own new CI matrix; do not call that latest SHA green until all required checks finish successfully.
+**Live repository checkpoint verified 2026-10-09.** Resolve the exact current `main` HEAD from Git before starting new work; this checkpoint update itself advances `main`, and its post-commit CI matrix must be checked independently. PR #79's merge SHA `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` passed 26/26 post-merge checks. Never assume a docs-only commit inherits the preceding SHA's green status.
 
 - **Development repository:** [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development), default branch `main`.
 - **PR #81 — bootstrap environment compatibility and naming record:** merged at `d0d7e8c0d43ec24924e5ce8950da092baeeaad2c`. `LERUCHI_*` DB bootstrap variables are canonical with tested `VIBE_*` fallbacks; the `vibedb` database and existing role/schema/migration identifiers remain unchanged.
@@ -747,7 +747,7 @@ Stage 29 merged as PR #58 at `93022678b151b1945640967ecc09642271c23e62`. Focused
 **Status: IN PROGRESS — candidate gates are passing on validated PR heads, but the final integrated main SHA and release gates are not yet cleared.**
 
 Current integration checkpoint verified 2026-10-09:
-- Current `main` HEAD at this checkpoint: `e6041869970841ba444aaaf47d0df428678e8f19` (OSS plan documentation update; CI is running on this docs commit). PR #79 merge SHA `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` passed 26/26 post-merge checks.
+- Resolve current `main` from Git at session start; the checkpoint documentation update itself advances `main`. PR #79 merge SHA `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4` passed 26/26 post-merge checks; validate the latest documentation SHA independently.
 - PR #81 bootstrap compatibility/naming slice is merged; `LERUCHI_*` is canonical with `VIBE_*` compatibility fallbacks. Database name `vibedb` and existing schema/role/migration identifiers remain unchanged.
 - PR #82 Node.js 24 dependency lock is merged. Its exact-head matrix passed 19/19 workflows, including Stage 31/32; the merge SHA passed 26/26 checks.
 - PR #79 strict capability grants and Studio integration is merged. Exact head passed 29/29 checks, including Stage 13 Studio, MCP, GraphRAG, Schema Catalog, architecture/state gates, Stage 31 and Stage 32. Its post-merge matrix is currently pending; check results on the PR head are not a substitute for checking the merge SHA.
