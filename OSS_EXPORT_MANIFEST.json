@@ -8,6 +8,7 @@
     "LICENSE",
     "CONTRIBUTING.md",
     "SECURITY.md",
+    "THIRD_PARTY_NOTICES.md",
     "docs/**",
     "packages/**",
     "apps/studio/**",
