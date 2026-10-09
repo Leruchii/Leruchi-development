@@ -6,7 +6,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ## Current checkpoint
 
-**Verified 2026-10-09.** Candidate source commit: `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`. Later handoff-document commits advance `main` but are excluded from the public export; resolve the live `main` HEAD from Git before starting work. PR #83 passed 23/23 exact-head checks and the candidate source commit passed 26/26 post-merge checks.
+**Verified 2026-10-10.** Current `main` includes documentation-only PR #85, merged as `e72e433fd2d025a32f05c8cba1ad98a909e6b633`; its post-merge matrix passed **26/26 checks**. The public export candidate source remains `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`; later handoff-document commits are excluded from the export. The Stage 32 candidate artifact and digests below remain the inspected candidate evidence. No versioned GitHub release has been published.
 
 - **Development repository:** [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development), default branch `main`, currently public.
 - **PR #83 — OSS export hardening:** merged as `4374e44ef4ee9214553d9863390eebe6cb430f53`. Added deterministic third-party dependency license inventory, export-contract enforcement, broader common credential-token pattern checks, Stage 31/32 verification and a fuller public README.
@@ -19,20 +19,19 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - **PR #82 — Node.js 24 dependency baseline:** merged at `c8cb75f98cac543539b31a5fc899e4e0e791df70`. Node.js 24 is the only supported runtime; do not introduce Node.js 20 into product, CI, workflow, container or release configuration.
 - **Stage 32 tracking PR #63:** remains draft/open as a tracking record only. It has a stale broad branch (380 commits/155 files); never merge it wholesale.
 - **Stale identity PR #66:** closed as superseded by merged PRs #67, #69 and #81.
-- **Branch protection:** GitHub branch metadata reports `main` as unprotected. Configure a ruleset/branch protection with required checks before release. The connected integration cannot change repository settings.
-- **Repository visibility:** development repository is public. Internal/control repository visibility could not be independently verified through the current connection; owner must confirm intended visibility of both. Automation must not change visibility.
-- **Credential hygiene:** a GitHub credential was exposed in project context; owner must revoke/rotate it and confirm the replacement is stored only in GitHub's secret manager. Do not reuse the exposed credential.
+- **Branch protection:** Owner-managed follow-up. Per owner direction on 2026-10-10, automation must not change branch protection/rulesets and their configuration is not a blocker to publishing the OSS source export. Keep the operational risk visible; this checkpoint does not assert that `main` is protected.
+- **Repository visibility:** development repository is public. Internal/control repository visibility could not be independently verified through the current connection. Per owner direction, visibility is owner-managed and not an automation blocker; do not change repository visibility.
+- **Credential hygiene:** a GitHub credential was exposed in project context. Per owner direction, token rotation is owner-managed and not a publication blocker. Never repeat or reuse the exposed credential; automation must not attempt token rotation.
 - **Production authorization:** capability-grant and revocation core is implemented/tested, but production authorization is not deployed. Real identity-provider/trusted-gateway integration, authoritative tenant policy, signing-key custody/rotation, least-privilege production DB roles, private networking/mTLS, monitoring/alerts and staging end-to-end/recovery evidence remain deployment gates.
-- **Release blockers:** full 200-file review, third-party license/attribution review, branch protection, visibility confirmation, credential rotation, any required legal/trademark review and explicit release approval. No tag, release or public export is authorized.
+- **Formal release gates still open:** owner/legal review of third-party LGPL/MPL/CC-BY license and attribution obligations; any required product-name/trademark review; and explicit owner approval for a versioned release. The candidate has undergone automated export/path/credential-pattern/runtime scans, but those bounded scans do not replace a human source and license review. Branch protection, repository visibility, and token rotation remain owner-managed follow-ups, not automation blockers. No versioned tag or GitHub Release exists yet.
 
 ### Required next actions
 
-1. Finish the manual review of the exact 200-file candidate and third-party license obligations; do not treat the inventory or ASVS profile as legal/compliance clearance.
-2. Owner: rotate the exposed GitHub credential and confirm intended visibility of the development and internal/control repositories.
-3. Configure branch protection/ruleset for `main` with required checks.
-4. Complete any required legal/trademark review and record explicit release approval.
-5. Rebuild Stage 32 from the final release source tree if any exported file changes; retain artifact digest and exact SHA provenance.
-6. Publish only after all owner-controlled gates are explicitly cleared.
+1. Owner/legal: review the exact candidate dependency tree and resolve any LGPL/MPL/CC-BY license, attribution, and distribution obligations; `THIRD_PARTY_NOTICES.md` is inventory evidence, not legal clearance.
+2. Owner: decide whether any product-name/trademark review is required and record explicit approval for the first versioned engineering-preview release.
+3. If any allowlisted/exported source file changes, rerun Stage 32 from the final source tree and retain exact-SHA and artifact-digest provenance.
+4. After release gates are cleared, create a versioned Git tag and GitHub Release whose notes state engineering-preview status, Node.js 24-only runtime, and production limitations.
+5. Separately, the owner may handle token rotation, repository visibility, and branch protection; do not block source publication on these settings or change them through automation.
 
 ## Verified state
 
