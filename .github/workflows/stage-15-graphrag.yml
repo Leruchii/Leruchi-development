@@ -96,6 +96,7 @@ jobs:
         run: node tests/retrieval-execution/hybrid-integration.mjs
       - name: Prove live MCP GraphRAG retrieval
         env:
+          LERUCHI_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
           VIBE_RUNTIME_DATABASE_URL: postgresql://vibe_runtime:runtime@127.0.0.1:5432/vibedb
         run: node tests/mcp/live-mcp-retrieval.test.mjs
       - name: Show database logs on failure

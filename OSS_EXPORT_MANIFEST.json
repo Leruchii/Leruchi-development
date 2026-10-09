@@ -20,7 +20,8 @@
     "scripts/leruchi-backup.sh",
     "scripts/leruchi-restore.sh",
     "scripts/vibedb-backup.sh",
-    "scripts/vibedb-restore.sh"
+    "scripts/vibedb-restore.sh",
+    "scripts/assert-runtime-policy.mjs"
   ],
   "exclude": [
     ".agents/**",

@@ -14,6 +14,10 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Enforce Node.js 24 runtime policy
+        run: node scripts/assert-runtime-policy.mjs
+      - name: Runtime policy regression tests
+        run: node --test tests/architecture/runtime-policy.test.mjs
       - name: Run architecture audit
         run: node tests/architecture/contract-audit.mjs
       - name: Enforce canonical Leruchi product identity

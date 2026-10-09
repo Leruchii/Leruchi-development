@@ -21,6 +21,7 @@ test("public export manifest excludes private control material", () => {
   }
   assert.ok(manifest.include.includes("OSS_EXPORT_MANIFEST.json"));
   assert.ok(manifest.include.includes("scripts/public-*.mjs"));
+  assert.ok(manifest.include.includes("scripts/assert-runtime-policy.mjs"));
   assert.ok(manifest.include.includes("packages/**"));
   assert.ok(manifest.include.includes("tests/**"));
   for (const script of [

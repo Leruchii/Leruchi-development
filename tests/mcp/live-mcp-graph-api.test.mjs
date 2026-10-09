@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {signTestCapabilityGrant} from "../fixtures/capability-grant-test-key.mjs";
 import {handleMcpMessage} from "../../packages/mcp-server/index.mjs";
 
-const base=(process.env.VIBE_API_URL??"").replace(/\/$/,"");
+const base=(process.env.LERUCHI_API_URL??process.env.VIBE_API_URL??"").replace(/\/$/,"");
 const token=(jti="stage-14-grant-1")=>signTestCapabilityGrant({
   sub:"stage-14-mcp",jti,tenant_id:"vibe_tenant_a",capabilities:["graph:read"]
 });
@@ -16,9 +16,9 @@ const ir={
 };
 
 test("MCP schema discovery and graph query traverse the live Graph API security boundary",async()=>{
-  assert.ok(base,"VIBE_API_URL is required");
-  process.env.VIBE_API_URL=base;
-  process.env.VIBE_MCP_ACCESS_TOKEN=token();
+  assert.ok(base,"LERUCHI_API_URL is required");
+  process.env.LERUCHI_API_URL=base;
+  process.env.LERUCHI_MCP_ACCESS_TOKEN=token();
 
   const schema=await handleMcpMessage({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:"schema.discover",arguments:{}}});
   assert.equal(schema.result.isError,undefined,schema.result.content?.[0]?.text??"schema discovery failed");
@@ -39,7 +39,7 @@ test("MCP schema discovery and graph query traverse the live Graph API security 
 });
 
 test("MCP live query remains tenant-authoritative when the agent supplies a conflicting tenant field",async()=>{
-  process.env.VIBE_MCP_ACCESS_TOKEN=token();
+  process.env.LERUCHI_MCP_ACCESS_TOKEN=token();
   const response=await handleMcpMessage({
     jsonrpc:"2.0",id:4,method:"tools/call",
     params:{name:"graph.query",arguments:{tenant_id:"vibe_tenant_b",ir}}
@@ -50,7 +50,7 @@ test("MCP live query remains tenant-authoritative when the agent supplies a conf
 
 
 test("MCP rejects a grant revoked by the live control plane",async()=>{
-  process.env.VIBE_MCP_ACCESS_TOKEN=token("stage-14-grant-revoked");
+  process.env.LERUCHI_MCP_ACCESS_TOKEN=token("stage-14-grant-revoked");
   const denied=await handleMcpMessage({jsonrpc:"2.0",id:5,method:"tools/call",params:{name:"schema.discover",arguments:{}}});
   assert.equal(denied.result.isError,true);
   assert.match(denied.result.content[0].text,/Capability grant was rejected/);
