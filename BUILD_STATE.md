@@ -975,3 +975,41 @@ The owner has confirmed that the separately exposed GitHub credential was rotate
 - Public PR #7's post-merge CodeQL checks and PR #96's post-merge main matrix are to be verified from their actual run results before final disposition.
 
 **Current disposition: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** Engineering fixes and test-backed repository changes are merged, but external legal/product-name approval, repository visibility/branch-protection administration, and production environment validation remain unresolved.
+
+## Final post-merge verification checkpoint — 2026-10-10
+
+This section corrects earlier statements where the live repository evidence below is more current.
+
+### Latest development main and security scans
+
+- PR #97 merged as `4807f1aa429782229f2aa4f6000850e6d76b882e`.
+- All 29 PR checks passed or completed neutrally; all 28 post-merge checks on development `main` completed successfully.
+- Post-merge introduced-change Gitleaks scan passed in [run 38042587035](https://github.com/Leruchii/Leruchi-development/actions/runs/38042587035). The new full-history Gitleaks scan also passed in that run; its job reported no leaks after the two exact historical fingerprints were dispositioned.
+- The exact historical findings and their evidence are documented in `SECURITY.md`; `.gitleaksignore` contains only the two exact fingerprints. No broad suppression was added.
+- PR #96's Stage 03 Supabase compatibility test passed, and the latest Stage 20 production-readiness and Stage 17 backup/recovery workflows also passed on the post-merge main commit. The backup/recovery CI drill restored a fresh database with AGE/vector extensions and verified migration equality plus pre-/post-snapshot evidence. These are automated CI/staging-harness results, not proof of a real production deployment.
+
+### Current open-source candidate provenance
+
+- The Stage 32 candidate workflow passed on PR #97 source head `cd5b95a9582e19e26c7fc18a8c35a890c3e570f0` in [run 38042435257](https://github.com/Leruchii/Leruchi-development/actions/runs/38042435257).
+- The candidate audit passed with **201 files audited**. Reproducibility was checked by comparing two deterministic gzip archives; the comparison passed.
+- Artifact ID: `11666412856`.
+- Uploaded artifact ZIP SHA-256: `4d1db773ad401e7a2bfa30c05b7ad30e41136341c144a84523bf42bc70374dbd`.
+- Candidate tarball SHA-256: `f1a80d8bb6411ddbe4f2f3d1825d9f0e4edc3bb66896b10fa3bfdf465c5e438f`.
+- The PR #97 squash merge preserves the candidate's export-eligible file contents. This is a validated publication candidate, not authorization to publish it. No release/tag/publication or production deployment was performed.
+
+### Public README discrepancy — correction to prior checkpoint
+
+The live public root `README.md` still begins with `# Vibe Query IR v1`. Inspection of public merge commit `216e867d6275a185084ea7326a1ad3a080b3f2ff` confirms that PR #4 changed the release-verification workflow, Compose key handling, package/lockfile, `.gitleaksignore`, and security guidance—but **did not change the README**. Therefore, the earlier statement that PR #4 resolved the README discrepancy was inaccurate.
+
+Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) is the active proposed README correction and remains unmerged. It proposes broader platform documentation but uses the proposed public product name `Leruchi Core`. Formal product-name/trademark clearance and approval of public release wording remain open. The authorized reviewer must approve the exact wording; the branch should then be refreshed against current public `main`, revalidated, and merged only after approval. The public README discrepancy is **not closed**.
+
+Public PR #7 merged as `60d811663a7be9bd8b273afc026fe9062df511d1`. Its five post-merge checks, including Node.js 24 static/contract CI, dependency/security validation, and CodeQL analyses, completed successfully.
+
+### Remaining external blockers — still not zero
+
+- **Legal/product identity:** authorized human approval of the exact public name, README/release wording, third-party license/attribution dossier, distribution scope, and candidate is not recorded. `docs/release/LEGAL_REVIEW_DOSSIER.md` is prepared evidence, not legal clearance.
+- **Repository administration:** live GitHub metadata reports `Leruchii/Leruchi-internal` as public even though Product Identity describes it as intended private. The development repository is also public despite being described as intended private. Existing owner instructions reserve visibility and branch-protection changes for an authorized administrator; this execution did not change those settings. An administrator must confirm intent or correct visibility and configure/verify branch rulesets.
+- **Production environment:** CI now exercises migration upgrade, bounded concurrency, tenant/RLS behavior, and a fresh-database backup/restore drill. The actual intended staging/production identity provider, production signing-key custody, least-privilege deployment roles, private networking/mTLS, live monitoring/alerting, and a real staging deployment/recovery/rollback sign-off are not verified here.
+- **Release publication:** no new public source export, version tag, or production deployment is authorized until the human/legal and administrator gates above are satisfied.
+
+**Final disposition: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The validated engineering and security changes are merged and post-merge CI is green, but legal/product-name approval, repository visibility/branch-protection administration, and production-environment sign-off remain open.
