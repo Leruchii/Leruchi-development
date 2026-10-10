@@ -26,12 +26,26 @@ function walk(dir) {
 const nvmrc = fs.readFileSync(path.join(root, ".nvmrc"), "utf8").trim();
 if (nvmrc !== REQUIRED_MAJOR) fail(".nvmrc must pin Node.js 24", [`found: ${nvmrc || "<empty>"}`]);
 
-const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-if (packageJson?.engines?.node !== REQUIRED_ENGINE) {
-  fail("package.json must enforce the Node.js 24 runtime range", [`found: ${packageJson?.engines?.node ?? "<missing>"}`]);
-}
+const packageManifests = [
+  "package.json",
+  "packages/graph-api/package.json",
+  "packages/schema-catalog-api/package.json",
+  "packages/leruchi-cli/package.json",
+  "packages/leruchi-sdk/package.json",
+  "apps/studio/package.json"
+];
 
 const violations = [];
+for (const rel of packageManifests) {
+  try {
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
+    if (manifest?.engines?.node !== REQUIRED_ENGINE) {
+      violations.push(`${rel}: engines.node must be ${REQUIRED_ENGINE}; found: ${manifest?.engines?.node ?? "<missing>"}`);
+    }
+  } catch {
+    violations.push(`${rel}: package manifest is missing or invalid JSON`);
+  }
+}
 for (const file of walk(root)) {
   const rel = path.relative(root, file).replaceAll(path.sep, "/");
   // This test file intentionally embeds invalid Node versions as negative fixtures, not configuration.
