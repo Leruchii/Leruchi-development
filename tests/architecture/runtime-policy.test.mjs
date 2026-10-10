@@ -58,7 +58,7 @@ test("runtime policy rejects a package engine outside Node.js 24",t=>{
   const root=fixture(t,{...validFiles,"package.json":JSON.stringify({engines:{node:">=22 <23"}})});
   const result=run(root);
   assert.notEqual(result.status,0);
-  assert.match(result.stderr,/package.json must enforce the Node.js 24 runtime range/);
+  assert.match(result.stderr,/package.json: engines.node must be >=24 <25/);
 });
 
 test("runtime policy rejects an incorrect .nvmrc pin",t=>{
