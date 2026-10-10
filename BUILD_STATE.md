@@ -941,3 +941,37 @@ The canonical Product Identity record says `Leruchii/Leruchi-internal` is intend
 ### Disposition
 
 **Status: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The Node.js 24 policy merge, current development main CI, post-merge introduced-change Gitleaks scan, owner-confirmed credential rotation, public PR #4 merge, public historical-placeholder disposition, and public main post-merge checks are evidenced. Public README PR #5 awaits authorized naming/legal review; public PR #6 is merged and its post-merge release-verification scan passed; branch-protection and repository-visibility administration, any remaining historical finding review, and production deployment/recovery evidence remain open.
+
+## Zero-blockers execution continuation — 2026-10-10
+
+### Verified repository changes
+
+- PR #95 merged documentation-only execution evidence and the legal-review dossier as `b35943efbfb56aa6cdb77d5ed24c4388268abcb6`. Its post-merge development-main matrix completed with 27/27 checks successful.
+- PR #96 merged the removal of the tracked Supavisor `VAULT_ENC_KEY` placeholder as `943aa7b11c42a10ac394cd740a25be47ae6900d6`. Compose now requires a fresh local-only value through environment interpolation; the local-development instructions explain the untracked `.env` requirement.
+- PR #96's Stage 03 Supabase compatibility job passed, including role credentials, tenant-claim hook permissions, real Auth-issued tenant claims, tenant isolation, tampering/revocation checks, and PostgREST RLS. Its introduced-change Gitleaks job passed. The post-merge main matrix subsequently completed with 27/27 checks successful.
+- The updated OSS candidate audit on PR #96's source head `670bf36d5da95aaec66a792c633dfe592a4cea7e` passed with 201 files audited. Artifact ID `11666242200`, archive digest `sha256:996647f2cfd404df789a33491d6504afb8591b18af38e5e528f9ea5405b67a66`. Treat this as PR-head candidate evidence; use post-merge source validation and exact export-tree comparison before designating it the release artifact.
+- Public PR #3 was closed unmerged because its stale branch replaced the root lockfile with an unrelated Studio lockfile and ran infrastructure-dependent tests without provisioning the required services. Replacement PR #7 merged as `60d811663a7be9bd8b273afc026fe9062df511d1`; its six PR checks passed. It adds Node.js 24 syntax/contract CI and fixes Query IR test paths for the sanitized public export. Post-merge CodeQL checks must still be verified independently.
+
+### Historical Gitleaks findings — exact disposition
+
+A redacted full-history scan on PR #97 found exactly two historical findings; the scan output did not expose secret values:
+
+1. `cbdbdda8ffc2762337dd0d082ce9945abef8c4ab:infra/supabase/docker-compose.yml:generic-api-key:124`: the fixed local-only Supavisor `VAULT_ENC_KEY` placeholder from the original Stage 03 Compose addition. The current tracked value is removed and now required from an untracked local environment setting.
+2. `d1a5a2e308e46875045ec39a15f0b1ecfd8bbdf3:tests/fixtures/capability-grant-test-key.mjs:private-key:3`: an old hard-coded private key in a test-only fixture. The current fixture generates an ephemeral Ed25519 keypair and is used by test code, not product runtime code.
+
+The new `.gitleaksignore` contains only these exact commit-specific fingerprints, with context documented in `SECURITY.md`. The normal introduced-change scan remains blocking and the workflow now adds a blocking full-history scan. Verify both jobs pass on the final PR head and after merge. Do not broaden these ignores.
+
+### Owner-confirmed credential rotation
+
+The owner has confirmed that the separately exposed GitHub credential was rotated. Accept this as complete unless contradictory evidence appears. Never reproduce or reuse the former credential. This owner confirmation is distinct from repository scanning and does not substitute for historical finding disposition.
+
+### Remaining external/security/release gates
+
+- Public PR #5, [README scope reconciliation](https://github.com/Leruchii/Leruchi/pull/5), remains open because formal product-name/trademark clearance and approval of public release wording are not recorded. The legal-review dossier is at `docs/release/LEGAL_REVIEW_DOSSIER.md`; it is prepared evidence, not legal clearance.
+- No new versioned release or publication has been authorized. Do not publish until an authorized human approves the exact candidate, distribution scope, license/attribution disposition, and product naming.
+- The live `Leruchii/Leruchi-internal` repository metadata reports `visibility: public`, although Product Identity describes it as intended private. Existing owner instructions reserve repository visibility and branch-protection changes for an authorized repository administrator; no settings were changed. This remains an admin/security blocker until that administrator confirms the exposure is intentional or corrects it.
+- Branch protection is not confirmed on either public repository's `main`; the connected integration cannot administer the required rulesets. This remains an owner/admin control rather than an automated code change.
+- Production deployment gates remain: production identity-provider/trusted-gateway integration, authoritative tenant policy, production signing-key custody/rotation, least-privilege production database roles, private networking/mTLS where required, monitoring/alerting, and staging recovery/rollback evidence. No production deployment or recovery drill is claimed.
+- Public PR #7's post-merge CodeQL checks and PR #96's post-merge main matrix are to be verified from their actual run results before final disposition.
+
+**Current disposition: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** Engineering fixes and test-backed repository changes are merged, but external legal/product-name approval, repository visibility/branch-protection administration, and production environment validation remain unresolved.
