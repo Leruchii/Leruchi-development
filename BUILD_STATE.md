@@ -1,36 +1,56 @@
 # Leruchi Build State
 
-This file is the canonical handoff checkpoint for coding agents.
+This file is the canonical handoff checkpoint for coding agents. Verify it against live Git history, implementation, tests, CI, and `BUILD_PLAN.md` before continuing. Executable evidence wins over stale documentation.
 
-Agents must verify this state against Git history, implementation, tests, CI, and `BUILD_PLAN.md` before continuing. If evidence conflicts with this file, executable repository evidence wins and this file must be corrected.
+## Current checkpoint — live verification 2026-10-10
 
-## Current checkpoint
+**Official product name:** Leruchi. The project owner confirms product-name, legal, and release approval. This records owner confirmation; the underlying reviewer/approval record was not supplied to this repository, so do not invent one.
 
-**Verified 2026-10-10 from live GitHub state.** The official product name is **Leruchi**. The owner confirms legal and release approval have been obtained. No repository visibility changes, production deployments, version tags, or GitHub Releases were made in this execution.
+### Repository and branch state
 
-- **Development repository:** [Leruchii/Leruchi-development](https://github.com/Leruchii/Leruchi-development), default branch `main`, currently public. Latest merge: PR [#99](https://github.com/Leruchii/Leruchi-development/pull/99), commit `8ff1d2ed72f79fef14607eb2492d07f5f2dbc4bc`.
-- **Public product repository:** [Leruchii/Leruchi](https://github.com/Leruchii/Leruchi), default branch `main`, currently public. PR [#8](https://github.com/Leruchii/Leruchi/pull/8) merged as `ca9187dcb9e216f896c5f4b48e31ff932ad2b959`; public README now names the product Leruchi. Its PR checks passed 6/6. Post-merge [Public Core CI](https://github.com/Leruchii/Leruchi/actions/runs/38045330342), [Verify Release](https://github.com/Leruchii/Leruchi/actions/runs/38045330327), and [Push on main](https://github.com/Leruchii/Leruchi/actions/runs/38045330487) all passed.
-- **Superseded public PR:** [#5](https://github.com/Leruchii/Leruchi/pull/5) was closed unmerged because its branch was stale/conflicted. It was replaced by PR #8; no force-merge was performed.
-- **Internal repository:** [Leruchii/Leruchi-internal](https://github.com/Leruchii/Leruchi-internal), default branch `main`, currently public according to live metadata. No visibility changes were made.
-- **Canonical identity and approval records:** `PRODUCT_IDENTITY.md`, `knowledge/decisions/product-naming-review.md`, `knowledge/decisions/public-oss-repository-boundary.md`, and `docs/release/LEGAL_REVIEW_DOSSIER.md` now record the owner's confirmation of the official name and legal/release approval. The actual underlying approval record's URL/reviewer details were not supplied, so none were invented.
-- **Node.js policy:** Node.js 24 only. Do not introduce Node.js 20 as an active runtime requirement in product, CI, workflow, container, or release configuration.
-- **Production checklist:** [REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md](docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md) documents direct staging/production verification, evidence requirements, and owner steps. Environment-specific checks remain `NOT TESTED` until an authorized engineer records evidence.
-- **PR #99 validation:** all 29 checks completed successfully on source head `2a4fc2e770130360f57757222f6caa0aa95fb8d4`. Its Stage 32 candidate workflow [run 38045423483](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483) passed with 202 files audited and deterministic archive comparison passing. The squash-merged main commit `8ff1d2ed72f79fef14607eb2492d07f5f2dbc4bc` has the **same Git tree SHA** as the validated PR head (`f9e6ae7d5636082f138453a8f73d703d823e4dbc)).
-- **Current candidate artifact:** artifact ID `11666638118`, [Stage 32 run](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483). Uploaded ZIP SHA-256: `871ede04a6bef81f6c37cc44aacbd50522c5838935d3cf021d3f9d07e7a39b86`. Contained candidate tarball SHA-256: `00674f10c5c7558802f202b6bbb3670ca7303035fa3dd27ae8bf5727b07ea9f7`. This is validated candidate evidence, not a published release.
-- **Latest development-main workflows:** the merge of PR #99 triggered the post-merge matrix; these workflow runs must reach terminal states and their conclusions be checked before declaring the latest main fully green. The PR-head matrix itself passed 29/29.
-- **Release boundary:** develop and validate in development; publish only the allowlisted, reviewed export to the public destination. Do not mirror the entire development/internal repository. The public destination remains a landing page; the Stage 32 source export has not yet been promoted and no versioned public release exists.
-- **Repository visibility and branch protection:** all three repositories currently report public. The owner will handle any visibility changes after relevant workflows have reached terminal states. Automation must not change visibility or branch-protection/ruleset settings.
-- **Credential hygiene:** the owner previously confirmed rotation of the exposed GitHub credential. Never reproduce or reuse it.
-- **Real production readiness:** not verified. Production identity-provider/trusted-gateway integration, authoritative tenant policy, signing-key custody/rotation, least-privilege production database roles, private networking/mTLS where required, live monitoring/alerting, and actual staging deployment/restore/rollback evidence still need direct evidence from the environment owner.
+- **Development:** [Leruchii/Leruchi-development](https://github.com/Leruchii/Leruchi-development), default branch `main`, HEAD [`7b2b2c4d85caf61990eb834b1d3d82357f4e6576`](https://github.com/Leruchii/Leruchi-development/commit/7b2b2c4d85caf61990eb834b1d3d82357f4e6576). Public.
+- **Public product:** [Leruchii/Leruchi](https://github.com/Leruchii/Leruchi), default branch `main`, HEAD [`ca9187dcb9e216f896c5f4b48e31ff932ad2b959`](https://github.com/Leruchii/Leruchi/commit/ca9187dcb9e216f896c5f4b48e31ff932ad2b959). Public. This is not just a landing page: its current tree contains the exported application/packages, tests, migrations, SDK/CLI, MCP and release metadata.
+- **Internal control:** [Leruchii/Leruchi-internal](https://github.com/Leruchii/Leruchi-internal), default branch `main`, HEAD [`7ecdb557a6db4c3d330233fc958324faa547f8f3`](https://github.com/Leruchii/Leruchi-internal/commit/7ecdb557a6db4c3d330233fc958324faa547f8f3). Public according to live GitHub metadata, despite its README describing it as private/internal. No visibility settings were changed, per owner instruction. This is a significant confidentiality/administrative follow-up for the owner after workflow runout.
+- All three repositories remain public; do not change visibility in automation. Owner/admin handles any later visibility changes.
+- No production deployment, version tag, or GitHub Release was created by this verification.
 
-### Required next actions
+### Merges and release candidate
 
-1. Verify every workflow triggered by the latest development-main commit reaches a terminal state; investigate any failures and rerun after fixes.
-2. Use the production checklist with an authorized deployment/DevOps engineer to verify staging and production configuration, security, monitoring, restore, and rollback.
-3. If proceeding to public source promotion, use the validated Stage 32 candidate above and follow the approved release process; verify the exact artifact and publication outcome. No release tag or public source promotion was performed in this execution.
-4. The owner may handle repository visibility and branch protection separately after workflow runout; automation must not change those settings.
+- Development PR [#99](https://github.com/Leruchii/Leruchi-development/pull/99) was merged. The merge commit is `8ff1d2ed72f79fef14607eb2492d07f5f2dbc4bc`; a subsequent documentation checkpoint commit is now at development `main` HEAD above.
+- Public PR [#8](https://github.com/Leruchii/Leruchi/pull/8) was merged as `ca9187dcb9e216f896c5f4b48e31ff932ad2b959`. The public README identifies Leruchi and describes the engineering-preview scope.
+- Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) remains closed and unmerged; it was superseded by PR #8 because its branch was stale/conflicted. Do not treat its historical failed checks as current-main failures or delete the evidence.
+- Development PR #99 source-head validation reported 29/29 checks passing. Stage 32 candidate workflow [run 38045423483](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483) passed with 202 files audited and deterministic archive comparison passing. The artifact is candidate evidence, not proof of production readiness.
+- Public post-merge checks on current public main passed: [Public Core CI](https://github.com/Leruchii/Leruchi/actions/runs/38045330342), [Verify Release](https://github.com/Leruchii/Leruchi/actions/runs/38045330327), and [Push on main](https://github.com/Leruchii/Leruchi/actions/runs/38045330487).
 
-**Current disposition:** PR #8 and PR #99 are merged; their PR-head checks passed. Public post-merge checks are green. The post-merge development-main matrix from PR #99 is running, and real production environment validation remains unperformed.
+### Live workflow snapshot
+
+- At verification, the 30 most recent development-main runs were all `completed/success`. This includes Stage State Gate, Architecture Regression Audit, Stage 17 Backup and Recovery, Stage 14 MCP Agent Gateway, Stage 21 PostgreSQL Recursive Compiler, and other stage checks. Example links: [Stage State Gate](https://github.com/Leruchii/Leruchi-development/actions/runs/38045612980), [Architecture Regression Audit](https://github.com/Leruchii/Leruchi-development/actions/runs/38045612877), [Backup and Recovery](https://github.com/Leruchii/Leruchi-development/actions/runs/38045612918).
+- The 30 most recent internal-main runs were all `completed/success`; latest [Stage 26A - OSS Product Boundary](https://github.com/Leruchii/Leruchi-internal/actions/runs/37832104118) passed.
+- Public current-main runs listed above passed. Historical public PR/branch attempts include failed and cancelled runs, especially the superseded PR #5 and intermediate validation branches. Those runs are terminal and retained as evidence; the corrected PR #8 and current-main workflows passed. Do not claim every historical run passed.
+- The live Actions API briefly returned two development runs as in progress, but a follow-up query returned zero in-progress runs and zero queued runs. Recheck before any owner-managed visibility change.
+- Code search found no `node-version: 20` matches in the development or public repositories. The README policy states Node.js 24 only; keep `.nvmrc`, package engine declarations, CI matrices, containers, and release tooling aligned to Node.js 24 and do not reintroduce Node.js 20.
+
+### Product identity and intentional legacy references
+
+- The public product identity is **Leruchi**. `Vibe Query IR v1` remains only in technical Query IR documentation/schema paths (for example `query-ir/README.md`, `packages/query-ir/README.md`, and versioned schema files), where it describes the technical subsystem/version rather than the overall product.
+- The development repository still contains legacy technical/history references in stage prompts and historical build notes. Keep these only where they describe historical implementation or compatibility; do not use them as the current product name.
+- The public README explicitly says this is an engineering preview and does not claim production readiness or full standards compliance.
+
+### Production readiness — CI versus real environment
+
+- CI evidence covers repository tests and stage-specific checks, including database-backed RLS/tenant tests, backup/restore test drills, MCP/agent tests, and OSS candidate/export validation where workflows are configured. These results do **not** prove the real deployment is correctly configured.
+- The production guide already exists at [`docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md`](docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md). It separates CI evidence from staging/production checks and records unknown infrastructure values as `NEEDS OWNER INPUT`. Use it with an authorized deployment/DevOps engineer; keep environment-specific evidence `NOT TESTED` until actually performed.
+- Still unverified in a real environment: deployed commit and ownership; identity-provider callbacks/token/session handling; production signing-key custody and rotation; least-privilege roles; authoritative tenant policy; database TLS/network restrictions; SQL/graph operations against the intended deployment; MCP permission enforcement in the environment; real logs/metrics/traces/alerts; production backup schedule and isolated restore measurements; staging deployment/rollback; incident and operational ownership.
+- The security docs record owner confirmation that the previously exposed GitHub credential was rotated. Do not reproduce or reuse it. Repository scans do not prove external credential rotation by themselves.
+
+### Next actions
+
+1. Before changing repository visibility, re-query all three repositories and confirm all relevant Actions runs have terminal conclusions. Investigate any newly failed runs and rerun after fixes; never cancel useful runs just to clear the queue.
+2. The owner/organization administrator should review the fact that `Leruchi-development` and especially `Leruchi-internal` are currently public, then make any planned visibility changes only after the owner's workflow/release timing requirement is met. This automation intentionally made no visibility change.
+3. Have the authorized DevOps/environment owner complete `docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md` with real staging/production evidence and named responsible people. Do not provide credentials to the agent.
+4. Before any new public release, validate the exact intended candidate artifact and follow the repository's release workflow. Do not create a tag, announce a release, or deploy to production based only on CI.
+
+**Current disposition:** repository changes and product identity updates are merged; recent main-branch CI snapshots are green; the public product repository contains the current source export. This is not a claim of production readiness. Real-environment verification remains outstanding, historical failed runs remain visible, and owner-managed visibility administration is deliberately pending.
 
 ## Verified state
 
