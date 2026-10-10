@@ -805,3 +805,32 @@ The candidate's technical build and export checks are complete. Do not merge PR 
 - Node.js 24 remains the only supported runtime.
 - Repository visibility and branch-protection settings remain owner-managed; this connection did not verify or change them.
 - License and attribution review remains a separate owner/legal responsibility. A green build is not legal clearance or proof of production readiness.
+
+
+## Post-PR #90 security-scanning checkpoint — 2026-10-10
+
+**Current development main merge commit:** [80c45e8f6fa357be7ba223d4ce3213b41496ee57](https://github.com/Leruchii/Leruchi-development/commit/80c45e8f6fa357be7ba223d4ce3213b41496ee57) — PR #90 merged the blocking introduced-change Gitleaks workflow.
+
+### Verified changes and evidence
+
+- Added [`.github/workflows/secret-scan.yml`](https://github.com/Leruchii/Leruchi-development/blob/main/.github/workflows/secret-scan.yml). It runs on pull requests targeting `main`, pushes to `main`, and manual dispatch.
+- The workflow uses read-only `contents: read` permissions, disables checkout credential persistence, fetches history for range scanning, and scans introduced commit changes with Gitleaks `v8.24.3`.
+- PR #90 exact-head workflow matrix completed successfully: 18 workflow runs were returned as completed with `success`, including Secret Scan (Introduced Changes), CI Root Integrity, Architecture Regression Audit, Stage State Gate, and the listed product-stage workflows. This is PR-head evidence; it is not evidence that the post-merge `main` push-triggered scan completed.
+- PR #90 merged as commit `80c45e8f6fa357be7ba223d4ce3213b41496ee57`. The workflow file is present on `main`.
+- The historical `VAULT_ENC_KEY` match remains unresolved as a historical secret-scanning finding. Current Compose context appears to use documented local/test placeholder configuration, but this alone does not prove the historical value was never a real credential. Do not add an ignore until exact scanner finding details and context are reviewed.
+- The previously shared GitHub credential remains an owner-managed revocation/rotation action. Its rotation has not been verified here; never reuse or reproduce it.
+
+### Remaining security validation
+
+1. Verify the post-merge `main` push-triggered Secret Scan run and retain its URL and conclusion. The available workflow-run connector did not expose a push-run listing, so that result is currently unverified.
+2. Obtain the exact historical Gitleaks finding/fingerprint and inspect its full context/history. Distinguish confirmed local placeholders from any live or formerly live secret; rotate any real credential and only then consider a narrowly scoped, evidence-based disposition.
+3. Continue repository-wide secret and supply-chain review without broad suppressions.
+4. Keep Node.js 24 as the only supported runtime. `.nvmrc` is `24`; the root package requires `>=24 <25`.
+
+### Handoff status
+
+- **Secret-scan automation:** merged; PR-head checks passed.
+- **Post-merge default-branch scan:** not independently verified by the current connector.
+- **Historical finding disposition:** unresolved pending exact scanner evidence.
+- **Credential rotation:** owner action; completion unverified.
+- **OSS publication/legal approval:** unchanged and still requires the previously documented owner/legal review and explicit release authorization.
