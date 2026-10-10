@@ -1,0 +1,2 @@
+cbdbdda8ffc2762337dd0d082ce9945abef8c4ab:infra/supabase/docker-compose.yml:generic-api-key:124
+d1a5a2e308e46875045ec39a15f0b1ecfd8bbdf3:tests/fixtures/capability-grant-test-key.mjs:private-key:3
