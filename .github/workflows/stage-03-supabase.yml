@@ -15,6 +15,10 @@ jobs:
         with:
           node-version: 24
 
+      - name: Configure ephemeral test-only vault key
+        shell: bash
+        run: echo "VAULT_ENC_KEY=ci-only-vault-key-not-for-production-32chars" >> "$GITHUB_ENV"
+
       - name: Verify Supabase role credentials
         run: node --test tests/security/supabase-role-credentials.test.mjs
       - name: Verify tenant-claim hook contract

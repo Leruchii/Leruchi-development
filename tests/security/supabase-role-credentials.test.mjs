@@ -28,6 +28,11 @@ for (const [role, pattern] of cases) {
   });
 }
 
+test("Supavisor vault encryption key must come from local environment", () => {
+  assert.match(compose, /VAULT_ENC_KEY:\s*\$\{VAULT_ENC_KEY:\?[^}]+\}/);
+  assert.doesNotMatch(compose, /VAULT_ENC_KEY:\s*vibe-stage-03-vault-key/);
+});
+
 test("development database and Supabase ports bind to loopback only", () => {
   assert.ok(rootCompose.includes('- "127.0.0.1:5432:5432"'));
   assert.ok(compose.includes('- "127.0.0.1:9999:9999"'));
