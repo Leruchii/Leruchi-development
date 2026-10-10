@@ -773,3 +773,35 @@ Per owner direction on 2026-10-10, token rotation, branch protection and reposit
 3. Keep production deployment readiness separate from publishing source. Real identity-provider/trusted-gateway integration, authoritative tenant policy, signing-key custody/rotation, least-privilege DB roles, private networking/mTLS, monitoring/alerts and staging recovery evidence remain production gates.
 
 The candidate's technical build and export checks are complete. Do not merge PR #63 wholesale; continue from current `main` and preserve the exact candidate SHA/digests above.
+
+
+## Post-PR #88 checkpoint — 2026-10-10
+
+**Development main:** `d1c02fae61120618cf9b39c5ff6f2e0605eb3dd8` (PR #88 merged).
+
+### CI integrity gate and post-merge matrix
+
+- PR #88 added `.github/workflows/ci-root-integrity.yml`: Node.js 24 policy, root `package.json`/lockfile consistency, clean locked dependency installation, runtime-policy audit, tracked JSON parsing and tracked shell syntax checks.
+- The PR's exact-head checks passed before merge.
+- Post-merge matrix for the merge commit completed: 23 workflow runs, all 23 concluded `success`, including Stage 13 Graph Studio, Architecture Regression Audit, Stage State Gate, and dynamic CodeQL.
+- This verifies the workflows triggered for that commit; it does not claim production deployment readiness.
+
+### OSS candidate preservation
+
+- Stage 32 candidate source remains `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`, with the previously recorded candidate artifact digest and tarball SHA above.
+- PR #88 changed only the CI integrity workflow, which is explicitly excluded from the public export manifest. The Stage 32 candidate inputs and recorded artifact are therefore unchanged by PR #88.
+- Keep Stage 32 as the publication gate. If any export-eligible path or a candidate-builder/audit input changes, rebuild and record new exact-SHA, tree, and artifact-digest evidence.
+- Do not merge stale PR #63 wholesale. Public repository and public PR #4 remain untouched; publication is a separate owner-controlled action.
+
+### Secret-scanning follow-up — unresolved, do not suppress blindly
+
+- No exact Gitleaks fingerprints for the previously reported historical `VAULT_ENC_KEY` findings are recorded in this checkpoint. Do not add broad ignores or fabricate fingerprints.
+- Before any ignore is considered, retrieve the scanner's exact findings and confirm whether each value is a harmless committed placeholder or a live/previously live credential. Rotate any real credential and remove it from active use.
+- The GitHub credential previously pasted into the project conversation must be revoked/rotated by the owner. Do not reuse or copy it into source, workflow files, issues, or logs.
+- The current development workflow list does not contain a dedicated Gitleaks workflow. A scanner should be added only with a deliberate policy for blocking new findings and handling verified historical placeholders—without disabling other security checks.
+
+### Owner-managed release/admin boundaries
+
+- Node.js 24 remains the only supported runtime.
+- Repository visibility and branch-protection settings remain owner-managed; this connection did not verify or change them.
+- License and attribution review remains a separate owner/legal responsibility. A green build is not legal clearance or proof of production readiness.
