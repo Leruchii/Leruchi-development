@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "@leruchi/sdk": "file:../leruchi-sdk"
+  },
+  "engines": {
+    "node": ">=24 <25"
   }
 }
