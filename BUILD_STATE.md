@@ -841,3 +841,25 @@ The candidate's technical build and export checks are complete. Do not merge PR 
 - The public destination `Leruchii/Leruchi` remains untouched by this execution. Public PR #4 is still open and unmerged; its recorded update time predates this execution.
 - The current public `main` README's first heading is `# Vibe Query IR v1` ([README](https://github.com/Leruchii/Leruchi/blob/main/README.md), blob `455512b6fecccfdad2a9fa9e91f8c761330abdb3`). This conflicts with the earlier statement above that the public repository contains only a project landing page. The connected integration did not provide a complete public tree listing, so no claim is made here about every public file. Do not modify the public destination as part of this validation; reconcile the documentation and intended public contents during the owner-controlled release review.
 - The export manifest explicitly excludes `.github/workflows/**` and `BUILD_STATE.md`. PR #90's workflow and this documentation-only checkpoint are therefore outside the Stage 32 export allowlist; the recorded Stage 32 candidate source and archive digests are not invalidated by these changes. Rebuild the candidate if any export-eligible source or builder/audit input changes.
+
+
+## Node.js 24 package-manifest policy hardening — PR #92 in progress
+
+The repository audit found that the root package and Studio manifest declared Node.js `>=24 <25`, while these four product package manifests did not declare a runtime engine:
+- `packages/graph-api/package.json`
+- `packages/schema-catalog-api/package.json`
+- `packages/leruchi-cli/package.json`
+- `packages/leruchi-sdk/package.json`
+
+PR #92 adds the same Node.js 24 engine range to those manifests and expands `scripts/assert-runtime-policy.mjs` to validate all six canonical product manifests. A regression test verifies that a nested package configured for a non-24 runtime is rejected.
+
+**Status:** IN_PROGRESS — PR checks are still running. Do not merge until all required checks complete successfully.
+
+Candidate evidence from the current PR code head `497d430606321b94c162d08fd72b9b3327d9416c`:
+- Stage 32 OSS Core Publication Candidate workflow [run 38016350068](https://github.com/Leruchii/Leruchi-development/actions/runs/38016350068) passed and rebuilt the candidate reproducibly.
+- Candidate archive: artifact ID `11656487172`, [workflow artifact](https://github.com/Leruchii/Leruchi-development/actions/runs/38016350068).
+- Artifact ZIP digest: `sha256:bc1d7d120fbb181b065150d0a72c7701e97ae4b5c92c1ed2e5048994575d68b2`.
+- Contained tarball SHA-256: `50febc5d3fe651f6cd2df32e4a10757cadacec050f0c4e6933e2d1413eeb41a5`.
+- The candidate audit reported `OSS CORE READINESS: PASS (200 files audited)`; the reproducibility comparison passed. This evidence is preliminary until the final PR head's Stage 32 workflow completes.
+
+The manifest change affects public-export-eligible package manifests, so the final release candidate must use the exact final intended source head and retain fresh artifact provenance. Do not publish the candidate from this PR without the established owner/legal release approval.
