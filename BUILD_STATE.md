@@ -798,7 +798,7 @@ The candidate's technical build and export checks are complete. Do not merge PR 
 - No exact Gitleaks fingerprints for the previously reported historical `VAULT_ENC_KEY` findings are recorded in this checkpoint. Do not add broad ignores or fabricate fingerprints.
 - Before any ignore is considered, retrieve the scanner's exact findings and confirm whether each value is a harmless committed placeholder or a live/previously live credential. Rotate any real credential and remove it from active use.
 - The GitHub credential previously pasted into the project conversation must be revoked/rotated by the owner. Do not reuse or copy it into source, workflow files, issues, or logs.
-- The current development workflow list does not contain a dedicated Gitleaks workflow. A scanner should be added only with a deliberate policy for blocking new findings and handling verified historical placeholders—without disabling other security checks.
+- PR #90 added a blocking introduced-change Gitleaks workflow; see the Post-PR #90 checkpoint below. Historical findings still require separate exact-fingerprint review.
 
 ### Owner-managed release/admin boundaries
 
