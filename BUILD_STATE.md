@@ -834,3 +834,10 @@ The candidate's technical build and export checks are complete. Do not merge PR 
 - **Historical finding disposition:** unresolved pending exact scanner evidence.
 - **Credential rotation:** owner action; completion unverified.
 - **OSS publication/legal approval:** unchanged and still requires the previously documented owner/legal review and explicit release authorization.
+
+
+### Public destination cross-check — 2026-10-10
+
+- The public destination `Leruchii/Leruchi` remains untouched by this execution. Public PR #4 is still open and unmerged; its recorded update time predates this execution.
+- The current public `main` README's first heading is `# Vibe Query IR v1` ([README](https://github.com/Leruchii/Leruchi/blob/main/README.md), blob `455512b6fecccfdad2a9fa9e91f8c761330abdb3`). This conflicts with the earlier statement above that the public repository contains only a project landing page. The connected integration did not provide a complete public tree listing, so no claim is made here about every public file. Do not modify the public destination as part of this validation; reconcile the documentation and intended public contents during the owner-controlled release review.
+- The export manifest explicitly excludes `.github/workflows/**` and `BUILD_STATE.md`. PR #90's workflow and this documentation-only checkpoint are therefore outside the Stage 32 export allowlist; the recorded Stage 32 candidate source and archive digests are not invalidated by these changes. Rebuild the candidate if any export-eligible source or builder/audit input changes.
