@@ -900,14 +900,15 @@ This section supersedes older statements in this file only where they conflict w
 
 The live public repository is not merely a landing page: its tree contains substantial source, infrastructure, package, test, and Studio content, while its main README previously described only the Query IR contract. The old landing-page-only statement is therefore inaccurate.
 
-Public PR [#4](https://github.com/Leruchii/Leruchi/pull/4) is open and is being used to repair the public repository's baseline:
-- Align the root package manifest with Node.js `>=24 <25` and replace the mismatched root Studio lockfile with a lockfile matching the root `pg@8.23.1` dependency.
-- Remove the fixed local-only `VAULT_ENC_KEY` placeholder from the three tracked Compose copies and require a local environment value.
-- Record the three exact historical placeholder fingerprints in `.gitleaksignore` and explain their narrow scope in `SECURITY.md`.
-- Replace the Query-IR-only README with an accurate Leruchi Core engineering-preview overview, explicit repository boundaries, Node.js 24 policy, and production/legal limitations.
-- Add a Node.js 24 release-verification workflow.
+Public PR [#4](https://github.com/Leruchii/Leruchi/pull/4) is the operational/security remediation PR. It now:
+- Aligns the root package manifest with Node.js `>=24 <25` and replaces the mismatched root Studio lockfile with a lockfile matching the root `pg@8.23.1` dependency.
+- Removes the fixed local-only `VAULT_ENC_KEY` placeholder from the three tracked Compose copies and requires a local environment value.
+- Records only the three exact historical placeholder fingerprints in `.gitleaksignore` and explains their narrow scope in `SECURITY.md`.
+- Adds a Node.js 24 release-verification workflow.
 
-At this checkpoint the latest PR head is `867caf31c23083814a450c298c2a3b700eeb7f58`; its final verification workflow and CodeQL checks were still running when this record was written. Do not claim the PR is validated or merged until GitHub confirms the final-head results.
+After separating the public-facing README proposal from this PR, PR #4's current head is `7182d66e46d36097fe3ce830cd06bdb2376f80c4`; final-head checks were still running at the latest query. Do not merge until the final-head dependency/lockfile and Gitleaks checks are confirmed successful.
+
+Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) separately proposes the corrected Leruchi Core overview. It remains unmerged because the canonical Product Identity record says public-name/trademark clearance is open. Do not merge the README change until the authorized reviewer approves the naming and release wording.
 
 ### Legal and release authorization
 
