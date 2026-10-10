@@ -1,13 +1,13 @@
 # Product Naming Review — Leruchi
 
 Status: **OWNER DECISION: RETAIN “LERUCHI” — NO ENGINEERING RENAME PLANNED**
-Review date: 2026-10-09
+Review date: 2026-10-09; approval status updated 2026-10-10
 
 ## Decision
 
 The product owner has explicitly confirmed they are comfortable retaining the name **Leruchi**. Engineering will use Leruchi as the canonical product name and will not initiate a rename based on the previously raised naming concern.
 
-This owner decision resolves the product team's naming choice; it is **not a legal opinion or a representation that trademark rights, domains, or third-party package namespaces have been cleared**. Any future authoritative conflict evidence should be escalated to the owner before public release.
+The project owner subsequently confirmed on 2026-10-10 that legal and release approval have been obtained for the official product name Leruchi and the intended release scope. Preserve the underlying authorized approval record in the organization's approved records; its link was not supplied in this repository. Any future authoritative conflict evidence should be escalated to the owner.
 
 ## Screening context and limits
 
@@ -26,4 +26,4 @@ This owner decision resolves the product team's naming choice; it is **not a leg
 
 ## Gate
 
-The engineering naming choice is **resolved in favor of Leruchi**. Public OSS release remains subject to the separate technical, security, repository-visibility and release-approval gates. This record is not legal advice or a trademark opinion.
+The product name and legal/release approval status are owner-confirmed. Public source publication still requires exact-candidate provenance and successful technical/security checks; production readiness remains a separate environment-validation gate. This record is not legal advice or a substitute for the underlying approval record.
