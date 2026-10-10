@@ -127,7 +127,7 @@ services:
       DATABASE_URL: ecto://supabase_admin:vibe_compat_admin@db:5432/_supabase
       CLUSTER_POSTGRES: "true"
       SECRET_KEY_BASE: vibe-stage-03-secret-key-base-change-this-to-a-long-secret
-      VAULT_ENC_KEY: vibe-stage-03-vault-key-32-characters
+      VAULT_ENC_KEY: ${VAULT_ENC_KEY:?Set a fresh local-only VAULT_ENC_KEY in an untracked .env file}
       API_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
       METRICS_JWT_SECRET: vibe-stage-03-jwt-secret-change-me-32
       REGION: local
