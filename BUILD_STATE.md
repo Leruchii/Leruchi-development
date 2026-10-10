@@ -873,3 +873,71 @@ Implemented:
 - Owner credential revocation/rotation remains unverified. Never reuse or reproduce the previously exposed credential.
 - The current public `Leruchii/Leruchi` README begins with `# Vibe Query IR v1`, which contradicts the older statement that the destination contains only a landing page. Do not modify the public repository as part of this work; reconcile the intended contents in the owner-controlled release review.
 - PR #63 is closed and unmerged. Do not merge its stale 380-commit/155-file branch.
+
+
+## Zero-blockers execution checkpoint — 2026-10-10
+
+This section supersedes older statements in this file only where they conflict with the current evidence below. Earlier candidate hashes and historical workflow results remain historical unless explicitly reaffirmed here.
+
+### Live repository state
+
+- Development repository: `Leruchii/Leruchi-development`; default branch `main`.
+- Public destination: `Leruchii/Leruchi`; default branch `main`.
+- Current development `main` commit at audit time: `7226e913d40941a97b34b290d5af03a430276429`, merged by PR #94.
+- The current main commit's GitHub check-runs endpoint reported 27 checks, all completed successfully, including Architecture Regression Audit, Stage State Gate, tenant-isolation checks, production-readiness workflow, and the introduced-change Gitleaks job.
+- The post-merge push-triggered Gitleaks run is now independently verified: run [38016936403](https://github.com/Leruchii/Leruchi-development/actions/runs/38016936403), event `push`, branch `main`, commit `7226e913d40941a97b34b290d5af03a430276429`, conclusion `success`. This scans changes introduced by that commit; it does not prove that all historical repository content is secret-free.
+- PR #93 merged Node.js 24 package-policy enforcement as `3b3072174ddb028b224c1946458dc1db44fbf2f0`. PR #94 merged this build-state checkpoint as `7226e913d40941a97b34b290d5af03a430276429`.
+- The development `main` branch is reported as unprotected by GitHub branch metadata. The connected integration cannot access the branch-protection administration endpoint, so this setting has not been changed or independently inspected further.
+
+### Credential and secret-scanning disposition
+
+- **Owner-confirmed rotation:** The owner has confirmed that the previously exposed GitHub credential was rotated. Accept rotation as complete unless contradictory evidence appears. Do not reproduce or reuse the old credential.
+- **Independent scan evidence:** The post-merge main push scan listed above passed for the introduced commit range.
+- **Historical finding:** The prior `VAULT_ENC_KEY` finding still requires exact-context review wherever it appears. The public repository's PR #4 exposed exact historical Gitleaks fingerprints for a fixed Stage 03 local-development Compose placeholder. The public PR replaces the current literal with required environment interpolation and uses fingerprint-specific ignores only for those historical matches. This is evidence for those public-repository findings only; do not assume the same disposition applies to any other match or repository without verifying its exact context.
+- Never add broad Gitleaks suppression. A passing introduced-change scan is not a substitute for historical finding disposition.
+
+### Public repository discrepancy and active remediation
+
+The live public repository is not merely a landing page: its tree contains substantial source, infrastructure, package, test, and Studio content, while its main README previously described only the Query IR contract. The old landing-page-only statement is therefore inaccurate.
+
+Public PR [#4](https://github.com/Leruchii/Leruchi/pull/4) is **merged** as `216e867d6275a185084ea7326a1ad3a080b3f2ff`. Its exact-head checks all passed:
+- Node.js 24 runtime and root package-manifest validation.
+- Clean dependency installation / root lockfile consistency.
+- Tracked JSON and shell syntax validation.
+- Gitleaks full-history scan with `no leaks found`; the only suppressions are the three exact historical fingerprints of the fixed local-only Compose placeholder, documented in `SECURITY.md`.
+- CodeQL Python and JavaScript/TypeScript analyses.
+
+Post-merge checks for public main commit `216e867d6275a185084ea7326a1ad3a080b3f2ff` completed successfully in [run 38041474786](https://github.com/Leruchii/Leruchi/actions/runs/38041474786). This verifies the configured checks for that commit, not production readiness.
+
+Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) separately proposes the corrected Leruchi Core overview because the current README is Query-IR-only. Its CodeQL and PR checks passed, but it remains intentionally unmerged because the canonical Product Identity record says public-name/trademark clearance is open. Do not merge the README change until an authorized reviewer approves the naming and release wording.
+
+Public PR [#6](https://github.com/Leruchii/Leruchi/pull/6) is **merged** as `7f5ad6d1a28cab1b28be2881c0bb1dd57691b4e9`. Its exact-head PR checks passed. The new post-merge push-triggered release-verification run [38041626250](https://github.com/Leruchii/Leruchi/actions/runs/38041626250) completed with `success` on public main commit `7f5ad6d1a28cab1b28be2881c0bb1dd57691b4e9`, including Node.js 24 enforcement, package/lockfile consistency, JSON/shell validation, and Gitleaks full-history scanning (`no leaks found`). CodeQL post-merge analysis was still running at the latest check; verify it separately.
+
+### Legal and release authorization
+
+The generated third-party inventory records 138 dependency entries from the root and Studio lockfiles, including LGPL-3.0-or-later, MPL-2.0, and CC-BY-4.0 metadata. The inventory is not legal clearance. The companion dossier `docs/release/LEGAL_REVIEW_DOSSIER.md` prepares the exact questions and evidence for an authorized reviewer.
+
+Product Identity documentation records formal public-name/trademark clearance as open. No AI-generated document, green workflow, prior engineering-preview tag, or owner instruction to finish work substitutes for a real authorized legal/release decision. Do not publish a new source export or general-availability release until the authorized reviewer records the required decision for the exact candidate.
+
+### Production disposition
+
+A successful repository CI matrix is not proof of production deployment. The currently recorded deployment gates remain:
+- production identity-provider/trusted-gateway integration;
+- authoritative server-side tenant policy and cross-surface enforcement;
+- production signing-key custody and rotation;
+- least-privilege production database roles;
+- private networking and TLS/mTLS where required;
+- monitoring, alerting, and incident diagnostics;
+- staging end-to-end recovery/restore exercise and rollback evidence.
+
+No production deployment or recovery drill is claimed by this checkpoint. These items require verified implementation and/or access to the intended staging/production environment.
+
+### Branch protection and remaining external control
+
+The public and development repository default branches are not confirmed protected by the available integration. Live branch metadata reports `protected: false` for both `Leruchii/Leruchi-development:main` and `Leruchii/Leruchi:main`; attempts to read the development branch-protection endpoint are rejected by the connected integration with HTTP 403. No branch-protection change is claimed.
+
+The canonical Product Identity record says `Leruchii/Leruchi-internal` is intended to be private, but the live GitHub repository metadata currently reports that repository as **public**. The development repository is also public despite being described in Product Identity as intended private. Per the existing owner-managed repository-settings boundary, this execution has not changed repository visibility or branch-protection settings. An authorized organization/repository administrator must confirm the intended visibility, make any required visibility changes, and configure/verify rulesets and required checks. Treat the internal repository's public visibility as a security/admin blocker until the owner confirms that it is intentional or the setting is corrected.
+
+### Disposition
+
+**Status: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The Node.js 24 policy merge, current development main CI, post-merge introduced-change Gitleaks scan, owner-confirmed credential rotation, public PR #4 merge, public historical-placeholder disposition, and public main post-merge checks are evidenced. Public README PR #5 awaits authorized naming/legal review; public PR #6 is merged and its post-merge release-verification scan passed; branch-protection and repository-visibility administration, any remaining historical finding review, and production deployment/recovery evidence remain open.
