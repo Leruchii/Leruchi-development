@@ -23,6 +23,11 @@ function run(root){
 const validFiles={
   ".nvmrc":"24\n",
   "package.json":JSON.stringify({engines:{node:">=24 <25"}}),
+  "packages/graph-api/package.json":JSON.stringify({name:"@leruchi/graph-api",engines:{node:">=24 <25"}}),
+  "packages/schema-catalog-api/package.json":JSON.stringify({name:"@leruchi/schema-catalog-api",engines:{node:">=24 <25"}}),
+  "packages/leruchi-cli/package.json":JSON.stringify({name:"@leruchi/cli",engines:{node:">=24 <25"}}),
+  "packages/leruchi-sdk/package.json":JSON.stringify({name:"@leruchi/sdk",engines:{node:">=24 <25"}}),
+  "apps/studio/package.json":JSON.stringify({name:"@leruchi/studio",engines:{node:">=24 <25"}}),
   ".github/workflows/ci.yml":"steps:\n  - uses: actions/setup-node@v6\n    with:\n      node-version: 24\n",
   "infra/Dockerfile":"FROM node:24-alpine\n",
   "runtime.env":"NODE_VERSION=24\n"
@@ -61,4 +66,11 @@ test("runtime policy rejects an incorrect .nvmrc pin",t=>{
   const result=run(root);
   assert.notEqual(result.status,0);
   assert.match(result.stderr,/.nvmrc must pin Node.js 24/);
+});
+
+test("runtime policy rejects a non-24 engine in a nested product package",t=>{
+  const root=fixture(t,{...validFiles,"packages/leruchi-sdk/package.json":JSON.stringify({name:"@leruchi/sdk",engines:{node:">=20 <25"}})});
+  const result=run(root);
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/packages\/leruchi-sdk\/package.json: engines.node must be >=24 <25/);
 });
