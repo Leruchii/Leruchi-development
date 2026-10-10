@@ -1,8 +1,8 @@
 # Leruchi Product Identity
 
-Status: CANONICAL PRODUCT NAME: LERUCHI; public brand clearance remains a separate release gate.
+Status: APPROVED — canonical public product name: LERUCHI (owner-confirmed 2026-10-10).
 
-Leruchi is the canonical engineering working name. **VibeDB is the former product name and must not be reintroduced as current product-facing branding. Legacy technical identifiers may remain temporarily only where changing them would break compatibility; each must be tracked for controlled migration.** Formal trademark/domain/package/namespace clearance remains open; do not treat Leruchi as a cleared public brand or publish the public OSS repository until the naming review is completed and recorded.
+Leruchi is the official product name. **VibeDB is the former product name and must not be reintroduced as current product-facing branding. Legacy technical identifiers may remain where changing them would break compatibility; each must be tracked for controlled migration.** The owner confirms legal and release approval has been obtained for the intended product identity and distribution scope. Preserve the underlying approval record in the organization's approved records; do not invent reviewer details or a record URL.
 
 ## Canonical GitHub topology
 
@@ -14,7 +14,7 @@ Leruchi is the canonical engineering working name. **VibeDB is the former produc
 
 ## Engineering rule
 
-All new engineering work, UI copy, documentation, package metadata, CLI documentation, MCP metadata and user-facing product references MUST use Leruchi. Public brand lock and release announcements remain blocked until formal naming clearance is recorded. Legacy environment variables, config paths, protocol audiences and filesystem paths must be migrated through tested compatibility steps, not blind global replacement. Coding agents must treat the GitHub topology above as authoritative and must not recreate the former VibeDB naming.
+All new engineering work, UI copy, documentation, package metadata, CLI documentation, MCP metadata and user-facing product references MUST use Leruchi. Public-facing naming must use Leruchi. Release announcements must describe the approved scope and must not imply production readiness until production gates are verified. Legacy environment variables, config paths, protocol audiences and filesystem paths must be migrated through tested compatibility steps, not blind global replacement. Coding agents must treat the GitHub topology above as authoritative and must not recreate the former VibeDB naming.
 
 Stable internal database identifiers, migration names, historical commit references, compatibility values, or externally persisted identifiers are not renamed merely for branding; changing those requires an explicit migration decision and compatibility plan.
 
