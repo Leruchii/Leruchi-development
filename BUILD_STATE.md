@@ -843,23 +843,33 @@ The candidate's technical build and export checks are complete. Do not merge PR 
 - The export manifest explicitly excludes `.github/workflows/**` and `BUILD_STATE.md`. PR #90's workflow and this documentation-only checkpoint are therefore outside the Stage 32 export allowlist; the recorded Stage 32 candidate source and archive digests are not invalidated by these changes. Rebuild the candidate if any export-eligible source or builder/audit input changes.
 
 
-## Node.js 24 package-manifest policy hardening — PR #92 in progress
 
-The repository audit found that the root package and Studio manifest declared Node.js `>=24 <25`, while these four product package manifests did not declare a runtime engine:
-- `packages/graph-api/package.json`
-- `packages/schema-catalog-api/package.json`
-- `packages/leruchi-cli/package.json`
-- `packages/leruchi-sdk/package.json`
+## Node.js 24 package-manifest policy hardening — VALIDATED
 
-PR #92 adds the same Node.js 24 engine range to those manifests and expands `scripts/assert-runtime-policy.mjs` to validate all six canonical product manifests. A regression test verifies that a nested package configured for a non-24 runtime is rejected.
+PR #93 is merged to development `main` as [`3b3072174ddb028b224c1946458dc1db44fbf2f0`](https://github.com/Leruchii/Leruchi-development/commit/3b3072174ddb028b224c1946458dc1db44fbf2f0).
 
-**Status:** IN_PROGRESS — PR checks are still running. Do not merge until all required checks complete successfully.
+Implemented:
+- Added `engines.node: >=24 <25` to `packages/graph-api/package.json`, `packages/schema-catalog-api/package.json`, `packages/leruchi-cli/package.json`, and `packages/leruchi-sdk/package.json`.
+- Expanded `scripts/assert-runtime-policy.mjs` to validate the six canonical product package manifests (root, Graph API, Schema Catalog API, CLI, SDK and Studio).
+- Added a regression test that rejects a nested product package configured for a non-24 Node.js engine.
+- Updated this handoff to record the actual findings and evidence.
 
-Candidate evidence from the current PR code head `497d430606321b94c162d08fd72b9b3327d9416c`:
-- Stage 32 OSS Core Publication Candidate workflow [run 38016350068](https://github.com/Leruchii/Leruchi-development/actions/runs/38016350068) passed and rebuilt the candidate reproducibly.
-- Candidate archive: artifact ID `11656487172`, [workflow artifact](https://github.com/Leruchii/Leruchi-development/actions/runs/38016350068).
-- Artifact ZIP digest: `sha256:bc1d7d120fbb181b065150d0a72c7701e97ae4b5c92c1ed2e5048994575d68b2`.
+### Exact-head validation
+
+- PR #93 head: `eae5e31591e9f99a7012b919aa9496650758de14`.
+- All 32 workflow runs associated with that PR head completed successfully; no failed, cancelled or pending runs remained at the final check.
+- Stage 32 OSS Core Publication Candidate workflow [run 38016469817](https://github.com/Leruchii/Leruchi-development/actions/runs/38016469817) passed on that exact PR head.
+- Candidate artifact: ID `11655997620`, [workflow artifact](https://github.com/Leruchii/Leruchi-development/actions/runs/38016469817).
+- Artifact ZIP digest: `sha256:36c0d81d024876117d2377ef84069150fb88da7963b91fa0e8f9cf6d78ce64e7`.
 - Contained tarball SHA-256: `50febc5d3fe651f6cd2df32e4a10757cadacec050f0c4e6933e2d1413eeb41a5`.
-- The candidate audit reported `OSS CORE READINESS: PASS (200 files audited)`; the reproducibility comparison passed. This evidence is preliminary until the final PR head's Stage 32 workflow completes.
+- The candidate was rebuilt twice and the tarball comparison passed. Both audits reported `OSS CORE READINESS: PASS (200 files audited)`.
+- The export manifest excludes `BUILD_STATE.md`; the PR head's export-eligible files are the source inputs validated by Stage 32. The candidate tarball digest is stable across the repeated builds.
 
-The manifest change affects public-export-eligible package manifests, so the final release candidate must use the exact final intended source head and retain fresh artifact provenance. Do not publish the candidate from this PR without the established owner/legal release approval.
+### Remaining release/security gates
+
+- The public source export is still **not authorized for publication** until the owner/legal review and explicit owner release approval already documented above are completed.
+- The post-merge `main` push-triggered Gitleaks run after PR #90 could not be independently enumerated through the available connector. The introduced-change scan passed on PR #90 and on subsequent PR heads, but the main push run remains unverified.
+- Historical `VAULT_ENC_KEY` finding disposition remains unresolved pending exact scanner finding/fingerprint and history review. Do not suppress it without evidence.
+- Owner credential revocation/rotation remains unverified. Never reuse or reproduce the previously exposed credential.
+- The current public `Leruchii/Leruchi` README begins with `# Vibe Query IR v1`, which contradicts the older statement that the destination contains only a landing page. Do not modify the public repository as part of this work; reconcile the intended contents in the owner-controlled release review.
+- PR #63 is closed and unmerged. Do not merge its stale 380-commit/155-file branch.
