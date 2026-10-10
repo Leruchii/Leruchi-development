@@ -19,7 +19,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - **PR #79 — strict capability grants and Studio integration:** merged at `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4`; exact head passed 29/29 and post-merge matrix passed 26/26.
 - **PR #81 — bootstrap compatibility/naming:** merged at `d0d7e8c0d43ec24924e5ce8950da092baeeaad2c`. `LERUCHI_*` variables are canonical with tested `VIBE_*` fallbacks; database name `vibedb` and established role/schema/migration identifiers remain unchanged.
 - **PR #82 — Node.js 24 dependency baseline:** merged at `c8cb75f98cac543539b31a5fc899e4e0e791df70`. Node.js 24 is the only supported runtime; do not introduce Node.js 20 into product, CI, workflow, container or release configuration.
-- **Stage 32 tracking PR #63:** remains draft/open as a tracking record only. It has a stale broad branch (380 commits/155 files); never merge it wholesale.
+- **Stage 32 tracking PR #63:** is closed and unmerged (still marked draft); its stale broad branch contains 380 commits/155 files. Do not merge it wholesale.
 - **Stale identity PR #66:** closed as superseded by merged PRs #67, #69 and #81.
 - **Branch protection:** Owner-managed follow-up. Per owner direction on 2026-10-10, automation must not change branch protection/rulesets and their configuration is not a blocker to publishing the OSS source export. Keep the operational risk visible; this checkpoint does not assert that `main` is protected.
 - **Repository visibility:** development repository is public. Internal/control repository visibility could not be independently verified through the current connection. Per owner direction, visibility is owner-managed and not an automation blocker; do not change repository visibility.
@@ -760,7 +760,7 @@ Verified 2026-10-10:
 - Reviewed the export manifest, README, license inventory, contribution/security guidance, Node.js 24 declarations, root and Studio package metadata, public export audit, Stage 31/32 workflow gates, Compose defaults and database bootstrap. Compose credentials are local/test placeholders documented as such; do not reuse them outside local development.
 - `THIRD_PARTY_NOTICES.md` inventories 138 dependency entries and 11 license expressions. LGPL-3.0-or-later, MPL-2.0 and CC-BY-4.0 entries remain flagged for any distribution/attribution review required by the owner; the inventory is not legal clearance.
 - Node.js 24 remains the only supported runtime. The production authorization limitations in README remain true; passing CI does not mean production authorization is deployed.
-- PR #63 remains an open tracking-only record with a stale 380-commit/155-file branch. Do not merge it wholesale.
+- PR #63 is closed and unmerged; its stale 380-commit/155-file branch remains tracking-only. Do not merge it wholesale.
 
 ### Owner-managed security follow-ups — separate from publication readiness
 
@@ -798,10 +798,46 @@ The candidate's technical build and export checks are complete. Do not merge PR 
 - No exact Gitleaks fingerprints for the previously reported historical `VAULT_ENC_KEY` findings are recorded in this checkpoint. Do not add broad ignores or fabricate fingerprints.
 - Before any ignore is considered, retrieve the scanner's exact findings and confirm whether each value is a harmless committed placeholder or a live/previously live credential. Rotate any real credential and remove it from active use.
 - The GitHub credential previously pasted into the project conversation must be revoked/rotated by the owner. Do not reuse or copy it into source, workflow files, issues, or logs.
-- The current development workflow list does not contain a dedicated Gitleaks workflow. A scanner should be added only with a deliberate policy for blocking new findings and handling verified historical placeholders—without disabling other security checks.
+- PR #90 added a blocking introduced-change Gitleaks workflow; see the Post-PR #90 checkpoint below. Historical findings still require separate exact-fingerprint review.
 
 ### Owner-managed release/admin boundaries
 
 - Node.js 24 remains the only supported runtime.
 - Repository visibility and branch-protection settings remain owner-managed; this connection did not verify or change them.
 - License and attribution review remains a separate owner/legal responsibility. A green build is not legal clearance or proof of production readiness.
+
+
+## Post-PR #90 security-scanning checkpoint — 2026-10-10
+
+**Current development main merge commit:** [80c45e8f6fa357be7ba223d4ce3213b41496ee57](https://github.com/Leruchii/Leruchi-development/commit/80c45e8f6fa357be7ba223d4ce3213b41496ee57) — PR #90 merged the blocking introduced-change Gitleaks workflow.
+
+### Verified changes and evidence
+
+- Added [`.github/workflows/secret-scan.yml`](https://github.com/Leruchii/Leruchi-development/blob/main/.github/workflows/secret-scan.yml). It runs on pull requests targeting `main`, pushes to `main`, and manual dispatch.
+- The workflow uses read-only `contents: read` permissions, disables checkout credential persistence, fetches history for range scanning, and scans introduced commit changes with Gitleaks `v8.24.3`.
+- PR #90 exact-head workflow matrix completed successfully: 18 workflow runs were returned as completed with `success`, including Secret Scan (Introduced Changes), CI Root Integrity, Architecture Regression Audit, Stage State Gate, and the listed product-stage workflows. This is PR-head evidence; it is not evidence that the post-merge `main` push-triggered scan completed.
+- PR #90 merged as commit `80c45e8f6fa357be7ba223d4ce3213b41496ee57`. The workflow file is present on `main`.
+- The historical `VAULT_ENC_KEY` match remains unresolved as a historical secret-scanning finding. Current Compose context appears to use documented local/test placeholder configuration, but this alone does not prove the historical value was never a real credential. Do not add an ignore until exact scanner finding details and context are reviewed.
+- The previously shared GitHub credential remains an owner-managed revocation/rotation action. Its rotation has not been verified here; never reuse or reproduce it.
+
+### Remaining security validation
+
+1. Verify the post-merge `main` push-triggered Secret Scan run and retain its URL and conclusion. The available workflow-run connector did not expose a push-run listing, so that result is currently unverified.
+2. Obtain the exact historical Gitleaks finding/fingerprint and inspect its full context/history. Distinguish confirmed local placeholders from any live or formerly live secret; rotate any real credential and only then consider a narrowly scoped, evidence-based disposition.
+3. Continue repository-wide secret and supply-chain review without broad suppressions.
+4. Keep Node.js 24 as the only supported runtime. `.nvmrc` is `24`; the root package requires `>=24 <25`.
+
+### Handoff status
+
+- **Secret-scan automation:** merged; PR-head checks passed.
+- **Post-merge default-branch scan:** not independently verified by the current connector.
+- **Historical finding disposition:** unresolved pending exact scanner evidence.
+- **Credential rotation:** owner action; completion unverified.
+- **OSS publication/legal approval:** unchanged and still requires the previously documented owner/legal review and explicit release authorization.
+
+
+### Public destination cross-check — 2026-10-10
+
+- The public destination `Leruchii/Leruchi` remains untouched by this execution. Public PR #4 is still open and unmerged; its recorded update time predates this execution.
+- The current public `main` README's first heading is `# Vibe Query IR v1` ([README](https://github.com/Leruchii/Leruchi/blob/main/README.md), blob `455512b6fecccfdad2a9fa9e91f8c761330abdb3`). This conflicts with the earlier statement above that the public repository contains only a project landing page. The connected integration did not provide a complete public tree listing, so no claim is made here about every public file. Do not modify the public destination as part of this validation; reconcile the documentation and intended public contents during the owner-controlled release review.
+- The export manifest explicitly excludes `.github/workflows/**` and `BUILD_STATE.md`. PR #90's workflow and this documentation-only checkpoint are therefore outside the Stage 32 export allowlist; the recorded Stage 32 candidate source and archive digests are not invalidated by these changes. Rebuild the candidate if any export-eligible source or builder/audit input changes.
