@@ -911,7 +911,7 @@ Post-merge checks for public main commit `216e867d6275a185084ea7326a1ad3a080b3f2
 
 Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) separately proposes the corrected Leruchi Core overview because the current README is Query-IR-only. Its CodeQL and PR checks passed, but it remains intentionally unmerged because the canonical Product Identity record says public-name/trademark clearance is open. Do not merge the README change until an authorized reviewer approves the naming and release wording.
 
-Public PR [#6](https://github.com/Leruchii/Leruchi/pull/6) adds the missing `push: main` trigger to the public release-verification workflow so dependency/lockfile checks and Gitleaks run after future merges. At this checkpoint, the exact-head workflow and CodeQL checks were still pending; verify all results before merge, then verify the post-merge push-triggered scan.
+Public PR [#6](https://github.com/Leruchii/Leruchi/pull/6) is **merged** as `7f5ad6d1a28cab1b28be2881c0bb1dd57691b4e9`. Its exact-head PR checks passed. The new post-merge push-triggered release-verification run [38041626250](https://github.com/Leruchii/Leruchi/actions/runs/38041626250) completed with `success` on public main commit `7f5ad6d1a28cab1b28be2881c0bb1dd57691b4e9`, including Node.js 24 enforcement, package/lockfile consistency, JSON/shell validation, and Gitleaks full-history scanning (`no leaks found`). CodeQL post-merge analysis was still running at the latest check; verify it separately.
 
 ### Legal and release authorization
 
@@ -940,4 +940,4 @@ The canonical Product Identity record says `Leruchii/Leruchi-internal` is intend
 
 ### Disposition
 
-**Status: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The Node.js 24 policy merge, current development main CI, post-merge introduced-change Gitleaks scan, owner-confirmed credential rotation, public PR #4 merge, public historical-placeholder disposition, and public main post-merge checks are evidenced. Public README PR #5 awaits authorized naming/legal review; public push-trigger PR #6 awaits final validation/merge; branch-protection and repository-visibility administration, any remaining historical finding review, and production deployment/recovery evidence remain open.
+**Status: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The Node.js 24 policy merge, current development main CI, post-merge introduced-change Gitleaks scan, owner-confirmed credential rotation, public PR #4 merge, public historical-placeholder disposition, and public main post-merge checks are evidenced. Public README PR #5 awaits authorized naming/legal review; public PR #6 is merged and its post-merge release-verification scan passed; branch-protection and repository-visibility administration, any remaining historical finding review, and production deployment/recovery evidence remain open.
