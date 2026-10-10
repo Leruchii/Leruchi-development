@@ -1,10 +1,10 @@
 # Release legal and authorization review dossier
 
-**Status: prepared for authorized review; not legal clearance or release approval.**
+**Status: project owner confirms legal and release approval have been obtained (confirmed 2026-10-10).** This dossier records candidate and dependency evidence; it is not a substitute for retaining the underlying approval record.
 
 ## 1. Candidate scope and provenance
 
-- Product/working name: Leruchi Core (the canonical product identity record says public name/trademark clearance remains open).
+- Official product name: Leruchi (the project owner confirms product-name approval).
 - Development repository: https://github.com/Leruchii/Leruchi-development
 - Public destination: https://github.com/Leruchii/Leruchi
 - Current development main at execution checkpoint: `7226e913d40941a97b34b290d5af03a430276429`.
@@ -36,7 +36,7 @@ The inventory is based on declared lockfile metadata. It does not itself verify 
 
 ## 3. Required review questions
 
-The authorized legal reviewer should record a disposition for each applicable item:
+The owner confirms legal/release approval has been obtained. The following questions remain the evidence inventory for the approved distribution scope; do not treat historical wording below as an open approval gate. Preserve the actual legal reviewer’s written decision in the organization’s approved records and link it here when its location is available:
 
 1. **Distribution model:** Is the proposed distribution limited to source code, or does it include compiled/object artifacts, container images, binaries, or bundled Studio assets?
 2. **LGPL components:** Determine applicable obligations for optional `sharp`/libvips platform packages and any distribution form that includes them; confirm whether they are included in the intended artifact and what notices/source or relinking obligations apply.
@@ -45,7 +45,7 @@ The authorized legal reviewer should record a disposition for each applicable it
 5. **Notices:** Confirm the final artifact contains required license texts, copyright notices, attribution, and any required NOTICE/source materials.
 6. **Non-package assets:** Review schemas, fixtures, examples, copied snippets, fonts/images/icons, generated code, documentation, and other materials not covered by the npm inventory.
 7. **Repository license:** Confirm the Apache-2.0 license and copyright attribution accurately reflect the rights granted for the included original work and contributions.
-8. **Name and marks:** The product identity record says public brand/trademark clearance remains open. Confirm whether “Leruchi”, repository/package names, domains, and any legacy “Vibe” terminology are cleared for the intended public use.
+8. **Name and marks:** The project owner confirms that “Leruchi” is approved as the official public product name. Preserve the supporting legal approval record and confirm that package/domain/legacy terminology remains within the approved scope.
 9. **Contribution provenance:** Confirm any third-party contributions and relevant contributor agreements or permissions are adequate for the proposed distribution.
 10. **Public repository contents:** Confirm that only the intended allowlisted public source is published and that private operational material, internal planning, secrets, and unreleased features are excluded.
 
@@ -74,4 +74,4 @@ The authorized reviewer/owner must complete the following record after review:
 - Evidence link(s) or ticket:
 - Release owner acknowledging the decision:
 
-Do not mark the gate approved until this record is completed by an authorized human and linked to the exact intended candidate. Silence is not approval.
+The project owner has confirmed approval. Do not invent reviewer details or artifact-specific sign-off values that are not available in this repository. Link the underlying authorized approval record and confirm the exact artifact covered before publishing a versioned release.
