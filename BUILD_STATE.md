@@ -900,15 +900,18 @@ This section supersedes older statements in this file only where they conflict w
 
 The live public repository is not merely a landing page: its tree contains substantial source, infrastructure, package, test, and Studio content, while its main README previously described only the Query IR contract. The old landing-page-only statement is therefore inaccurate.
 
-Public PR [#4](https://github.com/Leruchii/Leruchi/pull/4) is the operational/security remediation PR. It now:
-- Aligns the root package manifest with Node.js `>=24 <25` and replaces the mismatched root Studio lockfile with a lockfile matching the root `pg@8.23.1` dependency.
-- Removes the fixed local-only `VAULT_ENC_KEY` placeholder from the three tracked Compose copies and requires a local environment value.
-- Records only the three exact historical placeholder fingerprints in `.gitleaksignore` and explains their narrow scope in `SECURITY.md`.
-- Adds a Node.js 24 release-verification workflow.
+Public PR [#4](https://github.com/Leruchii/Leruchi/pull/4) is **merged** as `216e867d6275a185084ea7326a1ad3a080b3f2ff`. Its exact-head checks all passed:
+- Node.js 24 runtime and root package-manifest validation.
+- Clean dependency installation / root lockfile consistency.
+- Tracked JSON and shell syntax validation.
+- Gitleaks full-history scan with `no leaks found`; the only suppressions are the three exact historical fingerprints of the fixed local-only Compose placeholder, documented in `SECURITY.md`.
+- CodeQL Python and JavaScript/TypeScript analyses.
 
-After separating the public-facing README proposal from this PR, PR #4's current head is `7182d66e46d36097fe3ce830cd06bdb2376f80c4`; final-head checks were still running at the latest query. Do not merge until the final-head dependency/lockfile and Gitleaks checks are confirmed successful.
+Post-merge checks for public main commit `216e867d6275a185084ea7326a1ad3a080b3f2ff` completed successfully in [run 38041474786](https://github.com/Leruchii/Leruchi/actions/runs/38041474786). This verifies the configured checks for that commit, not production readiness.
 
-Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) separately proposes the corrected Leruchi Core overview. It remains unmerged because the canonical Product Identity record says public-name/trademark clearance is open. Do not merge the README change until the authorized reviewer approves the naming and release wording.
+Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) separately proposes the corrected Leruchi Core overview because the current README is Query-IR-only. Its CodeQL and PR checks passed, but it remains intentionally unmerged because the canonical Product Identity record says public-name/trademark clearance is open. Do not merge the README change until an authorized reviewer approves the naming and release wording.
+
+Public PR [#6](https://github.com/Leruchii/Leruchi/pull/6) adds the missing `push: main` trigger to the public release-verification workflow so dependency/lockfile checks and Gitleaks run after future merges. At this checkpoint, the exact-head workflow and CodeQL checks were still pending; verify all results before merge, then verify the post-merge push-triggered scan.
 
 ### Legal and release authorization
 
@@ -937,4 +940,4 @@ The canonical Product Identity record says `Leruchii/Leruchi-internal` is intend
 
 ### Disposition
 
-**Status: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The Node.js 24 policy merge, current development main CI, post-merge introduced-change Gitleaks scan, and owner-confirmed credential rotation are evidenced. Public PR #4 validation, historical finding review beyond the documented placeholder, formal legal/name clearance, branch-protection administration, and production deployment/recovery evidence remain open.
+**Status: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The Node.js 24 policy merge, current development main CI, post-merge introduced-change Gitleaks scan, owner-confirmed credential rotation, public PR #4 merge, public historical-placeholder disposition, and public main post-merge checks are evidenced. Public README PR #5 awaits authorized naming/legal review; public push-trigger PR #6 awaits final validation/merge; branch-protection and repository-visibility administration, any remaining historical finding review, and production deployment/recovery evidence remain open.
