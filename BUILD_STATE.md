@@ -9,7 +9,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 **Verified 2026-10-10 from live GitHub metadata and workflow runs.** Development `main` is `aed595d27b38d21f1abcec84e312354b275ff5a0`. The latest observed main-commit workflow matrix has completed successfully for the core build, security, architecture, production-readiness, backup/recovery, SDK/CLI, graph, RLS, observability, and regression checks. The Stage 32 candidate evidence documented below is from an earlier source commit and must not be described as a candidate rebuilt from the current main without rerunning Stage 32.
 
 - **Development repository:** [Leruchii/Leruchi-development](https://github.com/Leruchii/Leruchi-development), default branch `main`, currently public.
-- **Public product repository:** [Leruchii/Leruchi](https://github.com/Leruchii/Leruchi), default branch `main`, currently public. Public PR [#5](https://github.com/Leruchii/Leruchi/pull/5) is being updated to use the owner-approved product name **Leruchi** and a broader, implementation-backed platform description. Do not merge until the updated head's checks finish successfully.
+- **Public product repository:** [Leruchii/Leruchi](https://github.com/Leruchii/Leruchi), default branch `main`, currently public. Public PR [#8](https://github.com/Leruchii/Leruchi/pull/8) is the clean replacement based on current public main; it updates the public product identity to **Leruchi** and documents historical Gitleaks dispositions. PR #5 was found to have a stale base/conflicting tree and should be closed as superseded after PR #8 passes and merges.
 - **Internal repository:** [Leruchii/Leruchi-internal](https://github.com/Leruchii/Leruchi-internal), default branch `main`, currently public according to live GitHub metadata. No visibility changes were made.
 - **Product identity and approvals:** the project owner confirms that the official product name is **Leruchi**, and that legal and release approval have been obtained. This supersedes stale text below that said naming/legal/release approval was still open. Do not invent the identity of the reviewer or a legal-record URL; add the actual approval-record link if/when the owner supplies it.
 - **Release boundary:** build and validate in development; publish only the allowlisted, reviewed export to the public destination. Never mirror the whole engineering/internal/control repository into the public destination.
@@ -25,7 +25,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 
 ### Required next actions
 
-1. Update and merge public README PR #5 after the revised head's required checks succeed.
+1. Merge public README PR #8 after all required checks succeed; close stale PR #5 as superseded after replacement merge.
 2. Merge the production checklist and build-state handover PR after its required checks succeed.
 3. Rerun Stage 32 from the intended final export-eligible source if any source/export-builder input changed, and retain exact SHA/digest provenance before creating a release artifact.
 4. Use `docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md` to arrange actual staging/production verification with the authorized deployment/DevOps engineer.
