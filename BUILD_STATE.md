@@ -931,7 +931,9 @@ No production deployment or recovery drill is claimed by this checkpoint. These 
 
 ### Branch protection and remaining external control
 
-The public and development repository default branches are not confirmed protected by the available integration. The development branch metadata explicitly reports `protected: false`; attempts to read the branch-protection endpoint are rejected by the connected integration with HTTP 403. No branch-protection change is claimed. An authorized GitHub organization/repository administrator must configure and verify rulesets and required checks if the owner intends those controls to be enforced.
+The public and development repository default branches are not confirmed protected by the available integration. Live branch metadata reports `protected: false` for both `Leruchii/Leruchi-development:main` and `Leruchii/Leruchi:main`; attempts to read the development branch-protection endpoint are rejected by the connected integration with HTTP 403. No branch-protection change is claimed.
+
+The canonical Product Identity record says `Leruchii/Leruchi-internal` is intended to be private, but the live GitHub repository metadata currently reports that repository as **public**. The development repository is also public despite being described in Product Identity as intended private. Per the existing owner-managed repository-settings boundary, this execution has not changed repository visibility or branch-protection settings. An authorized organization/repository administrator must confirm the intended visibility, make any required visibility changes, and configure/verify rulesets and required checks. Treat the internal repository's public visibility as a security/admin blocker until the owner confirms that it is intentional or the setting is corrected.
 
 ### Disposition
 
