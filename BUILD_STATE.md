@@ -19,7 +19,7 @@ Agents must verify this state against Git history, implementation, tests, CI, an
 - **PR #79 — strict capability grants and Studio integration:** merged at `cd40cb120f6772ebddc2a7edbb4be5c01fe75de4`; exact head passed 29/29 and post-merge matrix passed 26/26.
 - **PR #81 — bootstrap compatibility/naming:** merged at `d0d7e8c0d43ec24924e5ce8950da092baeeaad2c`. `LERUCHI_*` variables are canonical with tested `VIBE_*` fallbacks; database name `vibedb` and established role/schema/migration identifiers remain unchanged.
 - **PR #82 — Node.js 24 dependency baseline:** merged at `c8cb75f98cac543539b31a5fc899e4e0e791df70`. Node.js 24 is the only supported runtime; do not introduce Node.js 20 into product, CI, workflow, container or release configuration.
-- **Stage 32 tracking PR #63:** remains draft/open as a tracking record only. It has a stale broad branch (380 commits/155 files); never merge it wholesale.
+- **Stage 32 tracking PR #63:** is closed and unmerged (still marked draft); its stale broad branch contains 380 commits/155 files. Do not merge it wholesale.
 - **Stale identity PR #66:** closed as superseded by merged PRs #67, #69 and #81.
 - **Branch protection:** Owner-managed follow-up. Per owner direction on 2026-10-10, automation must not change branch protection/rulesets and their configuration is not a blocker to publishing the OSS source export. Keep the operational risk visible; this checkpoint does not assert that `main` is protected.
 - **Repository visibility:** development repository is public. Internal/control repository visibility could not be independently verified through the current connection. Per owner direction, visibility is owner-managed and not an automation blocker; do not change repository visibility.
@@ -760,7 +760,7 @@ Verified 2026-10-10:
 - Reviewed the export manifest, README, license inventory, contribution/security guidance, Node.js 24 declarations, root and Studio package metadata, public export audit, Stage 31/32 workflow gates, Compose defaults and database bootstrap. Compose credentials are local/test placeholders documented as such; do not reuse them outside local development.
 - `THIRD_PARTY_NOTICES.md` inventories 138 dependency entries and 11 license expressions. LGPL-3.0-or-later, MPL-2.0 and CC-BY-4.0 entries remain flagged for any distribution/attribution review required by the owner; the inventory is not legal clearance.
 - Node.js 24 remains the only supported runtime. The production authorization limitations in README remain true; passing CI does not mean production authorization is deployed.
-- PR #63 remains an open tracking-only record with a stale 380-commit/155-file branch. Do not merge it wholesale.
+- PR #63 is closed and unmerged; its stale 380-commit/155-file branch remains tracking-only. Do not merge it wholesale.
 
 ### Owner-managed security follow-ups — separate from publication readiness
 
