@@ -1350,15 +1350,21 @@
       },
       {
         "path": "tests/browser/live-composition.spec.ts",
-        "classification": "unresolved_public_only_allowlisted_path"
+        "classification": "expected_duplicate_legacy_alias",
+        "equivalent_candidate_path": "apps/studio/tests/browser/live-composition.spec.ts",
+        "evidence": "Public file has the same Git blob SHA as the corresponding candidate path; it is a duplicate legacy alias outside the candidate layout."
       },
       {
         "path": "tests/browser/renderer-benchmark.spec.ts",
-        "classification": "unresolved_public_only_allowlisted_path"
+        "classification": "expected_duplicate_legacy_alias",
+        "equivalent_candidate_path": "apps/studio/tests/browser/renderer-benchmark.spec.ts",
+        "evidence": "Public file has the same Git blob SHA as the corresponding candidate path; it is a duplicate legacy alias outside the candidate layout."
       },
       {
         "path": "tests/browser/studio.spec.ts",
-        "classification": "unresolved_public_only_allowlisted_path"
+        "classification": "expected_duplicate_legacy_alias",
+        "equivalent_candidate_path": "apps/studio/tests/browser/studio.spec.ts",
+        "evidence": "Public file has the same Git blob SHA as the corresponding candidate path; it is a duplicate legacy alias outside the candidate layout."
       },
       {
         "path": "tsconfig.json",
@@ -1620,7 +1626,7 @@
     "classification_counts": {
       "expected_manifest_exclusion": 2,
       "expected_outside_allowlist_sanitized_difference": 333,
-      "unresolved_public_only_allowlisted_path": 3,
+      "expected_duplicate_legacy_alias": 3,
       "candidate_only_missing_public_documents": 2,
       "shared_content_different_unresolved": 13
     }
