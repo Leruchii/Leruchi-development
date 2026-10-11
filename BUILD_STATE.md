@@ -63,7 +63,7 @@ This is an engineering-preview OSS artifact, not a production-readiness declarat
 
 ### Exact next action
 
-Use an authorized GitHub CLI session with release/tag/content write access to run the prepared `publish-leruchi-oss-core-release.ps1` against the exact candidate archive and checksum. Then independently open the public release, download its attached asset, and verify the published checksum. Only after that verification may the disposition change to **PUBLIC OSS CORE RELEASED**.
+Do not run the prepared publisher yet. Resolve the public source/package identity decision, review public PR #9 and its CI, merge only the approved source changes, then rebuild and validate the exact final candidate. Recheck tag collisions and the downloaded public asset checksum after a separately approved publication step.
 
 ## Current checkpoint — live verification 2026-10-10
 
