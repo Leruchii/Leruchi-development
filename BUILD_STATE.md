@@ -2,6 +2,22 @@
 
 This file is the canonical handoff checkpoint for coding agents. Verify it against live Git history, implementation, tests, CI, and `BUILD_PLAN.md` before continuing. Executable evidence wins over stale documentation.
 
+## Current checkpoint — public-source reconciliation 2026-10-12
+
+**Disposition: candidate validated; release remains blocked pending a deliberate source/package-identity decision. No v0.1.1 tag or release was created.**
+
+- Public `main`: `ca9187dcb9e216f896c5f4b48e31ff932ad2b959`, tree `13f679ccea901d8142dfce652cc7bc037b80c0c4`, 538 regular files.
+- Development `main`: `a1f1011342ef4f45320a1733a1366c970102c15c`, tree `fea0c9c3769fb8f3bd5589bdb8b29a30219741da`, 340 regular files.
+- The recovered Stage 32 artifact ZIP checksum matches the recorded SHA-256. The inner candidate is 202 regular files, 186,904 bytes, SHA-256 `e1b50ac21d1ea37f6ffc9a305e2c8ccf46577f45149d8b4b46e0e7e6a9f860e0`.
+- Exact path/blob comparison: 202 candidate paths; 200 shared with public main; 187 shared files byte-identical by Git blob SHA; 13 shared paths differ; 2 candidate-only public release checklists; 338 public-only paths outside the sanitized candidate.
+- The root package identity is still unresolved: public uses `@leruchi/schema-catalog-api`; candidate uses `@leruchi/execution-engine`. Other differing files include `README.md`, `OSS_EXPORT_MANIFEST.json`, `SECURITY.md`, root lockfile, Docker Compose files, four package manifests, and two tests. Do not silently overwrite or rename these.
+- Public `OSS_EXPORT_MANIFEST.json` lacked an explicit exclusion for `docs/release/LEGAL_REVIEW_DOSSIER.md`. The dossier is not present in current public main or the candidate, but explicit defense-in-depth exclusion is warranted.
+- A safe public PR is open: [Leruchii/Leruchi PR #9](https://github.com/Leruchii/Leruchi/pull/9). It adds that exclusion and the two public-safe checklists missing from public main. Public CI is running; do not merge before checking its result.
+- Full comparison and file-level blob hashes: [OSS_PUBLIC_SOURCE_RECONCILIATION.md](docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.md) and [machine-readable JSON](docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.json).
+- Release notes and PowerShell publisher script in the local handoff were checked for the reported mojibake substring `â€”`; it was absent, and em dashes are correctly encoded in UTF-8. No publishing command was run.
+
+**Next safe action:** review PR #9 and its CI, then decide whether the public repository's root package/source layout should be aligned with the sanitized candidate or whether a documented dual-snapshot strategy is intended. Rebuild and revalidate after any candidate-included source change. Keep `v0.1.0-engineering-preview` untouched and do not publish `v0.1.1-engineering-preview` yet.
+
 ## Current checkpoint — OSS Core release execution 2026-10-11
 
 **Disposition: candidate validated; public release publication is blocked by the connected GitHub tooling's lack of release/tag/asset-upload write actions.** Do not claim that OSS Core is publicly released until a release is created, the candidate is attached, and the public asset checksum is independently verified.
