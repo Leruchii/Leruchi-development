@@ -104,6 +104,16 @@ jobs:
           gzip -n -c "$RUNNER_TEMP/leruchi-oss-core-candidate-verify.tar" > "$RUNNER_TEMP/leruchi-oss-core-candidate-verify.tar.gz"
           cmp "$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz" "$RUNNER_TEMP/leruchi-oss-core-candidate-verify.tar.gz"
           sha256sum "$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz"
+      - name: Validate extracted candidate in a clean Node.js 24 consumer workspace
+        run: |
+          archive="$RUNNER_TEMP/leruchi-oss-core-candidate.tar.gz"
+          consumer="$RUNNER_TEMP/leruchi-oss-core-consumer"
+          mkdir -p "$consumer"
+          tar -xzf "$archive" -C "$consumer"
+          cd "$consumer"
+          test "$(node -p 'process.versions.node.split(".")[0]')" = "24"
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs
       - name: Upload candidate artifact
         uses: actions/upload-artifact@v6
         with:

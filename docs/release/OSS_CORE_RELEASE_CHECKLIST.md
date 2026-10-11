@@ -8,6 +8,7 @@ Use this checklist for every public Leruchi Core release. A successful candidate
 - Confirm Node.js 24 is the only approved runtime.
 - Review `OSS_EXPORT_MANIFEST.json`; treat it as an allowlist, not a denylist.
 - Confirm that private control-plane material, internal engineering documents, secrets, environment files, and private release-gate tests are excluded.
+- Explicitly exclude `docs/release/LEGAL_REVIEW_DOSSIER.md`; it is an internal approval-evidence record and must never ship in the public archive.
 - Verify the project license, third-party notices, security reporting instructions, README, and contribution guidance.
 - Do not change repository visibility as part of the release automation.
 
