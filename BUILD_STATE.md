@@ -12,14 +12,14 @@ This file is the canonical handoff checkpoint for coding agents. Verify it again
 - Public product `main`: [`ca9187dcb9e216f896c5f4b48e31ff932ad2b959`](https://github.com/Leruchii/Leruchi/commit/ca9187dcb9e216f896c5f4b48e31ff932ad2b959).
 - The live GitHub metadata reports `Leruchii/Leruchi-internal` as **public**, while its README describes the repository as private/internal and its tree contains internal engineering control documents. Treat this as a confidentiality/administrative risk. No repository visibility was changed; the owner/organization administrator must decide and act.
 
-### Stage 32 evidence and current-source gap
+### Stage 32 evidence — current-source candidate passed
 
-- Successful run: [Stage 32 run 38045423483](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483).
-- The run used PR #99 merge ref `ed25507ac95407922e2a76e020f937c7ef6f3514` (PR head `2a4fc2e770130360f57757222f6caa0aa95fb8d4`), not the current `main` SHA above.
-- Its security, runtime, licensing, export-manifest, readiness, reproducibility, and upload steps all completed successfully. The candidate contained 202 export-eligible files.
-- Reproducible candidate archive SHA-256: `00674f10c5c7558802f202b6bbb3670ca7303035fa3dd27ae8bf5727b07ea9f7`.
-- Uploaded GitHub Actions artifact: [`leruchi-oss-core-candidate`](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483/artifacts/11666638118), artifact ID `11666638118`, artifact ZIP SHA-256 `871ede04a6bef81f6c37cc44aacbd50522c5838935d3cf021d3f9d07e7a39b86`.
-- Comparing the run merge ref to current development `main` found changes in `docs/release/LEGAL_REVIEW_DOSSIER.md` and the addition of `docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md`, both covered by the public export allowlist. Therefore a fresh Stage 32 run against current source is required before release.
+- Historical successful run: [Stage 32 run 38045423483](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483), which used the earlier PR #99 merge ref `ed25507ac95407922e2a76e020f937c7ef6f3514` (PR head `2a4fc2e770130360f57757222f6caa0aa95fb8d4`). Its security, runtime, licensing, export, readiness, reproducibility, and upload steps passed, but it did not include all current public-export documentation.
+- Fresh current-source validation: [Stage 32 run 38125672355](https://github.com/Leruchii/Leruchi-development/actions/runs/38125672355), triggered by [PR #101](https://github.com/Leruchii/Leruchi-development/pull/101) against base `main` SHA `7a34dd0a33d9d5753160130371c9a517a37d94ad`, with head `551d0954c424fb3945f51f66ec2f88fe85d5639b`. **Conclusion: success.**
+- The fresh run passed runtime enforcement, all Stage 32 focused security/licensing/export checks, both candidate readiness audits, deterministic archive comparison, and artifact upload. The candidate contains 203 files, including `docs/release/OSS_CORE_RELEASE_CHECKLIST.md`; `BUILD_STATE.md` remains excluded from the public export.
+- Reproducible candidate archive SHA-256: `a82ed4ef1a57807e26f706a69745b95e32e38fae96fd8baed649637d90436ab7`.
+- Uploaded artifact: [`leruchi-oss-core-candidate`](https://github.com/Leruchii/Leruchi-development/actions/runs/38125672355/artifacts/11697365933), artifact ID `11697365933`, artifact ZIP SHA-256 `423d7d51994f63ca899bddd562f5bfcde753498a1ac54923989ea12f5e6c5dae`, ZIP size 189,281 bytes.
+- The Stage 32 workflow passed for the current main plus the public release checklist change. The existing public release asset is still not the same artifact; see below. Do not claim a new public release until the verified candidate has been published and independently checked.
 
 ### Existing public preview release
 
