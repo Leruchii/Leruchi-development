@@ -56,6 +56,7 @@ test("private release-gate tests are excluded despite the broad tests/** include
   for (const privateTest of [
     "tests/oss-core-readiness/**",
     "tests/security/owasp-asvs-profile.test.mjs",
+    "docs/release/LEGAL_REVIEW_DOSSIER.md",
   ]) {
     assert.ok(manifest.exclude.includes(privateTest), "missing explicit exclusion: " + privateTest);
   }
@@ -70,6 +71,7 @@ test("candidate builder includes its manifest and removes stale output files", (
   assert.equal(fs.existsSync(path.join(output, "stale-secret.txt")), false);
   assert.equal(fs.existsSync(path.join(output, "OSS_EXPORT_MANIFEST.json")), true);
   assert.equal(fs.existsSync(path.join(output, "BUILD_STATE.md")), false);
+  assert.equal(fs.existsSync(path.join(output, "docs/release/LEGAL_REVIEW_DOSSIER.md")), false);
   assert.equal(fs.existsSync(path.join(output, "tests/oss-core-readiness")), false);
   fs.rmSync(output, { recursive: true, force: true });
 });
