@@ -32,14 +32,16 @@
     "BUILD_STATE.md",
     "NORTH_STAR.md",
     "OSS_BOUNDARY.md",
+    "docs/release/LEGAL_REVIEW_DOSSIER.md",
+    "docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.json",
+    "docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.md",
     "knowledge/**",
     "prompts/**",
-    "scripts/audit-oss-boundary.mjs",
-    "tests/security/owasp-asvs-profile.test.mjs",
-    "tests/oss-core-readiness/**",
     "scripts/assert-runtime-policy.mjs",
+    "scripts/audit-oss-boundary.mjs",
     "tests/architecture/runtime-policy.test.mjs",
-    "docs/release/LEGAL_REVIEW_DOSSIER.md"
+    "tests/oss-core-readiness/**",
+    "tests/security/owasp-asvs-profile.test.mjs"
   ],
   "rule": "Only paths matched by include may be exported. Exclusions are defense-in-depth, not the primary boundary."
 }
