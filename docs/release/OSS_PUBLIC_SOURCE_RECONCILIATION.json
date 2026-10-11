@@ -44,427 +44,1449 @@
     "shared_content_identical_count": 187,
     "shared_content_different_count": 13,
     "candidate_only_paths": [
-      "docs/release/OSS_CORE_RELEASE_CHECKLIST.md",
-      "docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md"
+      {
+        "path": "docs/release/OSS_CORE_RELEASE_CHECKLIST.md",
+        "classification": "public_repository_missing_public_safe_document",
+        "evidence": "Present in sanitized candidate and development source, absent from public main; public PR #9 proposes adding it."
+      },
+      {
+        "path": "docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md",
+        "classification": "public_repository_missing_public_safe_document",
+        "evidence": "Present in sanitized candidate and development source, absent from public main; public PR #9 proposes adding it."
+      }
     ],
     "public_only_paths": [
-      ".github/workflows/public-core-ci.yml",
-      ".github/workflows/verify-release.yml",
-      ".gitleaksignore",
-      "0000-migration-ledger.sql",
-      "0001-catalog-tenant-visibility.sql",
-      "0002-graph-realtime-outbox.sql",
-      "0003-vector-catalog.sql",
-      "01-vibe-bootstrap.sh",
-      "02-foundation.sql",
-      "04-schema-catalog.sql",
-      "Dockerfile",
-      "age-compiler/compiler.test.mjs",
-      "agent-evaluation.test.mjs",
-      "agent-evaluation/agent-evaluation.test.mjs",
-      "agent-evaluation/index.mjs",
-      "agent-governance.test.mjs",
-      "agent-governance/README.md",
-      "agent-governance/agent-governance.test.mjs",
-      "agent-governance/index.mjs",
-      "agent-intent.test.mjs",
-      "agent-intent/README.md",
-      "agent-intent/agent-intent.test.mjs",
-      "agent-intent/index.mjs",
-      "agent-intent/v1.schema.json",
-      "agent-trace-replay.test.mjs",
-      "agent-trace-replay/agent-trace-replay.test.mjs",
-      "agent-trace-replay/index.mjs",
-      "agent-trace-replay/surfaces.test.mjs",
-      "agent.mjs",
-      "api.test.mjs",
-      "api/studio/catalog/route.ts",
-      "api/studio/query/route.ts",
-      "app/api/studio/catalog/route.ts",
-      "app/api/studio/query/route.ts",
-      "app/globals.css",
-      "app/layout.tsx",
-      "app/page.tsx",
-      "architecture/contract-audit.mjs",
-      "audit.test.mjs",
-      "audit/audit.test.mjs",
-      "audit/index.mjs",
-      "backup-recovery-drill.sh",
-      "backup-recovery.test.mjs",
-      "backup-recovery/backup-recovery-drill.sh",
-      "backup-recovery/backup-recovery.test.mjs",
-      "backup-recovery/backup-script.test.mjs",
-      "backup-recovery/fixtures.sql",
-      "backup-recovery/index.mjs",
-      "backup-recovery/production-image-recovery-drill.sh",
-      "backup-recovery/restore-script.test.mjs",
-      "backup-script.test.mjs",
-      "bin/leruchi.mjs",
-      "bootstrap-env-compatibility.test.mjs",
-      "browser/live-composition.spec.ts",
-      "browser/renderer-benchmark.spec.ts",
-      "browser/studio.spec.ts",
-      "capability-control-plane/README.md",
-      "capability-control-plane/postgres-store.mjs",
-      "capability-control-plane/schema.sql",
-      "capability-control-plane/service.mjs",
-      "capability-grant-test-key.d.mts",
-      "capability-grant-test-key.mjs",
-      "capability-grants.md",
-      "capability-grants.test.mjs",
-      "capability-policy.test.mjs",
-      "capability-policy/README.md",
-      "capability-policy/capability-grants.test.mjs",
-      "capability-policy/capability-policy.test.mjs",
-      "capability-policy/control-plane-service.test.mjs",
-      "capability-policy/control-plane.mjs",
-      "capability-policy/grants.mjs",
-      "capability-policy/index.mjs",
-      "capability-policy/jwt.mjs",
-      "catalog-fixture.json",
-      "catalog/04-schema-catalog.sql",
-      "catalog/route.ts",
-      "catalog/stage-04-tenant-visibility.sql",
-      "catalog/stage-04.sql",
-      "cli.test.mjs",
-      "cli/agent-evaluation.test.mjs",
-      "cli/cli.test.mjs",
-      "cli/cross-modal-plan.test.mjs",
-      "compiler-age-mutation/index.mjs",
-      "compiler-age/index.mjs",
-      "compiler-postgresql-recursive/README.md",
-      "compiler-postgresql-recursive/index.mjs",
-      "compiler.test.mjs",
-      "concurrency-smoke.mjs",
-      "context-explain.test.mjs",
-      "context-ir.test.mjs",
-      "context-ir/README.md",
-      "context-ir/context-explain.test.mjs",
-      "context-ir/context-ir.test.mjs",
-      "context-ir/explain.mjs",
-      "context-ir/index.mjs",
-      "context-ir/v1.schema.json",
-      "context-resolution.test.mjs",
-      "context-resolution/README.md",
-      "context-resolution/context-resolution.test.mjs",
-      "context-resolution/index.mjs",
-      "context.mjs",
-      "context.test.mjs",
-      "contract-audit.mjs",
-      "control-plane-service.test.mjs",
-      "control-plane.mjs",
-      "cross-modal-plan.test.mjs",
-      "cross-modal-planner.test.mjs",
-      "cross-modal-planner/cross-modal-planner.test.mjs",
-      "cross-modal-planner/index.mjs",
-      "db/run-stage-01.sh",
-      "db/stage-01.sql",
-      "docker/postgres/Dockerfile",
-      "docker/postgres/init/01-vibe-bootstrap.sh",
-      "docker/postgres/init/02-foundation.sql",
-      "error.json",
-      "execution-context.test.mjs",
-      "execution-context/execution-context.test.mjs",
-      "execution-context/index.mjs",
-      "execution-engine/catalog-fixture.json",
-      "execution-engine/execution.test.mjs",
-      "execution-engine/fixture.json",
-      "execution-engine/index.mjs",
-      "execution.test.mjs",
-      "explain.mjs",
-      "fixture.json",
-      "fixtures.sql",
-      "fixtures/capability-grant-test-key.d.mts",
-      "fixtures/capability-grant-test-key.mjs",
-      "fixtures/error.json",
-      "fixtures/hybrid-retrieval-ir.json",
-      "fixtures/invalid-engine-leak.json",
-      "fixtures/person-knows.json",
-      "fixtures/two-hop.json",
-      "globals.css",
-      "grants.mjs",
-      "graph-api-catalog.test.mjs",
-      "graph-api-observability.test.mjs",
-      "graph-api/api.test.mjs",
-      "graph-api/graph-api-catalog.test.mjs",
-      "graph-api/index.mjs",
-      "graph-api/package.json",
-      "hybrid-integration.mjs",
-      "hybrid-retrieval-ir.json",
-      "index.mjs",
-      "init/01-vibe-bootstrap.sh",
-      "init/02-foundation.sql",
-      "integration.mjs",
-      "invalid-engine-leak.json",
-      "jwt.mjs",
-      "layout.tsx",
-      "leruchi-backup.sh",
-      "leruchi-cli/README.md",
-      "leruchi-cli/bin/leruchi.mjs",
-      "leruchi-cli/index.mjs",
-      "leruchi-cli/migrate.mjs",
-      "leruchi-cli/package.json",
-      "leruchi-restore.sh",
-      "leruchi-sdk/README.md",
-      "leruchi-sdk/agent-evaluation.test.mjs",
-      "leruchi-sdk/agent-intent.test.mjs",
-      "leruchi-sdk/agent.mjs",
-      "leruchi-sdk/context.mjs",
-      "leruchi-sdk/context.test.mjs",
-      "leruchi-sdk/cross-modal-plan.test.mjs",
-      "leruchi-sdk/index.mjs",
-      "leruchi-sdk/package.json",
-      "leruchi-sdk/plan.mjs",
-      "leruchi-sdk/retrieval.mjs",
-      "leruchi.mjs",
-      "live-composition.spec.ts",
-      "live-mcp-graph-api.test.mjs",
-      "live-mcp-retrieval.test.mjs",
-      "mcp-server.test.mjs",
-      "mcp-server/README.md",
-      "mcp-server/index.mjs",
-      "mcp/agent-evaluation.test.mjs",
-      "mcp/live-mcp-graph-api.test.mjs",
-      "mcp/live-mcp-retrieval.test.mjs",
-      "mcp/mcp-server.test.mjs",
-      "migrate.mjs",
-      "migrations/0000-migration-ledger.sql",
-      "migrations/0001-catalog-tenant-visibility.sql",
-      "migrations/0002-graph-realtime-outbox.sql",
-      "migrations/0003-vector-catalog.sql",
-      "mutation-approval.test.mjs",
-      "mutation-approval/index.mjs",
-      "mutation-approval/mutation-approval.test.mjs",
-      "mutation-execution/index.mjs",
-      "mutation-ir/README.md",
-      "mutation-ir/v1.schema.json",
-      "mutation-validation/index.mjs",
-      "mutation.test.mjs",
-      "mutation/mutation.test.mjs",
-      "mutation/stage-09-integration.mjs",
-      "next-env.d.ts",
-      "next.config.mjs",
-      "observability.test.mjs",
-      "observability/graph-api-observability.test.mjs",
-      "observability/index.mjs",
-      "observability/observability.test.mjs",
-      "page.tsx",
-      "person-knows.json",
-      "plan.mjs",
-      "planner.test.mjs",
-      "planner/README.md",
-      "planner/index.mjs",
-      "planner/planner.test.mjs",
-      "planner/retrieval-planner.test.mjs",
-      "planner/retrieval.mjs",
-      "playwright.config.ts",
-      "pool-policy.test.mjs",
-      "postcss.config.mjs",
-      "postgres-store.mjs",
-      "postgres/Dockerfile",
-      "postgres/init/01-vibe-bootstrap.sh",
-      "postgres/init/02-foundation.sql",
-      "postgresql-recursive-compiler/compiler.test.mjs",
-      "postgresql-recursive-compiler/integration.mjs",
-      "production-image-recovery-drill.sh",
-      "production-readiness/concurrency-smoke.mjs",
-      "production-readiness/pool-policy.test.mjs",
-      "production-readiness/readiness-audit.test.mjs",
-      "production-readiness/upgrade-drill.sh",
-      "public-oss-export-audit.mjs",
-      "query-ir/README.md",
-      "query-ir/fixtures/error.json",
-      "query-ir/fixtures/invalid-engine-leak.json",
-      "query-ir/fixtures/person-knows.json",
-      "query-ir/fixtures/two-hop.json",
-      "query-ir/test_query_ir.py",
-      "query-ir/v1-error.schema.json",
-      "query-ir/v1.schema.json",
-      "query-validation/catalog-fixture.json",
-      "query-validation/index.mjs",
-      "query-validation/validation.test.mjs",
-      "query/route.ts",
-      "readiness-audit.test.mjs",
-      "realtime-outbox/index.mjs",
-      "realtime-role-boundary.test.mjs",
-      "realtime.test.mjs",
-      "realtime/realtime.test.mjs",
-      "realtime/stage-12-integration.mjs",
-      "renderer-benchmark.spec.ts",
-      "restore-script.test.mjs",
-      "retrieval-contract/index.mjs",
-      "retrieval-execution.test.mjs",
-      "retrieval-execution/hybrid-integration.mjs",
-      "retrieval-execution/index.mjs",
-      "retrieval-execution/retrieval-execution.test.mjs",
-      "retrieval-explainability.test.mjs",
-      "retrieval-explainability/fixtures/hybrid-retrieval-ir.json",
-      "retrieval-explainability/index.mjs",
-      "retrieval-explainability/retrieval-explainability.test.mjs",
-      "retrieval-fusion.test.mjs",
-      "retrieval-fusion/index.mjs",
-      "retrieval-fusion/retrieval-fusion.test.mjs",
-      "retrieval-ir.test.mjs",
-      "retrieval-ir/index.mjs",
-      "retrieval-ir/retrieval-ir.test.mjs",
-      "retrieval-ir/v1.schema.json",
-      "retrieval-planner.test.mjs",
-      "retrieval.mjs",
-      "roles.sql",
-      "route.ts",
-      "run-stage-01.sh",
-      "schema-catalog-api/api.test.mjs",
-      "schema-catalog-api/index.mjs",
-      "schema-catalog-api/integration.mjs",
-      "schema-catalog-api/package.json",
-      "schema.sql",
-      "sdk.test.mjs",
-      "sdk/sdk.test.mjs",
-      "security/bootstrap-env-compatibility.test.mjs",
-      "security/capability-grants.md",
-      "security/realtime-role-boundary.test.mjs",
-      "security/stage-02-graph-api-e2e.test.mjs",
-      "security/stage-02-setup.sh",
-      "security/stage-02-tenant-a.sql",
-      "security/stage-02-tenant-b.sql",
-      "security/supabase-role-credentials.test.mjs",
-      "security/tenant-claim-hook-contract.test.mjs",
-      "security/tenant-claim-hook-fixture.sql",
-      "security/tenant-isolation-matrix.test.mjs",
-      "service.mjs",
-      "stage-01.sql",
-      "stage-02-graph-api-e2e.test.mjs",
-      "stage-02-setup.sh",
-      "stage-02-tenant-a.sql",
-      "stage-02-tenant-b.sql",
-      "stage-04-tenant-visibility.sql",
-      "stage-04.sql",
-      "stage-09-integration.mjs",
-      "stage-12-integration.mjs",
-      "studio.spec.ts",
-      "studio/app/api/studio/catalog/route.ts",
-      "studio/app/api/studio/query/route.ts",
-      "studio/app/globals.css",
-      "studio/app/layout.tsx",
-      "studio/app/page.tsx",
-      "studio/catalog/route.ts",
-      "studio/next-env.d.ts",
-      "studio/next.config.mjs",
-      "studio/package-lock.json",
-      "studio/package.json",
-      "studio/playwright.config.ts",
-      "studio/postcss.config.mjs",
-      "studio/query/route.ts",
-      "studio/tenant-render-contract.test.mjs",
-      "studio/tests/browser/live-composition.spec.ts",
-      "studio/tests/browser/renderer-benchmark.spec.ts",
-      "studio/tests/browser/studio.spec.ts",
-      "studio/tsconfig.json",
-      "supabase-role-credentials.test.mjs",
-      "supabase/docker-compose.yml",
-      "supabase/roles.sql",
-      "supabase/tenant-claim-hook.sql",
-      "surfaces.test.mjs",
-      "tenant-claim-hook-contract.test.mjs",
-      "tenant-claim-hook-fixture.sql",
-      "tenant-claim-hook.sql",
-      "tenant-isolation-matrix.test.mjs",
-      "tenant-render-contract.test.mjs",
-      "test_query_ir.py",
-      "tests/browser/live-composition.spec.ts",
-      "tests/browser/renderer-benchmark.spec.ts",
-      "tests/browser/studio.spec.ts",
-      "tsconfig.json",
-      "two-hop.json",
-      "upgrade-drill.sh",
-      "v1-error.schema.json",
-      "v1.schema.json",
-      "validation.test.mjs",
-      "vector-execution.test.mjs",
-      "vector-execution/index.mjs",
-      "vector-execution/integration.mjs",
-      "vector-execution/vector-execution.test.mjs",
-      "vibedb-backup.sh",
-      "vibedb-restore.sh"
+      {
+        "path": ".github/workflows/public-core-ci.yml",
+        "classification": "expected_manifest_exclusion"
+      },
+      {
+        "path": ".github/workflows/verify-release.yml",
+        "classification": "expected_manifest_exclusion"
+      },
+      {
+        "path": ".gitleaksignore",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "0000-migration-ledger.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "0001-catalog-tenant-visibility.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "0002-graph-realtime-outbox.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "0003-vector-catalog.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "01-vibe-bootstrap.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "02-foundation.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "04-schema-catalog.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "Dockerfile",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "age-compiler/compiler.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-evaluation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-evaluation/agent-evaluation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-evaluation/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-governance.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-governance/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-governance/agent-governance.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-governance/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-intent.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-intent/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-intent/agent-intent.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-intent/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-intent/v1.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-trace-replay.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-trace-replay/agent-trace-replay.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-trace-replay/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent-trace-replay/surfaces.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "agent.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "api.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "api/studio/catalog/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "api/studio/query/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "app/api/studio/catalog/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "app/api/studio/query/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "app/globals.css",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "app/layout.tsx",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "app/page.tsx",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "architecture/contract-audit.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "audit.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "audit/audit.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "audit/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery-drill.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery/backup-recovery-drill.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery/backup-recovery.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery/backup-script.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery/fixtures.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery/production-image-recovery-drill.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-recovery/restore-script.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "backup-script.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "bin/leruchi.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "bootstrap-env-compatibility.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "browser/live-composition.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "browser/renderer-benchmark.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "browser/studio.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-control-plane/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-control-plane/postgres-store.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-control-plane/schema.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-control-plane/service.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-grant-test-key.d.mts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-grant-test-key.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-grants.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-grants.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/capability-grants.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/capability-policy.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/control-plane-service.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/control-plane.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/grants.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "capability-policy/jwt.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "catalog-fixture.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "catalog/04-schema-catalog.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "catalog/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "catalog/stage-04-tenant-visibility.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "catalog/stage-04.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cli.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cli/agent-evaluation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cli/cli.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cli/cross-modal-plan.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "compiler-age-mutation/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "compiler-age/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "compiler-postgresql-recursive/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "compiler-postgresql-recursive/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "compiler.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "concurrency-smoke.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-explain.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-ir.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-ir/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-ir/context-explain.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-ir/context-ir.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-ir/explain.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-ir/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-ir/v1.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-resolution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-resolution/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-resolution/context-resolution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context-resolution/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "context.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "contract-audit.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "control-plane-service.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "control-plane.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cross-modal-plan.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cross-modal-planner.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cross-modal-planner/cross-modal-planner.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "cross-modal-planner/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "db/run-stage-01.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "db/stage-01.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "docker/postgres/Dockerfile",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "docker/postgres/init/01-vibe-bootstrap.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "docker/postgres/init/02-foundation.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "error.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution-context.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution-context/execution-context.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution-context/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution-engine/catalog-fixture.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution-engine/execution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution-engine/fixture.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution-engine/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "execution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "explain.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixture.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures/capability-grant-test-key.d.mts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures/capability-grant-test-key.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures/error.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures/hybrid-retrieval-ir.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures/invalid-engine-leak.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures/person-knows.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "fixtures/two-hop.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "globals.css",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "grants.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "graph-api-catalog.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "graph-api-observability.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "graph-api/api.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "graph-api/graph-api-catalog.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "graph-api/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "graph-api/package.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "hybrid-integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "hybrid-retrieval-ir.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "init/01-vibe-bootstrap.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "init/02-foundation.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "invalid-engine-leak.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "jwt.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "layout.tsx",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-backup.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-cli/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-cli/bin/leruchi.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-cli/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-cli/migrate.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-cli/package.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-restore.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/agent-evaluation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/agent-intent.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/agent.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/context.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/context.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/cross-modal-plan.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/package.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/plan.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi-sdk/retrieval.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "leruchi.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "live-composition.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "live-mcp-graph-api.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "live-mcp-retrieval.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mcp-server.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mcp-server/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mcp-server/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mcp/agent-evaluation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mcp/live-mcp-graph-api.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mcp/live-mcp-retrieval.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mcp/mcp-server.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "migrate.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "migrations/0000-migration-ledger.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "migrations/0001-catalog-tenant-visibility.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "migrations/0002-graph-realtime-outbox.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "migrations/0003-vector-catalog.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation-approval.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation-approval/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation-approval/mutation-approval.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation-execution/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation-ir/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation-ir/v1.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation-validation/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation/mutation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "mutation/stage-09-integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "next-env.d.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "next.config.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "observability.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "observability/graph-api-observability.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "observability/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "observability/observability.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "page.tsx",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "person-knows.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "plan.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "planner.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "planner/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "planner/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "planner/planner.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "planner/retrieval-planner.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "planner/retrieval.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "playwright.config.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "pool-policy.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "postcss.config.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "postgres-store.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "postgres/Dockerfile",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "postgres/init/01-vibe-bootstrap.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "postgres/init/02-foundation.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "postgresql-recursive-compiler/compiler.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "postgresql-recursive-compiler/integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "production-image-recovery-drill.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "production-readiness/concurrency-smoke.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "production-readiness/pool-policy.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "production-readiness/readiness-audit.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "production-readiness/upgrade-drill.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "public-oss-export-audit.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/README.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/fixtures/error.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/fixtures/invalid-engine-leak.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/fixtures/person-knows.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/fixtures/two-hop.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/test_query_ir.py",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/v1-error.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-ir/v1.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-validation/catalog-fixture.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-validation/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query-validation/validation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "query/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "readiness-audit.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "realtime-outbox/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "realtime-role-boundary.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "realtime.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "realtime/realtime.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "realtime/stage-12-integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "renderer-benchmark.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "restore-script.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-contract/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-execution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-execution/hybrid-integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-execution/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-execution/retrieval-execution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-explainability.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-explainability/fixtures/hybrid-retrieval-ir.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-explainability/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-explainability/retrieval-explainability.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-fusion.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-fusion/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-fusion/retrieval-fusion.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-ir.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-ir/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-ir/retrieval-ir.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-ir/v1.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval-planner.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "retrieval.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "roles.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "run-stage-01.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "schema-catalog-api/api.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "schema-catalog-api/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "schema-catalog-api/integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "schema-catalog-api/package.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "schema.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "sdk.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "sdk/sdk.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/bootstrap-env-compatibility.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/capability-grants.md",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/realtime-role-boundary.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/stage-02-graph-api-e2e.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/stage-02-setup.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/stage-02-tenant-a.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/stage-02-tenant-b.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/supabase-role-credentials.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/tenant-claim-hook-contract.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/tenant-claim-hook-fixture.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "security/tenant-isolation-matrix.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "service.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-01.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-02-graph-api-e2e.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-02-setup.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-02-tenant-a.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-02-tenant-b.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-04-tenant-visibility.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-04.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-09-integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "stage-12-integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/app/api/studio/catalog/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/app/api/studio/query/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/app/globals.css",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/app/layout.tsx",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/app/page.tsx",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/catalog/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/next-env.d.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/next.config.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/package-lock.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/package.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/playwright.config.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/postcss.config.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/query/route.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/tenant-render-contract.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/tests/browser/live-composition.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/tests/browser/renderer-benchmark.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/tests/browser/studio.spec.ts",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "studio/tsconfig.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "supabase-role-credentials.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "supabase/docker-compose.yml",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "supabase/roles.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "supabase/tenant-claim-hook.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "surfaces.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "tenant-claim-hook-contract.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "tenant-claim-hook-fixture.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "tenant-claim-hook.sql",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "tenant-isolation-matrix.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "tenant-render-contract.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "test_query_ir.py",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "tests/browser/live-composition.spec.ts",
+        "classification": "unresolved_public_only_allowlisted_path"
+      },
+      {
+        "path": "tests/browser/renderer-benchmark.spec.ts",
+        "classification": "unresolved_public_only_allowlisted_path"
+      },
+      {
+        "path": "tests/browser/studio.spec.ts",
+        "classification": "unresolved_public_only_allowlisted_path"
+      },
+      {
+        "path": "tsconfig.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "two-hop.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "upgrade-drill.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "v1-error.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "v1.schema.json",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "validation.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "vector-execution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "vector-execution/index.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "vector-execution/integration.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "vector-execution/vector-execution.test.mjs",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "vibedb-backup.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      },
+      {
+        "path": "vibedb-restore.sh",
+        "classification": "expected_outside_allowlist_sanitized_difference"
+      }
     ],
     "shared_content_different": [
       {
         "path": "OSS_EXPORT_MANIFEST.json",
         "public_blob_sha": "b7e04031c95837d437e3aec907d5cda5c507f18a",
         "candidate_blob_sha": "d81f72daf35e29b7029534e70af5bb6dbffe6ce7",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "README.md",
         "public_blob_sha": "7cf1625dbabec64d2f428fc62f56cd0826f02efc",
         "candidate_blob_sha": "00c9bc253e7d44daad64e8d90823ed2060e86632",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "SECURITY.md",
         "public_blob_sha": "02d022dc85274cf76b4a26e97541346a2021ce50",
         "candidate_blob_sha": "faa29e39a584f2787d84b9018928e3277f91c277",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "docker-compose.yml",
         "public_blob_sha": "16712972f5af06f7775186ba425c901ade7e7340",
         "candidate_blob_sha": "0515cc3a3ea456a6a719420229753066d73d8170",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "infra/supabase/docker-compose.yml",
         "public_blob_sha": "16712972f5af06f7775186ba425c901ade7e7340",
         "candidate_blob_sha": "6951712222d1dc52c85a3d04dc876218286c6bd4",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "package-lock.json",
         "public_blob_sha": "c2538b6e045e47acb315cbb37ced0f2b6a2d5a5d",
         "candidate_blob_sha": "2073263580d97938cceb584ed1a10936f35806ea",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "package.json",
         "public_blob_sha": "78ecffb021ca79d95aa3a9289b7510362f954f8d",
         "candidate_blob_sha": "9f7372ba7c06e2c7694701545e4ec6a080e92881",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "packages/graph-api/package.json",
         "public_blob_sha": "ef07c8c1e527702706ca5addde3de15b115e5c44",
         "candidate_blob_sha": "1cc0b7d459ceb697660c492d2840ffbc74c4675f",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "packages/leruchi-cli/package.json",
         "public_blob_sha": "cf7b145ee028149873e160b65415990bf0e1bf68",
         "candidate_blob_sha": "840fd827db5d1d9e6c4514eb8819293c5ad4910f",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "packages/leruchi-sdk/package.json",
         "public_blob_sha": "c3ecfa7ac73f7ae41196aac9823f2245fb1ff98e",
         "candidate_blob_sha": "cd759c2a7a42160d228a29fd960c53882e463ced",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "packages/schema-catalog-api/package.json",
         "public_blob_sha": "4d4883b57c6a702fef821f721ed53016de3ade42",
         "candidate_blob_sha": "30bec30f3872a32076b873c6149f4a8419007364",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "tests/architecture/contract-audit.mjs",
         "public_blob_sha": "f470e12461b4dcb9c52b2f0217d2ca05d4afd62b",
         "candidate_blob_sha": "007cfd2347fe96173e91ddc9b4f9fc5bcf301bae",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       },
       {
         "path": "tests/security/supabase-role-credentials.test.mjs",
         "public_blob_sha": "9369139fcd627636d3ef884de54b02f1a70fd722",
         "candidate_blob_sha": "df2d00a7d98f1eb9ed932c5b92164003417bf5eb",
-        "classification": "unresolved_content_difference"
+        "classification": "unresolved_requires_source_or_package_identity_decision"
       }
     ],
     "candidate_source_excluded_paths_present_in_development_tree": [
@@ -594,7 +1616,14 @@
       ".github/workflows/public-core-ci.yml",
       ".github/workflows/verify-release.yml"
     ],
-    "candidate_archive_review": "Inspected the downloaded artifact ZIP and inner tar.gz. 202 regular files were present; BUILD_STATE.md and docs/release/LEGAL_REVIEW_DOSSIER.md were absent."
+    "candidate_archive_review": "Inspected the downloaded artifact ZIP and inner tar.gz. 202 regular files were present; BUILD_STATE.md and docs/release/LEGAL_REVIEW_DOSSIER.md were absent.",
+    "classification_counts": {
+      "expected_manifest_exclusion": 2,
+      "expected_outside_allowlist_sanitized_difference": 333,
+      "unresolved_public_only_allowlisted_path": 3,
+      "candidate_only_missing_public_documents": 2,
+      "shared_content_different_unresolved": 13
+    }
   },
   "package_identity": {
     "public_package_name": "@leruchi/schema-catalog-api",
