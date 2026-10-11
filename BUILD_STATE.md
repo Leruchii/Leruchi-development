@@ -2,6 +2,41 @@
 
 This file is the canonical handoff checkpoint for coding agents. Verify it against live Git history, implementation, tests, CI, and `BUILD_PLAN.md` before continuing. Executable evidence wins over stale documentation.
 
+## Current checkpoint — final OSS release verification 2026-10-11
+
+**Disposition: the final OSS release is not yet verified complete.** A Stage 32 candidate workflow passed, but it ran against an earlier PR merge ref, and the already-published engineering-preview asset does not match that candidate archive. Do not overwrite or recreate the existing tag.
+
+### Current live repository state
+
+- Development `main`: [`7a34dd0a33d9d5753160130371c9a517a37d94ad`](https://github.com/Leruchii/Leruchi-development/commit/7a34dd0a33d9d5753160130371c9a517a37d94ad).
+- Public product `main`: [`ca9187dcb9e216f896c5f4b48e31ff932ad2b959`](https://github.com/Leruchii/Leruchi/commit/ca9187dcb9e216f896c5f4b48e31ff932ad2b959).
+- The live GitHub metadata reports `Leruchii/Leruchi-internal` as **public**, while its README describes the repository as private/internal and its tree contains internal engineering control documents. Treat this as a confidentiality/administrative risk. No repository visibility was changed; the owner/organization administrator must decide and act.
+
+### Stage 32 evidence and current-source gap
+
+- Successful run: [Stage 32 run 38045423483](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483).
+- The run used PR #99 merge ref `ed25507ac95407922e2a76e020f937c7ef6f3514` (PR head `2a4fc2e770130360f57757222f6caa0aa95fb8d4`), not the current `main` SHA above.
+- Its security, runtime, licensing, export-manifest, readiness, reproducibility, and upload steps all completed successfully. The candidate contained 202 export-eligible files.
+- Reproducible candidate archive SHA-256: `00674f10c5c7558802f202b6bbb3670ca7303035fa3dd27ae8bf5727b07ea9f7`.
+- Uploaded GitHub Actions artifact: [`leruchi-oss-core-candidate`](https://github.com/Leruchii/Leruchi-development/actions/runs/38045423483/artifacts/11666638118), artifact ID `11666638118`, artifact ZIP SHA-256 `871ede04a6bef81f6c37cc44aacbd50522c5838935d3cf021d3f9d07e7a39b86`.
+- Comparing the run merge ref to current development `main` found changes in `docs/release/LEGAL_REVIEW_DOSSIER.md` and the addition of `docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md`, both covered by the public export allowlist. Therefore a fresh Stage 32 run against current source is required before release.
+
+### Existing public preview release
+
+- Existing release: [`v0.1.0-engineering-preview`](https://github.com/Leruchii/Leruchi/releases/tag/v0.1.0-engineering-preview), published 2026-10-09 as a prerelease.
+- Existing asset: `leruchi-core-v0.1.0-preview.tar.gz`, 795,372 bytes, GitHub-reported SHA-256 `ac5a997cf65ab347b5f4554588c42007917af370a70c2ca61da7be814f63601f`.
+- This digest and size do not match the Stage 32 candidate archive above (187,850 bytes; SHA-256 `00674f10c5c7558802f202b6bbb3670ca7303035fa3dd27ae8bf5727b07ea9f7`). The existing public asset must not be described as the exact Stage 32 candidate. Preserve the existing release and use the established versioning/release process for any new artifact.
+
+### Required continuation
+
+1. Run Stage 32 on the current source state and inspect all steps, artifact, and checksum.
+2. Re-audit the sanitized candidate and confirm its contents match the approved manifest.
+3. Resolve the internal-repository visibility/confidentiality risk through the owner/organization administrator; do not change visibility automatically.
+4. Determine the next release version from the repository's established convention; do not overwrite the existing tag.
+5. Publish the newly verified candidate using the approved release mechanism, then verify the public asset and checksum against the exact candidate.
+6. Update this record with the actual release URL, tag, source SHA, asset digest, and final verification evidence.
+7. Keep production readiness explicitly unclaimed until the real-environment checklist is completed.
+
 ## Current checkpoint — live verification 2026-10-10
 
 **Official product name:** Leruchi. The project owner confirms product-name, legal, and release approval. This records owner confirmation; the underlying reviewer/approval record was not supplied to this repository, so do not invent one.
