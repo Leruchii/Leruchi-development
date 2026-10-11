@@ -14,7 +14,7 @@ This file is the canonical handoff checkpoint for coding agents. Verify it again
 - Public `OSS_EXPORT_MANIFEST.json` lacked an explicit exclusion for `docs/release/LEGAL_REVIEW_DOSSIER.md`. The dossier is not present in current public main or the candidate, but explicit defense-in-depth exclusion is warranted.
 - A safe public PR is open: [Leruchii/Leruchi PR #9](https://github.com/Leruchii/Leruchi/pull/9). It adds that exclusion and the two public-safe checklists missing from public main. Public CI is running; do not merge before checking its result.
 - Full comparison and file-level blob hashes: [OSS_PUBLIC_SOURCE_RECONCILIATION.md](docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.md) and [machine-readable JSON](docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.json).
-- Release notes and PowerShell publisher script in the local handoff were checked for the reported mojibake substring `â€”`; it was absent, and em dashes are correctly encoded in UTF-8. No publishing command was run.
+- Release notes and PowerShell publisher script in the local handoff were inspected as UTF-8; their em dashes are correctly encoded. No publishing command was run.
 
 **Next safe action:** review PR #9 and its CI, then decide whether the public repository's root package/source layout should be aligned with the sanitized candidate or whether a documented dual-snapshot strategy is intended. Rebuild and revalidate after any candidate-included source change. Keep `v0.1.0-engineering-preview` untouched and do not publish `v0.1.1-engineering-preview` yet.
 
