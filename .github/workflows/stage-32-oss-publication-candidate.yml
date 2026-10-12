@@ -114,6 +114,8 @@ jobs:
           tar -xzf "$archive" -C "$consumer"
           cd "$consumer"
           test "$(node -p 'process.versions.node.split(".")[0]')" = "24"
+          node tests/architecture/contract-audit.mjs
+          node --test tests/security/supabase-role-credentials.test.mjs
           npm ci --ignore-scripts --no-audit --no-fund
           node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs
       - name: Upload candidate artifact
