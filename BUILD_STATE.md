@@ -2,34 +2,44 @@
 
 This file is the canonical handoff checkpoint for coding agents. Verify it against live Git history, implementation, tests, CI, and `BUILD_PLAN.md` before continuing. Executable evidence wins over stale documentation.
 
-## Current checkpoint — OSS source reconciliation candidate 2026-10-12
+## Current checkpoint — source reconciliation complete 2026-10-12
 
-**Disposition: current development PR candidate passes all observed CI checks, including Stage 32. The public development repository's visibility is explicitly not a blocker. Public source reconciliation is proposed in PR #11; no new public release/tag has been created.**
+**Disposition: source reconciliation and visibility-policy work are merged. The candidate passes the full observed PR validation matrix. Before publication, independently confirm the Stage 32 workflow on the merged development `main` SHA and record its artifact. No new release or tag has been created.**
 
-### Exact candidate evidence
+### Current repository state
 
-- Development PR: [#104](https://github.com/Leruchii/Leruchi-development/pull/104). Candidate code head built by Stage 32: `a67664a464589a2a4545ca5c1aeb0b654e5e703a`. Later commits update only excluded `BUILD_STATE.md` and `docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.*` records; they do not change the exported candidate contents.
-- Public `main`: [`1613ddfc9cc7602c4a6110c9b917923fa99675c2`](https://github.com/Leruchii/Leruchi/commit/1613ddfc9cc7602c4a6110c9b917923fa99675c2).
-- Stage 32 on the updated PR head: [run 38227310042](https://github.com/Leruchii/Leruchi-development/actions/runs/38227310042), success. The full observed PR workflow matrix completed **24/24 successfully** with no failed or pending runs.
-- Candidate artifact ID: `11736908885`; ZIP size 188,183 bytes; SHA-256 `c90da0ed0332733ad7a87d7d562dc722577cb429f3df4462252b07b411d6995f`. The downloaded ZIP independently matched GitHub's artifact digest.
-- Inner archive: `leruchi-oss-core-candidate.tar.gz`, 187,965 bytes; SHA-256 `8be1e96616fec8e044e55f9c99c517e6e79d8aa209cf6560b73737370fd933fc`. Reproducible archive comparison passed.
-- Candidate has **202 regular files**. `BUILD_STATE.md`, `docs/release/LEGAL_REVIEW_DOSSIER.md`, and internal source-reconciliation reports are excluded. The manifest explicitly excludes the legal dossier and reconciliation reports.
-- Node.js 24 policy passed. New regression check for the final development-visibility decision passed. The candidate architecture audit ran successfully without requiring excluded `BUILD_PLAN.md`. Supabase credential/loopback test passed (6 tests); clean-consumer SDK/CLI tests passed (29 passed, 0 failed).
-- Stage 32's OWASP ASVS verification profile, tenant/realtime boundary, dependency/license inventory, manifest/export audit, readiness checks, reproducibility check, and artifact upload all passed. This is engineering-preview evidence, not proof of production readiness or full ASVS compliance.
+- Public `main`: [`f45a6a38f4a5e16e06bc1ad937edec8dcf8f6414`](https://github.com/Leruchii/Leruchi/commit/f45a6a38f4a5e16e06bc1ad937edec8dcf8f6414). Source reconciliation PR #11 is merged.
+- Development `main`: [`68324a2f1de0227b60ed2443a59d44082499db4b`](https://github.com/Leruchii/Leruchi-development/commit/68324a2f1de0227b60ed2443a59d44082499db4b). Visibility-policy and candidate-validation PR #104 is merged.
+- Public visibility-policy checklist PR #10 is merged as [`7ffd398903ff2858cca6ca79554ec14b4c460605`](https://github.com/Leruchii/Leruchi/commit/7ffd398903ff2858cca6ca79554ec14b4c460605).
+- Public and development `OSS_EXPORT_MANIFEST.json` now match at blob `abd29376a51e7ef20bc22a59fe47b38259819fc6`.
+- Root package metadata and lockfile now match across repositories as `@leruchi/execution-engine`; both root packages are `private: true`. The actual `packages/schema-catalog-api` package remains `@leruchi/schema-catalog-api`.
 
-### Policy and source reconciliation
+### Latest verified candidate artifact
 
-- Final owner decision: `Leruchii/Leruchi-development` may remain public. Its visibility is not a release blocker; actual candidate contents must still be scanned for secrets and confidential material.
-- The actual `packages/schema-catalog-api` package remains `@leruchi/schema-catalog-api`. Both root packages are private; their old root names were metadata drift, not proof of an external package rename.
-- The development PR now uses a public-safe README and security policy, and fixes the architecture audit so it does not depend on an excluded internal `BUILD_PLAN.md`.
-- Against current public `main`, the working comparison has **12 remaining shared-file differences**. Public [PR #11](https://github.com/Leruchii/Leruchi/pull/11) proposes aligning those files to the candidate. Public [PR #10](https://github.com/Leruchii/Leruchi/pull/10) records the visibility policy in the public release checklist. Both remain open at this checkpoint; review their exact-head CI before merging.
-- The current reconciliation report uses the latest candidate artifact identity. Tree hashes and full tree counts are left unknown where the connected read interface did not expose them; do not reuse stale values as current.
+- Stage 32 run: [38227841712](https://github.com/Leruchii/Leruchi-development/actions/runs/38227841712), success on PR #104 code head `41a1af0a8dc3ef34cff69d58c6a153da6fcc4110`. All 24 observed PR workflow runs on that head completed successfully.
+- Artifact ID: `11737275523`; ZIP size 188,183 bytes; SHA-256 `74962682501ce612c0be80c89362329d725744bb0f73430355990e2a138364fe`. The downloaded ZIP was independently hashed and matched GitHub's artifact digest.
+- Inner archive: `leruchi-oss-core-candidate.tar.gz`, 202 regular files, 187,965 bytes; SHA-256 `8be1e96616fec8e044e55f9c99c517e6e79d8aa209cf6560b73737370fd933fc`.
+- Reproducible packaging passed. Clean extracted candidate checks passed: architecture audit, Supabase credential/loopback tests (6), SDK/CLI tests (29 passed, 0 failed). Node.js 24 policy and the new development-visibility policy regression test passed.
+- The candidate excludes `BUILD_STATE.md`, `docs/release/LEGAL_REVIEW_DOSSIER.md`, and internal reconciliation reports. Both source manifests explicitly exclude the legal dossier and reconciliation reports.
+
+### Reconciliation result
+
+The previously identified shared-file differences are resolved. Public PR #11 aligned the manifest, README, SECURITY policy, root and Supabase Compose files, root package/lockfile metadata, package manifests, and Supabase credential/loopback test. The architecture audit was corrected to rely on public README evidence rather than excluded `BUILD_PLAN.md`.
+
+The 13 previously differing paths now have matching public/development Git blob SHAs. The prior inventory recorded the other 189 shared paths as identical before the final architecture-audit correction; combined, the 202 candidate paths are accounted for as identical. A full repository tree enumeration was not available, so old repository-wide file counts and tree hashes are not represented as current.
+
+### Final visibility policy
+
+**Final owner decision:** `Leruchii/Leruchi-development` may remain public. Its visibility is not a release blocker and must not be used as a CI or publication gate. Actual candidate content must still be checked for secrets, credentials, confidential/internal-only files, and customer data.
+
+The decision is recorded in agent instructions, product identity, build plan, repository-boundary documentation, a durable decision record, a regression test, the Stage 32 workflow, and the public release checklist.
 
 ### Release state and next action
 
-- Preserve the existing [`v0.1.0-engineering-preview`](https://github.com/Leruchii/Leruchi/releases/tag/v0.1.0-engineering-preview) unchanged.
-- No `v0.1.1-engineering-preview` tag/release has been created. Recheck collisions immediately before any separately authorized publication.
-- Next: allow the public source-reconciliation PR to validate; reconcile any CI failures; merge approved PRs through the normal review process; rebuild Stage 32 from the final integrated development SHA; then prepare publication of that exact artifact and verify the public asset checksum.
+- Preserve [`v0.1.0-engineering-preview`](https://github.com/Leruchii/Leruchi/releases/tag/v0.1.0-engineering-preview) unchanged.
+- No `v0.1.1-engineering-preview` tag/release has been created.
+- The connected workflow lookup did not expose a separately verifiable push-triggered Stage 32 run for merged development `main` SHA `68324a2f1de0227b60ed2443a59d44082499db4b`. Confirm a successful Stage 32 run on that exact SHA and record its artifact checksum before publication. The PR-head artifact is strong evidence because its candidate files are now merged and reconciled, but the exact-main run should be recorded explicitly.
+- After exact-main validation, obtain the required release authorization, prepare the next version separately, and verify the published asset checksum. Do not overwrite or move the existing `v0.1.0-engineering-preview` tag.
 - Production readiness remains a separate real-environment assessment.
 
 ## Current checkpoint — OSS Core release execution 2026-10-11
