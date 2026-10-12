@@ -5,6 +5,7 @@ Status: **ADOPTED**
 
 ## Decision
 
+- **Final owner policy:** `Leruchii/Leruchi-development` may be public. Its visibility is not, by itself, a release blocker and must not be used as a publication gate.
 - Public distribution home: [`Leruchii/Leruchi`](https://github.com/Leruchii/Leruchi).
 - Engineering workspace and CI/candidate-generation home: [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development).
 - Internal/control-plane repository: [`Leruchii/Leruchi-internal`](https://github.com/Leruchii/Leruchi-internal). Its current GitHub metadata reports public visibility; do not change visibility automatically, and leave any visibility correction to the owner.
