@@ -49,7 +49,8 @@ on:
       - "packages/realtime-outbox/index.mjs"
       - "apps/studio/package-lock.json"
       - ".github/workflows/stage-31-oss-core-readiness.yml"
-      - ".github/workflows/stage-32-oss-publication-candidate.yml"  pull_request:
+      - ".github/workflows/stage-32-oss-publication-candidate.yml"
+  pull_request:
     paths:
       # Every path allowed by OSS_EXPORT_MANIFEST must trigger a fresh candidate build.
       - "OSS_EXPORT_MANIFEST.json"
