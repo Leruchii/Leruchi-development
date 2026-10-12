@@ -30,7 +30,7 @@ Status: **ADOPTED**
 - No versioned public release has been published.
 - The current candidate source commit is `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`; documentation-only commits in the engineering repository are excluded from the candidate export.
 - The candidate dependency inventory contains license expressions covered by the owner's confirmed legal/release approval for the intended scope. Preserve the underlying approval record; any broader distribution requires a fresh scope review.
-- Token rotation, repository visibility and branch protection are owner-managed follow-ups per owner direction. Automation must not change those settings or treat them as blockers to the technical export work.
+- Token rotation and branch protection remain owner-managed follow-ups. Automation must not change those settings. The public visibility of `Leruchi-development` is explicitly accepted and must not block OSS source publication. Inspect the actual candidate for credentials, confidential material, or customer data; remediate concrete exposures separately.
 
 ## Safety rules for future agents
 
