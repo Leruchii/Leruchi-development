@@ -1,6 +1,6 @@
 # OSS Public Source Reconciliation Report
 
-**Status: source reconciliation completed and merged. The public development repository is permitted and is not a release blocker. Publication remains pending final post-merge-main candidate evidence and explicit release authorization. No new tag or release was created.**
+**Status: source reconciliation completed and merged; exact-main Stage 32 passed on development main commit `696d5f5f272d99d5a37335af3f999b50858edfd8`. The public development repository is permitted and is not a release blocker. Publication remains pending formal product-name/trademark and exact public release-wording approval. No new tag or release was created.**
 
 ## Current repository state — 2026-10-12
 
@@ -49,6 +49,6 @@ This decision is recorded in the development agent instructions, product identit
 
 - Preserve the existing [`v0.1.0-engineering-preview`](https://github.com/Leruchii/Leruchi/releases/tag/v0.1.0-engineering-preview) unchanged.
 - No `v0.1.1-engineering-preview` tag/release was created.
-- The connected workflow lookup verified the PR-head Stage 32 run, but does not expose push-triggered runs. The latest observed development control commit is `ad357f4aba6d03af1f92fd63740e92147b733347`; no exact-main run ID/artifact could be independently confirmed. Before publication, confirm a successful Stage 32 run for the exact source/control state and record its artifact checksum. The PR-head artifact is strong evidence because the candidate source changes are merged, but do not represent it as exact-main validation.
+- Exact-main Stage 32 is now verified by successful push-triggered run [38234741708](https://github.com/Leruchii/Leruchi-development/actions/runs/38234741708) on commit `696d5f5f272d99d5a37335af3f999b50858edfd8`; its artifact ZIP checksum was independently recomputed and matched GitHub's digest.
 - After exact-main validation, obtain the required release authorization, prepare the next version separately, and verify the published asset checksum. Do not overwrite or move the existing `v0.1.0-engineering-preview` tag.
 - Production readiness remains a separate real-environment assessment. An engineering-preview release is not a production-readiness claim.
