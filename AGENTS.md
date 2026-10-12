@@ -312,6 +312,6 @@ Before continuing an existing stage or pull request, inspect the live default-br
 
 After every candidate-branch change, synchronize the checkpoint and PR body so they name the same current SHA and cite its current exact-head CI. A green result on an older SHA does not validate a newer commit. Feature branches may be ahead of main while a PR is open; do not merge a large candidate merely to make branch counts look synchronized. Keep checkpoint/plan content aligned across main and the active candidate while preserving the intentional code-integration boundary.
 
-Never merge or publish an OSS candidate while repository visibility, licensing/naming clearance, legacy-change reconciliation, export audit, artifact provenance, or exact-head CI gates remain unresolved. If the GitHub connection cannot change repository settings, record the blocker and request an authorized administrator; do not imply it was fixed.
+Never merge or publish an OSS candidate while genuine release gates remain unresolved: applicable licensing/naming approval, source reconciliation, export audit, artifact provenance, sensitive-content review, and exact-head CI. The public visibility of `Leruchi-development` is explicitly not a gate. If a concrete sensitive-content exposure is found, record the exact evidence and remediation; do not substitute a repository-visibility demand for that evidence.
 
 Node.js 24 is the only supported runtime. Do not introduce an older Node.js major in code, workflows, Docker, scripts, package metadata, or docs.
