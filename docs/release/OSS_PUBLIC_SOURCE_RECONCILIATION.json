@@ -5,32 +5,34 @@
     "public": {
       "full_name": "Leruchii/Leruchi",
       "branch": "main",
-      "commit": "ca9187dcb9e216f896c5f4b48e31ff932ad2b959",
-      "tree_sha": "13f679ccea901d8142dfce652cc7bc037b80c0c4",
-      "regular_file_count": 538,
-      "manifest_blob_sha": "b7e04031c95837d437e3aec907d5cda5c507f18a"
+      "commit": "1613ddfc9cc7602c4a6110c9b917923fa99675c2",
+      "tree_sha": null,
+      "regular_file_count": null,
+      "manifest_blob_sha": "820adddfaba70410cf1e4584904c2061f030135e",
+      "tree_sha_status": "Not exposed by the connected GitHub read interface during this refresh; old tree hash intentionally cleared."
     },
     "development": {
       "full_name": "Leruchii/Leruchi-development",
       "branch": "main",
-      "commit": "a1f1011342ef4f45320a1733a1366c970102c15c",
-      "tree_sha": "fea0c9c3769fb8f3bd5589bdb8b29a30219741da",
-      "regular_file_count": 340,
-      "manifest_blob_sha": "d81f72daf35e29b7029534e70af5bb6dbffe6ce7"
+      "commit": "ee5492c2d1800be609707e80edcbab376d703eac",
+      "tree_sha": null,
+      "regular_file_count": null,
+      "manifest_blob_sha": "abd29376a51e7ef20bc22a59fe47b38259819fc6",
+      "tree_sha_status": "Not exposed by the connected GitHub read interface during this refresh; old tree hash intentionally cleared."
     }
   },
   "candidate": {
-    "source_commit": "a1f1011342ef4f45320a1733a1366c970102c15c",
-    "source_tree_sha": "fea0c9c3769fb8f3bd5589bdb8b29a30219741da",
-    "workflow_url": "https://github.com/Leruchii/Leruchi-development/actions/runs/38126397395",
-    "workflow_head_sha": "a82533db4a6b60fbfb8147ec31d452163e6088d6",
+    "source_commit": "ee5492c2d1800be609707e80edcbab376d703eac",
+    "source_tree_sha": null,
+    "workflow_url": "https://github.com/Leruchii/Leruchi-development/actions/runs/38220961168",
+    "workflow_head_sha": "ee5492c2d1800be609707e80edcbab376d703eac",
     "workflow_conclusion": "success",
-    "artifact_id": 11697531929,
-    "artifact_zip_size_bytes": 187131,
-    "artifact_zip_sha256": "52012743c38a034503c550d960fc8fe1a0e7dab1aadd2ca46a03b4af2ba33e9d",
+    "artifact_id": 11733764439,
+    "artifact_zip_size_bytes": 187166,
+    "artifact_zip_sha256": "24956ad98e9d9202f055466526e5cdff2b2f888a6d62b4b59bad269d87bd95a2",
     "archive_name": "leruchi-oss-core-candidate.tar.gz",
-    "archive_size_bytes": 186904,
-    "archive_sha256": "e1b50ac21d1ea37f6ffc9a305e2c8ccf46577f45149d8b4b46e0e7e6a9f860e0",
+    "archive_size_bytes": 186934,
+    "archive_sha256": "40583b352321275d5815cadcaddf3c0ae21f9ed3da115ae0b2942ae8c3ac3a7e",
     "regular_file_count": 202,
     "consumer_test_result": {
       "sdk_cli_tests_passed": 29,
@@ -40,21 +42,10 @@
   },
   "comparison": {
     "candidate_path_count": 202,
-    "shared_path_count": 200,
-    "shared_content_identical_count": 187,
+    "shared_path_count": 202,
+    "shared_content_identical_count": 189,
     "shared_content_different_count": 13,
-    "candidate_only_paths": [
-      {
-        "path": "docs/release/OSS_CORE_RELEASE_CHECKLIST.md",
-        "classification": "public_repository_missing_public_safe_document",
-        "evidence": "Present in sanitized candidate and development source, absent from public main; public PR #9 proposes adding it."
-      },
-      {
-        "path": "docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md",
-        "classification": "public_repository_missing_public_safe_document",
-        "evidence": "Present in sanitized candidate and development source, absent from public main; public PR #9 proposes adding it."
-      }
-    ],
+    "candidate_only_paths": [],
     "public_only_paths": [
       {
         "path": ".github/workflows/public-core-ci.yml",
@@ -1418,9 +1409,9 @@
     "shared_content_different": [
       {
         "path": "OSS_EXPORT_MANIFEST.json",
-        "public_blob_sha": "b7e04031c95837d437e3aec907d5cda5c507f18a",
-        "candidate_blob_sha": "d81f72daf35e29b7029534e70af5bb6dbffe6ce7",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "public_blob_sha": "820adddfaba70410cf1e4584904c2061f030135e",
+        "candidate_blob_sha": "abd29376a51e7ef20bc22a59fe47b38259819fc6",
+        "classification": "source_manifest_difference_requires_reconciliation"
       },
       {
         "path": "README.md",
@@ -1616,20 +1607,21 @@
       "tests/oss-core-readiness/public-export-manifest.test.mjs",
       "tests/security/owasp-asvs-profile.test.mjs"
     ],
-    "public_manifest_explicitly_excludes_legal_dossier": false,
+    "public_manifest_explicitly_excludes_legal_dossier": true,
     "development_manifest_explicitly_excludes_legal_dossier": true,
     "public_manifest_paths_matched_by_own_excludes": [
       ".github/workflows/public-core-ci.yml",
       ".github/workflows/verify-release.yml"
     ],
-    "candidate_archive_review": "Inspected the downloaded artifact ZIP and inner tar.gz. 202 regular files were present; BUILD_STATE.md and docs/release/LEGAL_REVIEW_DOSSIER.md were absent.",
+    "candidate_archive_review": "Latest Stage 32 artifact inspected: 202 regular files; BUILD_STATE.md and docs/release/LEGAL_REVIEW_DOSSIER.md absent. ZIP SHA-256 matches GitHub artifact digest; inner archive SHA-256 recorded for run 38220961168.",
     "classification_counts": {
       "expected_manifest_exclusion": 2,
       "expected_outside_allowlist_sanitized_difference": 333,
       "expected_duplicate_legacy_alias": 3,
-      "candidate_only_missing_public_documents": 2,
+      "candidate_only_missing_public_documents": 0,
       "shared_content_different_unresolved": 13
-    }
+    },
+    "metric_freshness": "Path counts are adjusted from the prior exact comparison using the confirmed PR #9 change set (two checklist files added to public main); a full current-tree enumeration was unavailable in this run. Refresh exact path/blob metrics before publication."
   },
   "package_identity": {
     "public_package_name": "@leruchi/schema-catalog-api",
@@ -1638,7 +1630,12 @@
     "candidate_package_name": "@leruchi/execution-engine",
     "candidate_package_json_blob_sha": "9f7372ba7c06e2c7694701545e4ec6a080e92881",
     "candidate_package_lock_blob_sha": "2073263580d97938cceb584ed1a10936f35806ea",
-    "runtime_in_both": ">=24 <25"
+    "runtime_in_both": ">=24 <25",
+    "root_packages_private": true,
+    "actual_schema_catalog_package_name": "@leruchi/schema-catalog-api",
+    "actual_schema_catalog_package_name_matches_in_both_repositories": true,
+    "root_name_difference_is_not_an_external_published_package_identity": true,
+    "status": "Root metadata drift understood; root manifests/lockfiles remain part of the source reconciliation list. Do not rename packages/schema-catalog-api based only on private root package names."
   },
   "existing_public_release": {
     "tag": "v0.1.0-engineering-preview",
@@ -1650,9 +1647,10 @@
   },
   "classifications": {
     "expected_sanitized_export_difference": "Public-only files outside the candidate allowlist are not to be copied into the sanitized release. The public tree has historical/flat-layout aliases and CI files; no wholesale mirror is justified.",
-    "unresolved_content_difference": "Thirteen shared paths differ by Git blob SHA. Most consequential are root README, manifest, SECURITY.md, root package.json and lockfile, Docker Compose files, four package metadata files, and two tests. Do not overwrite them without a deliberate public-source/package identity decision.",
-    "candidate_only_difference": "Two public-safe release checklists are in the candidate but absent from public main.",
-    "manifest_safety_gap": "Public OSS_EXPORT_MANIFEST.json includes docs/** but does not explicitly exclude docs/release/LEGAL_REVIEW_DOSSIER.md, while development manifest does. The dossier is absent from current public tree and candidate, but public manifest should be hardened.",
-    "encoding": "The local release notes and publisher script were checked as UTF-8 and contain no mojibake substring 'â€”'; their em dashes are correctly encoded."
+    "unresolved_content_difference": "Thirteen shared paths differ by Git blob SHA. The actual packages/schema-catalog-api package is named @leruchi/schema-catalog-api in both repositories; both root packages are private, so their differing names are private metadata drift rather than evidence of a published package rename. Reconcile root manifests/lockfiles, README, SECURITY.md, Compose files, package metadata, and two tests based on exact candidate and architecture evidence.",
+    "candidate_only_difference": "Resolved by public PR #9: both public-safe release checklists now exist in public main. No candidate-only checklist paths remain in the current known comparison.",
+    "manifest_safety_gap": "Resolved by public PR #9: public OSS_EXPORT_MANIFEST.json explicitly excludes docs/release/LEGAL_REVIEW_DOSSIER.md and public CI asserts the exclusion. Keep the exclusion in future changes.",
+    "encoding": "The local release notes and publisher script were checked as UTF-8 and contain no mojibake substring 'â€”'; their em dashes are correctly encoded.",
+    "development_visibility_policy": "Final owner decision dated 2026-10-12: Leruchii/Leruchi-development may remain public and its visibility is not a publication blocker. Review actual candidate contents for secrets or confidential material."
   }
 }
