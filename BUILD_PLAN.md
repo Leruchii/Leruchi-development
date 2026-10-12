@@ -1321,7 +1321,7 @@ Integrated controls include the Apache-2.0 license file, explicit export allowli
 
 The ASVS ledger records 345 requirements and explicitly does **not** claim compliance. Many requirements remain unmapped, require scoping, or are deferred. This is an evidence/planning gate, not certification or proof that every control is implemented.
 
-The pre-merge candidate artifact is validation evidence only. Rebuild and inspect an artifact from the final integrated SHA before any release. Publication remains gated on repository visibility, formal product-name clearance, final dependency/license inventory, complete export review, provenance/reproducibility review and explicit release approval.
+The pre-merge candidate artifact is validation evidence only. Rebuild and inspect an artifact from the final integrated SHA before any release. Publication is gated on formal product-name/distribution approval, dependency/license inventory, complete export and sensitive-content review, source reconciliation, provenance/reproducibility, exact-head CI, and explicit release authorization. **The public visibility of `Leruchi-development` is not a publication gate.**
 
 ## Stage 31A — Agent Governance Foundation
 
@@ -1345,7 +1345,7 @@ The pre-merge candidate artifact is validation evidence only. Rebuild and inspec
 
 ### Owner-managed security follow-ups — not publication blockers per owner direction
 
-On 2026-10-10, the owner directed that exposed-token rotation, branch protection and repository visibility settings remain owner-operated and not block OSS source publication. Do not change those settings through automation. Keep them documented as important security/admin follow-ups for the owner to handle separately. The current connection cannot verify internal/control repository visibility or read main's branch-protection settings.
+On 2026-10-12, the owner made a final decision that the public visibility of `Leruchii/Leruchi-development` is permitted and is not a blocker to OSS source publication. Do not require that repository to become private and do not create visibility-based release gates. Token rotation and branch protection remain owner-managed; do not change those settings through automation. Review the actual candidate for secrets or sensitive content and handle concrete exposures separately. The current connection cannot change repository settings or verify main's branch-protection rules.
 
 ### Remaining release considerations
 

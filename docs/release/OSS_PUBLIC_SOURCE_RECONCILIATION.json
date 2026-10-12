@@ -5,56 +5,49 @@
     "public": {
       "full_name": "Leruchii/Leruchi",
       "branch": "main",
-      "commit": "ca9187dcb9e216f896c5f4b48e31ff932ad2b959",
-      "tree_sha": "13f679ccea901d8142dfce652cc7bc037b80c0c4",
-      "regular_file_count": 538,
-      "manifest_blob_sha": "b7e04031c95837d437e3aec907d5cda5c507f18a"
+      "commit": "1613ddfc9cc7602c4a6110c9b917923fa99675c2",
+      "tree_sha": null,
+      "regular_file_count": null,
+      "manifest_blob_sha": "820adddfaba70410cf1e4584904c2061f030135e",
+      "tree_sha_status": "Not exposed by the connected GitHub read interface during this refresh; old tree hash intentionally cleared."
     },
     "development": {
       "full_name": "Leruchii/Leruchi-development",
       "branch": "main",
-      "commit": "a1f1011342ef4f45320a1733a1366c970102c15c",
-      "tree_sha": "fea0c9c3769fb8f3bd5589bdb8b29a30219741da",
-      "regular_file_count": 340,
-      "manifest_blob_sha": "d81f72daf35e29b7029534e70af5bb6dbffe6ce7"
+      "commit": "ee5492c2d1800be609707e80edcbab376d703eac",
+      "tree_sha": null,
+      "regular_file_count": null,
+      "manifest_blob_sha": "abd29376a51e7ef20bc22a59fe47b38259819fc6",
+      "tree_sha_status": "This identifies current main; the candidate was built from PR #104 code head a67664a464589a2a4545ca5c1aeb0b654e5e703a."
     }
   },
   "candidate": {
-    "source_commit": "a1f1011342ef4f45320a1733a1366c970102c15c",
-    "source_tree_sha": "fea0c9c3769fb8f3bd5589bdb8b29a30219741da",
-    "workflow_url": "https://github.com/Leruchii/Leruchi-development/actions/runs/38126397395",
-    "workflow_head_sha": "a82533db4a6b60fbfb8147ec31d452163e6088d6",
+    "source_commit": "a67664a464589a2a4545ca5c1aeb0b654e5e703a",
+    "source_tree_sha": null,
+    "workflow_url": "https://github.com/Leruchii/Leruchi-development/actions/runs/38227310042",
+    "workflow_head_sha": "a67664a464589a2a4545ca5c1aeb0b654e5e703a",
     "workflow_conclusion": "success",
-    "artifact_id": 11697531929,
-    "artifact_zip_size_bytes": 187131,
-    "artifact_zip_sha256": "52012743c38a034503c550d960fc8fe1a0e7dab1aadd2ca46a03b4af2ba33e9d",
+    "artifact_id": 11736908885,
+    "artifact_zip_size_bytes": 188183,
+    "artifact_zip_sha256": "c90da0ed0332733ad7a87d7d562dc722577cb429f3df4462252b07b411d6995f",
     "archive_name": "leruchi-oss-core-candidate.tar.gz",
-    "archive_size_bytes": 186904,
-    "archive_sha256": "e1b50ac21d1ea37f6ffc9a305e2c8ccf46577f45149d8b4b46e0e7e6a9f860e0",
+    "archive_size_bytes": 187965,
+    "archive_sha256": "8be1e96616fec8e044e55f9c99c517e6e79d8aa209cf6560b73737370fd933fc",
     "regular_file_count": 202,
     "consumer_test_result": {
       "sdk_cli_tests_passed": 29,
       "failed": 0,
-      "runtime": "Node.js 24"
+      "runtime": "Node.js 24",
+      "architecture_audit": "passed in extracted candidate",
+      "supabase_role_credential_tests_passed": 6
     }
   },
   "comparison": {
     "candidate_path_count": 202,
-    "shared_path_count": 200,
-    "shared_content_identical_count": 187,
-    "shared_content_different_count": 13,
-    "candidate_only_paths": [
-      {
-        "path": "docs/release/OSS_CORE_RELEASE_CHECKLIST.md",
-        "classification": "public_repository_missing_public_safe_document",
-        "evidence": "Present in sanitized candidate and development source, absent from public main; public PR #9 proposes adding it."
-      },
-      {
-        "path": "docs/release/REAL_PRODUCTION_ENVIRONMENT_CHECKLIST.md",
-        "classification": "public_repository_missing_public_safe_document",
-        "evidence": "Present in sanitized candidate and development source, absent from public main; public PR #9 proposes adding it."
-      }
-    ],
+    "shared_path_count": 202,
+    "shared_content_identical_count": 190,
+    "shared_content_different_count": 12,
+    "candidate_only_paths": [],
     "public_only_paths": [
       {
         "path": ".github/workflows/public-core-ci.yml",
@@ -1418,81 +1411,75 @@
     "shared_content_different": [
       {
         "path": "OSS_EXPORT_MANIFEST.json",
-        "public_blob_sha": "b7e04031c95837d437e3aec907d5cda5c507f18a",
-        "candidate_blob_sha": "d81f72daf35e29b7029534e70af5bb6dbffe6ce7",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "public_blob_sha": "820adddfaba70410cf1e4584904c2061f030135e",
+        "candidate_blob_sha": "abd29376a51e7ef20bc22a59fe47b38259819fc6",
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "README.md",
         "public_blob_sha": "7cf1625dbabec64d2f428fc62f56cd0826f02efc",
-        "candidate_blob_sha": "00c9bc253e7d44daad64e8d90823ed2060e86632",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "candidate_blob_sha": "e6bfa812c55f20fe01fee48a020d448f5fa662e6",
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "SECURITY.md",
         "public_blob_sha": "02d022dc85274cf76b4a26e97541346a2021ce50",
-        "candidate_blob_sha": "faa29e39a584f2787d84b9018928e3277f91c277",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "candidate_blob_sha": "4dd44a95e19674a4ed5d93a713fdd9956b1ef1f4",
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "docker-compose.yml",
         "public_blob_sha": "16712972f5af06f7775186ba425c901ade7e7340",
         "candidate_blob_sha": "0515cc3a3ea456a6a719420229753066d73d8170",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "infra/supabase/docker-compose.yml",
         "public_blob_sha": "16712972f5af06f7775186ba425c901ade7e7340",
         "candidate_blob_sha": "6951712222d1dc52c85a3d04dc876218286c6bd4",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "package-lock.json",
         "public_blob_sha": "c2538b6e045e47acb315cbb37ced0f2b6a2d5a5d",
         "candidate_blob_sha": "2073263580d97938cceb584ed1a10936f35806ea",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "package.json",
         "public_blob_sha": "78ecffb021ca79d95aa3a9289b7510362f954f8d",
         "candidate_blob_sha": "9f7372ba7c06e2c7694701545e4ec6a080e92881",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "packages/graph-api/package.json",
         "public_blob_sha": "ef07c8c1e527702706ca5addde3de15b115e5c44",
         "candidate_blob_sha": "1cc0b7d459ceb697660c492d2840ffbc74c4675f",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "packages/leruchi-cli/package.json",
         "public_blob_sha": "cf7b145ee028149873e160b65415990bf0e1bf68",
         "candidate_blob_sha": "840fd827db5d1d9e6c4514eb8819293c5ad4910f",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "packages/leruchi-sdk/package.json",
         "public_blob_sha": "c3ecfa7ac73f7ae41196aac9823f2245fb1ff98e",
         "candidate_blob_sha": "cd759c2a7a42160d228a29fd960c53882e463ced",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "packages/schema-catalog-api/package.json",
         "public_blob_sha": "4d4883b57c6a702fef821f721ed53016de3ade42",
         "candidate_blob_sha": "30bec30f3872a32076b873c6149f4a8419007364",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
-      },
-      {
-        "path": "tests/architecture/contract-audit.mjs",
-        "public_blob_sha": "f470e12461b4dcb9c52b2f0217d2ca05d4afd62b",
-        "candidate_blob_sha": "007cfd2347fe96173e91ddc9b4f9fc5bcf301bae",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       },
       {
         "path": "tests/security/supabase-role-credentials.test.mjs",
         "public_blob_sha": "9369139fcd627636d3ef884de54b02f1a70fd722",
         "candidate_blob_sha": "df2d00a7d98f1eb9ed932c5b92164003417bf5eb",
-        "classification": "unresolved_requires_source_or_package_identity_decision"
+        "classification": "proposed_alignment_in_public_pr_11"
       }
     ],
     "candidate_source_excluded_paths_present_in_development_tree": [
@@ -1614,22 +1601,25 @@
       "tests/architecture/runtime-policy.test.mjs",
       "tests/oss-core-readiness/oss-core-readiness.test.mjs",
       "tests/oss-core-readiness/public-export-manifest.test.mjs",
-      "tests/security/owasp-asvs-profile.test.mjs"
+      "tests/security/owasp-asvs-profile.test.mjs",
+      "knowledge/decisions/development-repository-visibility-release-policy.md",
+      "tests/oss-core-readiness/repository-visibility-policy.test.mjs"
     ],
-    "public_manifest_explicitly_excludes_legal_dossier": false,
+    "public_manifest_explicitly_excludes_legal_dossier": true,
     "development_manifest_explicitly_excludes_legal_dossier": true,
     "public_manifest_paths_matched_by_own_excludes": [
       ".github/workflows/public-core-ci.yml",
       ".github/workflows/verify-release.yml"
     ],
-    "candidate_archive_review": "Inspected the downloaded artifact ZIP and inner tar.gz. 202 regular files were present; BUILD_STATE.md and docs/release/LEGAL_REVIEW_DOSSIER.md were absent.",
+    "candidate_archive_review": "Latest Stage 32 artifact (run 38227310042) independently downloaded. ZIP SHA-256 matched GitHub artifact digest; inner archive SHA-256 matched workflow sha256sum. 202 regular files; BUILD_STATE.md, docs/release/LEGAL_REVIEW_DOSSIER.md, and source-reconciliation reports absent.",
     "classification_counts": {
       "expected_manifest_exclusion": 2,
       "expected_outside_allowlist_sanitized_difference": 333,
       "expected_duplicate_legacy_alias": 3,
-      "candidate_only_missing_public_documents": 2,
-      "shared_content_different_unresolved": 13
-    }
+      "candidate_only_missing_public_documents": 0,
+      "shared_content_different_unresolved": 12
+    },
+    "metric_freshness": "Current working count is derived from the previous exact inventory, the confirmed PR #9 checklist additions, and the architecture-audit file now being identical in both source branches. The full current repository tree was not enumerated by the connected read interface; refresh exact path/blob metrics after PR #11 merges."
   },
   "package_identity": {
     "public_package_name": "@leruchi/schema-catalog-api",
@@ -1638,7 +1628,12 @@
     "candidate_package_name": "@leruchi/execution-engine",
     "candidate_package_json_blob_sha": "9f7372ba7c06e2c7694701545e4ec6a080e92881",
     "candidate_package_lock_blob_sha": "2073263580d97938cceb584ed1a10936f35806ea",
-    "runtime_in_both": ">=24 <25"
+    "runtime_in_both": ">=24 <25",
+    "root_packages_private": true,
+    "actual_schema_catalog_package_name": "@leruchi/schema-catalog-api",
+    "actual_schema_catalog_package_name_matches_in_both_repositories": true,
+    "root_name_difference_is_not_an_external_published_package_identity": true,
+    "status": "Root names differ on public main vs candidate but both root packages are private. The actual schema-catalog-api package name is unchanged in both repositories. Public PR #11 proposes aligning the root metadata and remaining candidate files."
   },
   "existing_public_release": {
     "tag": "v0.1.0-engineering-preview",
@@ -1650,9 +1645,16 @@
   },
   "classifications": {
     "expected_sanitized_export_difference": "Public-only files outside the candidate allowlist are not to be copied into the sanitized release. The public tree has historical/flat-layout aliases and CI files; no wholesale mirror is justified.",
-    "unresolved_content_difference": "Thirteen shared paths differ by Git blob SHA. Most consequential are root README, manifest, SECURITY.md, root package.json and lockfile, Docker Compose files, four package metadata files, and two tests. Do not overwrite them without a deliberate public-source/package identity decision.",
-    "candidate_only_difference": "Two public-safe release checklists are in the candidate but absent from public main.",
-    "manifest_safety_gap": "Public OSS_EXPORT_MANIFEST.json includes docs/** but does not explicitly exclude docs/release/LEGAL_REVIEW_DOSSIER.md, while development manifest does. The dossier is absent from current public tree and candidate, but public manifest should be hardened.",
-    "encoding": "The local release notes and publisher script were checked as UTF-8 and contain no mojibake substring 'â€”'; their em dashes are correctly encoded."
+    "unresolved_content_difference": "Twelve shared paths currently differ by Git blob SHA and are proposed for alignment in public PR #11. The root packages are private; the actual packages/schema-catalog-api package remains @leruchi/schema-catalog-api. Public PR #11 copies the validated candidate's root manifests/lockfile, README, SECURITY, Compose files, package manifests, and Supabase credential regression test.",
+    "candidate_only_difference": "Resolved: both public-safe release checklists exist in public main after PR #9. No candidate-only checklist paths remain in the current known comparison.",
+    "manifest_safety_gap": "Resolved: public PR #9 added an explicit legal-dossier exclusion and CI regression assertion. Public PR #11 proposes aligning the full manifest with the candidate, including exclusions for internal source-reconciliation reports.",
+    "encoding": "The local release notes and publisher script were checked as UTF-8 and contain no mojibake substring 'â€”'; their em dashes are correctly encoded.",
+    "development_visibility_policy": "Final owner decision dated 2026-10-12: Leruchii/Leruchi-development may remain public and its visibility is not a publication blocker. Review actual candidate contents for secrets or confidential material."
+  },
+  "public_source_reconciliation_pr": {
+    "url": "https://github.com/Leruchii/Leruchi/pull/11",
+    "status": "open",
+    "head": "f9ae526a924c82f859f0b2c354d9bbe55bdb4ec1",
+    "changed_files": 12
   }
 }

@@ -5,6 +5,7 @@ Status: **ADOPTED**
 
 ## Decision
 
+- **Final owner policy:** `Leruchii/Leruchi-development` may be public. Its visibility is not, by itself, a release blocker and must not be used as a publication gate.
 - Public distribution home: [`Leruchii/Leruchi`](https://github.com/Leruchii/Leruchi).
 - Engineering workspace and CI/candidate-generation home: [`Leruchii/Leruchi-development`](https://github.com/Leruchii/Leruchi-development).
 - Internal/control-plane repository: [`Leruchii/Leruchi-internal`](https://github.com/Leruchii/Leruchi-internal). Its current GitHub metadata reports public visibility; do not change visibility automatically, and leave any visibility correction to the owner.
@@ -29,7 +30,7 @@ Status: **ADOPTED**
 - No versioned public release has been published.
 - The current candidate source commit is `bbdd9aa2265c952328f064cd7bbcd17a2a3bc1f5`; documentation-only commits in the engineering repository are excluded from the candidate export.
 - The candidate dependency inventory contains license expressions covered by the owner's confirmed legal/release approval for the intended scope. Preserve the underlying approval record; any broader distribution requires a fresh scope review.
-- Token rotation, repository visibility and branch protection are owner-managed follow-ups per owner direction. Automation must not change those settings or treat them as blockers to the technical export work.
+- Token rotation and branch protection remain owner-managed follow-ups. Automation must not change those settings. The public visibility of `Leruchi-development` is explicitly accepted and must not block OSS source publication. Inspect the actual candidate for credentials, confidential material, or customer data; remediate concrete exposures separately.
 
 ## Safety rules for future agents
 

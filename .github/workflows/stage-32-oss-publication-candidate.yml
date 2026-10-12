@@ -83,6 +83,8 @@ jobs:
         run: node scripts/verify-third-party-notices.mjs
       - name: Validate public export manifest
         run: node tests/oss-core-readiness/public-export-manifest.test.mjs
+      - name: Enforce repository visibility release-policy decision
+        run: node --test tests/oss-core-readiness/repository-visibility-policy.test.mjs
       - name: Audit source export contract
         run: node scripts/public-oss-export-audit.mjs
       - name: Build sanitized OSS candidate
@@ -112,6 +114,8 @@ jobs:
           tar -xzf "$archive" -C "$consumer"
           cd "$consumer"
           test "$(node -p 'process.versions.node.split(".")[0]')" = "24"
+          node tests/architecture/contract-audit.mjs
+          node --test tests/security/supabase-role-credentials.test.mjs
           npm ci --ignore-scripts --no-audit --no-fund
           node --test tests/sdk/sdk.test.mjs tests/cli/cli.test.mjs
       - name: Upload candidate artifact
