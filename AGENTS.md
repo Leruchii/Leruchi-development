@@ -297,9 +297,13 @@ Use the checkpoint status vocabulary defined in `BUILD_STATE.md`. Code that exis
 
 ## 9. Repository visibility and release synchronization
 
-Before integrating a large staged candidate into `main`, or publishing any sanitized OSS artifact, verify actual GitHub repository visibility through the repository API/settings. Names such as `*-development` and `*-internal` do not prove a repository is private. If either development or internal control repositories are public when intended to be private, stop merge/publication actions, alert the authorized administrator, and verify the visibility change before continuing.
+The owner has made a final release-policy decision: **the fact that `Leruchii/Leruchi-development` is public is not, by itself, a security defect or a blocker to publishing the sanitized OSS Core.** Do not require this repository to become private, do not stop publication because it is public, and do not add visibility-based release gates for it.
 
-A green candidate workflow is not approval to merge or publish. Reconcile stacked/legacy pull requests and document any remaining branch-side commits before claiming the repository is synchronized. Keep public brand clearance, sanitized artifact review, and explicit release approval as separate gates.
+Continue to inspect the actual candidate contents and run secret/sensitive-data scans. A concrete exposed credential, confidential file, customer data, or other sensitive content is a separate finding that must be handled; repository visibility and artifact-content safety are different questions. Do not change repository visibility settings through automation.
+
+For `Leruchii/Leruchi-internal`, assess actual confidentiality exposure and alert the owner if internal material is exposed. Do not copy internal/control-plane material into the OSS candidate. Do not infer a release blocker from a repository name or visibility flag alone; tie any stop condition to a concrete risk in the release candidate or a confirmed incident.
+
+A green candidate workflow is not approval to merge or publish. Reconcile source differences, preserve artifact provenance, verify export audits and exact-head CI, and keep explicit release authorization separate from the development repository's visibility.
 
 
 ### Required live Git/CI synchronization (mandatory)
