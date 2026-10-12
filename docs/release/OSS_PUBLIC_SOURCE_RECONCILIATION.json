@@ -14,11 +14,11 @@
     "development": {
       "full_name": "Leruchii/Leruchi-development",
       "branch": "main",
-      "commit": "ad357f4aba6d03af1f92fd63740e92147b733347",
+      "commit": "696d5f5f272d99d5a37335af3f999b50858edfd8",
       "tree_sha": null,
       "regular_file_count": null,
       "manifest_blob_sha": "abd29376a51e7ef20bc22a59fe47b38259819fc6",
-      "tree_sha_status": "Latest observed development main control/documentation commit on 2026-10-12 is ad357f4aba6d03af1f92fd63740e92147b733347. Source reconciliation/policy merge remains 68324a2f1de0227b60ed2443a59d44082499db4b. Full tree SHA not exposed by connected GitHub read interface."
+      "tree_sha_status": "Exact-main Stage 32 verified on 2026-10-12 for development main commit 696d5f5f272d99d5a37335af3f999b50858edfd8; full tree SHA not exposed by the connected GitHub read interface."
     }
   },
   "candidate": {
@@ -42,9 +42,25 @@
       "supabase_role_credential_tests_passed": 6
     },
     "source_commit_merged_as": "68324a2f1de0227b60ed2443a59d44082499db4b",
-    "post_merge_main_run_status": "Not independently confirmed: the connected workflow query exposes PR-triggered runs only, and no push-triggered Stage 32 run ID/artifact for latest main control commit ad357f4aba6d03af1f92fd63740e92147b733347 was available. Verify exact-main run and artifact before publication.",
-    "latest_main_control_commit": "ad357f4aba6d03af1f92fd63740e92147b733347",
-    "development_visibility_policy": "Final owner decision: Leruchii/Leruchi-development may remain public; its visibility is not a publication blocker. Review actual candidate contents independently for secrets and confidential material."
+    "post_merge_main_run_status": "Verified: Stage 32 push-triggered run 38234741708 succeeded on exact development main commit 696d5f5f272d99d5a37335af3f999b50858edfd8; artifact downloaded and ZIP SHA-256 independently matched GitHub digest.",
+    "latest_main_control_commit": "696d5f5f272d99d5a37335af3f999b50858edfd8",
+    "development_visibility_policy": "Final owner decision: Leruchii/Leruchi-development may remain public; its visibility is not a publication blocker. Review actual candidate contents independently for secrets and confidential material.",
+    "main_candidate_verification": {
+      "workflow_url": "https://github.com/Leruchii/Leruchi-development/actions/runs/38234741708",
+      "event": "push",
+      "branch": "main",
+      "commit": "696d5f5f272d99d5a37335af3f999b50858edfd8",
+      "conclusion": "success",
+      "artifact_id": 11740037634,
+      "artifact_zip_size_bytes": 188183,
+      "artifact_zip_sha256": "52ff861156c00e1b39b757b90f4b48538e1a8f87a180715a22f747add486c1a9",
+      "archive_name": "leruchi-oss-core-candidate.tar.gz",
+      "archive_size_bytes": 187965,
+      "archive_sha256": "8be1e96616fec8e044e55f9c99c517e6e79d8aa209cf6560b73737370fd933fc",
+      "independent_zip_hash_check": "passed",
+      "node_runtime": "24",
+      "candidate_regular_file_count": 202
+    }
   },
   "comparison": {
     "candidate_path_count": 202,
@@ -1599,5 +1615,14 @@
     "status": "merged",
     "merge_commit": "68324a2f1de0227b60ed2443a59d44082499db4b",
     "validated_candidate_run": "https://github.com/Leruchii/Leruchi-development/actions/runs/38227841712"
+  },
+  "next_release_preflight": {
+    "proposed_tag": "v0.1.1-engineering-preview",
+    "tag_exists_at_check": false,
+    "release_exists_at_check": false,
+    "checked_at": "2026-10-12",
+    "existing_release_to_preserve": "v0.1.0-engineering-preview",
+    "publication_status": "not published",
+    "authorization_status": "pending formal product-name/trademark and exact public release-wording approval"
   }
 }
