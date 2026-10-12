@@ -8,7 +8,7 @@ Leruchi is the official product name. **VibeDB is the former product name and mu
 
 - Enterprise/product: **Leruchi**
 - GitHub organization: **Leruchii**
-- Intended private development repository: **Leruchii/Leruchi-development** — GitHub currently reports this repository as public; treat this as a security blocker until an authorized administrator changes and verifies visibility.
+- Development and candidate-generation repository: **Leruchii/Leruchi-development** — GitHub currently reports this repository as public. The owner has made a final decision that this is permitted and is **not a release blocker**. Do not require a visibility change before OSS publication.
 - Intended private internal control repository: **Leruchii/Leruchi-internal** — GitHub currently reports this repository as public; treat this as a security blocker until an authorized administrator changes and verifies visibility.
 - Public OSS Core repository: **Leruchii/Leruchi**
 
