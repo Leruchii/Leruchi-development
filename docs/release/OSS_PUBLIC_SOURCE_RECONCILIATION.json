@@ -14,11 +14,11 @@
     "development": {
       "full_name": "Leruchii/Leruchi-development",
       "branch": "main",
-      "commit": "68324a2f1de0227b60ed2443a59d44082499db4b",
+      "commit": "ad357f4aba6d03af1f92fd63740e92147b733347",
       "tree_sha": null,
       "regular_file_count": null,
       "manifest_blob_sha": "abd29376a51e7ef20bc22a59fe47b38259819fc6",
-      "tree_sha_status": "Not exposed by the connected GitHub read interface; no stale tree hash retained."
+      "tree_sha_status": "Latest observed development main control/documentation commit on 2026-10-12 is ad357f4aba6d03af1f92fd63740e92147b733347. Source reconciliation/policy merge remains 68324a2f1de0227b60ed2443a59d44082499db4b. Full tree SHA not exposed by connected GitHub read interface."
     }
   },
   "candidate": {
@@ -42,7 +42,9 @@
       "supabase_role_credential_tests_passed": 6
     },
     "source_commit_merged_as": "68324a2f1de0227b60ed2443a59d44082499db4b",
-    "post_merge_main_run_status": "Not independently retrievable through the connected workflow-run query; confirm exact-main Stage 32 run before publication."
+    "post_merge_main_run_status": "Not independently confirmed: the connected workflow query exposes PR-triggered runs only, and no push-triggered Stage 32 run ID/artifact for latest main control commit ad357f4aba6d03af1f92fd63740e92147b733347 was available. Verify exact-main run and artifact before publication.",
+    "latest_main_control_commit": "ad357f4aba6d03af1f92fd63740e92147b733347",
+    "development_visibility_policy": "Final owner decision: Leruchii/Leruchi-development may remain public; its visibility is not a publication blocker. Review actual candidate contents independently for secrets and confidential material."
   },
   "comparison": {
     "candidate_path_count": 202,
