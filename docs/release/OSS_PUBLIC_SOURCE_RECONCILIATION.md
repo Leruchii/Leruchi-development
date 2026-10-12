@@ -1,15 +1,15 @@
 # OSS Public Source Reconciliation Report
 
-**Status: public-development visibility is accepted and is not a release blocker. Publication is still pending source reconciliation and a fresh exact-candidate release review. No new tag or release was created.**
+**Status: public-development visibility is accepted and is not a release blocker. The updated candidate passes Stage 32; public PR #11 proposes aligning the remaining 12 shared-file differences. No new tag or release was created.**
 
 ## Current live evidence — 2026-10-12
 
 - Public `main`: [`1613ddfc9cc7602c4a6110c9b917923fa99675c2`](https://github.com/Leruchii/Leruchi/commit/1613ddfc9cc7602c4a6110c9b917923fa99675c2).
 - Development `main`: [`ee5492c2d1800be609707e80edcbab376d703eac`](https://github.com/Leruchii/Leruchi-development/commit/ee5492c2d1800be609707e80edcbab376d703eac).
-- Latest Stage 32 run: [38220961168](https://github.com/Leruchii/Leruchi-development/actions/runs/38220961168), successful against development `main` at `ee5492c2d1800be609707e80edcbab376d703eac`.
-- Candidate artifact ID `11733764439`; ZIP size 187,166 bytes; SHA-256 `24956ad98e9d9202f055466526e5cdff2b2f888a6d62b4b59bad269d87bd95a2`.
-- Inner candidate archive: 202 regular files, 186,934 bytes; SHA-256 `40583b352321275d5815cadcaddf3c0ae21f9ed3da115ae0b2942ae8c3ac3a7e`.
-- The latest workflow passed all 16 substantive steps, including Node.js 24 enforcement, security/export checks, reproducible packaging, and clean consumer validation (29 SDK/CLI tests passed, 0 failed).
+- Latest updated candidate: [Stage 32 run 38227310042](https://github.com/Leruchii/Leruchi-development/actions/runs/38227310042), successful against PR #104 code head `a67664a464589a2a4545ca5c1aeb0b654e5e703a`.
+- Candidate artifact ID `11736908885`; ZIP size 188,183 bytes; SHA-256 `c90da0ed0332733ad7a87d7d562dc722577cb429f3df4462252b07b411d6995f`. The downloaded ZIP independently matched GitHub's artifact digest.
+- Inner candidate archive: 202 regular files, 187,965 bytes; SHA-256 `8be1e96616fec8e044e55f9c99c517e6e79d8aa209cf6560b73737370fd933fc`.
+- All 24 observed PR-head workflows completed successfully on code head `a67664a464589a2a4545ca5c1aeb0b654e5e703a`; the later build-state-only commit does not change exported candidate contents. Stage 32 passed Node.js 24, visibility-policy regression, architecture audit in the clean candidate, Supabase credential/loopback tests (6), and clean-consumer SDK/CLI tests (29 passed, 0 failed).
 - Public manifest blob: `820adddfaba70410cf1e4584904c2061f030135e`. Development manifest blob: `abd29376a51e7ef20bc22a59fe47b38259819fc6`.
 - Public PR #9 is merged at the public commit above. Its explicit legal-dossier exclusion and both public-safe release checklists are now in public `main`. Earlier statements that PR #9 was open or that the public manifest lacked this exclusion are superseded.
 - Tree hashes and full repository file counts were not exposed by the connected GitHub read interface in this run; do not reuse the old tree hashes as current evidence.
@@ -22,13 +22,13 @@ The root manifest and lockfile remain among the shared-file differences and stil
 
 ## Reconciliation method and metric freshness
 
-The file-level comparison below originated from the prior candidate snapshot. Public PR #9 subsequently added the two checklist files to public `main` and changed the public manifest. The candidate now shares those checklist paths with public `main`. The 13 differing shared paths remain the working reconciliation list; the manifest hashes and source SHAs have been refreshed. The full tree was not independently enumerated in this run, so old tree hashes and repository file counts are not presented as current measurements.
+The file-level comparison below originated from the prior candidate snapshot. Public PR #9 subsequently added the two checklist files to public `main` and changed the public manifest. The updated development candidate also changed the architecture audit to use public README evidence rather than excluded `BUILD_PLAN.md`, so that path is now identical to public `main`. The current working reconciliation list has **12 shared-file differences**. The full tree was not independently enumerated in this run, so old tree hashes and repository file counts are not presented as current measurements.
 
 ## File-level comparison
 
 - Candidate paths derived from the latest Stage 32 artifact: **202 regular files**.
 - The two checklist paths previously described as candidate-only now exist in public `main` after PR #9.
-- The working difference inventory still contains **13 shared paths** requiring file-level reconciliation.
+- The working difference inventory contains **12 shared paths** requiring file-level reconciliation.
 - Previous tree/path counts below are historical comparison data, not freshly enumerated current-tree totals.
 
 ### Candidate-only files
@@ -64,7 +64,7 @@ These are public release checklists in the candidate but absent from public `mai
 | Root package `private` | `true` | `true` |
 | Node runtime | `>=24 <25` | `>=24 <25` |
 
-Both root packages are private. The actual `packages/schema-catalog-api` package name is `@leruchi/schema-catalog-api` in both repositories. Treat the root-name difference as private metadata/source drift, not as proof that the public API package must be renamed. The root manifests and lockfiles still need to be reconciled with the intended build layout.
+Both root packages are private. The actual `packages/schema-catalog-api` package name is `@leruchi/schema-catalog-api` in both repositories. Treat the root-name difference as private metadata/source drift, not as proof that the public API package must be renamed. The root manifests and lockfiles are included in public PR #11's proposed reconciliation with the current candidate.
 
 ## Manifest safety finding — corrected
 
@@ -73,8 +73,8 @@ Public PR #9 merged an explicit exclusion for `docs/release/LEGAL_REVIEW_DOSSIER
 ## Decisions and actions
 
 1. **Completed:** PR #9 added the legal-dossier exclusion, regression check, and public-safe release checklists to public `main`.
-2. **Resolve the remaining source differences:** review each of the 13 differing shared paths against the current candidate. Keep the actual `packages/schema-catalog-api` identity unchanged unless evidence requires a migration; both root packages are private.
-3. Record the final source-promotion strategy and refresh the file-level comparison from the exact final candidate.
+2. **Validate public PR #11:** it aligns the remaining 12 shared-file differences with the updated candidate; do not merge until public CI and release verification pass on its exact head.
+3. Merge approved source and policy PRs through the normal review process, then rebuild Stage 32 from the final integrated development SHA and refresh the file-level comparison.
 4. Keep the existing `v0.1.0` release/tag untouched. Do not create or publish `v0.1.1` until source reconciliation, exact-candidate validation, and artifact provenance are reviewed.
 5. The public visibility of `Leruchi-development` is not a release blocker. Review actual candidate contents for secrets and sensitive material instead.
 
