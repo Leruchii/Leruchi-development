@@ -5,7 +5,7 @@
 ## Current repository state — 2026-10-12
 
 - Public `main`: [`f45a6a38f4a5e16e06bc1ad937edec8dcf8f6414`](https://github.com/Leruchii/Leruchi/commit/f45a6a38f4a5e16e06bc1ad937edec8dcf8f6414), created by merged source reconciliation PR #11.
-- Development `main`: [`68324a2f1de0227b60ed2443a59d44082499db4b`](https://github.com/Leruchii/Leruchi-development/commit/68324a2f1de0227b60ed2443a59d44082499db4b), created by merged policy/validation PR #104.
+- Development source-reconciliation merge: [`68324a2f1de0227b60ed2443a59d44082499db4b`](https://github.com/Leruchii/Leruchi-development/commit/68324a2f1de0227b60ed2443a59d44082499db4b), created by merged policy/validation PR #104. Latest observed development `main` control/documentation commit: [`ad357f4aba6d03af1f92fd63740e92147b733347`](https://github.com/Leruchii/Leruchi-development/commit/ad357f4aba6d03af1f92fd63740e92147b733347); this updates Stage 32 push-path triggers and excluded release-state records, not candidate product source files.
 - Public policy checklist PR #10 is merged as [`7ffd398903ff2858cca6ca79554ec14b4c460605`](https://github.com/Leruchii/Leruchi/commit/7ffd398903ff2858cca6ca79554ec14b4c460605).
 - Public manifest and development manifest now have the same Git blob SHA: `abd29376a51e7ef20bc22a59fe47b38259819fc6`.
 - The actual `packages/schema-catalog-api` package remains `@leruchi/schema-catalog-api`. Both root packages are private and now have the same root package name and lockfile metadata: `@leruchi/execution-engine`.
@@ -49,6 +49,6 @@ This decision is recorded in the development agent instructions, product identit
 
 - Preserve the existing [`v0.1.0-engineering-preview`](https://github.com/Leruchii/Leruchi/releases/tag/v0.1.0-engineering-preview) unchanged.
 - No `v0.1.1-engineering-preview` tag/release was created.
-- The connected workflow lookup verified the PR-head Stage 32 run, but did not expose a separately verifiable push-triggered run for the merged development `main` commit `68324a2f1de0227b60ed2443a59d44082499db4b`. Before publication, confirm a successful Stage 32 run on that exact main SHA and verify its artifact checksum. The PR-head artifact is strong evidence because the candidate source changes are merged, but the final-main run should be recorded explicitly.
+- The connected workflow lookup verified the PR-head Stage 32 run, but does not expose push-triggered runs. The latest observed development control commit is `ad357f4aba6d03af1f92fd63740e92147b733347`; no exact-main run ID/artifact could be independently confirmed. Before publication, confirm a successful Stage 32 run for the exact source/control state and record its artifact checksum. The PR-head artifact is strong evidence because the candidate source changes are merged, but do not represent it as exact-main validation.
 - After exact-main validation, obtain the required release authorization, prepare the next version separately, and verify the published asset checksum. Do not overwrite or move the existing `v0.1.0-engineering-preview` tag.
 - Production readiness remains a separate real-environment assessment. An engineering-preview release is not a production-readiness claim.
