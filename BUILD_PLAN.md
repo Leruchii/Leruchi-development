@@ -1321,7 +1321,7 @@ Integrated controls include the Apache-2.0 license file, explicit export allowli
 
 The ASVS ledger records 345 requirements and explicitly does **not** claim compliance. Many requirements remain unmapped, require scoping, or are deferred. This is an evidence/planning gate, not certification or proof that every control is implemented.
 
-The pre-merge candidate artifact is validation evidence only. Rebuild and inspect an artifact from the final integrated SHA before any release. Publication remains gated on repository visibility, formal product-name clearance, final dependency/license inventory, complete export review, provenance/reproducibility review and explicit release approval.
+The pre-merge candidate artifact is validation evidence only. Rebuild and inspect an artifact from the final integrated SHA before any release. Publication is gated on formal product-name/distribution approval, dependency/license inventory, complete export and sensitive-content review, source reconciliation, provenance/reproducibility, exact-head CI, and explicit release authorization. **The public visibility of `Leruchi-development` is not a publication gate.**
 
 ## Stage 31A — Agent Governance Foundation
 
