@@ -8,7 +8,7 @@ This file is the canonical handoff checkpoint for coding agents. Verify it again
 
 ### Exact candidate evidence
 
-- Development PR: [#104](https://github.com/Leruchii/Leruchi-development/pull/104), head `a67664a464589a2a4545ca5c1aeb0b654e5e703a`.
+- Development PR: [#104](https://github.com/Leruchii/Leruchi-development/pull/104). Candidate code head built by Stage 32: `a67664a464589a2a4545ca5c1aeb0b654e5e703a`. Later commits update only excluded `BUILD_STATE.md` and `docs/release/OSS_PUBLIC_SOURCE_RECONCILIATION.*` records; they do not change the exported candidate contents.
 - Public `main`: [`1613ddfc9cc7602c4a6110c9b917923fa99675c2`](https://github.com/Leruchii/Leruchi/commit/1613ddfc9cc7602c4a6110c9b917923fa99675c2).
 - Stage 32 on the updated PR head: [run 38227310042](https://github.com/Leruchii/Leruchi-development/actions/runs/38227310042), success. The full observed PR workflow matrix completed **24/24 successfully** with no failed or pending runs.
 - Candidate artifact ID: `11736908885`; ZIP size 188,183 bytes; SHA-256 `c90da0ed0332733ad7a87d7d562dc722577cb429f3df4462252b07b411d6995f`. The downloaded ZIP independently matched GitHub's artifact digest.
