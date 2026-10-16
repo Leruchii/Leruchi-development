@@ -71,7 +71,7 @@ jobs:
           # retry the actual graph query and retain a bounded wait.
           for attempt in $(seq 1 60); do
             if docker exec vibedb-stage21-db psql -v ON_ERROR_STOP=1 -U postgres -d vibedb -Atqc \
-              "LOAD 'age'; SET search_path = ag_catalog, public; SELECT * FROM ag_catalog.cypher('vibe_stage01', $cypher$RETURN 1 AS result$cypher$) AS (result ag_catalog.agtype);" \
+              "LOAD 'age'; SET search_path = ag_catalog, public; SELECT * FROM ag_catalog.cypher('vibe_stage01', \$cypher\$RETURN 1 AS result\$cypher\$) AS (result ag_catalog.agtype);" \
               2>/dev/null | grep -qx '1'; then
               echo 'Fresh initialization verified: AGE graph exists and Cypher returned 1.'
               exit 0
