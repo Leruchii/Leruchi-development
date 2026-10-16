@@ -1,0 +1,5 @@
+# Keep files consumed by Linux containers stable across Windows and Unix checkouts.
+*.sh text eol=lf
+*.sql text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
