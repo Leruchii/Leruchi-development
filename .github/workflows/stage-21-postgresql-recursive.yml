@@ -27,6 +27,24 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
+      - name: Validate Linux line endings and initialization inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .gitattributes
+          grep -Fqx '*.sh text eol=lf' .gitattributes
+          grep -Fqx '*.sql text eol=lf' .gitattributes
+          grep -Fqx '*.yml text eol=lf' .gitattributes
+          grep -Fqx '*.yaml text eol=lf' .gitattributes
+          for file in infra/docker/postgres/init/01-vibe-bootstrap.sh infra/docker/postgres/init/02-foundation.sql; do
+            test -f "$file"
+            if LC_ALL=C grep -n "$(printf '\r')" "$file"; then
+              echo "ERROR: CRLF detected in $file; Linux container initialization files must use LF." >&2
+              exit 1
+            fi
+          done
+          test "$(head -n 1 infra/docker/postgres/init/01-vibe-bootstrap.sh)" = '#!/usr/bin/env bash'
+          echo 'Initialization scripts exist and use LF line endings.'
       - name: Install dependencies
         run: npm install --ignore-scripts
       - name: Compiler and planner contract tests
@@ -44,6 +62,30 @@ jobs:
             sleep 2
           done
           docker logs vibedb-stage21-db
+          exit 1
+      - name: Verify fresh database initialization and Apache AGE Cypher
+        shell: bash
+        run: |
+          set -euo pipefail
+          # pg_isready can become true before entrypoint initialization has finished;
+          # retry the actual graph query and retain a bounded wait.
+          for attempt in $(seq 1 60); do
+            if docker exec vibedb-stage21-db psql -v ON_ERROR_STOP=1 -U postgres -d vibedb -Atqc \
+              "LOAD 'age'; SET search_path = ag_catalog, public; SELECT * FROM ag_catalog.cypher('vibe_stage01', \$cypher\$RETURN 1 AS result\$cypher\$) AS (result ag_catalog.agtype);" \
+              2>/dev/null | grep -qx '1'; then
+              echo 'Fresh initialization verified: AGE graph exists and Cypher returned 1.'
+              exit 0
+            fi
+            state=$(docker inspect --format '{{.State.Status}}' vibedb-stage21-db 2>/dev/null || true)
+            if [ "$state" != running ]; then
+              docker logs vibedb-stage21-db || true
+              echo "PostgreSQL container stopped during initialization (state: $state)." >&2
+              exit 1
+            fi
+            sleep 2
+          done
+          docker logs vibedb-stage21-db || true
+          echo 'Timed out waiting for initialized AGE graph and Cypher smoke test.' >&2
           exit 1
       - name: Database traversal, RLS, depth, limit and parameter-safety evidence
         env:
