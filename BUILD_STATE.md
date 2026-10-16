@@ -1110,3 +1110,13 @@ Public PR #7 merged as `60d811663a7be9bd8b273afc026fe9062df511d1`. Its five post
 - **Release publication:** no new public source export, version tag, or production deployment is authorized until the human/legal and administrator gates above are satisfied.
 
 **Final disposition: PARTIALLY COMPLETE — NOT ZERO-BLOCKER.** The validated engineering and security changes are merged and post-merge CI is green, but legal/product-name approval, repository visibility/branch-protection administration, and production-environment sign-off remain open.
+
+
+## Windows PostgreSQL init line-ending hardening — 2026-10-16
+
+- The live main branch did not contain `.gitattributes`; the canonical bootstrap script's GitHub API content is LF-only (46 LF newlines, zero CRLF sequences). The user's Windows checkout uses `core.autocrlf=true` and has a local `.gitattributes`, so the exact historical failing checkout/blob could not be proven from the current remote blob alone.
+- The error `env: ‘bash\r’: No such file or directory` is consistent with a CRLF shebang in an executable Linux shell script. The missing committed line-ending policy is a verified cross-platform hardening gap and a plausible cause, but the historical runtime cause remains unconfirmed until reproduced against the failing checkout.
+- Fix branch `fix/postgres-windows-line-endings` adds root `.gitattributes` rules forcing LF for `*.sh`, `*.sql`, `*.yml`, and `*.yaml`.
+- Stage 21 PostgreSQL CI now validates the policy, checks the canonical initialization files and shebang, and performs a bounded fresh-container AGE/Cypher smoke test after startup. The existing `if: always()` container cleanup and failure-log step remain in place.
+- The change is not yet validated by a GitHub Actions run or a local Docker execution. Do not mark the regression fixed until the PR workflow passes and its fresh-container test proves the graph query returns `1`.
+- Node.js policy remains Node.js 24 only; no Node.js 20 changes were made.
