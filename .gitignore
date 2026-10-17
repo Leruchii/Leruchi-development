@@ -1,3 +1,12 @@
 # Local Leruchi CLI configuration and the legacy config directory.
 .leruchi/
 .vibe/
+
+# Installed dependencies and generated Next.js output.
+node_modules/
+**/.next/
+
+# Local environment files may contain tokens or database credentials.
+.env
+.env.*
+!.env.example
